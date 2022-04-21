@@ -41,18 +41,23 @@ mod_overview_server <- function(id, data){
     output$heatmap <- echarts4r::renderEcharts4r({
 
       heatmap_data() |>
-        echarts4r::e_charts(name.x) |>
-        echarts4r::e_heatmap(name.y, n, pointSize = 5) |>
+        echarts4r::e_charts(
+          x = name.x,
+          label = list(show = TRUE)   # show values inside cells
+        ) |>
+        echarts4r::e_heatmap(
+          y = name.y,
+          z = n,
+          pointSize = 5
+        ) |>
         echarts4r::e_visual_map(
           serie = n,
-          # itemWidth = 15,
-          # show = "false"#,
-          orient = "horizontal",
-          left = "center",
-          # bottom = "15%"
+          show = FALSE   # hide the interactive legend gradient"
         ) |>
         echarts4r::e_tooltip(
           trigger = "item",
+          # Check out https://echarts4r.john-coene.com/articles/tooltip.html#javascript
+          # for more context on how we created the custom tooltip
           formatter = htmlwidgets::JS("
             function(params){
               return('# of Youth Who Identify as' +
@@ -61,8 +66,7 @@ mod_overview_server <- function(id, data){
             }
           ")
         ) |>
-        echarts4r::e_x_axis(axisLabel = list(rotate = 45)) |>
-        echarts4r::e_grid(bottom = "30%")
+        echarts4r::e_x_axis(axisLabel = list(rotate = 45))
 
     })
 
