@@ -66,7 +66,9 @@ mod_overview_server <- function(id, data){
             }
           ")
         ) |>
-        echarts4r::e_x_axis(axisLabel = list(rotate = 45))
+        echarts4r::e_x_axis(
+          axisLabel = list(rotate = 45)
+        )
 
     })
 

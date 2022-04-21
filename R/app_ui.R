@@ -30,7 +30,11 @@ app_ui <- function(request) {
         id = "overview_page",
         title = "Overview",
 
-        mod_overview_ui("overview_1")
+        mod_overview_ui("overview_1"),
+
+        br(),
+
+        mod_bar_chart_ui("bar_chart_1")
 
       )
 

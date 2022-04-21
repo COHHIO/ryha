@@ -35,3 +35,25 @@ prep_heatmap <- function(data) {
     dplyr::mutate(n = ifelse(name.x == name.y, NA, n))
 
 }
+
+
+
+prep_bar_chart <- function(data) {
+
+  data |>
+    dplyr::select(-DOB) |>
+    dplyr::select(PersonalID, AmIndAKNative:HispanicLatino) |>
+    tidyr::pivot_longer(
+      cols = -PersonalID,
+      names_to = "Ethnicity",
+      values_to = "Status",
+      values_transform = list(Status = as.integer)
+    ) |>
+    dplyr::filter(Status == 1L) |>
+    dplyr::count(
+      Ethnicity,
+      name = "Count"
+    ) |>
+    dplyr::arrange(Count)
+
+}

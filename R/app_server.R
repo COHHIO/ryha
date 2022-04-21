@@ -14,4 +14,11 @@ app_server <- function(input, output, session) {
     data = client
   )
 
+  mod_bar_chart_server(
+    id = "bar_chart_1",
+    data = client
+  )
+
+
+
 }
