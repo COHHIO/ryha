@@ -57,7 +57,7 @@ mod_overview_server <- function(id, data){
             function(params){
               return('# of Youth Who Identify as' +
               '<br /><em>' + params.value[0] + '</em> & <em>' + params.value[1] + '</em>' +
-              '<br />Count: <strong>' + params.value[2] + '</strong>')
+              '<br />' + params.marker + ' Count: <strong>' + params.value[2] + '</strong>')
             }
           ")
         ) |>
