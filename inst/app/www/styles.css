@@ -1,0 +1,7 @@
+
+
+ /* Set the background & border color for the navbar */
+.navbar.bg-primary, .navbar.navbar-inverse {
+  background-color: #07274A !important;
+  border-color: #07274A !important;
+}
