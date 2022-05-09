@@ -67,16 +67,13 @@ within the app:
 | Living Situation                             | *Enrollment.csv*          |
 | Welfare History                              | *Enrollment.csv*          |
 | Program Exit Status                          | *Exit.csv*                |
+| Trafficking                                  | *Exit.csv*                |
 | Domestic Violence History                    | *HealthAndDV.csv*         |
 | Overall Health (General, Dental, and Mental) | *HealthAndDV.csv*         |
 | Pregnancy Status                             | *HealthAndDV.csv*         |
 | Income                                       | *IncomeBenefits.csv*      |
 | Unemployment & Other Benefits Received       | *IncomeBenefits.csv*      |
 | Insurance                                    | *IncomeBenefits.csv*      |
-
-#### TO DO:
-
--   Not sure where to find data around trafficking
 
 ### Historical Database
 
