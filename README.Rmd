@@ -79,7 +79,7 @@ tibble::tribble(
   "Insurance", "*IncomeBenefits.csv*"
   
 ) |> 
-  knitr::kable()
+  knitr::kable(caption = "*Table 1*")
 
 ```
 
@@ -89,4 +89,15 @@ Privileged users have access to historical data within the application, which gi
 
 ### Individual Program File Upload
 
-Non-privileged users have the ability to upload their own (individual program) data into the app for analysis.  
+Non-privileged users have the ability to upload their own (individual program) data into the app for analysis.
+
+#### File Storage
+
+Users can upload one Zip file containing *.csv* files representing a single export of HMIS data for their individual program (i.e., grantee). The uploaded data will pass through a data processing script, which will break the *.csv* files up into smaller, more modular datasets that align with the attributes described in [Table 1](#methodology-for-analysis), and stored as *.parquet* files in the data lake.
+
+The data lake is partitioned by **program (grantee)** and **export date range**. An example of the data lake directory structure across two example programs (and three example files) can be seen below:
+
+```{r data_lake_structure, echo = FALSE}
+fs::dir_tree("example_data_lake")
+```
+

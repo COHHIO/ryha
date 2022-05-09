@@ -75,6 +75,8 @@ within the app:
 | Unemployment & Other Benefits Received       | *IncomeBenefits.csv*      |
 | Insurance                                    | *IncomeBenefits.csv*      |
 
+*Table 1*
+
 ### Historical Database
 
 Privileged users have access to historical data within the application,
@@ -84,3 +86,28 @@ which gives the ability to view trends over time across metrics.
 
 Non-privileged users have the ability to upload their own (individual
 program) data into the app for analysis.
+
+#### File Storage
+
+Users can upload one Zip file containing *.csv* files representing a
+single export of HMIS data for their individual program (i.e., grantee).
+The uploaded data will pass through a data processing script, which will
+break the *.csv* files up into smaller, more modular datasets that align
+with the attributes described in [Table 1](#methodology-for-analysis),
+and stored as *.parquet* files in the data lake.
+
+The data lake is partitioned by **program (grantee)** and **export date
+range**. An example of the data lake directory structure across two
+example programs (and three example files) can be seen below:
+
+    #> example_data_lake
+    #> +-- ProgramABCD
+    #> |   \-- 2022-01-01_2022-03-31
+    #> |       +-- ethnicity.parquet
+    #> |       +-- gender.parquet
+    #> |       \-- military.parquet
+    #> \-- ProgramEFGH
+    #>     \-- 2022-02-01_2022-04-30
+    #>         +-- ethnicity.parquet
+    #>         +-- gender.parquet
+    #>         \-- military.parquet
