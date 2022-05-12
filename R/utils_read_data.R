@@ -145,7 +145,7 @@ get_export_dates <- function(dir) {
     file = fs::path(dir, "Export.csv"),
     col_select = c(ExportStartDate, ExportEndDate),
     col_types = readr::cols(
-      .default = readr::col_date()
+      .default = readr::col_date(format = "%m/%d/%Y")
     )
   )
 
@@ -161,7 +161,7 @@ get_export_dates <- function(dir) {
     paste0(
       "A valid ",
       ifelse(check_nas[1], "`ExportStartDate` ", ""),
-      ifelse(all(check_nas), "and "),
+      ifelse(all(check_nas), "and ", ""),
       ifelse(check_nas[2], "`ExportEndDate` ", ""),
       "could not be found in `Export.csv`"
     ) |>
@@ -174,10 +174,7 @@ get_export_dates <- function(dir) {
   # Ensure that there was exactly one row
   if (num_rows != 1L) {
 
-    paste0(
-      "Expected exactly 1 row of data, but found ",
-      num_rows, "rows."
-    ) |>
+    glue::glue("Expected exactly 1 row of data, but found {num_rows} rows.") |>
       rlang::abort()
 
   }
