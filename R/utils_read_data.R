@@ -5,7 +5,7 @@
 #' @return The return value, if any, from executing the utility.
 #'
 #' @noRd
-read_ethnicity <- function() {
+read_client <- function() {
 
   client <- readr::read_csv(
     file = here::here("data/Client.csv"),
@@ -47,6 +47,65 @@ read_ethnicity <- function() {
     ethnicity = ethnicity,
     gender = gender
   )
+
+}
+
+
+
+process_ethnicity <- function(client_data, submission_id) {
+
+  ethnicity <- client |>
+    dplyr::select(-DOB) |>
+    dplyr::select(PersonalID, AmIndAKNative:HispanicLatino) |>
+    tidyr::pivot_longer(
+      cols = -PersonalID,
+      names_to = "Ethnicity",
+      values_to = "Status",
+      values_transform = list(Status = as.integer)
+    ) |>
+    dplyr::filter(Status == 1L) |>
+    dplyr::select(-Status) |>
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::select(SubmissionID, dplyr::everything())
+
+  ethnicity
+
+}
+
+
+
+#' Title
+#'
+#' @param path (String) Path to the "Submission" .parquet file(s) in the data
+#'   lake
+#'
+#' @return
+#' @export
+#'
+#' @examples
+generate_submission_id <- function(file) {
+
+  last_submission <- arrow::read_parquet(
+    file = ,
+    col_select = c(SubmissionID, DatetimeSubmitted)
+  ) |>
+    dplyr::filter(SubmissionID == max(SubmissionID)) |>
+    dplyr::collect()
+
+  last_submission_id <- last_submission |>
+    dplyr::pull(SubmissionID)
+
+  if (length(last_submission_id) != 1L) {
+
+    if (length(last_submission_id) == 0) {
+
+      rlang::inform("First submission")
+
+    }
+
+    rlang::abort("Expected ")
+
+  }
 
 }
 
