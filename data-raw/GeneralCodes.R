@@ -1,8 +1,7 @@
 
 
 
-# These are the 5 "general" codes that many of the variables in the HMIS data
-#
+# These are the 5 "general" codes used by many of the variables in the HMIS data
 
 GeneralCodes <- tibble::tribble(
   ~Code, ~Description,
