@@ -75,7 +75,7 @@ read_client <- function(file, submission_id) {
 
 
 
-read_gender <- function(file) {
+read_gender <- function(file, submission_id) {
 
   # Here's some old code that might help you with this ETL
 
@@ -108,7 +108,7 @@ read_gender <- function(file) {
 
 
 
-read_ethnicity <- function(file) {
+read_ethnicity <- function(file, submission_id) {
 
   # data <- readr::read_csv(
   #   file = file,
@@ -140,7 +140,7 @@ read_ethnicity <- function(file) {
 
 
 
-read_veteran <- function(file) {
+read_veteran <- function(file, submission_id) {
 
   # data <- readr::read_csv(
   #   file = file,
