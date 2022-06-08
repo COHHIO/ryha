@@ -26,7 +26,9 @@ golem::add_module(name = "upload") # Name of the module
 ## Add helper functions ----
 ## Creates fct_* and utils_*
 golem::add_fct("", with_test = TRUE)
-golem::add_utils("read_data", with_test = TRUE)
+golem::add_utils("ingest", with_test = TRUE)
+golem::add_utils("process_data", with_test = TRUE)
+golem::add_utils("ingest_tests", with_test = TRUE)
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
