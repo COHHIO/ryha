@@ -2,3 +2,5 @@
 .Renviron
 example_data_lake/
 data_lake/
+*.csv
+*.zip
