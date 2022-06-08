@@ -7,19 +7,26 @@
 #' @noRd
 read_client <- function() {
 
-  client <- readr::read_csv(
+  full <- readr::read_csv(
     file = here::here("data/Client.csv"),
-    col_select = c(PersonalID, DOB, AmIndAKNative:GenderNone),
+    col_select = c(
+      PersonalID, SSN, SSNDataQuality, DOB, DOBDataQuality,
+      AmIndAKNative:DischargeStatus
+    ),
     col_types = readr::cols(
       .default = readr::col_integer(),
       PersonalID = readr::col_character(),
+      SSN = readr::col_character(),
       DOB = readr::col_date()
     )
   ) |>
     dplyr::rename(HispanicLatino = Ethnicity)
 
-  ethnicity <- client |>
-    dplyr::select(-DOB) |>
+  client <- full |>
+    dplyr::select(PersonalID, SSN, SSNDataQuality, DOB, DOBDataQuality)
+
+  ethnicity <- full |>
+    dplyr::select(-c(SSN, SSNDataQuality, DOB, DOBDataQuality)) |>
     dplyr::select(PersonalID, AmIndAKNative:HispanicLatino) |>
     tidyr::pivot_longer(
       cols = -PersonalID,
@@ -30,8 +37,8 @@ read_client <- function() {
     dplyr::filter(Status == 1L) |>
     dplyr::select(-Status)
 
-  gender <- client |>
-    dplyr::select(-DOB) |>
+  gender <- full |>
+    dplyr::select(-c(SSN, SSNDataQuality, DOB, DOBDataQuality)) |>
     dplyr::select(PersonalID, Female:Questioning) |>
     tidyr::pivot_longer(
       cols = -PersonalID,
@@ -42,10 +49,14 @@ read_client <- function() {
     dplyr::filter(Status == 1L) |>
     dplyr::select(-Status)
 
+  military <- full |>
+    dplyr::select(PersonalID, VeteranStatus:DischargeStatus)
+
   list(
-    client_full = client,
+    client = client,
     ethnicity = ethnicity,
-    gender = gender
+    gender = gender,
+    military = military
   )
 
 }
@@ -54,7 +65,7 @@ read_client <- function() {
 
 process_ethnicity <- function(client_data, submission_id) {
 
-  ethnicity <- client |>
+  ethnicity <- client_data |>
     dplyr::select(-DOB) |>
     dplyr::select(PersonalID, AmIndAKNative:HispanicLatino) |>
     tidyr::pivot_longer(
@@ -76,17 +87,69 @@ process_ethnicity <- function(client_data, submission_id) {
 
 #' Title
 #'
-#' @param path (String) Path to the "Submission" .parquet file(s) in the data
-#'   lake
+#' @param dir (String) Path to the directory containing the "Submission"
+#'   .parquet file(s) in the data lake
 #'
 #' @return
 #' @export
 #'
 #' @examples
-generate_submission_id <- function(file) {
+generate_submission_id <- function(dir, contact_first_name, contact_last_name,
+                                   contact_email, program_id,
+                                   period_start_date, period_end_date) {
+
+  # Handle "first" submission, to generate ID 1, when there is no historical
+  # "submission" file in the data lake
+  existing_sub_files <- fs::dir_info(
+    path = dir,
+    recurse = TRUE,
+    type = "file"
+  )
+
+  if (nrow(existing_sub_files) == 0) {
+
+    submission_id <- 1L
+
+  } else {
+
+    max_sub_id <- arrow::read_parquet(
+      file = "some_file",
+      col_select = SubmissionID
+    ) |>
+      dplyr::filter(SubmissionID == max(SubmissionID)) |>
+      dplyr::collect() |>
+      dplyr::pull(SubmissionID)
+
+    # Stop if there isn't exactly 1 max SubmissionID
+    if (length(max_sub_id) != 1L) {
+
+      rlang::abort(
+        "Found the same `max` SubmissionID in the `Submission` data lake table"
+      )
+
+    }
+
+    submission_id <- max_sub_id + 1L
+
+  }
+
+  # TODO // Figure out how to retrieve "ProgramID" from `Program` data lake table
+
+  sub_data <- tibble::tibble(
+    SubmissionID = submission_id,
+    DateTimeSubmitted = Sys.time(),
+    DateSubmitted = Sys.Date(),
+    SourceContactFirstName = contact_first_name,
+    SourceContactLastName = contact_last_name,
+    SourceContactEmailAddress = contact_email,
+    ProgramID = program_id,
+    PeriodDateStart = period_start_date,
+    PeriodDateEnd = period_end_date,
+  )
+
 
   last_submission <- arrow::read_parquet(
-    file = ,
+    file = file,
     col_select = c(SubmissionID, DatetimeSubmitted)
   ) |>
     dplyr::filter(SubmissionID == max(SubmissionID)) |>
@@ -244,3 +307,127 @@ get_export_dates <- function(dir) {
   )
 
 }
+
+
+
+
+
+#' Title
+#'
+#' @param zip_file
+#'
+#' @return
+#' @export
+#'
+#' @examples
+process_data <- function(zip_file) {
+
+  # Create a temporary directory to unzip the .csv files into
+  tmp_dir <- tempfile()
+
+  # Ensure that this is a new (i.e., empty) directory
+  if (fs::dir_exists(tmp_dir)) {
+
+    fs::dir_delete(tmp_dir)
+
+  }
+
+  # Unzip the .csv files into the temp directory
+  zip::unzip(
+    zipfile = zip_file,
+    exdir = tmp_dir,
+    overwrite = TRUE   # overwrite any previous uploads into same temp directory
+  )
+
+  # Check that all required HMIS files are present in uploaded .zip file
+  check <- check_file_names(dir = tmp_dir)
+
+  # Run more checks...
+
+
+
+  # Process "Client" file
+  client_file_path <- tmp_dir |>
+    stringr::str_subset("Client.csv$")
+
+  # Move to Dropbox data lake
+
+
+
+  # TODO // Decide if we need to do this last...
+  # I imagine we *might* still need a temp directory if the user is a non-
+  # grantee (i.e., we aren't storing their data in the Dropbox data lake).
+  # If the user *is* a grantee and we are storing their data in the data lake,
+  # then we should be able to delete this temp directory without issue.
+  fs::dir_delete(tmp_dir)
+
+  # Generate "Submission" data
+
+
+}
+
+
+# Helper function that converts a character vector to an HTML bullet-point list
+vec_to_ul <- function(vec) {
+
+  # Create the individual bullet-points
+  bullets <- vec |>
+    purrr::map(.f = function(x) shiny::tags$li(x))
+
+  # Return the un-ordered list ("ul") containing the individual bullet-points
+  shiny::tagList(
+    shiny::tags$ul(
+      bullets
+    )
+  )
+
+}
+
+
+# Compare the file names within the uploaded .zip file to the expected file
+# names (stored in the 'HMISmetadata' data object within this R package)
+check_file_names <- function(dir) {
+
+  # Retrieve the full paths to each individual file extracted from the .zip file
+  paths <- fs::dir_info(dir) |>
+    dplyr::pull(path)
+
+  # Retrieve the related directory
+  dir <- dirname(paths) |> unique()
+
+  # Remove the directory from the path, so that we are just left with the file
+  # names themselves (e.g., "path/to/data.csv" --> "data.csv")
+  file_names <- paths |>
+    stringr::str_replace(
+      pattern = paste0(dir, "/"),
+      replacement = ""
+    )
+
+  # Assume that there were no discrepancies in the uploaded file names
+  valid <- TRUE
+
+  # Compare the character vector of file names from the .zip file to the
+  # file names we expect based on the 'HMISmetadata' data in this R package
+  missing_from_upload <- setdiff(
+    x = HMISmetadata$FileName,
+    y = file_names
+  )
+
+  # If at least 1 file was found to be missing from the uploaded .zip file...
+  if (length(missing_from_upload) > 0) {
+
+    # ... set the "valid" flag to FALSE
+    valid <- FALSE
+
+  }
+
+  # Return the "valid" flag and accompanying message (if applicable)
+  out <- list(
+    valid = valid,
+    missing_file_names = missing_from_upload
+  )
+
+  return(out)
+
+}
+

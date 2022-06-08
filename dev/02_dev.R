@@ -21,6 +21,7 @@ attachment::att_amend_desc()
 ## Create a module infrastructure in R/
 golem::add_module(name = "overview") # Name of the module
 golem::add_module(name = "bar_chart") # Name of the module
+golem::add_module(name = "upload") # Name of the module
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*

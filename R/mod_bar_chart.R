@@ -12,6 +12,47 @@ mod_bar_chart_ui <- function(id){
   tagList(
 
     fluidRow(
+
+      column(
+        width = 3,
+
+        shiny::selectInput(
+          inputId = ns("group_by_overview"),
+          label = "Group By:",
+          choices = c("Ethnicity", "Gender", "Veteran Status"),
+          selected = "Ethnicity"
+        )
+
+      ),
+
+      column(
+        width = 3,
+
+        shiny::selectInput(
+          inputId = ns("gender_filter_overview"),
+          label = "Gender:",
+          choices = c("Male", "Female", "Transgender", "NoSingleGender"),
+          selected = c("Male", "Female", "Transgender", "NoSingleGender"),
+          multiple = TRUE
+        )
+
+      ),
+
+      column(
+        width = 3,
+
+        shiny::selectInput(
+          inputId = ns("veteran_filter_overview"),
+          label = "Veteran Status:",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE
+        )
+
+      )
+    ),
+
+    fluidRow(
       column(
         width = 12,
 
@@ -31,23 +72,32 @@ mod_bar_chart_server <- function(id, data){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    bar_chart_data <- reactive(prep_bar_chart(data()))
+    # bar_chart_data <- reactive(
+    #   prep_bar_chart(
+    #     data = data,
+    #     group = input$group_by_overview
+    #   )
+    # )
 
     output$bar_chart <- echarts4r::renderEcharts4r({
 
-      bar_chart_data() |>
-      echarts4r::e_chart(x = Ethnicity) |>
-        echarts4r::e_bar(
-          serie = Count,
-          name = "# of Youth",
-          legend = FALSE,
-          label = list(
-            formatter = '{@[0]}',
-            show = TRUE,
-            position = "right"
-          )
-        ) |>
-        echarts4r::e_flip_coords()
+      Sys.sleep(3)
+
+
+
+
+      req(input$group_by_overview)
+
+      selected_table <- tolower(input$group_by_overview)
+
+      # message(selected_table)
+
+      generate_bar_chart(
+        data = data |>
+          purrr::pluck(selected_table),
+        group = input$group_by_overview
+      ) |>
+        echarts4r::e_show_loading()
 
     })
 

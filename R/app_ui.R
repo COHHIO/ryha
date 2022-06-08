@@ -19,7 +19,7 @@ app_ui <- function(request) {
       ),
       theme = bslib::bs_theme(
         version = 5,
-        bootswatch = "simplex",
+        bootswatch = "zephyr",
         bg = "#ffffff",
         fg = "#000000",
         primary = ,
@@ -30,11 +30,27 @@ app_ui <- function(request) {
         id = "overview_page",
         title = "Overview",
 
-        mod_overview_ui("overview_1"),
+        # mod_overview_ui("overview_1"),
 
         br(),
 
         mod_bar_chart_ui("bar_chart_1")
+
+      ),
+
+      bslib::nav(
+        id = "exit_page",
+        title = "Exits",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "upload_page",
+        title = "Upload Data",
+
+        mod_upload_ui("upload_1")
 
       )
 

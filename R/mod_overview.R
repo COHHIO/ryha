@@ -34,7 +34,7 @@ mod_overview_server <- function(id, data){
 
     heatmap_data <- reactive({
 
-      prep_heatmap(data = data())
+      prep_heatmap(data = data)
 
     })
 
