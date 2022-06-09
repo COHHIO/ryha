@@ -77,32 +77,43 @@ read_client <- function(file, submission_id) {
 
 read_gender <- function(file, submission_id) {
 
-  # Here's some old code that might help you with this ETL
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "GENDER" from "CLIENT" data lake table
+    col_select = c(
+      PersonalID,
+      Female,
+      Male,
+      NoSingleGender,
+      Transgender,
+      Questioning,
+      GenderNone
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      Female = readr::col_integer(),
+      Male = readr::col_integer(),
+      NoSingleGender = readr::col_integer(),
+      Transgender = readr::col_integer(),
+      Questioning = readr::col_integer(),
+      GenderNone = readr::col_integer()
+    )
+  ) |>
+    tidyr::pivot_longer(
+      cols = -PersonalID,
+      names_to = "Gender",
+      values_to = "Status",
+      values_transform = list(Status = as.integer)
+    ) |>
+    dplyr::filter(Status != 0 )|>
+    dplyr::select(-Status) |>
 
-  # data <- readr::read_csv(
-  #   file = file,
-  # only read in columns needed for "GENDER" data lake table
-  #   col_select = c(
-  #     PersonalID,
-  #     Female:Questioning
-  #   ) |>
+    # add the 'SubmissionID' as the first column in the data
+  dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::select(SubmissionID, dplyr::everything())
 
-  # column type specifications go here...
-
-  #   tidyr::pivot_longer(
-  #     cols = -PersonalID,
-  #     names_to = "Gender",
-  #     values_to = "Status",
-  #     values_transform = list(Status = as.integer)
-  #   ) |>
-  #   dplyr::filter(Status == 1L) |>
-  #   dplyr::select(-Status)
-
-  # join relevant codes to get plain-english descriptions...
-
-  # add the 'SubmissionID' as the first column in the data
-
-  # return(data)
+   return(data)
 
 }
 
@@ -110,45 +121,87 @@ read_gender <- function(file, submission_id) {
 
 read_ethnicity <- function(file, submission_id) {
 
-  # data <- readr::read_csv(
-  #   file = file,
-  # only read in columns needed for "GENDER" data lake table
-  #   col_select = c(
-  #     PersonalID,
-  #     AmIndAKNative:Ethnicity
-  #   ) |>
+  data <- readr::read_csv(
+    file = file,
+  col_select = c(
+    PersonalID,
+    AmIndAKNative,
+    Asian,
+    BlackAfAmerican,
+    NativeHIPacific,
+    White,
+    RaceNone,
+    Ethnicity
+  ),
+  # define schema types
+  col_types = readr::cols(
+    .default = readr::col_character(),
+    AmIndAKNative = readr::col_integer(),
+    Asian = readr::col_integer(),
+    BlackAfAmerican = readr::col_integer(),
+    NativeHIPacific = readr::col_integer(),
+    White = readr::col_integer(),
+    RaceNone = readr::col_integer(),
+    Ethnicity = readr::col_integer()
+  )
+  ) |>
+  tidyr::pivot_longer(
+    cols = -PersonalID,
+    names_to = "Ethnicity",
+    values_to = "Status",
+    values_transform = list(Status = as.integer)
+  ) |>
+  dplyr::filter(Status != 0) |>
+  dplyr::select(-Status)|>
 
-  # column type specifications go here...
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::select(SubmissionID, dplyr::everything())
 
-  # dplyr::rename(HispanicLatino = Ethnicity) |>
-  # tidyr::pivot_longer(
-  #   cols = -PersonalID,
-  #   names_to = "Ethnicity",
-  #   values_to = "Status",
-  #   values_transform = list(Status = as.integer)
-  # ) |>
-  #   dplyr::filter(Status == 1L) |>
-  #   dplyr::select(-Status)
-
-  # join relevant codes to get plain-english descriptions...
-
-  # add the 'SubmissionID' as the first column in the data
-
-  # return(data)
+  return(data)
 
 }
 
-
-
 read_veteran <- function(file, submission_id) {
 
-  # data <- readr::read_csv(
-  #   file = file,
-  # only read in columns needed for "GENDER" data lake table
-  #   col_select = c(
-  #     PersonalID,
-  #     VeteranStatus
-  #   ) |>
+data <- readr::read_csv(
+  file = file,
+  col_select = c(
+    PersonalID,
+    VeteranStatus,
+    YearEnteredService,
+    YearSeparated,
+    WorldWarII:WarsServed,
+    KoreanWar:WarsServed,
+    VietnamWar:WarsServed,
+    DesertStorm:WarsServed,
+    AfghanistanOEF:WarsServed,
+    IraqOIF:WarsServed,
+    IraqOND:WarsServed,
+    OtherTheater:WarsServed,
+    MilitaryBranch,
+    DischargeStatus
+  ),
+
+  col_types = readr::cols(
+    .default = readr::col_character(),
+    VeteranStatus = readr::col_integer(),
+    YearEnteredService = readr::col_date(),
+    YearSeparated = readr::col_integer(),
+    WorldWarII = readr::col_integer(),
+    KoreanWar = readr::col_integer(),
+    VietnamWar = readr::col_integer(),
+    DesertStorm = readr::col_integer(),
+    AfghanistanOEF = readr::col_integer(),
+    IraqOIF = readr::col_integer(),
+    IraqOND = readr::col_integer(),
+    OtherTheater = readr::col_integer(),
+    MilitaryBranch = readr::col_character(),
+    DischargeStatus = readr::col_integer()
+  )
+
+)
+# |>
 
   # column type specifications go here...
 
