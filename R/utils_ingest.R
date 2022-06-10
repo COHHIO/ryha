@@ -67,7 +67,7 @@ read_client <- function(file, submission_id) {
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::select(SubmissionID, dplyr::everything())
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
 
   return(data)
 
@@ -102,7 +102,7 @@ read_gender <- function(file, submission_id) {
     dplyr::select(-Status) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::select(SubmissionID, dplyr::everything())
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
 
   return(data)
 
@@ -137,7 +137,7 @@ read_ethnicity <- function(file, submission_id) {
     dplyr::select(-Status)|>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::select(SubmissionID, dplyr::everything())
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
 
   return(data)
 
@@ -170,7 +170,7 @@ read_veteran <- function(file, submission_id) {
     )|>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::select(SubmissionID, dplyr::everything())
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
 
   return(data)
 
