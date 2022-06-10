@@ -4,13 +4,13 @@
 # raw .csv file into an arrow table that is ready to be written to the database
 
 
-#' Ingest "Client.csv" file and perform ETL prep for database
+#' Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table
 #'
 #' @param file String, the full path to the .csv file
 #' @param submission_id Integer, the Submission ID associated with this upload
 #'
 #' @return A data frame, containing the transformed data to be written out to
-#'   the database
+#'   the "CLIENT" database table
 #'
 #' @export
 #'
@@ -75,6 +75,26 @@ read_client <- function(file, submission_id) {
 
 
 
+#' Ingest "Client.csv" file and perform ETL prep for "GENDER" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "GENDER" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Client.csv"
+#'
+#' read_gender(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
 read_gender <- function(file, submission_id) {
 
   data <- readr::read_csv(
@@ -134,7 +154,7 @@ read_ethnicity <- function(file, submission_id) {
     ) |>
     # keep only "1" (affirmative) status values
     dplyr::filter(Status == 1L) |>
-    dplyr::select(-Status)|>
+    dplyr::select(-Status) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::relocate(SubmissionID, .before = dplyr::everything())
