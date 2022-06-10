@@ -99,10 +99,10 @@ read_gender <- function(file, submission_id) {
     dplyr::select(-Status) |>
 
     # add the 'SubmissionID' as the first column in the data
-  dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::select(SubmissionID, dplyr::everything())
 
-   return(data)
+  return(data)
 
 }
 
@@ -112,24 +112,24 @@ read_ethnicity <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
-  col_select = c(
-    PersonalID,
-    AmIndAKNative:Ethnicity
-  ),
+    col_select = c(
+      PersonalID,
+      AmIndAKNative:Ethnicity
+    ),
 
-  col_types = readr::cols(
-    .default = readr::col_integer(),
-    PersonalID = readr::col_character()
-  )
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      PersonalID = readr::col_character()
+    )
   ) |>
-  tidyr::pivot_longer(
-    cols = -PersonalID,
-    names_to = "Ethnicity",
-    values_to = "Status",
-    values_transform = list(Status = as.integer)
-  ) |>
-  dplyr::filter(Status == 1L) |>
-  dplyr::select(-Status)|>
+    tidyr::pivot_longer(
+      cols = -PersonalID,
+      names_to = "Ethnicity",
+      values_to = "Status",
+      values_transform = list(Status = as.integer)
+    ) |>
+    dplyr::filter(Status == 1L) |>
+    dplyr::select(-Status)|>
 
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
@@ -141,43 +141,43 @@ read_ethnicity <- function(file, submission_id) {
 
 read_veteran <- function(file, submission_id) {
 
-data <- readr::read_csv(
-  file = file,
-  col_select = c(
-    PersonalID,
-    VeteranStatus
-  ),
+  data <- readr::read_csv(
+    file = file,
+    col_select = c(
+      PersonalID,
+      VeteranStatus
+    ),
 
-  col_types = readr::cols(
-    .default = readr::col_character(),
-    VeteranStatus = readr::col_integer()
-  )
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      VeteranStatus = readr::col_integer()
+    )
 
   ) |>
 
-  tidyr::pivot_longer(
-  cols = -PersonalID,
-  names_to = "VeteranStatus",
-  values_to = "Status",
-  values_transform = list(Status = as.integer)
-  ) |>
-
-  dplyr::left_join(
-  GeneralCodes,
-  by = c("Status" = "Code")
+    tidyr::pivot_longer(
+      cols = -PersonalID,
+      names_to = "VeteranStatus",
+      values_to = "Status",
+      values_transform = list(Status = as.integer)
     ) |>
 
-  dplyr::mutate(
-    VeteranStatus = Description,
-    Description = NULL  # drop 'Description' column
+    dplyr::left_join(
+      GeneralCodes,
+      by = c("Status" = "Code")
+    ) |>
+
+    dplyr::mutate(
+      VeteranStatus = Description,
+      Description = NULL  # drop 'Description' column
 
     )|>
 
-  dplyr::select(-Status) |>
+    dplyr::select(-Status) |>
 
-  # add the 'SubmissionID' as the first column in the data
-  dplyr::mutate(SubmissionID = submission_id) |>
-  dplyr::select(SubmissionID, dplyr::everything())
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::select(SubmissionID, dplyr::everything())
 
-return(data)
+  return(data)
 }
