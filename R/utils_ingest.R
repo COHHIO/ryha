@@ -1,16 +1,16 @@
 
 
 # The following family of functions define the ETL process for converting each
-# raw .csv file into an arrow table that is ready to be written to the data lake
+# raw .csv file into an arrow table that is ready to be written to the database
 
 
-#' Ingest "Client.csv" file and perform ETL prep for data lake
+#' Ingest "Client.csv" file and perform ETL prep for database
 #'
 #' @param file String, the full path to the .csv file
 #' @param submission_id Integer, the Submission ID associated with this upload
 #'
 #' @return A data frame, containing the transformed data to be written out to
-#'   the data lake as a .parquet file
+#'   the database
 #'
 #' @export
 #'
@@ -29,7 +29,7 @@ read_client <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
-    # only read in columns needed for "CLIENT" data lake table
+    # only read in columns needed for "CLIENT" database table
     col_select = c(
       PersonalID,
       SSN,
@@ -50,7 +50,7 @@ read_client <- function(file, submission_id) {
       SSNDataQualityCodes,
       by = c("SSNDataQuality" = "Code")
     ) |>
-    # Replace the codes in 'SSNDataQuality' column with their descriptions
+    # replace the codes in 'SSNDataQuality' column with their descriptions
     dplyr::mutate(
       SSNDataQuality = Description,
       Description = NULL   # drop 'Description' column
@@ -60,7 +60,7 @@ read_client <- function(file, submission_id) {
       DOBDataQualityCodes,
       by = c("DOBDataQuality" = "Code")
     ) |>
-    # Replace the codes in 'DOBDataQuality' column with their descriptions
+    # replace the codes in 'DOBDataQuality' column with their descriptions
     dplyr::mutate(
       DOBDataQuality = Description,
       Description = NULL   # drop 'Description' column
@@ -79,25 +79,27 @@ read_gender <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
+    # only read in columns needed for "GENDER" database table
     col_select = c(
       PersonalID,
       Female:GenderNone
     ),
-
+    # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
       PersonalID = readr::col_character()
     )
   ) |>
+    # pivot gender columns from wide to long
     tidyr::pivot_longer(
       cols = -PersonalID,
       names_to = "Gender",
       values_to = "Status",
       values_transform = list(Status = as.integer)
     ) |>
+    # keep only "1" (affirmative) status values
     dplyr::filter(Status == 1L)|>
     dplyr::select(-Status) |>
-
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::select(SubmissionID, dplyr::everything())
@@ -112,25 +114,27 @@ read_ethnicity <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
+    # only read in columns needed for "ETHNICITY" database table
     col_select = c(
       PersonalID,
       AmIndAKNative:Ethnicity
     ),
-
+    # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
       PersonalID = readr::col_character()
     )
   ) |>
+    # pivot ethnicity columns from wide to long
     tidyr::pivot_longer(
       cols = -PersonalID,
       names_to = "Ethnicity",
       values_to = "Status",
       values_transform = list(Status = as.integer)
     ) |>
+    # keep only "1" (affirmative) status values
     dplyr::filter(Status == 1L) |>
     dplyr::select(-Status)|>
-
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::select(SubmissionID, dplyr::everything())
@@ -143,41 +147,39 @@ read_veteran <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
+    # only read in columns needed for "VETERAN" database table
     col_select = c(
       PersonalID,
       VeteranStatus
     ),
-
+    # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
       VeteranStatus = readr::col_integer()
     )
-
   ) |>
-
+    # pivot veteran columns from wide to long
     tidyr::pivot_longer(
       cols = -PersonalID,
       names_to = "VeteranStatus",
       values_to = "Status",
       values_transform = list(Status = as.integer)
     ) |>
-
+    # join the relevant codes from 'GeneralCodes'
     dplyr::left_join(
       GeneralCodes,
       by = c("Status" = "Code")
     ) |>
-
+    # replace the codes in 'VeteranStatus' column with their descriptions
     dplyr::mutate(
       VeteranStatus = Description,
       Description = NULL  # drop 'Description' column
-
     )|>
-
     dplyr::select(-Status) |>
-
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::select(SubmissionID, dplyr::everything())
 
   return(data)
+
 }
