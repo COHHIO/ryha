@@ -158,24 +158,16 @@ read_veteran <- function(file, submission_id) {
       VeteranStatus = readr::col_integer()
     )
   ) |>
-    # pivot veteran columns from wide to long
-    tidyr::pivot_longer(
-      cols = -PersonalID,
-      names_to = "VeteranStatus",
-      values_to = "Status",
-      values_transform = list(Status = as.integer)
-    ) |>
     # join the relevant codes from 'GeneralCodes'
     dplyr::left_join(
       GeneralCodes,
-      by = c("Status" = "Code")
+      by = c("VeteranStatus" = "Code")
     ) |>
     # replace the codes in 'VeteranStatus' column with their descriptions
     dplyr::mutate(
       VeteranStatus = Description,
       Description = NULL  # drop 'Description' column
     )|>
-    dplyr::select(-Status) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::select(SubmissionID, dplyr::everything())
