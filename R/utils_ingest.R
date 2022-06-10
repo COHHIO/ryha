@@ -95,7 +95,7 @@ read_gender <- function(file, submission_id) {
       values_to = "Status",
       values_transform = list(Status = as.integer)
     ) |>
-    dplyr::filter(Status != 0 )|>
+    dplyr::filter(Status == 1L)|>
     dplyr::select(-Status) |>
 
     # add the 'SubmissionID' as the first column in the data
@@ -128,7 +128,7 @@ read_ethnicity <- function(file, submission_id) {
     values_to = "Status",
     values_transform = list(Status = as.integer)
   ) |>
-  dplyr::filter(Status != 0) |>
+  dplyr::filter(Status == 1L) |>
   dplyr::select(-Status)|>
 
     # add the 'SubmissionID' as the first column in the data
