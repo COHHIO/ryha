@@ -130,6 +130,26 @@ read_gender <- function(file, submission_id) {
 
 
 
+#' Ingest "Client.csv" file and perform ETL prep for "ETHNICITY" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "ETHNICITY" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Client.csv"
+#'
+#' read_ethnicity(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
 read_ethnicity <- function(file, submission_id) {
 
   data <- readr::read_csv(
@@ -163,6 +183,27 @@ read_ethnicity <- function(file, submission_id) {
 
 }
 
+
+#' Ingest "Client.csv" file and perform ETL prep for "VETERAN" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "VETERAN" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Client.csv"
+#'
+#' read_veteran(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
 read_veteran <- function(file, submission_id) {
 
   data <- readr::read_csv(
@@ -195,3 +236,67 @@ read_veteran <- function(file, submission_id) {
   return(data)
 
 }
+
+
+#' Ingest "Disabilities.csv" file and perform ETL prep for "DISABILITIES" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "DISABILITIES" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Disabilities.csv"
+#'
+#' read_disabilities(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_disabilities <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "DISABILITIES" database table
+    col_select = c(
+      PersonalID,
+     # InformationDate,
+      DisabilityResponse,
+      IndefiniteAndImpairs
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      PersonalID = readr::col_character(),
+     # InformationDate = readr::col_date()
+    )
+  ) |>
+    # keep only "1" (affirmative) DisabilityResponse AND IndefiniteAndImpairs values
+    dplyr::filter(DisabilityResponse == 1L & IndefiniteAndImpairs == 1L ) |>
+    dplyr::select(-DisabilityResponse) |>
+    # join the relevant codes from 'GeneralCodes'
+    dplyr::left_join(
+      GeneralCodes,
+      by = c("IndefiniteAndImpairs" = "Code")
+    ) |>
+    # keeping last occurrences based on latest dates, using unique function to avoid duplicates
+    unique(fromLast=T) |>
+    # replace the codes in 'IndefiniteAndImpairs' column with their descriptions
+    dplyr::mutate(
+      IndefiniteAndImpairs = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+  return(data)
+
+}
+
+
