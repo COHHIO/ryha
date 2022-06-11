@@ -435,3 +435,48 @@ read_employment <- function(file, submission_id) {
   return(data)
 
 }
+
+#' Ingest "Enrollment.csv" file and perform ETL prep for "HOUSEHOLD" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "HOUSEHOLD" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Enrollment.csv"
+#'
+#' read_enrollment(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_enrollment <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Enrollment.csv",
+    # only read in columns needed for "HOUSEHOLD" database table
+    col_select = c(
+      HouseholdID,
+      PersonalID,
+      EntryDate,
+      RelationshipToHoH:DateToStreetESSH
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      HouseholdID = readr::col_character(),
+      PersonalID = readr::col_character(),
+      EntryDate = readr::col_date(),
+      DateToStreetESSH = readr::col_date()
+    )
+  )
+
+  return(data)
+
+}
