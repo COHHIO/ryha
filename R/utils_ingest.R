@@ -300,3 +300,67 @@ read_disabilities <- function(file, submission_id) {
 }
 
 
+
+#' Ingest "EmploymentEducation.csv" file and perform ETL prep for "EDUCATION" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "EDUCATION" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/EmploymentEducation.csv"
+#'
+#' read_education(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_education <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "EDUCATION" database table
+    col_select = c(
+      PersonalID,
+      InformationDate:SchoolStatus
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      PersonalID = readr::col_character(),
+      InformationDate = readr::col_date()
+    )
+  ) |>
+    # join the relevant codes from 'LastGradeCompletedCodes'
+    dplyr::left_join(
+      LastGradeCompletedCodes,
+      by = c("LastGradeCompleted" = "Code")
+    ) |>
+    # replace the codes in 'LastGradeCompleted' column with their descriptions
+    dplyr::mutate(
+      LastGradeCompleted = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
+    # join the relevant codes from 'SchoolStatusCodes'
+    dplyr::left_join(
+      SchoolStatusCodes,
+      by = c("SchoolStatus" = "Code")
+    ) |>
+    # replace the codes in 'SchoolStatus' column with their descriptions
+    dplyr::mutate(
+      SchoolStatus = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+  return(data)
+
+}
