@@ -459,7 +459,7 @@ read_employment <- function(file, submission_id) {
 read_enrollment <- function(file, submission_id) {
 
   data <- readr::read_csv(
-    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Enrollment.csv",
+    file = file,
     # only read in columns needed for "HOUSEHOLD" database table
     col_select = c(
       HouseholdID,
