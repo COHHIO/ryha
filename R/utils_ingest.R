@@ -364,3 +364,74 @@ read_education <- function(file, submission_id) {
   return(data)
 
 }
+
+
+#' Ingest "EmploymentEducation.csv" file and perform ETL prep for "EMPLOYMENT" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "EMPLOYMENT" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/EmploymentEducation.csv"
+#'
+#' read_employment(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_employment <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "EMPLOYMENT" database table
+    col_select = c(
+      PersonalID,
+      InformationDate,
+      Employed:NotEmployedReason
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      PersonalID = readr::col_character(),
+      InformationDate = readr::col_date()
+    )
+  ) |>
+    # join the relevant codes from 'EducationCodes'
+    dplyr::left_join(
+      Employment_Yes_Status,
+      by = c("EmploymentType" = "Code")
+    ) |>
+    # replace the codes in 'EmploymentType' column with their descriptions
+    dplyr::mutate(
+      EmploymentType = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
+    # join the relevant codes from 'EducationCodes'
+    dplyr::left_join(
+      Employment_NO_Status,
+      by = c("NotEmployedReason" = "Code")
+    ) |>
+    # replace the codes in 'NotEmployedReason' column with their descriptions
+    dplyr::mutate(
+      NotEmployedReason = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
+    #unite EmploymentType and NotEmployedReason to an Employment Column
+    tidyr::unite("Employment", EmploymentType,NotEmployedReason, na.rm = TRUE) |>
+    # Only keep "1" (affirmative) and "0" (non-formative) status values of employed
+    dplyr::filter(Employed == 1L | Employed == 0L) |>
+    dplyr::select(-Employed) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+  return(data)
+
+}
