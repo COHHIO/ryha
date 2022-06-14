@@ -265,30 +265,26 @@ read_disabilities <- function(file, submission_id) {
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
       PersonalID,
-     # InformationDate,
-      DisabilityResponse,
-      IndefiniteAndImpairs
+      InformationDate:DisabilityResponse
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
       PersonalID = readr::col_character(),
-     # InformationDate = readr::col_date()
+      InformationDate = readr::col_date()
     )
   ) |>
-    # keep only "1" (affirmative) DisabilityResponse AND IndefiniteAndImpairs values
-    dplyr::filter(DisabilityResponse == 1L & IndefiniteAndImpairs == 1L ) |>
+    # keep only "1" (affirmative) DisabilityResponse
+    dplyr::filter(DisabilityResponse == 1L) |>
     dplyr::select(-DisabilityResponse) |>
-    # join the relevant codes from 'GeneralCodes'
+    # join the relevant codes from 'DisabilityCodes'
     dplyr::left_join(
-      GeneralCodes,
-      by = c("IndefiniteAndImpairs" = "Code")
+      DisabilityTypeCodes,
+      by = c("DisabilityType" = "Code")
     ) |>
-    # keeping last occurrences based on latest dates, using unique function to avoid duplicates
-    unique(fromLast=T) |>
-    # replace the codes in 'IndefiniteAndImpairs' column with their descriptions
+    # replace the codes in 'DisabilityType' column with their descriptions
     dplyr::mutate(
-      IndefiniteAndImpairs = Description,
+      DisabilityType = Description,
       Description = NULL  # drop 'Description' column
     ) |>
     # add the 'SubmissionID' as the first column in the data
@@ -477,6 +473,45 @@ read_enrollment <- function(file, submission_id) {
     )
   )
 
+  return(data)
+
+}
+
+#' Ingest "Project.csv" file and perform ETL prep for "PROGRAM" database table
+#'
+#' @param file String, the full path to the .csv file
+#' @param ProgramID Integer, the Submission ID associated with this upload
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PROGRAM" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Project.csv"
+#'
+#' read_program(
+#'   file = path,
+#'   program_id = 1L
+#' )
+#'
+#' }
+read_program <- function(file, program_id) {
+
+  data <- readr::read_csv(
+    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Project.csv",
+    # only read in columns needed for "PROGRAM" database table
+    col_select = c(
+      ProjectID,
+      ProjectName
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character()
+    )
+  )
   return(data)
 
 }
