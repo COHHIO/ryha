@@ -61,10 +61,21 @@ Employment_NO_Status <- tibble::tribble(
   99L, "Data not collected"
 )
 
+# Data Collection Stage 5.03 section in Data Dictionary
+DataCollectionStageCodes <- tibble::tribble(
+  ~Code, ~Description,
+  1L, "Project start",
+  2L, "Project update",
+  3L, "Project exit",
+  5L, "Project annual assessment",
+  6L, "Post exit"
+)
+
 usethis::use_data(
   LastGradeCompletedCodes,
   SchoolStatusCodes,
   Employment_Yes_Status,
   Employment_NO_Status,
+  DataCollectionStageCodes,
   overwrite = TRUE
 )

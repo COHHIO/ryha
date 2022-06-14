@@ -324,13 +324,18 @@ read_education <- function(file, submission_id) {
     # only read in columns needed for "EDUCATION" database table
     col_select = c(
       PersonalID,
-      InformationDate:SchoolStatus
+      EmploymentEducationID,
+      InformationDate:SchoolStatus,
+      DataCollectionStage,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
       PersonalID = readr::col_character(),
-      InformationDate = readr::col_date()
+      EmploymentEducationID = readr::col_character(),
+      InformationDate = readr::col_date(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # join the relevant codes from 'LastGradeCompletedCodes'
@@ -351,6 +356,15 @@ read_education <- function(file, submission_id) {
     # replace the codes in 'SchoolStatus' column with their descriptions
     dplyr::mutate(
       SchoolStatus = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
+    dplyr::left_join(
+      DataCollectionStageCodes,
+      by = c("DataCollectionStage" = "Code")
+    ) |>
+    # replace the codes in 'DataCollectionStage' column with their descriptions
+    dplyr::mutate(
+      DataCollectionStage = Description,
       Description = NULL   # drop 'Description' column
     ) |>
     # add the 'SubmissionID' as the first column in the data
@@ -389,14 +403,19 @@ read_employment <- function(file, submission_id) {
     # only read in columns needed for "EMPLOYMENT" database table
     col_select = c(
       PersonalID,
+      EmploymentEducationID,
       InformationDate,
-      Employed:NotEmployedReason
+      Employed:NotEmployedReason,
+      DataCollectionStage,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
+      EmploymentEducationID = readr::col_character(),
       PersonalID = readr::col_character(),
-      InformationDate = readr::col_date()
+      InformationDate = readr::col_date(),
+      DateUpdated = readr::col_datetime() # this has to be called with character because of the date and time updated structure. hence can't be dealt as date but as charachter
     )
   ) |>
     # join the relevant codes from 'EducationCodes'
@@ -424,6 +443,15 @@ read_employment <- function(file, submission_id) {
     # Only keep "1" (affirmative) and "0" (non-formative) status values of employed
     dplyr::filter(Employed == 1L | Employed == 0L) |>
     dplyr::select(-Employed) |>
+    dplyr::left_join(
+      DataCollectionStageCodes,
+      by = c("DataCollectionStage" = "Code")
+    ) |>
+      # replace the codes in 'DataCollectionStage' column with their descriptions
+    dplyr::mutate(
+      DataCollectionStage = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::relocate(SubmissionID, .before = dplyr::everything())
