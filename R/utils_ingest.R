@@ -568,13 +568,9 @@ read_project <- function(file, program_id) {
     ) |>
     #create "Match" column that checks for a matching projectID in the system
     dplyr::mutate(Status = (ProjectID == program_id ) * 1) |> #not sure if I should just use if_else()
-    # keep only "1" (affirmative) status values
-    dplyr::filter(Status == 1L)|>
-    dplyr::select(-Status)
+    dplyr::filter(Status == 1L)
 
 
-
-  return(ProjectInformation)
-
+return(ProjectInformation)
 
 }
