@@ -367,6 +367,13 @@ read_education <- function(file, submission_id) {
       DataCollectionStage = Description,
       Description = NULL   # drop 'Description' column
     ) |>
+    # Mutate datetime into just date in 'DateUpdate' column , to match 'infromationDate' column
+    dplyr::mutate(
+      DateUpdatedDate = as.POSIXct(DateUpdated, format = "%Y-%d-%m %H:%M:%S"),
+      #change the class format of 'DateUpdated' column to date class
+      DateUpdated = as.Date(format(DateUpdatedDate, "%Y-%d-%m")),
+      DateUpdatedDate = NULL   # drop 'DateUpdatedDate' column
+    )
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::relocate(SubmissionID, .before = dplyr::everything())
@@ -451,6 +458,13 @@ read_employment <- function(file, submission_id) {
     dplyr::mutate(
       DataCollectionStage = Description,
       Description = NULL   # drop 'Description' column
+    ) |>
+    # Mutate datetime into just date in 'DateUpdate' column , to match 'infromationDate' column
+    dplyr::mutate(
+      DateUpdatedDate = as.POSIXct(DateUpdated, format = "%Y-%d-%m %H:%M:%S"),
+      #change the class format of 'DateUpdated' column to date class
+      DateUpdated = as.Date(format(DateUpdatedDate, "%Y-%d-%m")),
+      DateUpdatedDate = NULL   # drop 'DateUpdatedDate' column
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
