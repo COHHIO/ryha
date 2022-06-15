@@ -11,113 +11,114 @@ app_ui <- function(request) {
     golem_add_external_resources(),
 
     # Your application UI logic
-    bslib::page_navbar(
-      id = "nav_bar",
-      title = span(
-        img(src = "www/favicon.ico", height = 30),
-        span(strong("RYHA"), style = "color: #ffffff")   # Predictive Ecology Yellow
+    bs4Dash::dashboardPage(
+      header = bs4Dash::dashboardHeader(
+        title = span(
+          img(src = "www/favicon.ico", height = 30),
+          span(strong("RYHA"), style = "color: #ffffff")   # Predictive Ecology Yellow
+        )
       ),
-      theme = bslib::bs_theme(
-        version = 5,
-        bootswatch = "zephyr",
-        bg = "#ffffff",
-        fg = "#000000",
-        primary = ,
-        base_font = bslib::font_google("Inter")
+      sidebar = bs4Dash::dashboardSidebar(
+        bs4Dash::sidebarMenu(
+          bs4Dash::menuItem(
+            text = "Overview",
+            tabName = "overview_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Gender",
+            tabName = "gender_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Ethnicity",
+            tabName = "ethnicity_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Veteran",
+            tabName = "veteran_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Disabilities",
+            tabName = "disabilities_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Employment",
+            tabName = "employment_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Education",
+            tabName = "education_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Exits",
+            tabName = "exits_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Disabilities",
+            tabName = "health_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Domestic Violence",
+            tabName = "domestic_violence_page"
+          ),
+          bs4Dash::menuItem(
+            text = "Upload Data",
+            tabName = "upload_page"
+          )
+        )
       ),
-
-      bslib::nav(
-        id = "overview_page",
-        title = "Overview",
-
-        shiny::p("Placeholder")
-
+      controlbar = bs4Dash::bs4DashControlbar(
+        shiny::p("Place Filters Here!")
       ),
-
-      bslib::nav(
-        id = "gender_page",
-        title = "Gender",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "ethnicity_page",
-        title = "Ethnicity",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "veteran_page",
-        title = "Veteran",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "disabilities_page",
-        title = "Disabilities",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "employment_page",
-        title = "Employment",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "education_page",
-        title = "Education",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "exits_page",
-        title = "Exits",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "health_page",
-        title = "Disabilities",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "domestic_violence_page",
-        title = "Domestic Violence",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "upload_page",
-        title = "Upload Data",
-
-        mod_upload_ui("upload_1")
-
+      body = bs4Dash::dashboardBody(
+        bs4Dash::tabItems(
+          bs4Dash::tabItem(
+            tabName = "overview_page",
+            shiny::p("Placeholder Overview")
+          ),
+          bs4Dash::tabItem(
+            tabName = "gender_page",
+            shiny::p("Placeholder Gender")
+          ),
+          bs4Dash::tabItem(
+            tabName = "ethnicity_page",
+            shiny::p("Placeholder Ethnicity")
+          ),
+          bs4Dash::tabItem(
+            tabName = "veteran_page",
+            shiny::p("Placeholder Veteran")
+          ),
+          bs4Dash::tabItem(
+            tabName = "disabilities_page",
+            shiny::p("Placeholder Disabilities")
+          ),
+          bs4Dash::tabItem(
+            tabName = "employment_page",
+            shiny::p("Placeholder Employment")
+          ),
+          bs4Dash::tabItem(
+            tabName = "education_page",
+            shiny::p("Placeholder Education")
+          ),
+          bs4Dash::tabItem(
+            tabName = "exits_page",
+            shiny::p("Placeholder Exits")
+          ),
+          bs4Dash::tabItem(
+            tabName = "health_page",
+            shiny::p("Placeholder Disabilities")
+          ),
+          bs4Dash::tabItem(
+            tabName = "domestic_violence_page",
+            shiny::p("Placeholder Domestic Violence")
+          ),
+          bs4Dash::tabItem(
+            tabName = "upload_page",
+            mod_upload_ui("upload_1")
+          )
+        )
       )
-
     )
-
   )
-
 }
 
 #' Add external Resources to the Application
