@@ -534,26 +534,49 @@ read_enrollment <- function(file, submission_id) {
 #'
 #' path <- "path/to/Project.csv"
 #'
-#' read_program(
+#' read_project(
 #'   file = path,
 #'   program_id = 1L
 #' )
 #'
 #' }
-read_program <- function(file, program_id) {
+read_project <- function(file, program_id) {
 
-  data <- readr::read_csv(
+  ProjectInformation <- readr::read_csv(
     file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Project.csv",
     # only read in columns needed for "PROGRAM" database table
     col_select = c(
       ProjectID,
-      ProjectName
+      ProjectName,
+      ProjectType
     ),
     # define schema types
     col_types = readr::cols(
-      .default = readr::col_character()
+      .default = readr::col_character(),
+      ProjectType = readr::col_integer()
     )
-  )
-  return(data)
+  ) |>
+    # join the relevant codes from 'ProjectCodes'
+    dplyr::left_join(
+      ProjectTypeCodes,
+      by = c("ProjectType" = "Code")
+    ) |>
+    # replace the codes in 'ProjectType' column with their descriptions
+    dplyr::mutate(
+      ProjectType = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    #create "Match" column that checks for a matching projectID in the system
+    dplyr::mutate(Status = (ProjectID == program_id ) * 1) |>
+    # keep only "1" (affirmative) status values
+    dplyr::filter(Status == 1L)|>
+    dplyr::select(-Status)
+    # dplyr::filter((ProjectID == program_id ))
+    # #filter data of the project ID that was inputed : goal would be to recieve info over the ProjectID given by user
+    # dplyr::if_else((ProjectID == program_id) == TRUE, filter(ProjectID == program_id) , "ProjectID was not located" )
+
+
+  return(ProjectInformation)
+
 
 }
