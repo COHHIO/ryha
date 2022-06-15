@@ -30,17 +30,77 @@ app_ui <- function(request) {
         id = "overview_page",
         title = "Overview",
 
-        # mod_overview_ui("overview_1"),
-
-        br(),
-
-        mod_bar_chart_ui("bar_chart_1")
+        shiny::p("Placeholder")
 
       ),
 
       bslib::nav(
-        id = "exit_page",
+        id = "gender_page",
+        title = "Gender",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "ethnicity_page",
+        title = "Ethnicity",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "veteran_page",
+        title = "Veteran",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "disabilities_page",
+        title = "Disabilities",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "employment_page",
+        title = "Employment",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "education_page",
+        title = "Education",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "exits_page",
         title = "Exits",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "health_page",
+        title = "Disabilities",
+
+        shiny::p("Placeholder")
+
+      ),
+
+      bslib::nav(
+        id = "domestic_violence_page",
+        title = "Domestic Violence",
 
         shiny::p("Placeholder")
 
