@@ -522,10 +522,10 @@ read_enrollment <- function(file, submission_id) {
 #' Ingest "Project.csv" file and perform ETL prep for "PROGRAM" database table
 #'
 #' @param file String, the full path to the .csv file
-#' @param ProgramID Integer, the Submission ID associated with this upload
+#' @param ProjectID Integer, the Project ID associated with pulling Project information
 #'
 #' @return A data frame, containing the transformed data to be written out to
-#'   the "PROGRAM" database table
+#'   the "PROGRAM" database table. "PROGRAM" database table shows ProjectName and ProjectType based on ProjectID
 #'
 #' @export
 #'
@@ -543,7 +543,7 @@ read_enrollment <- function(file, submission_id) {
 read_project <- function(file, program_id) {
 
   ProjectInformation <- readr::read_csv(
-    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Project.csv",
+    file = file,
     # only read in columns needed for "PROGRAM" database table
     col_select = c(
       ProjectID,
@@ -567,13 +567,11 @@ read_project <- function(file, program_id) {
       Description = NULL  # drop 'Description' column
     ) |>
     #create "Match" column that checks for a matching projectID in the system
-    dplyr::mutate(Status = (ProjectID == program_id ) * 1) |>
+    dplyr::mutate(Status = (ProjectID == program_id ) * 1) |> #not sure if I should just use if_else()
     # keep only "1" (affirmative) status values
     dplyr::filter(Status == 1L)|>
     dplyr::select(-Status)
-    # dplyr::filter((ProjectID == program_id ))
-    # #filter data of the project ID that was inputed : goal would be to recieve info over the ProjectID given by user
-    # dplyr::if_else((ProjectID == program_id) == TRUE, filter(ProjectID == program_id) , "ProjectID was not located" )
+
 
 
   return(ProjectInformation)
