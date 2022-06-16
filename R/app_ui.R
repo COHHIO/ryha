@@ -15,17 +15,20 @@ app_ui <- function(request) {
       header = bs4Dash::dashboardHeader(
         title = span(
           img(src = "www/favicon.ico", height = 30),
-          span(strong("RYHA"), style = "color: #ffffff")   # Predictive Ecology Yellow
+          span(strong("RYHA"), style = "color: #ffffff")
         )
       ),
       sidebar = bs4Dash::dashboardSidebar(
         bs4Dash::sidebarMenu(
           # menuItems is created in R/fct_menuItems.R
-          create_menuItems(menuItems)
+          create_menuItems(define_menu())
         )
       ),
       controlbar = bs4Dash::bs4DashControlbar(
-        shiny::p("Place Filters Here!")
+        shiny::p("Place Filters Here!"),
+        id = "control_bar",
+        width = 350,
+        collapsed = FALSE
       ),
       body = bs4Dash::dashboardBody(
         bs4Dash::tabItems(
@@ -97,7 +100,7 @@ golem_add_external_resources <- function() {
     favicon(),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "ryha"
+      app_title = "COHHIO Youth Homelessness Analyzer"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
