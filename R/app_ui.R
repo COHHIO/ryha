@@ -20,50 +20,8 @@ app_ui <- function(request) {
       ),
       sidebar = bs4Dash::dashboardSidebar(
         bs4Dash::sidebarMenu(
-          bs4Dash::menuItem(
-            text = "Overview",
-            tabName = "overview_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Gender",
-            tabName = "gender_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Ethnicity",
-            tabName = "ethnicity_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Veteran",
-            tabName = "veteran_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Disabilities",
-            tabName = "disabilities_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Employment",
-            tabName = "employment_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Education",
-            tabName = "education_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Exits",
-            tabName = "exits_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Disabilities",
-            tabName = "health_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Domestic Violence",
-            tabName = "domestic_violence_page"
-          ),
-          bs4Dash::menuItem(
-            text = "Upload Data",
-            tabName = "upload_page"
-          )
+          # menuItems is created in R/fct_menuItems.R
+          create_menuItems(menuItems)
         )
       ),
       controlbar = bs4Dash::bs4DashControlbar(
