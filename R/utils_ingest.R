@@ -641,3 +641,59 @@ return(ProjectInformation)
 
 }
 
+
+#### --- this is new function DV - domestic violance
+
+#' Ingest "HealthAndDV.csv" file and perform ETL prep for "PREGNANCY" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PREGNANCY" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/HealthAndDV.csv"
+#'
+#' read_pregnancystatus(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_pregnancystatus <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "HEALTH" database table
+    col_select = c(
+      HealthAndDVID:InformationDate,
+      PregnancyStatus,
+      DueDate
+      #GeneralHealthStatus:DueDate
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      PregnancyStatus = readr::col_integer(),
+      DueDate = readr::col_date()
+    )
+  ) |>
+    # join the relevant codes from 'GeneralCodes'
+    dplyr::left_join(
+      GeneralCodes,
+      by = c("PregnancyStatus" = "Code")
+    ) |>
+    # keep only "1" (affirmative) PregnancyStatus
+    dplyr::filter(PregnancyStatus == 1L)
+
+    # add the 'SubmissionID' as the first column in the data
+    # dplyr::mutate(SubmissionID = submission_id) |>
+    # dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+  return(data)
+
+}
