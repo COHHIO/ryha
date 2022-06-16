@@ -261,7 +261,7 @@ read_veteran <- function(file, submission_id) {
 read_disabilities <- function(file, submission_id) {
 
   data <- readr::read_csv(
-    file = file,
+    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Disabilities.csv",
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
       DisabilitiesID:DisabilityResponse
@@ -474,6 +474,72 @@ read_employment <- function(file, submission_id) {
 
 }
 
+#' Ingest "CurrentLivingSituation.csv" file and perform ETL prep for "CURRENTLIVING" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "CURRENTLIVING" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/CurrentLivingSituation.csv"
+#'
+#' read_currentlivingsituation(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_currentlivingsituation <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "CURRENTLIVING" database table
+    col_select = c(
+      CurrentLivingSitID:CurrentLivingSituation,
+      LeaveSituation14Days
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      InformationDate = readr::col_date(),
+      CurrentLivingSituation = readr::col_integer(),
+      LeaveSituation14Days = readr::col_integer()
+    )
+  ) |>
+    # join the relevant codes from 'Appendix_A_Codes' for CurrentLivingSituation
+    dplyr::left_join(
+      LSOL_SituationsCodes,
+      by = c("CurrentLivingSituation" = "Code")
+    ) |>
+    # replace the codes in 'CurrentLivingSituation' column with their descriptions
+    dplyr::mutate(
+      CurrentLivingSituation = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
+    # join the relevant codes from 'Appendix_A_Codes' for LeaveSituation14Days
+    dplyr::left_join(
+      LSOL_SituationsCodes,
+      by = c("LeaveSituation14Days" = "Code")
+    ) |>
+    # replace the codes in 'LeaveSituation14Days' column with their descriptions
+    dplyr::mutate(
+      LeaveSituation14Days = Description,
+      Description = NULL   # drop 'Description' column
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+  return(data)
+
+}
+
+
 #' Ingest "Enrollment.csv" file and perform ETL prep for "HOUSEHOLD" database table
 #'
 #' @inheritParams read_client
@@ -574,3 +640,4 @@ read_project <- function(file, program_id) {
 return(ProjectInformation)
 
 }
+
