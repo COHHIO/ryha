@@ -8,13 +8,13 @@
 #' @return
 #' @export
 create_menuItems <- function(menuItems){
-  purrr::map2(
-    .x = menuItems$text,
-    .y = menuItems$tabName,
-    .f = function(x, y){
+  purrr::pmap(
+    .l = list(menuItems$text, menuItems$tabName, menuItems$icon),
+    .f = function(text, tabName, icon) {
       bs4Dash::menuItem(
-        text    = x,
-        tabName = y
+        text = text,
+        tabName = tabName,
+        icon = shiny::icon(icon)
       )
     }
   )

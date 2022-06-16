@@ -1,14 +1,14 @@
 menuItems <- tibble::tribble(
-               ~text ,  ~tabName               ,
-  "Overview"         , "overview_page"         ,
-  "Gender"           , "gender_page"           ,
-  "Ethnicity"        , "ethnicity_page"        ,
-  "Veteran"          , "veteran_page"          ,
-  "Disabilities"     , "disabilities_page"     ,
-  "Employment"       , "employment_page"       ,
-  "Education"        , "education_page"        ,
-  "Exits"            , "exits_page"            ,
-  "Health"           , "health_page"           ,
-  "Domestic Violence", "domestic_violence_page",
-  "Upload Data"      , "upload_page"
+  ~text ,            ~tabName                  , ~icon,
+  "Overview"         , "overview_page"         , "home",
+  "Gender"           , "gender_page"           , "venus-mars",
+  "Ethnicity"        , "ethnicity_page"        , "globe-americas",
+  "Veteran"          , "veteran_page"          , "fighter-jet",
+  "Disabilities"     , "disabilities_page"     , "accessible-icon",
+  "Employment"       , "employment_page"       , "briefcase",
+  "Education"        , "education_page"        , "book-open",
+  "Exits"            , "exits_page"            , "door-open",
+  "Health"           , "health_page"           , "stethoscope",
+  "Domestic Violence", "domestic_violence_page", "user-shield",
+  "Upload Data"      , "upload_page"           , "upload"
 )
