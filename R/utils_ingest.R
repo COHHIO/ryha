@@ -264,14 +264,14 @@ read_disabilities <- function(file, submission_id) {
     file = file,
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
-      PersonalID,
-      InformationDate:DisabilityResponse
+      DisabilitiesID:DisabilityResponse
     ),
     # define schema types
     col_types = readr::cols(
-      .default = readr::col_integer(),
-      PersonalID = readr::col_character(),
-      InformationDate = readr::col_date()
+      .default = readr::col_character(),
+      InformationDate = readr::col_date(),
+      DisabilityType = readr::col_integer(),
+      DisabilityResponse = readr::col_integer()
     )
   ) |>
     # keep only "1" (affirmative) DisabilityResponse
