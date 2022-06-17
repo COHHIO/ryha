@@ -23,5 +23,4 @@ ServiceCodes <- tibble::tribble(
   18L, "Substance Use disorder Ed/Prevention"
 )
 
-
 usethis::use_data(ServiceCodes, overwrite = TRUE)

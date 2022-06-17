@@ -1,14 +1,16 @@
+##what is the true index to be used for disabilities.csv ??
+
 ## code to prepare `Disabilities` dataset goes here
 
-# Project information 2.02 section in Data Dictionary
+# Project information Appendix B 1.3 section in Data Dictionary
 DisabilityTypeCodes <- tibble::tribble(
   ~Code, ~Description,
-  5L, "RETIRED",
-  6L, "Services Only",
-  7L, "Other",
-  8L, "Safe Haven",
-  9L, "PH – Housing Only",
-  10L, "PH – Housing with Services (no disability required for entry)"
+  5L, "Physical Disability",
+  6L, "Developmental Disability",
+  7L, "Chronic Health Condition",
+  8L, "HIV/AIDS",
+  9L, "Mental Health Disorder",
+  10L, "Substance Use Disorder"
 )
 
 

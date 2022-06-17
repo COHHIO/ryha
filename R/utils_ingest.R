@@ -323,17 +323,16 @@ read_education <- function(file, submission_id) {
     file = file,
     # only read in columns needed for "EDUCATION" database table
     col_select = c(
-      PersonalID,
-      EmploymentEducationID,
-      InformationDate:SchoolStatus,
+      EmploymentEducationID:SchoolStatus,
       DataCollectionStage,
       DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
-      .default = readr::col_integer(),
-      PersonalID = readr::col_character(),
-      EmploymentEducationID = readr::col_character(),
+      .default = readr::col_character(),
+      LastGradeCompleted = readr::col_integer(),
+      DataCollectionStage = readr::col_integer(),
+      SchoolStatus = readr::col_integer(),
       InformationDate = readr::col_date(),
       DateUpdated = readr::col_datetime()
     )
@@ -409,18 +408,17 @@ read_employment <- function(file, submission_id) {
     file = file,
     # only read in columns needed for "EMPLOYMENT" database table
     col_select = c(
-      PersonalID,
-      EmploymentEducationID,
-      InformationDate,
-      Employed:NotEmployedReason,
-      DataCollectionStage,
+      EmploymentEducationID:InformationDate,
+      Employed:DataCollectionStage,
       DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
-      .default = readr::col_integer(),
-      EmploymentEducationID = readr::col_character(),
-      PersonalID = readr::col_character(),
+      .default = readr::col_character(),
+      Employed = readr::col_integer(),
+      EmploymentType = readr::col_integer(),
+      NotEmployedReason = readr::col_integer(),
+      DataCollectionStage = readr::col_integer(),
       InformationDate = readr::col_date(),
       DateUpdated = readr::col_datetime() # this has to be called with character because of the date and time updated structure. hence can't be dealt as date but as charachter
     )
@@ -474,12 +472,12 @@ read_employment <- function(file, submission_id) {
 
 }
 
-#' Ingest "CurrentLivingSituation.csv" file and perform ETL prep for "CURRENTLIVING" database table
+#' Ingest "CurrentLivingSituation.csv" file and perform ETL prep for "LIVING" database table
 #'
 #' @inheritParams read_client
 #'
 #' @return A data frame, containing the transformed data to be written out to
-#'   the "CURRENTLIVING" database table
+#'   the "LIVING" database table
 #'
 #' @export
 #'
@@ -488,17 +486,17 @@ read_employment <- function(file, submission_id) {
 #'
 #' path <- "path/to/CurrentLivingSituation.csv"
 #'
-#' read_currentlivingsituation(
+#' read_living(
 #'   file = path,
 #'   submission_id = 1L
 #' )
 #'
 #' }
-read_currentlivingsituation <- function(file, submission_id) {
+read_living <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
-    # only read in columns needed for "CURRENTLIVING" database table
+    # only read in columns needed for "LIVING" database table
     col_select = c(
       CurrentLivingSitID:CurrentLivingSituation,
       LeaveSituation14Days
@@ -539,6 +537,156 @@ read_currentlivingsituation <- function(file, submission_id) {
 
 }
 
+#' Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "HEALTH" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/HealthAndDV.csv"
+#'
+#' read_health(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_health <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "HEALTH" database table
+    col_select = c(
+      HealthAndDVID:InformationDate,
+      GeneralHealthStatus:DueDate
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      HealthAndDVID = readr::col_character(),
+      EnrollmentID = readr::col_character(),
+      PersonalID = readr::col_character(),
+      InformationDate = readr::col_date(),
+      DueDate = readr::col_date()
+    )
+  ) |>
+    # replace the codes in 'PregnancyStatus' column with their DueDates If pregnant
+    dplyr::mutate(
+      PregnancyStatus = DueDate,
+      DueDate = NULL  # drop 'Description' column
+    ) |>
+    # join the relevant codes from 'HealthStatusCodes'
+    dplyr::left_join(
+      HealthStatusCodes,
+      by = c("MentalHealthStatus" = "Code")
+    ) |>
+    # replace the codes in 'MentalHealthStatus' column with their Descriptions
+    dplyr::mutate(
+      MentalHealthStatus = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    # join the relevant codes from 'HealthStatusCodes'
+    dplyr::left_join(
+      HealthStatusCodes,
+      by = c("DentalHealthStatus" = "Code")
+    ) |>
+    # replace the codes in 'DentalHealthStatus' column with their Descriptions
+    dplyr::mutate(
+      DentalHealthStatus = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    # join the relevant codes from 'HealthStatusCodes'
+    dplyr::left_join(
+      HealthStatusCodes,
+      by = c("GeneralHealthStatus" = "Code")
+    ) |>
+    # replace the codes in 'GeneralHealthStatus' column with their Descriptions
+    dplyr::mutate(
+      GeneralHealthStatus = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+  return(data)
+
+}
+
+#' Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "DOMESTIC_VIOLENCE" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/HealthAndDV.csv"
+#'
+#' read_domesticViolence(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_domesticViolence <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = file,
+    # only read in columns needed for "HEALTH" database table
+    col_select = c(
+      HealthAndDVID:CurrentlyFleeing
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      HealthAndDVID = readr::col_character(),
+      EnrollmentID = readr::col_character(),
+      PersonalID = readr::col_character(),
+      InformationDate = readr::col_date()
+    )
+  ) |>
+    # keep only "1" (affirmative) DomesticViolenceVictim
+    dplyr::filter(DomesticViolenceVictim == 1L) |>
+    dplyr::select(-DomesticViolenceVictim) |>
+    #if yes for domestic violence victim/survivor
+    # join the relevant codes from 'DVStatusCodes'
+    dplyr::left_join(
+      DVStatusCodes,
+      by = c("WhenOccurred" = "Code")
+    ) |>
+    # replace the codes in 'WhenOccurred' column with their Descriptions
+    dplyr::mutate(
+      WhenOccurred = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    # join the relevant codes from 'GeneralCodes'
+    dplyr::left_join(
+      GeneralCodes,
+      by = c("CurrentlyFleeing" = "Code")
+    ) |>
+    # replace the codes in 'CurrentlyFleeing' column with their Descriptions
+    dplyr::mutate(
+      CurrentlyFleeing = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+  return(data)
+
+}
 
 #' Ingest "Enrollment.csv" file and perform ETL prep for "HOUSEHOLD" database table
 #'
@@ -580,6 +728,70 @@ read_enrollment <- function(file, submission_id) {
       DateToStreetESSH = readr::col_date()
     )
   )
+
+  return(data)
+
+}
+
+
+#' Ingest "Services.csv" file and perform ETL prep for "SERVICES" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "SERVICES" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Services.csv"
+#'
+#' read_services(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_services <- function(file, submission_id) {
+
+  data <- readr::read_csv(
+    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Services.csv",
+    # only read in columns needed for "DISABILITIES" database table
+    col_select = c(
+      ServicesID:DateProvided,
+      TypeProvided,
+      ReferralOutcome
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      DateProvided = readr::col_date(),
+      TypeProvided = readr::col_integer(),
+      ReferralOutcome = readr::col_integer()
+    )
+  ) |>
+    # join the relevant codes from 'ServiceCodes'
+    dplyr::left_join(
+      ServiceCodes,
+      by = c("TypeProvided" = "Code")
+    ) |>
+    # replace the codes in 'TypeProvided' column with their descriptions
+    dplyr::mutate(
+      TypeProvided = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    #uncertain about the index object data sets, hence unsure about this part of the code.
+    # join the relevant codes from 'ReferralsServiceCodes'
+    # dplyr::left_join(
+    #   ReferralsOutcomeCodes,
+    #   by = c("ReferralOutcome" = "Code")
+    # )
+
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
 
   return(data)
 
@@ -642,58 +854,5 @@ return(ProjectInformation)
 }
 
 
-#### --- this is new function DV - domestic violance
 
-#' Ingest "HealthAndDV.csv" file and perform ETL prep for "PREGNANCY" database table
-#'
-#' @inheritParams read_client
-#'
-#' @return A data frame, containing the transformed data to be written out to
-#'   the "PREGNANCY" database table
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'
-#' path <- "path/to/HealthAndDV.csv"
-#'
-#' read_pregnancystatus(
-#'   file = path,
-#'   submission_id = 1L
-#' )
-#'
-#' }
-read_pregnancystatus <- function(file, submission_id) {
 
-  data <- readr::read_csv(
-    file = file,
-    # only read in columns needed for "HEALTH" database table
-    col_select = c(
-      HealthAndDVID:InformationDate,
-      PregnancyStatus,
-      DueDate
-      #GeneralHealthStatus:DueDate
-    ),
-    # define schema types
-    col_types = readr::cols(
-      .default = readr::col_character(),
-      PregnancyStatus = readr::col_integer(),
-      DueDate = readr::col_date()
-    )
-  ) |>
-    # join the relevant codes from 'GeneralCodes'
-    dplyr::left_join(
-      GeneralCodes,
-      by = c("PregnancyStatus" = "Code")
-    ) |>
-    # keep only "1" (affirmative) PregnancyStatus
-    dplyr::filter(PregnancyStatus == 1L)
-
-    # add the 'SubmissionID' as the first column in the data
-    # dplyr::mutate(SubmissionID = submission_id) |>
-    # dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
-
-}
