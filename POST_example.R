@@ -30,10 +30,20 @@ files[[2]]$path_display
 file <- here::here("cohhio_test_dbox.csv")
 dest <- "/ODH/Ketchbrook Analytics/test_file.csv"
 
+# TODO // Could not get this approach to work:
+# If using App Key + Secret approach, must first base64encode "key:secret"
+# key_sec <- glue::glue("{Sys.getenv('DBOX_KEY')}:{Sys.getenv('DBOX_SEC')}") |>
+#   charToRaw() |>
+#   base64enc::base64encode()
+
+# See Authentication Types here:
+# https://www.dropbox.com/developers/reference/auth-types
+
 req <- httr::POST(
   url = "https://content.dropboxapi.com/2/files/upload",
   httr::add_headers(
-    Authorization = glue::glue("Bearer {Sys.getenv('DBOX_TOKEN')}"),
+    # Authorization = glue::glue("Basic {key_sec}"),
+    Authorization = glue::glue("Bearer {Sys.getenv('DBOX_TOKEN')}"),   # OAuth
     `Dropbox-API-Arg` = jsonlite::toJSON(
       list(
         path = dest
