@@ -47,6 +47,24 @@ RecordTypeRHYServicesCodes <- tibble::tribble(
   28L, "STD Testing",
   29L, "Street-based Services"
 )
+
+#based on 'HMIS CSV FORMAT Specifications FY2022 – May 2021' guide pdf file, I had
+#followed Services.csv informaiton in page 30, 'Null unless RecordType = 161'
+
+#?? has also a different name in the index guide??
+#???
+#???
+
+PathReferralOutcomeCodes <- tibble::tribble(
+  ~Code, ~Description,
+  1L, "Attained",
+  2L, "Not attained",
+  3L, "Unknown"
+)
+
+
+
 usethis::use_data(ServiceCodes,
                   RecordTypeRHYServicesCodes,
+                  PathReferralOutcomeCodes,
                   overwrite = TRUE)

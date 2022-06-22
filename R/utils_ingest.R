@@ -278,9 +278,27 @@ read_disabilities <- function(file, submission_id) {
       DisabilityResponse = readr::col_integer()
     )
   ) |>
-    # keep only "1" (affirmative) DisabilityResponse
-    dplyr::filter(DisabilityResponse == 1L) |>
-    dplyr::select(-DisabilityResponse) |>
+    # # keep only "1" (affirmative) DisabilityResponse and when "DisabilityType" is 10L
+    # dplyr::filter(DisabilityResponse == 1L & DisabilityType == 10L) |>
+    # # join the relevant codes from 'DisabilityCodes'
+    # dplyr::left_join(
+    #   SubstanceUseDisorderCodes,
+    #   by = c("DisabilityType" = "Code")
+    # ) |>
+    # keep only "1" (affirmative) DisabilityResponse and when NOT "DisabilityType" == 10L
+    dplyr::filter(DisabilityResponse == 1L & DisabilityType != 10L) |>
+    # join the relevant codes from 'GeneralCodes'
+    dplyr::left_join(
+      GeneralCodes,
+      by = c("DisabilityType" = "Code")
+    ) |>
+    # replace the codes in 'DisabilityResponse' column with their descriptions
+    dplyr::mutate(
+      DisabilityResponse = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
+    # keep only "1" (affirmative) DisabilityResponse and when NOT "DisabilityType" == 10L
+    dplyr::filter(DisabilityType != 10L) |>
     # join the relevant codes from 'DisabilityCodes'
     dplyr::left_join(
       DisabilityTypeCodes,
@@ -762,7 +780,7 @@ read_services <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
-    # only read in columns needed for "DISABILITIES" database table
+    # only read in columns needed for "Services" database table
     col_select = c(
       ServicesID:DateProvided,
       TypeProvided,
