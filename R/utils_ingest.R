@@ -169,10 +169,10 @@ read_ethnicity <- function(file, submission_id) {
     dplyr::mutate( Ethnicity = replace( Ethnicity, Ethnicity == 0, "Non-Hispanic/Non-Latin(a)(o)(x)"),
                    Ethnicity = replace( Ethnicity, Ethnicity == 1, "Hispanic/Latin(a)(o)(x)")
     ) |>
-    # pivot ethnicity columns from wide to long
+    # pivot ethnicity in detail columns from wide to long
     tidyr::pivot_longer(
-      cols = -PersonalID,
-      names_to = "Ethnicity",
+      cols = -c(PersonalID, Ethnicity),
+      names_to = "Ethnicity in detail",
       values_to = "Status",
       values_transform = list(Status = as.integer)
     ) |>
@@ -265,7 +265,7 @@ read_veteran <- function(file, submission_id) {
 read_disabilities <- function(file, submission_id) {
 
   data <- readr::read_csv(
-    file = file,
+    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Disabilities.csv",
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
       DisabilitiesID:DisabilityResponse
