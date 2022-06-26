@@ -51,9 +51,6 @@ RecordTypeRHYServicesCodes <- tibble::tribble(
 #based on 'HMIS CSV FORMAT Specifications FY2022 – May 2021' guide pdf file, I had
 #followed Services.csv informaiton in page 30, 'Null unless RecordType = 161'
 
-#?? has also a different name in the index guide??
-#???
-#???
 
 PathReferralOutcomeCodes <- tibble::tribble(
   ~Code, ~Description,
