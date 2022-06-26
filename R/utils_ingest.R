@@ -265,7 +265,7 @@ read_veteran <- function(file, submission_id) {
 read_disabilities <- function(file, submission_id) {
 
   data <- readr::read_csv(
-    file = "C:/Users/yaniv/Desktop/KA/hudx-111_YWCA/Disabilities.csv",
+    file = file,
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
       DisabilitiesID:DisabilityResponse
@@ -278,37 +278,43 @@ read_disabilities <- function(file, submission_id) {
       DisabilityResponse = readr::col_integer()
     )
   ) |>
-    # # keep only "1" (affirmative) DisabilityResponse and when "DisabilityType" is 10L
-    # dplyr::filter(DisabilityResponse == 1L & DisabilityType == 10L) |>
-    # # join the relevant codes from 'DisabilityCodes'
-    # dplyr::left_join(
-    #   SubstanceUseDisorderCodes,
-    #   by = c("DisabilityType" = "Code")
-    # ) |>
-    # keep only "1" (affirmative) DisabilityResponse and when NOT "DisabilityType" == 10L
-    dplyr::filter(DisabilityResponse == 1L & DisabilityType != 10L) |>
+    # create and bind a new column called 'SubstanceAbuse'
+     cbind(SubstanceAbuse = NA) |>
+    #filter data based on DisabilityType and values of DisabilityResponse other than zero
+    dplyr::filter(DisabilityType == 10L | DisabilityResponse != 0L) |>
+    # join the relevant codes from 'DisabilityTypeCodes'
+    dplyr::left_join(
+      DisabilityTypeCodes,
+      by = c("DisabilityType" = "Code")
+    ) |>
+    # replace and mutate SubstanceAbuse based on DisabilityResponse 5:9 and 10 and change column DisabilityType with Description
+    dplyr::mutate( SubstanceAbuse = replace( DisabilityResponse, DisabilityType != 10, NA),
+                   DisabilityResponse = replace( DisabilityResponse, DisabilityType == 10, NA),
+                   DisabilityType = Description,
+                   Description = NULL
+    ) |>
+    # join the relevant codes from 'SubstanceUseDisorderCodes'
+    dplyr::left_join(
+      SubstanceUseDisorderCodes,
+      by = c("SubstanceAbuse" = "Code")
+    ) |>
+    # replace the codes in 'SubstanceAbuse' column with their descriptions
+    dplyr::mutate(
+      SubstanceAbuse = Description,
+      Description = NULL  # drop 'Description' column
+    ) |>
     # join the relevant codes from 'GeneralCodes'
     dplyr::left_join(
       GeneralCodes,
-      by = c("DisabilityType" = "Code")
+      by = c("DisabilityResponse" = "Code")
     ) |>
     # replace the codes in 'DisabilityResponse' column with their descriptions
     dplyr::mutate(
       DisabilityResponse = Description,
       Description = NULL  # drop 'Description' column
     ) |>
-    # keep only "1" (affirmative) DisabilityResponse and when NOT "DisabilityType" == 10L
-    dplyr::filter(DisabilityType != 10L) |>
-    # join the relevant codes from 'DisabilityCodes'
-    dplyr::left_join(
-      DisabilityTypeCodes,
-      by = c("DisabilityType" = "Code")
-    ) |>
-    # replace the codes in 'DisabilityType' column with their descriptions
-    dplyr::mutate(
-      DisabilityType = Description,
-      Description = NULL  # drop 'Description' column
-    ) |>
+    #unite DisabilityResponse and SubstanceAbuse columns
+    tidyr::unite("DisabilityResponse", DisabilityResponse,SubstanceAbuse, na.rm = TRUE) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::relocate(SubmissionID, .before = dplyr::everything())
@@ -394,7 +400,7 @@ read_education <- function(file, submission_id) {
       #change the class format of 'DateUpdated' column to date class
       DateUpdated = as.Date(format(DateUpdatedDate, "%Y-%d-%m")),
       DateUpdatedDate = NULL   # drop 'DateUpdatedDate' column
-    )
+    ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::relocate(SubmissionID, .before = dplyr::everything())
