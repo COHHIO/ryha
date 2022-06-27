@@ -28,7 +28,7 @@ res <- DBI::dbSendQuery(
   conn = con,
   statement = "SELECT * FROM iris_test WHERE \"Species\" = 'setosa'"
 )
-dbFetch(res)
-dbClearResult(res)
+DBI::dbFetch(res)
+DBI::dbClearResult(res)
 
 DBI::dbDisconnect(conn = con)
