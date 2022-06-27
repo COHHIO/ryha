@@ -35,35 +35,32 @@ read_client <- function(file, submission_id) {
       SSN,
       SSNDataQuality,
       DOB,
-      DOBDataQuality
+      DOBDataQuality,
+      AmIndAKNative:VeteranStatus
     ),
     # define schema types
     col_types = readr::cols(
-      .default = readr::col_character(),
+      .default = readr::col_integer(),
+      PersonalID = readr::col_character(),
+      SSN = readr::col_character(),
       SSNDataQuality = readr::col_integer(),
-      DOB = readr::col_date(),
-      DOBDataQuality = readr::col_integer()
+      DOB = readr::col_date(format = "%m/%d/%y")
     )
   ) |>
-    # join the relevant codes from 'SSNDataQualityCodes'
-    dplyr::left_join(
-      SSNDataQualityCodes,
-      by = c("SSNDataQuality" = "Code")
-    ) |>
-    # replace the codes in 'SSNDataQuality' column with their descriptions
+    # replace the "SSN/DOBDataQuality" codes with the plain-English description
     dplyr::mutate(
-      SSNDataQuality = Description,
-      Description = NULL   # drop 'Description' column
+      SSNDataQuality = SSNDataQualityCodes$Description[match(x = SSNDataQuality, table = SSNDataQualityCodes$Code)],
+      DOBDataQuality = DOBDataQualityCodes$Description[match(x = DOBDataQuality, table = DOBDataQualityCodes$Code)]
     ) |>
-    # join the relevant codes from 'DOBDataQualityCodes'
-    dplyr::left_join(
-      DOBDataQualityCodes,
-      by = c("DOBDataQuality" = "Code")
-    ) |>
-    # replace the codes in 'DOBDataQuality' column with their descriptions
+    # rename the "Ethnicity" column to "HispanicLatinaox"
+    dplyr::rename(HispanicLatinaox = Ethnicity) |>
+    # replace the "AmIndAKNative:VeteranStatus" codes with the plain-English
+    # description
     dplyr::mutate(
-      DOBDataQuality = Description,
-      Description = NULL   # drop 'Description' column
+      dplyr::across(
+        .cols = AmIndAKNative:VeteranStatus,
+        .fns = function(x) GeneralCodes$Description[match(x = x, table = GeneralCodes$Code)]
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
@@ -73,173 +70,6 @@ read_client <- function(file, submission_id) {
 
 }
 
-
-
-#' Ingest "Client.csv" file and perform ETL prep for "GENDER" database table
-#'
-#' @inheritParams read_client
-#'
-#' @return A data frame, containing the transformed data to be written out to
-#'   the "GENDER" database table
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'
-#' path <- "path/to/Client.csv"
-#'
-#' read_gender(
-#'   file = path,
-#'   submission_id = 1L
-#' )
-#'
-#' }
-read_gender <- function(file, submission_id) {
-
-  data <- readr::read_csv(
-    file = file,
-    # only read in columns needed for "GENDER" database table
-    col_select = c(
-      PersonalID,
-      Female:GenderNone
-    ),
-    # define schema types
-    col_types = readr::cols(
-      .default = readr::col_integer(),
-      PersonalID = readr::col_character()
-    )
-  ) |>
-    # pivot gender columns from wide to long
-    tidyr::pivot_longer(
-      cols = -PersonalID,
-      names_to = "Gender",
-      values_to = "Status",
-      values_transform = list(Status = as.integer)
-    ) |>
-    # keep only "1" (affirmative) status values
-    dplyr::filter(Status == 1L)|>
-    dplyr::select(-Status) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
-
-}
-
-
-
-#' Ingest "Client.csv" file and perform ETL prep for "ETHNICITY" database table
-#'
-#' @inheritParams read_client
-#'
-#' @return A data frame, containing the transformed data to be written out to
-#'   the "ETHNICITY" database table
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'
-#' path <- "path/to/Client.csv"
-#'
-#' read_ethnicity(
-#'   file = path,
-#'   submission_id = 1L
-#' )
-#'
-#' }
-read_ethnicity <- function(file, submission_id) {
-
-  data <- readr::read_csv(
-    file = file,
-    # only read in columns needed for "ETHNICITY" database table
-    col_select = c(
-      PersonalID,
-      AmIndAKNative:Ethnicity
-    ),
-    # define schema types
-    col_types = readr::cols(
-      .default = readr::col_integer(),
-      PersonalID = readr::col_character()
-    )
-  ) |>
-    # replace the ethnicity codes in 'Ethnicity' column with their descriptions
-    dplyr::mutate( Ethnicity = replace( Ethnicity, Ethnicity == 0, "Non-Hispanic/Non-Latin(a)(o)(x)"),
-                   Ethnicity = replace( Ethnicity, Ethnicity == 1, "Hispanic/Latin(a)(o)(x)")
-    ) |>
-    # pivot ethnicity in detail columns from wide to long
-    tidyr::pivot_longer(
-      cols = -c(PersonalID, Ethnicity),
-      names_to = "Ethnicity in detail",
-      values_to = "Status",
-      values_transform = list(Status = as.integer)
-    ) |>
-    # keep only "1" (affirmative) status values
-    dplyr::filter(Status == 1L) |>
-    dplyr::select(-Status) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
-
-}
-
-
-#' Ingest "Client.csv" file and perform ETL prep for "VETERAN" database table
-#'
-#' @inheritParams read_client
-#'
-#' @return A data frame, containing the transformed data to be written out to
-#'   the "VETERAN" database table
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'
-#' path <- "path/to/Client.csv"
-#'
-#' read_veteran(
-#'   file = path,
-#'   submission_id = 1L
-#' )
-#'
-#' }
-read_veteran <- function(file, submission_id) {
-
-  data <- readr::read_csv(
-    file = file,
-    # only read in columns needed for "VETERAN" database table
-    col_select = c(
-      PersonalID,
-      VeteranStatus
-    ),
-    # define schema types
-    col_types = readr::cols(
-      .default = readr::col_character(),
-      VeteranStatus = readr::col_integer()
-    )
-  ) |>
-    # join the relevant codes from 'GeneralCodes'
-    dplyr::left_join(
-      GeneralCodes,
-      by = c("VeteranStatus" = "Code")
-    ) |>
-    # replace the codes in 'VeteranStatus' column with their descriptions
-    dplyr::mutate(
-      VeteranStatus = Description,
-      Description = NULL  # drop 'Description' column
-    )|>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
-
-}
 
 
 #' Ingest "Disabilities.csv" file and perform ETL prep for "DISABILITIES" database table
