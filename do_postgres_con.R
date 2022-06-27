@@ -11,22 +11,19 @@ con <- DBI::dbConnect(
   password = Sys.getenv("POSTGRES_PWD")
 )
 
-# Create the table, 'iris_test'
-# DBI::dbWriteTable(
-#   conn = con,
-#   name = "iris_test",
-#   value = iris
-# )
-
 DBI::dbListTables(conn = con)
 
-DBI::dbListFields(conn = con, "iris_test")
+DBI::dbListFields(conn = con, "client")
 
-DBI::dbReadTable(conn = con, "iris_test")
+DBI::dbReadTable(conn = con, "client") |> tibble::as_tibble()
+
+DBI::dbReadTable(conn = con, "project") |> tibble::as_tibble()
+
+DBI::dbReadTable(conn = con, "submission") |> tibble::as_tibble()
 
 res <- DBI::dbSendQuery(
   conn = con,
-  statement = "SELECT * FROM iris_test WHERE \"Species\" = 'setosa'"
+  statement = "SELECT COUNT(*) FROM client"
 )
 DBI::dbFetch(res)
 DBI::dbClearResult(res)

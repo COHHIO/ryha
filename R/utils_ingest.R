@@ -44,7 +44,7 @@ read_client <- function(file, submission_id) {
       PersonalID = readr::col_character(),
       SSN = readr::col_character(),
       SSNDataQuality = readr::col_integer(),
-      DOB = readr::col_date(format = "%m/%d/%y")
+      DOB = readr::col_date()
     )
   ) |>
     # replace the "SSN/DOBDataQuality" codes with the plain-English description
@@ -682,13 +682,14 @@ read_services <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_project <- function(file, program_id) {
+read_project <- function(file, submission_id) {
 
-  ProjectInformation <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "PROGRAM" database table
     col_select = c(
       ProjectID,
+      OrganizationID,
       ProjectName,
       ProjectType
     ),
@@ -698,22 +699,13 @@ read_project <- function(file, program_id) {
       ProjectType = readr::col_integer()
     )
   ) |>
-    # join the relevant codes from 'ProjectCodes'
-    dplyr::left_join(
-      ProjectTypeCodes,
-      by = c("ProjectType" = "Code")
-    ) |>
-    # replace the codes in 'ProjectType' column with their descriptions
+    # replace the "ProjectType" codes with the plain-English description
     dplyr::mutate(
-      ProjectType = Description,
-      Description = NULL  # drop 'Description' column
+      ProjectType = ProjectTypeCodes$Description[match(x = ProjectType, table = ProjectTypeCodes$Code)]
     ) |>
-    #create "Match" column that checks for a matching projectID in the system
-    dplyr::mutate(Status = (ProjectID == program_id ) * 1) |> #not sure if I should just use if_else()
-    dplyr::filter(Status == 1L)
-
-
-return(ProjectInformation)
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
 
 }
 
