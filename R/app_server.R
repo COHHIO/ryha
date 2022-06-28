@@ -24,6 +24,8 @@ app_server <- function(input, output, session) {
     data$project <- DBI::dbReadTable(conn = data$con, name = "project")
     data$client <- DBI::dbReadTable(conn = data$con, name = "client")
 
+    on.exit(DBI::dbDisconnect(conn = con))
+
   })
 
   mod_gender_server(
@@ -34,7 +36,5 @@ app_server <- function(input, output, session) {
       dplyr::filter(value == "Yes") |>
       dplyr::select(-value)
   )
-
-  on.exit(DBI::dbDisconnect(conn = con))
 
 }
