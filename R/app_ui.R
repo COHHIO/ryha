@@ -11,53 +11,75 @@ app_ui <- function(request) {
     golem_add_external_resources(),
 
     # Your application UI logic
-    bslib::page_navbar(
-      id = "nav_bar",
-      title = span(
-        img(src = "www/favicon.ico", height = 30),
-        span(strong("RYHA"), style = "color: #ffffff")   # Predictive Ecology Yellow
+    bs4Dash::dashboardPage(
+      header = bs4Dash::dashboardHeader(
+        title = span(
+          img(src = "www/favicon.ico", height = 30),
+          span(strong("RYHA"), style = "color: #ffffff")
+        )
       ),
-      theme = bslib::bs_theme(
-        version = 5,
-        bootswatch = "zephyr",
-        bg = "#ffffff",
-        fg = "#000000",
-        primary = ,
-        base_font = bslib::font_google("Inter")
+      sidebar = bs4Dash::dashboardSidebar(
+        bs4Dash::sidebarMenu(
+          # menuItems is created in R/fct_menuItems.R
+          create_menuItems(define_menu())
+        )
       ),
-
-      bslib::nav(
-        id = "overview_page",
-        title = "Overview",
-
-        # mod_overview_ui("overview_1"),
-
-        br(),
-
-        mod_bar_chart_ui("bar_chart_1")
-
+      controlbar = bs4Dash::bs4DashControlbar(
+        shiny::p("Place Filters Here!"),
+        id = "control_bar",
+        width = 350,
+        collapsed = FALSE
       ),
-
-      bslib::nav(
-        id = "exit_page",
-        title = "Exits",
-
-        shiny::p("Placeholder")
-
-      ),
-
-      bslib::nav(
-        id = "upload_page",
-        title = "Upload Data",
-
-        mod_upload_ui("upload_1")
-
+      body = bs4Dash::dashboardBody(
+        bs4Dash::tabItems(
+          bs4Dash::tabItem(
+            tabName = "overview_page",
+            shiny::p("Placeholder Overview")
+          ),
+          bs4Dash::tabItem(
+            tabName = "gender_page",
+            mod_gender_ui("gender_1")
+          ),
+          bs4Dash::tabItem(
+            tabName = "ethnicity_page",
+            shiny::p("Placeholder Ethnicity")
+          ),
+          bs4Dash::tabItem(
+            tabName = "veteran_page",
+            shiny::p("Placeholder Veteran")
+          ),
+          bs4Dash::tabItem(
+            tabName = "disabilities_page",
+            shiny::p("Placeholder Disabilities")
+          ),
+          bs4Dash::tabItem(
+            tabName = "employment_page",
+            shiny::p("Placeholder Employment")
+          ),
+          bs4Dash::tabItem(
+            tabName = "education_page",
+            shiny::p("Placeholder Education")
+          ),
+          bs4Dash::tabItem(
+            tabName = "exits_page",
+            shiny::p("Placeholder Exits")
+          ),
+          bs4Dash::tabItem(
+            tabName = "health_page",
+            shiny::p("Placeholder Disabilities")
+          ),
+          bs4Dash::tabItem(
+            tabName = "domestic_violence_page",
+            shiny::p("Placeholder Domestic Violence")
+          ),
+          bs4Dash::tabItem(
+            tabName = "upload_page",
+            mod_upload_ui("upload_1")
+          )
+        )
       )
-
     )
-
   )
-
 }
 
 #' Add external Resources to the Application
@@ -78,7 +100,7 @@ golem_add_external_resources <- function() {
     favicon(),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "ryha"
+      app_title = "COHHIO Youth Homelessness Analyzer"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()

@@ -22,6 +22,7 @@ attachment::att_amend_desc()
 golem::add_module(name = "overview") # Name of the module
 golem::add_module(name = "bar_chart") # Name of the module
 golem::add_module(name = "upload") # Name of the module
+golem::add_module(name = "gender")
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*

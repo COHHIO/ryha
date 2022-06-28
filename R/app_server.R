@@ -7,7 +7,9 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
-  # data <- reactive(read_client())
+  # data <- # connect to AWS PostgreSQL database
+
+  # dm <- # create relational data model with {dm}
 
   data <- shiny::reactiveValues(
     submission = arrow::open_dataset("data_lake/submission/"),
@@ -18,18 +20,9 @@ app_server <- function(input, output, session) {
     military = arrow::open_dataset("data_lake/military/")
   )
 
-  mod_overview_server(
-    id = "overview_1",
-    data = data()$client_full
-  )
-
-  mod_bar_chart_server(
-    id = "bar_chart_1",
+  mod_gender_server(
+    "gender_1",
     data = data
-  )
-
-  mod_upload_server(
-    id = "upload_1"
   )
 
 }

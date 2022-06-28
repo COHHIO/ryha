@@ -182,6 +182,24 @@
         "tidyr"
       ]
     },
+    "bs4Dash": {
+      "Package": "bs4Dash",
+      "Version": "2.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cca14515876425caa963eb95f52e4564",
+      "Requirements": [
+        "bslib",
+        "fresh",
+        "htmltools",
+        "httpuv",
+        "httr",
+        "jsonlite",
+        "lifecycle",
+        "shiny",
+        "waiter"
+      ]
+    },
     "bslib": {
       "Package": "bslib",
       "Version": "0.3.1",
@@ -465,6 +483,19 @@
       "Requirements": [
         "htmltools",
         "rlang"
+      ]
+    },
+    "fresh": {
+      "Package": "fresh",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fa54367040deb4537da49b7ac0ee5770",
+      "Requirements": [
+        "htmltools",
+        "rstudioapi",
+        "sass",
+        "shiny"
       ]
     },
     "fs": {
@@ -1439,6 +1470,18 @@
         "tzdb",
         "vctrs",
         "withr"
+      ]
+    },
+    "waiter": {
+      "Package": "waiter",
+      "Version": "0.2.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "93e6b6c8ae3f81d4be77a0dc74e5cf5e",
+      "Requirements": [
+        "R6",
+        "htmltools",
+        "shiny"
       ]
     },
     "waldo": {
