@@ -110,19 +110,18 @@ mod_gender_ui <- function(id){
 #' gender Server Functions
 #'
 #' @noRd
-mod_gender_server <- function(id, data){
+mod_gender_server <- function(id, gender_data){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
     output$male_pct_txt <- shiny::renderText({
 
-      male <- data$gender |>
-        dplyr::filter(Gender == "Male") |>
-        dplyr::collect() |>
+      male <- gender_data |>
+        dplyr::filter(gender == "male") |>
         nrow()
 
       paste0(
-        round(male / data$gender$num_rows * 100, 2),
+        round(male / nrow(gender_data) * 100, 2),
         "%"
       )
 
@@ -130,22 +129,20 @@ mod_gender_server <- function(id, data){
 
     output$male_count_txt <- shiny::renderText({
 
-      data$gender |>
-        dplyr::filter(Gender == "Male") |>
-        dplyr::collect() |>
+      gender_data |>
+        dplyr::filter(gender == "male") |>
         nrow()
 
     })
 
     output$female_pct_txt <- shiny::renderText({
 
-      female <- data$gender |>
-        dplyr::filter(Gender == "Female") |>
-        dplyr::collect() |>
+      female <- gender_data |>
+        dplyr::filter(gender == "female") |>
         nrow()
 
       paste0(
-        round(female / data$gender$num_rows * 100, 2),
+        round(female / nrow(gender_data) * 100, 2),
         "%"
       )
 
@@ -153,22 +150,21 @@ mod_gender_server <- function(id, data){
 
     output$female_count_txt <- shiny::renderText({
 
-      data$gender |>
-        dplyr::filter(Gender == "Female") |>
-        dplyr::collect() |>
+      gender_data |>
+        dplyr::filter(gender == "female") |>
         nrow()
 
     })
 
     output$other_pct_txt <- shiny::renderText({
 
-      other <- data$gender |>
-        dplyr::filter(!Gender %in% c("Male", "Female")) |>
+      other <- gender_data |>
+        dplyr::filter(!gender %in% c("male", "female")) |>
         dplyr::collect() |>
         nrow()
 
       paste0(
-        round(other / data$gender$num_rows * 100, 2),
+        round(other / nrow(gender_data) * 100, 2),
         "%"
       )
 
@@ -176,21 +172,19 @@ mod_gender_server <- function(id, data){
 
     output$other_count_txt <- shiny::renderText({
 
-      data$gender |>
-        dplyr::filter(!Gender %in% c("Male", "Female")) |>
-        dplyr::collect() |>
+      gender_data |>
+        dplyr::filter(!gender %in% c("male", "female")) |>
         nrow()
 
     })
 
     output$gender_chart <- echarts4r::renderEcharts4r({
 
-      data$gender |>
-        dplyr::collect() |>
-        dplyr::group_by(Gender) |>
-        dplyr::summarise(Count = dplyr::n(), .groups = "drop") |>
-        echarts4r::e_charts(x = Gender) |>
-        echarts4r::e_bar(serie = Count) |>
+      gender_data |>
+        dplyr::group_by(gender) |>
+        dplyr::summarise(count = dplyr::n(), .groups = "drop") |>
+        echarts4r::e_charts(x = gender) |>
+        echarts4r::e_bar(serie = count) |>
         echarts4r::e_flip_coords() |>
         echarts4r::e_tooltip(trigger = "item")
 

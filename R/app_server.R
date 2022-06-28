@@ -7,22 +7,34 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
-  # data <- # connect to AWS PostgreSQL database
-
-  # dm <- # create relational data model with {dm}
-
   data <- shiny::reactiveValues(
-    submission = arrow::open_dataset("data_lake/submission/"),
-    program = arrow::open_dataset("data_lake/program/"),
-    client = arrow::open_dataset("data_lake/client/"),
-    ethnicity = arrow::open_dataset("data_lake/ethnicity/"),
-    gender = arrow::open_dataset("data_lake/gender/"),
-    military = arrow::open_dataset("data_lake/military/")
+    con = DBI::dbConnect(
+      drv = RPostgres::Postgres(),
+      dbname = Sys.getenv("POSTGRES_DBNAME"),
+      host = Sys.getenv("POSTGRES_HOST"),
+      port = Sys.getenv("POSTGRES_PORT"),
+      user = Sys.getenv("POSTGRES_USER"),
+      password = Sys.getenv("POSTGRES_PWD")
+    )
   )
+
+  shiny::observe({
+
+    data$submission <- DBI::dbReadTable(conn = data$con, name = "submission")
+    data$project <- DBI::dbReadTable(conn = data$con, name = "project")
+    data$client <- DBI::dbReadTable(conn = data$con, name = "client")
+
+  })
 
   mod_gender_server(
     "gender_1",
-    data = data
+    gender_data = data$client |>
+      dplyr::select(submission_id, personal_id, female:questioning) |>
+      tidyr::pivot_longer(cols = -c(submission_id, personal_id), names_to = "gender") |>
+      dplyr::filter(value == "Yes") |>
+      dplyr::select(-value)
   )
+
+  on.exit(DBI::dbDisconnect(conn = con))
 
 }

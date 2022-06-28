@@ -11,16 +11,23 @@ con <- DBI::dbConnect(
   password = Sys.getenv("POSTGRES_PWD")
 )
 
+# List all tables in the database
 DBI::dbListTables(conn = con)
 
+# List the column names for a particular table
 DBI::dbListFields(conn = con, "client")
 
-DBI::dbReadTable(conn = con, "client") |> tibble::as_tibble()
+# Read in all the data from a particular table
+DBI::dbReadTable(conn = con, "client") |>
+  tibble::as_tibble()
 
-DBI::dbReadTable(conn = con, "project") |> tibble::as_tibble()
+DBI::dbReadTable(conn = con, "project") |>
+  tibble::as_tibble()
 
-DBI::dbReadTable(conn = con, "submission") |> tibble::as_tibble()
+DBI::dbReadTable(conn = con, "submission") |>
+  tibble::as_tibble()
 
+# Send a specific SQL query to the database
 res <- DBI::dbSendQuery(
   conn = con,
   statement = "SELECT COUNT(*) FROM client"
@@ -28,4 +35,5 @@ res <- DBI::dbSendQuery(
 DBI::dbFetch(res)
 DBI::dbClearResult(res)
 
+# Disconnect from the database (for security purposes)
 DBI::dbDisconnect(conn = con)
