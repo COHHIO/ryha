@@ -24,7 +24,7 @@ app_server <- function(input, output, session) {
     data$project <- DBI::dbReadTable(conn = data$con, name = "project")
     data$client <- DBI::dbReadTable(conn = data$con, name = "client")
 
-    on.exit(DBI::dbDisconnect(conn = con))
+    on.exit(DBI::dbDisconnect(conn = data$con))
 
   })
 
