@@ -397,7 +397,7 @@ read_living <- function(file, submission_id) {
     dplyr::mutate(
       CurrentLivingSituation = lookup_codes(
         var = CurrentLivingSituation,
-        codes = CurrentLivingSituationCodes
+        codes = LivingCodes
       ),
       LeaveSituation14Days = lookup_codes(
         var = LeaveSituation14Days,
@@ -411,6 +411,8 @@ read_living <- function(file, submission_id) {
   return(data)
 
 }
+
+
 
 #' Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database table
 #'
@@ -678,13 +680,12 @@ read_services <- function(file, submission_id) {
 
 }
 
-#' Ingest "Project.csv" file and perform ETL prep for "PROGRAM" database table
+#' Ingest "Project.csv" file and perform ETL prep for "PROJECT" database table
 #'
-#' @param file String, the full path to the .csv file
-#' @param ProjectID Integer, the Project ID associated with pulling Project information
+#' @inheritParams read_client
 #'
 #' @return A data frame, containing the transformed data to be written out to
-#'   the "PROGRAM" database table. "PROGRAM" database table shows ProjectName and ProjectType based on ProjectID
+#'   the "PROJECT" database table
 #'
 #' @export
 #'
@@ -695,7 +696,7 @@ read_services <- function(file, submission_id) {
 #'
 #' read_project(
 #'   file = path,
-#'   program_id = 1L
+#'   submission_id = 1L
 #' )
 #'
 #' }
@@ -728,4 +729,58 @@ read_project <- function(file, submission_id) {
 
 
 
+#' Ingest "Exit.csv" file and perform ETL prep for "EXIT" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "EXIT" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Exit.csv"
+#'
+#' read_exit(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_exit <- function(file, submission_id) {
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "PROGRAM" database table
+    col_select = c(
+      ExitID,
+      EnrollmentID,
+      PersonalID,
+      ExitDate:OtherDestination,
+      ProjectCompletionStatus,
+      ExchangeForSex:PosCommunityConnections
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      ExitID = readr::col_character(),
+      EnrollmentID = readr::col_character(),
+      PersonalID = readr::col_character(),
+      ExitDate = readr::col_date()
+    )
+  ) |>
+    # replace the "ProjectType" codes with the plain-English description
+    dplyr::mutate(
+     Destination = lookup_codes(
+       var = Destination,
+       codes = LivingCodes
+     )
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+}
 
