@@ -4,6 +4,26 @@
 # raw .csv file into an arrow table that is ready to be written to the database
 
 
+#' Lookup Plain-English Definitions from Integer Codes
+#'
+#' @description This is a helper function that gets used in most downstream
+#'   `read_*()` functions to replace integer codes with their associated
+#'   plain-english definitions (character strings) *in place*
+#'
+#' @param var A tidy-select specification of a column variable
+#' @param codes An R dataset
+#'
+#' @return A vector of character strings, representing the plain-english
+#'   definitions based upon the integer values found in the input `var` column
+#'
+#' @noRd
+lookup_codes <- function(var, codes) {
+
+  codes$Description[match(x = {{ var }}, table = codes$Code)]
+
+}
+
+
 #' Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table
 #'
 #' @param file String, the full path to the .csv file
@@ -49,8 +69,14 @@ read_client <- function(file, submission_id) {
   ) |>
     # replace the "SSN/DOBDataQuality" codes with the plain-English description
     dplyr::mutate(
-      SSNDataQuality = SSNDataQualityCodes$Description[match(x = SSNDataQuality, table = SSNDataQualityCodes$Code)],
-      DOBDataQuality = DOBDataQualityCodes$Description[match(x = DOBDataQuality, table = DOBDataQualityCodes$Code)]
+      SSNDataQuality = lookup_codes(
+        var = SSNDataQuality,
+        codes = SSNDataQualityCodes
+      ),
+      DOBDataQuality = lookup_codes(
+        var = DOBDataQuality,
+        codes = DOBDataQualityCodes
+      )
     ) |>
     # rename the "Ethnicity" column to "HispanicLatinaox"
     dplyr::rename(HispanicLatinaox = Ethnicity) |>
@@ -59,7 +85,7 @@ read_client <- function(file, submission_id) {
     dplyr::mutate(
       dplyr::across(
         .cols = AmIndAKNative:VeteranStatus,
-        .fns = function(x) GeneralCodes$Description[match(x = x, table = GeneralCodes$Code)]
+        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
     ) |>
     # add the 'SubmissionID' as the first column in the data
@@ -367,25 +393,16 @@ read_living <- function(file, submission_id) {
       LeaveSituation14Days = readr::col_integer()
     )
   ) |>
-    # join the relevant codes from 'Appendix_A_Codes' for CurrentLivingSituation
-    dplyr::left_join(
-      LSOL_SituationsCodes,
-      by = c("CurrentLivingSituation" = "Code")
-    ) |>
-    # replace the codes in 'CurrentLivingSituation' column with their descriptions
+    # join the relevant codes from 'CurrentLivingSituationCodes' dataset
     dplyr::mutate(
-      CurrentLivingSituation = Description,
-      Description = NULL   # drop 'Description' column
-    ) |>
-    # join the relevant codes from 'Appendix_A_Codes' for LeaveSituation14Days
-    dplyr::left_join(
-      LSOL_SituationsCodes,
-      by = c("LeaveSituation14Days" = "Code")
-    ) |>
-    # replace the codes in 'LeaveSituation14Days' column with their descriptions
-    dplyr::mutate(
-      LeaveSituation14Days = Description,
-      Description = NULL   # drop 'Description' column
+      CurrentLivingSituation = lookup_codes(
+        var = CurrentLivingSituation,
+        codes = CurrentLivingSituationCodes
+      ),
+      LeaveSituation14Days = lookup_codes(
+        var = LeaveSituation14Days,
+        codes = GeneralCodes
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
