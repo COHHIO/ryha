@@ -1,6 +1,6 @@
-## code to prepare `CurrentLivingSituationCodes` dataset goes here
+## code to prepare `LivingCodes` dataset goes here
 
-CurrentLivingSituationCodes <- tibble::tribble(
+LivingCodes <- tibble::tribble(
   ~Code, ~Description,
   16L, "Place not meant for habitation (e.g., a vehicle, an abandoned building, bus/train/subway station/airport or anywhere outside)",
   1L, "Emergency shelter, including hotel or motel paid for with emergency shelter voucher, or RHY-funded Host Home shelter",
@@ -17,7 +17,12 @@ CurrentLivingSituationCodes <- tibble::tribble(
   32L, "Host Home (non-crisis)",
   13L, "Staying or living with friends, temporary tenure (e.g. room apartment or house)",
   36L, "Staying or living in a friend’s room, apartment or house",
+  12L, "Staying or living with family, temporary tenure (e.g. room, apartment or house)",
+  22L, "Staying or living with family, permanent tenure",
   35L, "Staying or living in a family member’s room, apartment or house",
+  23L, "Staying or living with friends, permanent tenure",
+  26L, "Moved from one HOPWA funded project to HOPWA PH",
+  27L, "Moved from one HOPWA funded project to HOPWA TH",
   28L, "Rental by client, with GPD TIP housing subsidy",
   19L, "Rental by client, with VASH housing subsidy",
   3L, "Permanent housing (other than RRH) for formerly homeless persons",
@@ -28,11 +33,15 @@ CurrentLivingSituationCodes <- tibble::tribble(
   20L, "Rental by client, with other ongoing housing subsidy",
   21L, "Owned by client, with ongoing housing subsidy",
   11L, "Owned by client, no ongoing housing subsidy",
+  30L, "No exit interview completed",
   17L, "Other",
+  24, "Deceased",
   37L, "Worker unable to determine",
   8L, "Client doesn’t know",
   9L, "Client refused",
   99L, "Data not collected"
 )
 
-usethis::use_data(CurrentLivingSituationCodes, overwrite = TRUE)
+
+
+usethis::use_data(LivingCodes, overwrite = TRUE)
