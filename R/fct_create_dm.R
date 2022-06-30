@@ -37,7 +37,9 @@ table_client <- DBI::dbReadTable(conn = con, name = "client") |>
       veteran_status == "Yes" ~ "Yes",
       veteran_status == "No" ~ "No",
       TRUE ~ "Missing Data"
-    )
+    ),
+
+    age = lubridate::interval(dob, lubridate::today()) / lubridate::years(1)
   )
 
 table_submission <- DBI::dbReadTable(conn = con, name = "submission")
