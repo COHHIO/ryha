@@ -19,6 +19,7 @@ mod_filters_ui <- function(id){
         "Male",
         "No Single Gender",
         "Transgender",
+        "Questioning",
         "Missing Data"
       ),
       selected = c(
@@ -26,6 +27,7 @@ mod_filters_ui <- function(id){
         "Male",
         "No Single Gender",
         "Transgender",
+        "Questioning",
         "Missing Data"
       )
     ),
