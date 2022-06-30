@@ -37,16 +37,8 @@ app_ui <- function(request) {
             shiny::p("Placeholder Overview")
           ),
           bs4Dash::tabItem(
-            tabName = "gender_page",
-            mod_gender_ui("gender_1")
-          ),
-          bs4Dash::tabItem(
-            tabName = "ethnicity_page",
-            shiny::p("Placeholder Ethnicity")
-          ),
-          bs4Dash::tabItem(
-            tabName = "veteran_page",
-            shiny::p("Placeholder Veteran")
+            tabName = "client_page",
+            shiny::p("Placeholder")
           ),
           bs4Dash::tabItem(
             tabName = "disabilities_page",

@@ -13,9 +13,7 @@ define_menu <- function() {
   tibble::tribble(
     ~text              , ~tabName                , ~icon,
     "Overview"         , "overview_page"         , "home",
-    "Gender"           , "gender_page"           , "venus-mars",
-    "Ethnicity"        , "ethnicity_page"        , "globe-americas",
-    "Veteran"          , "veteran_page"          , "fighter-jet",
+    "Client"           , "client_page"           , "user",
     "Disabilities"     , "disabilities_page"     , "accessible-icon",
     "Employment"       , "employment_page"       , "briefcase",
     "Education"        , "education_page"        , "book-open",
