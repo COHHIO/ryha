@@ -25,7 +25,7 @@ app_ui <- function(request) {
         )
       ),
       controlbar = bs4Dash::bs4DashControlbar(
-        shiny::p("Place Filters Here!"),
+        mod_filters_ui("filters_1"),
         id = "control_bar",
         width = 350,
         collapsed = FALSE
