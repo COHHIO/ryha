@@ -10,5 +10,5 @@ app_server <- function(input, output, session) {
 
   my_dm_filtered <- mod_filters_server("filters_1", my_dm)
 
-  mod_client_server("client_1", my_dm_filtered)
+  mod_client_server("client_1", my_dm, my_dm_filtered)
 }

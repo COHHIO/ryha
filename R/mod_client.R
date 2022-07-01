@@ -55,7 +55,7 @@ mod_client_ui <- function(id){
 #' client Server Functions
 #'
 #' @noRd
-mod_client_server <- function(id, filtered_dm){
+mod_client_server <- function(id, dm, filtered_dm){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -63,19 +63,17 @@ mod_client_server <- function(id, filtered_dm){
     #  submissions table from the filtered_dm that is the output of the
     #  filters module.
     # It is ordered in decreasing order to show most recent data as default
-    list_quarters <- reactive({
-      filtered_dm()$table_submission |>
+    list_quarters <- dm$table_submission |>
         dplyr::pull(quarter) |>
         unique() |>
         sort(decreasing = TRUE)
-    })
 
     # Update the selectInput when list_quarters gets computed
     # I'm not sure this is the best approach, but it works.
-    observeEvent(list_quarters(), {
+    observeEvent(list_quarters, {
       shiny::updateSelectInput(
         inputId = "quarter",
-        choices = list_quarters()
+        choices = list_quarters
       )
     })
 
