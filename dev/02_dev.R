@@ -23,6 +23,8 @@ golem::add_module(name = "overview") # Name of the module
 golem::add_module(name = "bar_chart") # Name of the module
 golem::add_module(name = "upload") # Name of the module
 golem::add_module(name = "gender")
+golem::add_module(name = "filters")
+golem::add_module(name = "client")
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
