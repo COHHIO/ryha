@@ -87,6 +87,12 @@ mod_filters_ui <- function(id){
       ),
       multiple = TRUE,
       options = list(`actions-box` = TRUE)
+    ),
+
+    # Add button to trigger filters
+    bs4Dash::actionButton(
+      inputId = ns("apply_filters"),
+      label = "Apply Filters"
     )
   )
 }
@@ -102,14 +108,14 @@ mod_filters_server <- function(id, dm){
     # dm is not reactive because it is computed when we launch the app.
     # This approach might not be the best, but it works.
     # Maybe in the future we can refactor code.
-    my_dm_filtered <- shiny::reactive({
+    my_dm_filtered <- shiny::eventReactive(input$apply_filters, {
       dm |>
         dm::dm_filter(table_client,
                       gender %in% input$gender,
                       ethnicity %in% input$ethnicity,
                       veteran_status %in% input$veteran_status) |>
         dm::dm_apply_filters()
-    })
+    }, ignoreNULL = FALSE)
 
     return(my_dm_filtered)
 
