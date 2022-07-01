@@ -10,14 +10,6 @@
 mod_filters_ui <- function(id){
   ns <- NS(id)
   tagList(
-    # To create the filters, I decided to use checkboxGroupInput.
-    #  The reason for that is that all options get displayed when you open
-    #  the controlBar, and you can quickly select or unselect any category.
-    #  When using a selectInput that accepted multiple options, in order to
-    #  remove one you had to click on the option and delete it with the keyboard.
-    #  For now, I find the checkboxGroupInput more appealing. This can change in
-    #  the future.
-
     # Gender filter
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shinyWidgets::pickerInput(

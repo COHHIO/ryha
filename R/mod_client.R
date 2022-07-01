@@ -60,8 +60,7 @@ mod_client_server <- function(id, dm, filtered_dm){
     ns <- session$ns
 
     # In order to get the complete list of submissions dates, we use the
-    #  submissions table from the filtered_dm that is the output of the
-    #  filters module.
+    #  submissions table from the dm object that gets created in the server
     # It is ordered in decreasing order to show most recent data as default
     list_quarters <- dm$table_submission |>
         dplyr::pull(quarter) |>
@@ -69,7 +68,7 @@ mod_client_server <- function(id, dm, filtered_dm){
         sort(decreasing = TRUE)
 
     # Update the selectInput when list_quarters gets computed
-    # I'm not sure this is the best approach, but it works.
+    # This observeEvent will trigger once because list_quarters is not reactive.
     observeEvent(list_quarters, {
       shiny::updateSelectInput(
         inputId = "quarter",
@@ -80,7 +79,7 @@ mod_client_server <- function(id, dm, filtered_dm){
     # This filtered dm takes the return value from the filters module and
     #  applies a new layer of filtering (by quarter).
     # I'm not adding the quarter filter to the controlBar because we might
-    #  want to still have access to all the submissions simultaneosly in
+    #  want to still have access to all the submissions simultaneously in
     #  another page
     filtered_dm_submission <- reactive({
       filtered_dm() |>
