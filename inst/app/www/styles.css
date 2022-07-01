@@ -5,3 +5,9 @@
   background-color: #07274A !important;
   border-color: #07274A !important;
 }
+
+/* Checkbox choices identation */
+.checkbox {margin-left: 30px}
+
+/* Checkbox label identation */
+.control-filter-label {margin-left: 10px}

@@ -22,7 +22,7 @@ mod_filters_ui <- function(id){
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shiny::checkboxGroupInput(
       inputId = ns("gender"),
-      label = shiny::h3("Gender"),
+      label = shiny::h3("Gender", class = "control-filter-label"),
       choices = c(
         "Female",
         "Male",
@@ -45,7 +45,7 @@ mod_filters_ui <- function(id){
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shiny::checkboxGroupInput(
       inputId = ns("ethnicity"),
-      label = shiny::h3("Ethnicity"),
+      label = shiny::h3("Ethnicity", class = "control-filter-label"),
       choices = c(
         "White",
         "Black and African American",
@@ -70,7 +70,7 @@ mod_filters_ui <- function(id){
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shiny::checkboxGroupInput(
       inputId = ns("veteran_status"),
-      label = shiny::h3("Is Veteran"),
+      label = shiny::h3("Is Veteran", class = "control-filter-label"),
       choices = c(
         "Yes",
         "No",
