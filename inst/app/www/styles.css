@@ -6,8 +6,8 @@
   border-color: #07274A !important;
 }
 
-/* Checkbox choices identation */
-.checkbox {margin-left: 30px}
+/* Filter box identation */
+.dropdown.bootstrap-select.show-tick.form-control {margin-left: 30px}
 
-/* Checkbox label identation */
+/* Filter label identation */
 .control-filter-label {margin-left: 10px}

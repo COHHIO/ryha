@@ -20,7 +20,7 @@ mod_filters_ui <- function(id){
 
     # Gender filter
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
-    shiny::checkboxGroupInput(
+    shinyWidgets::pickerInput(
       inputId = ns("gender"),
       label = shiny::h3("Gender", class = "control-filter-label"),
       choices = c(
@@ -38,12 +38,14 @@ mod_filters_ui <- function(id){
         "Transgender",
         "Questioning",
         "Missing Data"
-      )
+      ),
+      multiple = TRUE,
+      options = list(`actions-box` = TRUE)
     ),
 
     # Ethnicity filter
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
-    shiny::checkboxGroupInput(
+    shinyWidgets::pickerInput(
       inputId = ns("ethnicity"),
       label = shiny::h3("Ethnicity", class = "control-filter-label"),
       choices = c(
@@ -63,12 +65,14 @@ mod_filters_ui <- function(id){
         "Native Hawaiians and other Pacific Islanders",
         "Asian",
         "Missing Data"
-      )
+      ),
+      multiple = TRUE,
+      options = list(`actions-box` = TRUE)
     ),
 
     # Veteran status filter
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
-    shiny::checkboxGroupInput(
+    shinyWidgets::pickerInput(
       inputId = ns("veteran_status"),
       label = shiny::h3("Is Veteran", class = "control-filter-label"),
       choices = c(
@@ -80,7 +84,9 @@ mod_filters_ui <- function(id){
         "Yes",
         "No",
         "Missing Data"
-      )
+      ),
+      multiple = TRUE,
+      options = list(`actions-box` = TRUE)
     )
   )
 }
