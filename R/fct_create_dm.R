@@ -82,9 +82,10 @@ create_dm <- function(){
                   table_submission,
                   table_project,
                   table_current_living_situation) |>
-    dm::dm_add_pk(table = table_submission, columns = submission_id) |>
+    dm::dm_add_pk(table = table_project, columns = submission_id) |>
     dm::dm_add_pk(table = table_client, columns = personal_id) |>
-    dm::dm_add_fk(table = table_client, columns = submission_id, ref_table = table_submission) |>
+    dm::dm_add_fk(table = table_client, columns = submission_id, ref_table = table_project) |>
+    dm::dm_add_fk(table = table_submission, columns = submission_id, ref_table = table_project) |>
     dm::dm_add_fk(table = table_current_living_situation, columns = personal_id, ref_table = table_client)
 
   return(my_dm)

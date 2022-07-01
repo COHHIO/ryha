@@ -10,6 +10,16 @@
 mod_filters_ui <- function(id){
   ns <- NS(id)
   tagList(
+    # Organization filter
+    shinyWidgets::pickerInput(
+      inputId = ns("organization"),
+      label = shiny::h3("Organization", class = "control-filter-label"),
+      choices = NULL,
+      selected = NULL,
+      multiple = TRUE,
+      options = list(`actions-box` = TRUE)
+    ),
+
     # Gender filter
     # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shinyWidgets::pickerInput(
@@ -96,6 +106,24 @@ mod_filters_server <- function(id, dm){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    # In order to get the complete list of organizations, we use the projects
+    #  table from the dm object that gets created in the server
+    list_organizations <- dm$table_project |>
+      dplyr::pull(project_name) |>
+      unique() |>
+      sort()
+
+    # Update the selectInput when list_organizations gets computed
+    # This observeEvent will trigger once because list_quarters is not reactive.
+    observeEvent(list_organizations, {
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "organization",
+        choices = list_organizations,
+        selected = list_organizations
+      )
+    })
+
     # Here we create and return a filtered dm object.
     # dm is not reactive because it is computed when we launch the app.
     # This approach might not be the best, but it works.
@@ -106,6 +134,8 @@ mod_filters_server <- function(id, dm){
                       gender %in% input$gender,
                       ethnicity %in% input$ethnicity,
                       veteran_status %in% input$veteran_status) |>
+        dm::dm_filter(table_project,
+                      project_name %in% input$organization) |>
         dm::dm_apply_filters()
     }, ignoreNULL = FALSE)
 
