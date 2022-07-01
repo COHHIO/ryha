@@ -10,7 +10,16 @@
 mod_filters_ui <- function(id){
   ns <- NS(id)
   tagList(
+    # To create the filters, I decided to use checkboxGroupInput.
+    #  The reason for that is that all options get displayed when you open
+    #  the controlBar, and you can quickly select or unselect any category.
+    #  When using a selectInput that accepted multiple options, in order to
+    #  remove one you had to click on the option and delete it with the keyboard.
+    #  For now, I find the checkboxGroupInput more appealing. This can change in
+    #  the future.
+
     # Gender filter
+    # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shiny::checkboxGroupInput(
       inputId = ns("gender"),
       label = "Gender",
@@ -33,6 +42,7 @@ mod_filters_ui <- function(id){
     ),
 
     # Ethnicity filter
+    # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shiny::checkboxGroupInput(
       inputId = ns("ethnicity"),
       label = "Ethnicity",
@@ -57,6 +67,7 @@ mod_filters_ui <- function(id){
     ),
 
     # Veteran status filter
+    # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
     shiny::checkboxGroupInput(
       inputId = ns("veteran_status"),
       label = "Is Veteran",
@@ -81,6 +92,10 @@ mod_filters_server <- function(id, dm){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    # Here we create and return a filtered dm object.
+    # dm is not reactive because it is computed when we launch the app.
+    # This approach might not be the best, but it works.
+    # Maybe in the future we can refactor code.
     my_dm_filtered <- shiny::reactive({
       dm |>
         dm::dm_filter(table_client,

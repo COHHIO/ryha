@@ -1,3 +1,17 @@
+# In this script we create the baseline dm object.
+# As we have to apply some wrangling to the tables, the approach I took was
+# the following:
+# - Connect to the DB
+# - Get each table into memory applying the wrangle I found necessary
+#   (create new columns)
+# - Disconnect from the DB
+# - Use the tables in memory to create the dm object. So far, tables are not
+#   that big. I'm not aware of the number of rows of the rest.
+# This process takes some time to run (between 10 and 15 seconds), but once
+#  the app launches everything works properly.
+# We might end up refactoring this code. I wanted to make things work as soon
+#  as possible.
+
 # Connect to DB
 con <- DBI::dbConnect(
   drv = RPostgres::Postgres(),
@@ -13,6 +27,8 @@ con <- DBI::dbConnect(
 #  table size is small for now.
 table_client <- DBI::dbReadTable(conn = con, name = "client") |>
   dplyr::mutate(
+
+    # Create ethnicity column
     ethnicity = dplyr::case_when(
       am_ind_ak_native == "Yes" ~ "American Indian and Alaska Native",
       asian == "Yes" ~ "Asian",
@@ -24,6 +40,7 @@ table_client <- DBI::dbReadTable(conn = con, name = "client") |>
       TRUE ~ "Missing Data"
     ),
 
+    # Create gender column
     gender = dplyr::case_when(
       transgender == "Yes" ~ "Transgender",
       questioning == "Yes" ~ "Questioning",
@@ -33,17 +50,20 @@ table_client <- DBI::dbReadTable(conn = con, name = "client") |>
       TRUE ~ "Missing Data"
     ),
 
+    # Create veteran status column
     veteran_status = dplyr::case_when(
       veteran_status == "Yes" ~ "Yes",
       veteran_status == "No" ~ "No",
       TRUE ~ "Missing Data"
     ),
 
+    # Create age column
     age = lubridate::interval(dob, lubridate::today()) / lubridate::years(1)
   )
 
 table_submission <- DBI::dbReadTable(conn = con, name = "submission") |>
   dplyr::mutate(
+    # Create submission quarter column
     quarter = paste0(
       lubridate::year(export_start_date),
       " Q",
@@ -56,6 +76,7 @@ table_current_living_situation <- DBI::dbReadTable(conn = con, name = "current_l
 
 DBI::dbDisconnect(conn = con)
 
+# Create dm object, defining keys
 my_dm <- dm::dm(table_client,
                 table_submission,
                 table_project,
