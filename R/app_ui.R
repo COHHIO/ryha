@@ -38,7 +38,7 @@ app_ui <- function(request) {
           ),
           bs4Dash::tabItem(
             tabName = "client_page",
-            shiny::p("Placeholder")
+            mod_client_ui("client_1")
           ),
           bs4Dash::tabItem(
             tabName = "disabilities_page",

@@ -7,4 +7,5 @@
 app_server <- function(input, output, session) {
   # Your application server logic
   my_dm_filtered <- mod_filters_server("filters_1", my_dm)
+  mod_client_server("client_1", my_dm_filtered)
 }
