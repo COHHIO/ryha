@@ -42,7 +42,15 @@ table_client <- DBI::dbReadTable(conn = con, name = "client") |>
     age = lubridate::interval(dob, lubridate::today()) / lubridate::years(1)
   )
 
-table_submission <- DBI::dbReadTable(conn = con, name = "submission")
+table_submission <- DBI::dbReadTable(conn = con, name = "submission") |>
+  dplyr::mutate(
+    quarter = paste0(
+      lubridate::year(export_start_date),
+      " Q",
+      lubridate::quarter(export_start_date)
+    )
+  )
+
 table_project <- DBI::dbReadTable(conn = con, name = "project")
 table_current_living_situation <- DBI::dbReadTable(conn = con, name = "current_living_situation")
 
