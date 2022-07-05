@@ -26,19 +26,52 @@ create_dm <- function(){
   # Data wrangling
   #  Read the tables into memory and process them. This might not be ideal, but
   #  table size is small for now.
+
+  # Create auxiliary ethnicity table
+  #  This table contains for each personal_id a comma separated string of ethnicities
+  #  If a personal_id had missing data, it won't be in this dataset.
+  #  This table will be left joined to the clients table. personal_id without a match
+  #  will be assigned the value "Missing Data".
+  aux_table_client_ethnicity <- DBI::dbReadTable(conn = con, name = "client") |>
+    tidyr::pivot_longer(
+      cols = c(am_ind_ak_native,
+               asian,
+               black_af_american,
+               native_hi_pacific,
+               white,
+               race_none,
+               hispanic_latinaox),
+      names_to = "ethnicity_name",
+      values_to = "has_ethnicity"
+    ) |>
+    dplyr::mutate(
+      ethnicity_name = dplyr::case_when(
+        ethnicity_name == "am_ind_ak_native" ~ "American Indian and Alaska Native",
+        ethnicity_name == "asian" ~ "Asian",
+        ethnicity_name == "black_af_american" ~ "Black and African American",
+        ethnicity_name == "native_hi_pacific" ~ "Native Hawaiians and other Pacific Islanders",
+        ethnicity_name == "white" ~ "White",
+        ethnicity_name == "race_none" ~ "Missing Data",
+        ethnicity_name == "hispanic_latinaox" ~ "Hispanic and Latino American",
+        TRUE ~ "Missing Data"
+      )
+    ) |>
+    dplyr::filter(has_ethnicity == "Yes") |>
+    dplyr::group_by(submission_id, personal_id) |>
+    dplyr::summarise(ethnicity = paste0(ethnicity_name, collapse = ",")) |>
+    dplyr::ungroup()
+
   table_client <- DBI::dbReadTable(conn = con, name = "client") |>
+    dplyr::left_join(
+      y = aux_table_client_ethnicity,
+      by = c("submission_id", "personal_id")
+    ) |>
     dplyr::mutate(
 
-      # Create ethnicity column
+      # Identify Missing Data in ethnicity column
       ethnicity = dplyr::case_when(
-        am_ind_ak_native == "Yes" ~ "American Indian and Alaska Native",
-        asian == "Yes" ~ "Asian",
-        black_af_american == "Yes" ~ "Black and African American",
-        native_hi_pacific == "Yes" ~ "Native Hawaiians and other Pacific Islanders",
-        white == "Yes" ~ "White",
-        !is.na(race_none) ~ "Missing Data",
-        hispanic_latinaox == "Yes" ~ "Hispanic and Latino American",
-        TRUE ~ "Missing Data"
+        is.na(ethnicity) ~ "Missing Data",
+        TRUE ~ ethnicity
       ),
 
       # Create gender column
