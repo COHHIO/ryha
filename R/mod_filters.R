@@ -17,7 +17,8 @@ mod_filters_ui <- function(id){
       choices = NULL,
       selected = NULL,
       multiple = TRUE,
-      options = list(`actions-box` = TRUE)
+      options = list(`actions-box` = TRUE,
+                     `selected-text-format` = 'count > 2')
     ),
 
     # Gender filter
@@ -42,7 +43,8 @@ mod_filters_ui <- function(id){
         "Missing Data"
       ),
       multiple = TRUE,
-      options = list(`actions-box` = TRUE)
+      options = list(`actions-box` = TRUE,
+                     `selected-text-format` = 'count > 2')
     ),
 
     # Ethnicity filter
@@ -69,7 +71,8 @@ mod_filters_ui <- function(id){
         "Missing Data"
       ),
       multiple = TRUE,
-      options = list(`actions-box` = TRUE)
+      options = list(`actions-box` = TRUE,
+                     `selected-text-format` = 'count > 2')
     ),
 
     # Veteran status filter
@@ -88,7 +91,8 @@ mod_filters_ui <- function(id){
         "Missing Data"
       ),
       multiple = TRUE,
-      options = list(`actions-box` = TRUE)
+      options = list(`actions-box` = TRUE,
+                     `selected-text-format` = 'count > 2')
     ),
 
     # Add button to trigger filters
