@@ -136,7 +136,7 @@ mod_filters_server <- function(id, dm){
       dm |>
         dm::dm_filter(table_client,
                       gender %in% input$gender,
-                      ethnicity %in% input$ethnicity,
+                      stringr::str_detect(ethnicity, input$ethnicity |> paste0(collapse = "|")),
                       veteran_status %in% input$veteran_status) |>
         dm::dm_filter(table_project,
                       project_name %in% input$organization) |>
