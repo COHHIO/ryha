@@ -140,6 +140,8 @@ mod_client_server <- function(id, dm, filtered_dm){
     # Create ethnicity chart
     output$chart_ethnicity <- echarts4r::renderEcharts4r({
       filtered_dm_submission()$table_client |>
+        dplyr::mutate(ethnicity = strsplit(ethnicity, ",")) %>%
+        tidyr::unnest(ethnicity) |>
         dplyr::mutate(ethnicity = stringr::str_wrap(ethnicity, 25)) |>
         dplyr::count(ethnicity) |>
         dplyr::arrange(dplyr::desc(n)) |>
