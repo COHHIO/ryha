@@ -2,21 +2,21 @@
 % Please edit documentation in R/utils_ingest.R
 \name{read_project}
 \alias{read_project}
-\title{Ingest "Project.csv" file and perform ETL prep for "PROGRAM" database table}
+\title{Ingest "Project.csv" file and perform ETL prep for "PROJECT" database table}
 \usage{
 read_project(file, submission_id)
 }
 \arguments{
 \item{file}{String, the full path to the .csv file}
 
-\item{ProjectID}{Integer, the Project ID associated with pulling Project information}
+\item{submission_id}{Integer, the Submission ID associated with this upload}
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "PROGRAM" database table. "PROGRAM" database table shows ProjectName and ProjectType based on ProjectID
+  the "PROJECT" database table
 }
 \description{
-Ingest "Project.csv" file and perform ETL prep for "PROGRAM" database table
+Ingest "Project.csv" file and perform ETL prep for "PROJECT" database table
 }
 \examples{
 \dontrun{
@@ -25,7 +25,7 @@ path <- "path/to/Project.csv"
 
 read_project(
   file = path,
-  program_id = 1L
+  submission_id = 1L
 )
 
 }
