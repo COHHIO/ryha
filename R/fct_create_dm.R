@@ -1,18 +1,8 @@
-# In this script we create the baseline dm object.
-# As we have to apply some wrangling to the tables, the approach I took was
-# the following:
-# - Connect to the DB
-# - Get each table into memory applying the wrangle I found necessary
-#   (create new columns)
-# - Disconnect from the DB
-# - Use the tables in memory to create the dm object. So far, tables are not
-#   that big. I'm not aware of the number of rows of the rest.
-# This process takes some time to run (between 10 and 15 seconds), but once
-#  the app launches everything works properly.
-# We might end up refactoring this code. I wanted to make things work as soon
-#  as possible.
 
-create_dm <- function(){
+
+
+create_dm <- function() {
+
   # Connect to DB
   con <- DBI::dbConnect(
     drv = RPostgres::Postgres(),
@@ -23,104 +13,143 @@ create_dm <- function(){
     password = Sys.getenv("POSTGRES_PWD")
   )
 
-  # Data wrangling
-  #  Read the tables into memory and process them. This might not be ideal, but
-  #  table size is small for now.
+  # Read "project" table into memory
+  project <- DBI::dbReadTable(
+    conn = con,
+    name = "project"
+  )
 
-  # Create auxiliary ethnicity table
-  #  This table contains for each personal_id a comma separated string of ethnicities
-  #  If a personal_id had missing data, it won't be in this dataset.
-  #  This table will be left joined to the clients table. personal_id without a match
-  #  will be assigned the value "Missing Data".
-  aux_table_client_ethnicity <- DBI::dbReadTable(conn = con, name = "client") |>
+  # Read "submission" table into memory
+  submission <- DBI::dbReadTable(
+    conn = con,
+    name = "submission"
+  ) |>
+    dplyr::mutate(quarter = paste0(
+      lubridate::year(export_start_date),
+      " Q",
+      lubridate::quarter(export_start_date)
+    ))
+
+  # Read "client" table into memory
+  client_tbl <- DBI::dbReadTable(
+    conn = con,
+    name = "client"
+  )
+
+  # Prep "client" table
+  client <- client_tbl |>
+    dplyr::select(
+      submission_id,
+      personal_id,
+      dob,
+      dob_data_quality,
+      veteran_status
+    ) |>
+    dplyr::mutate(
+      age = lubridate::time_length(
+        difftime(lubridate::today(), dob),
+        "years"
+      ) |> floor()
+    ) |>
+    dplyr::select(
+      submission_id,
+      personal_id,
+      age,
+      veteran_status
+    )
+
+  # Prep "gender" table
+  gender <- client_tbl |>
+    dplyr::select(
+      submission_id,
+      personal_id,
+      female:questioning
+    ) |>
     tidyr::pivot_longer(
-      cols = c(am_ind_ak_native,
-               asian,
-               black_af_american,
-               native_hi_pacific,
-               white,
-               race_none,
-               hispanic_latinaox),
-      names_to = "ethnicity_name",
-      values_to = "has_ethnicity"
+      cols = female:questioning,
+      names_to = "gender",
+      values_drop_na = TRUE
+    ) |>
+    dplyr::filter(value == "Yes") |>
+    dplyr::select(-value) |>
+    dplyr::right_join(
+      client |> dplyr::select(-age),
+      by = c("personal_id", "submission_id")
     ) |>
     dplyr::mutate(
-      ethnicity_name = dplyr::case_when(
-        ethnicity_name == "am_ind_ak_native" ~ "American Indian and Alaska Native",
-        ethnicity_name == "asian" ~ "Asian",
-        ethnicity_name == "black_af_american" ~ "Black and African American",
-        ethnicity_name == "native_hi_pacific" ~ "Native Hawaiians and other Pacific Islanders",
-        ethnicity_name == "white" ~ "White",
-        ethnicity_name == "race_none" ~ "Missing Data",
-        ethnicity_name == "hispanic_latinaox" ~ "Hispanic and Latino American",
-        TRUE ~ "Missing Data"
-      )
+      gender = dplyr::if_else(is.na(gender), "missing data", gender)
     ) |>
-    dplyr::filter(has_ethnicity == "Yes") |>
-    dplyr::group_by(submission_id, personal_id) |>
-    dplyr::summarise(ethnicity = paste0(ethnicity_name, collapse = ",")) |>
-    dplyr::ungroup()
-
-  table_client <- DBI::dbReadTable(conn = con, name = "client") |>
-    dplyr::left_join(
-      y = aux_table_client_ethnicity,
-      by = c("submission_id", "personal_id")
-    ) |>
-    dplyr::mutate(
-
-      # Identify Missing Data in ethnicity column
-      ethnicity = dplyr::case_when(
-        is.na(ethnicity) ~ "Missing Data",
-        TRUE ~ ethnicity
-      ),
-
-      # Create gender column
-      gender = dplyr::case_when(
-        transgender == "Yes" ~ "Transgender",
-        questioning == "Yes" ~ "Questioning",
-        no_single_gender == "Yes" ~ "No Single Gender",
-        female == "Yes" ~ "Female",
-        male == "Yes" ~ "Male",
-        TRUE ~ "Missing Data"
-      ),
-
-      # Create veteran status column
-      veteran_status = dplyr::case_when(
-        veteran_status == "Yes" ~ "Yes",
-        veteran_status == "No" ~ "No",
-        TRUE ~ "Missing Data"
-      ),
-
-      # Create age column
-      age = lubridate::interval(dob, lubridate::today()) / lubridate::years(1)
+    dplyr::arrange(
+      submission_id,
+      personal_id
     )
 
-  table_submission <- DBI::dbReadTable(conn = con, name = "submission") |>
+  # Prep "ethnicity" table
+  ethnicity <- client_tbl |>
+    dplyr::select(
+      submission_id,
+      personal_id,
+      am_ind_ak_native:white, hispanic_latinaox
+    ) |>
+    tidyr::pivot_longer(
+      cols = am_ind_ak_native:hispanic_latinaox,
+      names_to = "ethnicity",
+      values_drop_na = TRUE
+    ) |>
+    dplyr::filter(value == "Yes") |>
+    dplyr::select(-value) |>
+    dplyr::right_join(
+      client |> dplyr::select(-age),
+      by = c("personal_id", "submission_id")
+    ) |>
     dplyr::mutate(
-      # Create submission quarter column
-      quarter = paste0(
-        lubridate::year(export_start_date),
-        " Q",
-        lubridate::quarter(export_start_date)
-      )
+      ethnicity = dplyr::if_else(ethnicity == "race_none", "missing data", ethnicity)
+    ) |>
+    dplyr::arrange(
+      submission_id,
+      personal_id
     )
 
-  table_project <- DBI::dbReadTable(conn = con, name = "project")
-  table_current_living_situation <- DBI::dbReadTable(conn = con, name = "current_living_situation")
+  # Read "current_living_situation" table into memory
+  current_living_situation <- DBI::dbReadTable(
+    conn = con,
+    name = "current_living_situation"
+  )
 
+  # Disconnect from the database
   DBI::dbDisconnect(conn = con)
 
-  # Create dm object, defining keys
-  my_dm <- dm::dm(table_client,
-                  table_submission,
-                  table_project,
-                  table_current_living_situation) |>
-    dm::dm_add_pk(table = table_project, columns = submission_id) |>
-    dm::dm_add_pk(table = table_client, columns = personal_id) |>
-    dm::dm_add_fk(table = table_client, columns = submission_id, ref_table = table_project) |>
-    dm::dm_add_fk(table = table_submission, columns = submission_id, ref_table = table_project) |>
-    dm::dm_add_fk(table = table_current_living_situation, columns = personal_id, ref_table = table_client)
+  # Create {dm} object
+  dm <- dm::dm(
+    project,
+    submission,
+    client,
+    gender,
+    ethnicity,
+    current_living_situation
+  ) |>
+    # setup "project" table
+    dm::dm_add_pk(table = project, columns = project_id) |>
 
-  return(my_dm)
+    # setup "submission" table
+    dm::dm_add_pk(table = submission, columns = submission_id) |>
+    dm::dm_add_fk(table = submission, columns = project_id, ref_table = project) |>
+
+    # setup "client" table
+    dm::dm_add_pk(table = client, columns = c(submission_id, personal_id)) |>
+    dm::dm_add_fk(table = client, columns = submission_id, ref_table = submission) |>
+
+    # setup "gender" table
+    dm::dm_add_fk(table = gender, columns = c(submission_id, personal_id), ref_table = client) |>
+
+    # setup "ethnicity" table
+    dm::dm_add_fk(table = ethnicity, columns = c(submission_id, personal_id), ref_table = client) |>
+
+    # setup "current_living_situation" table
+    dm::dm_add_pk(table = current_living_situation, columns = c(submission_id, current_living_sit_id)) |>
+    dm::dm_add_fk(table = current_living_situation, columns = c(submission_id, personal_id), ref_table = client) # |>
+  # dm::dm_add_fk(table = current_living_situation, columns = c(submission_id, enrollment_id), ref_table = enrollment) |>
+
+  return(dm)
 
 }

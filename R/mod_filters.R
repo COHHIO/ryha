@@ -10,96 +10,89 @@
 mod_filters_ui <- function(id){
   ns <- NS(id)
   tagList(
-    # Organization filter
-    shinyWidgets::pickerInput(
-      inputId = ns("organization"),
-      label = shiny::h3("Organization", class = "control-filter-label"),
-      choices = NULL,
-      selected = NULL,
-      multiple = TRUE,
-      options = list(`actions-box` = TRUE,
-                     `selected-text-format` = 'count > 2')
-    ),
 
-    # Gender filter
-    # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
-    shinyWidgets::pickerInput(
-      inputId = ns("gender"),
-      label = shiny::h3("Gender", class = "control-filter-label"),
-      choices = c(
-        "Female",
-        "Male",
-        "No Single Gender",
-        "Transgender",
-        "Questioning",
-        "Missing Data"
-      ),
-      selected = c(
-        "Female",
-        "Male",
-        "No Single Gender",
-        "Transgender",
-        "Questioning",
-        "Missing Data"
-      ),
-      multiple = TRUE,
-      options = list(`actions-box` = TRUE,
-                     `selected-text-format` = 'count > 2')
-    ),
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
 
-    # Ethnicity filter
-    # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
-    shinyWidgets::pickerInput(
-      inputId = ns("ethnicity"),
-      label = shiny::h3("Ethnicity", class = "control-filter-label"),
-      choices = c(
-        "White",
-        "Black and African American",
-        "Hispanic and Latino American",
-        "American Indian and Alaska Native",
-        "Native Hawaiians and other Pacific Islanders",
-        "Asian",
-        "Missing Data"
-      ),
-      selected = c(
-        "White",
-        "Black and African American",
-        "Hispanic and Latino American",
-        "American Indian and Alaska Native",
-        "Native Hawaiians and other Pacific Islanders",
-        "Asian",
-        "Missing Data"
-      ),
-      multiple = TRUE,
-      options = list(`actions-box` = TRUE,
-                     `selected-text-format` = 'count > 2')
-    ),
+        # Project filter
+        shinyWidgets::pickerInput(
+          inputId = ns("project_filter_global"),
+          label = "Organization/Grantee",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE,
+          # collapse the list of selected items in the UI
+          options = list(
+            `actions-box` = TRUE,
+            `selected-text-format` = 'count > 2'
+          )
+        ),
 
-    # Veteran status filter
-    # Values are hardcoded, they come from data wrangling step in fct_create_dm.R
-    shinyWidgets::pickerInput(
-      inputId = ns("veteran_status"),
-      label = shiny::h3("Is Veteran", class = "control-filter-label"),
-      choices = c(
-        "Yes",
-        "No",
-        "Missing Data"
-      ),
-      selected = c(
-        "Yes",
-        "No",
-        "Missing Data"
-      ),
-      multiple = TRUE,
-      options = list(`actions-box` = TRUE,
-                     `selected-text-format` = 'count > 2')
-    ),
+        # Submission Date Filter
+        shinyWidgets::pickerInput(
+          inputId = ns("submission_filter_global"),
+          label = "Quarter",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE,
+          options = list(
+            `actions-box` = TRUE,
+            `selected-text-format` = 'count > 2'
+          )
+        ),
 
-    # Add button to trigger filters
-    bs4Dash::actionButton(
-      inputId = ns("apply_filters"),
-      label = "Apply Filters"
+        # Gender filter
+        shinyWidgets::pickerInput(
+          inputId = ns("gender_filter_global"),
+          label = "Gender",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE,
+          options = list(
+            `actions-box` = TRUE,
+            `selected-text-format` = 'count > 2'
+          )
+        ),
+
+        # Ethnicity filter
+        shinyWidgets::pickerInput(
+          inputId = ns("ethnicity_filter_global"),
+          label = "Ethnicity",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE,
+          options = list(
+            `actions-box` = TRUE,
+            `selected-text-format` = 'count > 2'
+          )
+        ),
+
+        # Age slider
+        shiny::sliderInput(
+          inputId = ns("age_filter_global"),
+          label = "Age",
+          min = 0,
+          max = 18,
+          value = c(0, 18)
+        ),
+
+        # Age missing checkbox
+        shiny::checkboxInput(
+          inputId = ns("age_missing_global"),
+          label = "Include Youth with Missing Ages?",
+          value = TRUE
+        ),
+
+        # Add button to trigger filters
+        bs4Dash::actionButton(
+          inputId = ns("apply_filters"),
+          label = "Apply Filters"
+        )
+
+      )
     )
+
   )
 }
 
@@ -110,40 +103,92 @@ mod_filters_server <- function(id, dm){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # In order to get the complete list of organizations, we use the projects
-    #  table from the dm object that gets created in the server
-    list_organizations <- dm$table_project |>
-      dplyr::pull(project_name) |>
-      unique() |>
-      sort()
+    valid_ages <- shiny::reactive({
 
-    # Update the selectInput when list_organizations gets computed
-    # This observeEvent will trigger once because list_quarters is not reactive.
-    observeEvent(list_organizations, {
-      shinyWidgets::updatePickerInput(
-        session = session,
-        inputId = "organization",
-        choices = list_organizations,
-        selected = list_organizations
-      )
+      dm$client |>
+        dplyr::filter(!is.na(age)) |>
+        dplyr::pull(age) |>
+        unique()
+
     })
 
-    # Here we create and return a filtered dm object.
-    # dm is not reactive because it is computed when we launch the app.
-    # This approach might not be the best, but it works.
-    # Maybe in the future we can refactor code.
-    my_dm_filtered <- shiny::eventReactive(input$apply_filters, {
-      dm |>
-        dm::dm_filter(table_client,
-                      gender %in% input$gender,
-                      stringr::str_detect(ethnicity, input$ethnicity |> paste0(collapse = "|")),
-                      veteran_status %in% input$veteran_status) |>
-        dm::dm_filter(table_project,
-                      project_name %in% input$organization) |>
+    # Update the values in the filters given the {dm} data
+    shiny::observe({
+
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "project_filter_global",
+        choices = unique( dm$project$project_name ) |> sort(),
+        selected = unique( dm$project$project_name ) |> sort()
+      )
+
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "submission_filter_global",
+        choices = unique( dm$submission$quarter ) |> sort(),
+        selected = unique( dm$submission$quarter ) |> sort()
+      )
+
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "gender_filter_global",
+        choices = unique( dm$gender$gender ) |> sort(),
+        selected = unique( dm$gender$gender ) |> sort()
+      )
+
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "ethnicity_filter_global",
+        choices = unique( dm$ethnicity$ethnicity ) |> sort(),
+        selected = unique( dm$ethnicity$ethnicity ) |> sort()
+      )
+
+      shiny::updateSliderInput(
+        session = session,
+        inputId = "age_filter_global",
+        min = min( valid_ages() ),
+        max = max( valid_ages() ),
+        value = c(
+          min( valid_ages() ),
+          max( valid_ages() )
+        )
+      )
+
+    })
+
+    # Created filtered {dm} data
+    dm_filtered <- shiny::eventReactive(input$apply_filters, {
+
+      dm_out <- dm |>
+        dm::dm_filter(project, project_name %in% input$project_filter_global) |>
+        dm::dm_filter(submission, quarter %in% input$submission_filter_global) |>
+        dm::dm_filter(gender, gender %in% input$gender_filter_global) |>
+        dm::dm_filter(ethnicity, ethnicity %in% input$ethnicity_filter_global)
+
+      if (input$age_missing_global) {
+
+        dm_out <- dm_out |>
+          dm::dm_filter(
+            client,
+            (age >= input$age_filter_global[1] & age <= input$age_filter_global[2]) | is.na(age)
+          )
+
+      } else {
+
+        dm_out <- dm_out |>
+          dm::dm_filter(
+            client,
+            age >= input$age_filter_global[1] & age <= input$age_filter_global[2]
+          )
+
+      }
+
+      dm_out |>
         dm::dm_apply_filters()
+
     }, ignoreNULL = FALSE)
 
-    return(my_dm_filtered)
+    return(dm_filtered)
 
   })
 }
