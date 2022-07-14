@@ -29,7 +29,7 @@ mod_filters_ui <- function(id){
           )
         ),
 
-        # Submission Date Filter
+        # Submission date (quarter) filter
         shinyWidgets::pickerInput(
           inputId = ns("submission_filter_global"),
           label = "Quarter",
@@ -84,10 +84,10 @@ mod_filters_ui <- function(id){
           value = TRUE
         ),
 
-        # Add button to trigger filters
+        # Action button to apply filters
         bs4Dash::actionButton(
           inputId = ns("apply_filters"),
-          label = "Apply Filters"
+          label = "Apply"
         )
 
       )

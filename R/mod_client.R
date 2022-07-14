@@ -18,33 +18,27 @@ mod_client_ui <- function(id){
     # - total number of projects filtered clients come from
     # Each element will be inside a column
     shiny::fluidRow(
+
       shiny::column(
-        width = 2 #,
-        # Submission selector
-        # shiny::selectInput(
-        #   inputId = ns("quarter"),
-        #   label = "Submission",
-        #   choices = NULL,
-        #   width = "100%"
-        # )
-      ),
-      shiny::column(
-        width = 5,
+        width = 6,
         # Number of clients (post filters)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_clients"),
           width = "100%"
         )
       ),
+
       shiny::column(
-        width = 5,
+        width = 6,
         # Number of projects (post filters)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_projects"),
           width = "100%"
         )
       )
+
     ),
+
     # This fluidRow contains gender and ethinicity charts
     shiny::fluidRow(
       echarts4r::echarts4rOutput(
@@ -84,7 +78,13 @@ mod_client_server <- function(id, filtered_dm){
     # Compute number of clients post filters
     n_clients <- shiny::reactive(
 
-      filtered_dm()$client |> nrow()
+      filtered_dm()$client |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, project_id),
+          by = "submission_id"
+        ) |>
+        dplyr::distinct(project_id, personal_id) |>
+        nrow()
 
     )
 
@@ -99,7 +99,7 @@ mod_client_server <- function(id, filtered_dm){
     output$n_clients <- bs4Dash::renderbs4ValueBox({
       bs4Dash::bs4ValueBox(
         value = n_clients(),
-        subtitle = "Total Clients",
+        subtitle = "Total # of Youth in Program(s)",
         icon = shiny::icon("user")
       )
     })
@@ -108,7 +108,7 @@ mod_client_server <- function(id, filtered_dm){
     output$n_projects <- bs4Dash::renderbs4ValueBox({
       bs4Dash::bs4ValueBox(
         value = n_projects(),
-        subtitle = "Total Projects",
+        subtitle = "Total # of Projects",
         icon = shiny::icon("folder-open")
       )
     })
