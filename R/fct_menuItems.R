@@ -14,6 +14,7 @@ define_menu <- function() {
     ~text              , ~tabName                , ~icon,
     "Overview"         , "overview_page"         , "home",
     "Client"           , "client_page"           , "user",
+    "Living Situation" , "living_situation_page" , "home",
     "Disabilities"     , "disabilities_page"     , "accessible-icon",
     "Employment"       , "employment_page"       , "briefcase",
     "Education"        , "education_page"        , "book-open",

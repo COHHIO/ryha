@@ -12,62 +12,84 @@ app_ui <- function(request) {
 
     # Your application UI logic
     bs4Dash::dashboardPage(
+
       header = bs4Dash::dashboardHeader(
         title = span(
           img(src = "www/favicon.ico", height = 30),
           span(strong("RYHA"), style = "color: #ffffff")
         )
       ),
+
       sidebar = bs4Dash::dashboardSidebar(
+
         bs4Dash::sidebarMenu(
           # menuItems is created in R/fct_menuItems.R
           create_menuItems(define_menu())
         )
+
       ),
+
       controlbar = bs4Dash::bs4DashControlbar(
         mod_filters_ui("filters_1"),
         id = "control_bar",
         width = 350,
         collapsed = FALSE
       ),
+
       body = bs4Dash::dashboardBody(
+
         bs4Dash::tabItems(
+
           bs4Dash::tabItem(
             tabName = "overview_page",
             shiny::p("Placeholder Overview")
           ),
+
           bs4Dash::tabItem(
             tabName = "client_page",
             mod_client_ui("client_1")
           ),
+
+          bs4Dash::tabItem(
+            tabName = "living_situation_page",
+            mod_living_ui("living_1")
+          ),
+
           bs4Dash::tabItem(
             tabName = "disabilities_page",
             shiny::p("Placeholder Disabilities")
           ),
+
           bs4Dash::tabItem(
             tabName = "employment_page",
             shiny::p("Placeholder Employment")
           ),
+
           bs4Dash::tabItem(
             tabName = "education_page",
             shiny::p("Placeholder Education")
           ),
+
           bs4Dash::tabItem(
             tabName = "exits_page",
             shiny::p("Placeholder Exits")
           ),
+
           bs4Dash::tabItem(
             tabName = "health_page",
-            shiny::p("Placeholder Disabilities")
+            shiny::p("Placeholder Health")
           ),
+
           bs4Dash::tabItem(
             tabName = "domestic_violence_page",
             shiny::p("Placeholder Domestic Violence")
           ),
+
           bs4Dash::tabItem(
             tabName = "upload_page",
             mod_upload_ui("upload_1")
           )
+
         )
       )
     )

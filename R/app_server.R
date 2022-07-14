@@ -12,6 +12,7 @@ app_server <- function(input, output, session) {
 
   # Create a reactiveValues list to hold summary statistics
   # rctv <- shiny::reactiveValues(
+  #   n_youth_total
   #
   # )
 
@@ -19,4 +20,7 @@ app_server <- function(input, output, session) {
   dm_filtered <- mod_filters_server("filters_1", dm)
 
   mod_client_server("client_1", dm_filtered)
+
+  mod_living_server("living_1", dm_filtered)
+
 }

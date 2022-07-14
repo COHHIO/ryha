@@ -41,6 +41,8 @@ create_dm <- function() {
     dplyr::select(
       submission_id,
       personal_id,
+      ssn,
+      ssn_data_quality,
       dob,
       dob_data_quality,
       veteran_status
@@ -54,6 +56,8 @@ create_dm <- function() {
     dplyr::select(
       submission_id,
       personal_id,
+      ssn,
+      ssn_data_quality,
       age,
       veteran_status
     )
