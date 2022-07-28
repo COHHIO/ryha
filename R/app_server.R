@@ -8,7 +8,9 @@ app_server <- function(input, output, session) {
   # Your application server logic
 
   # Create dm object. This is run once per session
-  dm <- create_dm()
+  # dm <- create_dm()
+  dm <- readRDS("db_data/db_data.rds")
+
 
   # Create a reactiveValues list to hold summary statistics
   # rctv <- shiny::reactiveValues(
