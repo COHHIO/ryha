@@ -58,22 +58,52 @@ mod_living_ui <- function(id){
 
     shiny::fluidRow(
 
+      shiny::column(
+        width = 12,
+
+        bs4Dash::tabsetPanel(
+          id = "living_tabset_panel",
+          selected = "Most Recent Data",
+          type = "pills",
+
+          shiny::tabPanel(
+            title = "Most Recent Data",
+
+            bs4Dash::box(
+              title = "My Box Title",
+              width = NULL,
+              echarts4r::echarts4rOutput(
+                outputId = ns("living_bar_chart"),
+                height = "600px"
+              )
+            )
+
+          ),
+
+          shiny::tabPanel(
+            title = "Trend",
+
+            bs4Dash::box(
+              title = "My Box Title",
+              width = NULL,
+              echarts4r::echarts4rOutput(
+                outputId = ns("living_line_chart"),
+                height = "600px"
+              )
+            )
+
+          )
+
+        )
+
+      )
+
       # shiny::column(
       #   width = 6,
       #
       #   shiny::p("Bar Chart Here")
       #
-      # ),
-
-      shiny::column(
-        width = 12,
-
-        echarts4r::echarts4rOutput(
-          outputId = ns("living_line_chart"),
-          height = "600px"
-        )
-
-      )
+      # )
 
     )
 
@@ -173,7 +203,27 @@ mod_living_server <- function(id, filtered_dm){
 
     })
 
+    output$living_bar_chart <- echarts4r::renderEcharts4r({
 
+      filtered_dm()$current_living_situation |>
+        dplyr::inner_join(
+          filtered_dm()$submission |>
+            dplyr::group_by(project_id) |>
+            dplyr::filter(export_end_date == max(export_end_date)) |>
+            dplyr::ungroup() |>
+            dplyr::select(submission_id, project_id),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(personal_id, current_living_situation) |>
+        dplyr::distinct(personal_id, .keep_all = TRUE) |>
+        dplyr::count(current_living_situation) |>
+        echarts4r::e_charts(x = current_living_situation) |>
+        echarts4r::e_bar(serie = n, name = "# of Youth") |>
+        echarts4r::e_flip_coords() |>
+        echarts4r::e_tooltip(trigger = "item")
+
+    })
 
   })
 }
