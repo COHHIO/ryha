@@ -36,10 +36,15 @@ submission <- tibble::tibble(
   dplyr::bind_cols(project) |>
   dplyr::bind_cols(export)
 
+disabilities <- read_disabilities(
+  file = paste0(dir, "/Disabilities.csv"),
+  submission_id = submission_id
+)
+
 # Create the table, 'client'
 DBI::dbWriteTable(
   conn = con,
-  name = "submission",
-  value = submission |> janitor::clean_names(case = "snake"),
+  name = "disabilities",
+  value = disabilities |> janitor::clean_names(case = "snake"),
   append = TRUE
 )

@@ -25,4 +25,6 @@ app_server <- function(input, output, session) {
 
   mod_living_server("living_1", dm_filtered)
 
+  mod_disabilities_server("disabilities_1", dm_filtered)
+
 }

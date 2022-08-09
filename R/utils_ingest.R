@@ -134,43 +134,20 @@ read_disabilities <- function(file, submission_id) {
       DisabilityResponse = readr::col_integer()
     )
   ) |>
-    # create and bind a new column called 'SubstanceAbuse'
-     cbind(SubstanceAbuse = NA) |>
-    #filter data based on DisabilityType and values of DisabilityResponse other than zero
-    dplyr::filter(DisabilityType == 10L | DisabilityResponse != 0L) |>
     # join the relevant codes from 'DisabilityTypeCodes'
-    dplyr::left_join(
-      DisabilityTypeCodes,
-      by = c("DisabilityType" = "Code")
-    ) |>
-    # replace and mutate SubstanceAbuse based on DisabilityResponse 5:9 and 10 and change column DisabilityType with Description
-    dplyr::mutate( SubstanceAbuse = replace( DisabilityResponse, DisabilityType != 10, NA),
-                   DisabilityResponse = replace( DisabilityResponse, DisabilityType == 10, NA),
-                   DisabilityType = Description,
-                   Description = NULL
-    ) |>
-    # join the relevant codes from 'SubstanceUseDisorderCodes'
-    dplyr::left_join(
-      SubstanceUseDisorderCodes,
-      by = c("SubstanceAbuse" = "Code")
-    ) |>
-    # replace the codes in 'SubstanceAbuse' column with their descriptions
     dplyr::mutate(
-      SubstanceAbuse = Description,
-      Description = NULL  # drop 'Description' column
+      DisabilityType = lookup_codes(
+        var = DisabilityType,
+        codes = DisabilityTypeCodes
+      )
     ) |>
-    # join the relevant codes from 'GeneralCodes'
-    dplyr::left_join(
-      GeneralCodes,
-      by = c("DisabilityResponse" = "Code")
-    ) |>
-    # replace the codes in 'DisabilityResponse' column with their descriptions
     dplyr::mutate(
-      DisabilityResponse = Description,
-      Description = NULL  # drop 'Description' column
+      DisabilityResponse = dplyr::if_else(
+        DisabilityType == "Substance Use Disorder",
+        lookup_codes(var = DisabilityResponse, SubstanceUseDisorderCodes),
+        lookup_codes(var = DisabilityResponse, GeneralCodes),
+      )
     ) |>
-    #unite DisabilityResponse and SubstanceAbuse columns
-    tidyr::unite("DisabilityResponse", DisabilityResponse,SubstanceAbuse, na.rm = TRUE) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
     dplyr::relocate(SubmissionID, .before = dplyr::everything())

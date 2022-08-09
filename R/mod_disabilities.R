@@ -1,0 +1,204 @@
+#' disabilities UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd
+#'
+#' @importFrom shiny NS tagList
+mod_disabilities_ui <- function(id){
+  ns <- NS(id)
+  tagList(
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 6,
+        # Number of clients (post filters)
+        bs4Dash::bs4ValueBoxOutput(
+          outputId = ns("n_youth_box"),
+          width = "100%"
+        )
+      ),
+
+      shiny::column(
+        width = 6,
+        # Number of projects (post filters)
+        bs4Dash::bs4ValueBoxOutput(
+          outputId = ns("n_youth_with_disabilities_data_box"),
+          width = "100%"
+        )
+      )
+
+    ),
+
+    shiny::hr(),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 6,
+        shiny::p("Placeholder")
+      ),
+
+      shiny::column(
+        width = 6,
+
+        shiny::checkboxInput(
+          inputId = "dedup_status",
+          label = "De-duplicate Youth Across Programs by SSN?",
+          value = FALSE,
+          width = "100%"
+        )
+
+      )
+
+    ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 12,
+
+        bs4Dash::tabsetPanel(
+          id = "living_tabset_panel",
+          selected = "Most Recent Data",
+          type = "pills",
+
+          shiny::tabPanel(
+            title = "Most Recent Data",
+
+            bs4Dash::box(
+              title = "My Box Title",
+              width = NULL,
+              echarts4r::echarts4rOutput(
+                outputId = ns("disabilities_pie_chart"),
+                height = "600px"
+              )
+            )
+
+          ),
+
+          shiny::tabPanel(
+            title = "Trend",
+
+            bs4Dash::box(
+              title = "My Box Title",
+              width = NULL,
+              echarts4r::echarts4rOutput(
+                outputId = ns("living_line_chart"),
+                height = "600px"
+              )
+            )
+
+          )
+
+        )
+
+      )
+
+    )
+
+  )
+}
+
+#' disabilities Server Functions
+#'
+#' @noRd
+mod_disabilities_server <- function(id, filtered_dm){
+  moduleServer( id, function(input, output, session){
+    ns <- session$ns
+
+    # Total number of Youth in program(s), based on `client.csv` file
+    n_youth <- shiny::reactive({
+
+      filtered_dm()$client |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, project_id),
+          by = "submission_id"
+        ) |>
+        dplyr::distinct(project_id, personal_id) |>
+        nrow()
+
+    })
+
+    # Total number of Youth in program(s) that exist in the `disabilities.csv`
+    # file
+    n_youth_with_disabilities_data <- shiny::reactive(
+
+      filtered_dm()$disabilities |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, project_id),
+          by = "submission_id"
+        ) |>
+        dplyr::distinct(project_id, personal_id) |>
+        nrow()
+
+    )
+
+    # Render number of clients box
+    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth(),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user")
+      )
+
+    })
+
+    # Render number of projects box
+    output$n_youth_with_disabilities_data_box <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth_with_disabilities_data(),
+        subtitle = "Total # of Youth with Disabilities Data Available",
+        icon = shiny::icon("home")
+      )
+
+    })
+
+    output$living_line_chart <- echarts4r::renderEcharts4r({
+
+      filtered_dm()$current_living_situation |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(quarter, personal_id, current_living_situation) |>
+        dplyr::distinct(quarter, personal_id, .keep_all = TRUE) |>
+        dplyr::count(quarter, current_living_situation) |>
+        dplyr::group_by(current_living_situation) |>
+        echarts4r::e_charts(x = quarter) |>
+        echarts4r::e_line(serie = n) |>
+        echarts4r::e_tooltip(trigger = "axis")
+
+    })
+
+    # TODO // Still need to filter this down to the most *recent* quarter's data
+    # so that we are not duplicating individuals
+    output$disabilities_pie_chart <- echarts4r::renderEcharts4r({
+
+      filtered_dm()$disabilities |>
+        dplyr::filter(disability_response == "Yes") |>
+        dplyr::count(disability_type) |>
+        dplyr::arrange(dplyr::desc(n)) |>
+        echarts4r::e_chart(x = disability_type) |>
+        echarts4r::e_pie(n, legend = FALSE, name = "Disability Type") |>
+        echarts4r::e_title("# of Disabled Youth by Disability Type") |>
+        echarts4r::e_tooltip()
+
+    })
+
+
+
+  })
+}
+
+## To be copied in the UI
+# mod_disabilities_ui("disabilities_1")
+
+## To be copied in the server
+# mod_disabilities_server("disabilities_1")
