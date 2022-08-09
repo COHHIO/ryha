@@ -199,7 +199,8 @@ mod_living_server <- function(id, filtered_dm){
         dplyr::group_by(current_living_situation) |>
         echarts4r::e_charts(x = quarter) |>
         echarts4r::e_line(serie = n) |>
-        echarts4r::e_tooltip(trigger = "axis")
+        echarts4r::e_tooltip(trigger = "axis") |>
+        echarts4r::e_grid(top = "20%")
 
     })
 
@@ -221,7 +222,8 @@ mod_living_server <- function(id, filtered_dm){
         echarts4r::e_charts(x = current_living_situation) |>
         echarts4r::e_bar(serie = n, name = "# of Youth") |>
         echarts4r::e_flip_coords() |>
-        echarts4r::e_tooltip(trigger = "item")
+        echarts4r::e_tooltip(trigger = "item") |>
+        echarts4r::e_grid(containLabel = TRUE)
 
     })
 
