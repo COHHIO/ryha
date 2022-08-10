@@ -30,6 +30,14 @@ mod_filters_ui <- function(id){
           )
         ),
 
+        # SSN De-Dup checkbox
+        shiny::checkboxInput(
+          inputId = ns("dedup_status"),
+          label = "De-duplicate Youth Across Programs by SSN?",
+          value = FALSE,
+          width = "100%"
+        ),
+
         # Submission date (quarter) filter
         shinyWidgets::pickerInput(
           inputId = ns("submission_filter_global"),
@@ -157,6 +165,15 @@ mod_filters_server <- function(id, dm){
           min( valid_ages() ),
           max( valid_ages() )
         )
+      )
+
+    })
+
+    shiny::observe({
+
+      shinyjs::toggleState(
+        id = "dedup_status",
+        condition = length(input$project_filter_global) >= 2L
       )
 
     })

@@ -38,27 +38,6 @@ mod_disabilities_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 6,
-        shiny::p("Placeholder")
-      ),
-
-      shiny::column(
-        width = 6,
-
-        shiny::checkboxInput(
-          inputId = "dedup_status",
-          label = "De-duplicate Youth Across Programs by SSN?",
-          value = FALSE,
-          width = "100%"
-        )
-
-      )
-
-    ),
-
-    shiny::fluidRow(
-
-      shiny::column(
         width = 5,
 
         bs4Dash::box(
