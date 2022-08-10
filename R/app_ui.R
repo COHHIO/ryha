@@ -14,9 +14,11 @@ app_ui <- function(request) {
     bs4Dash::dashboardPage(
 
       header = bs4Dash::dashboardHeader(
-        title = span(
-          img(src = "www/favicon.ico", height = 30),
-          span(strong("RYHA"), style = "color: #ffffff")
+        title = bs4Dash::dashboardBrand(
+          title = "RYHA",
+          color = "secondary",
+          href = "https://cohhio.org/youthhealth/",
+          image = "www/favicon.ico"
         )
       ),
 
