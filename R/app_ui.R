@@ -32,7 +32,7 @@ app_ui <- function(request) {
       controlbar = bs4Dash::bs4DashControlbar(
         mod_filters_ui("filters_1"),
         id = "control_bar",
-        width = 350,
+        width = 500,
         collapsed = FALSE
       ),
 

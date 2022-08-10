@@ -19,13 +19,14 @@ mod_filters_ui <- function(id){
         shinyWidgets::pickerInput(
           inputId = ns("project_filter_global"),
           label = "Organization/Grantee",
+          width = "460px",
           choices = NULL,
           selected = NULL,
           multiple = TRUE,
           # collapse the list of selected items in the UI
           options = list(
             `actions-box` = TRUE,
-            `selected-text-format` = 'count > 2'
+            `selected-text-format` = 'count > 1'
           )
         ),
 
@@ -33,6 +34,7 @@ mod_filters_ui <- function(id){
         shinyWidgets::pickerInput(
           inputId = ns("submission_filter_global"),
           label = "Quarter",
+          width = "460px",
           choices = NULL,
           selected = NULL,
           multiple = TRUE,
@@ -46,6 +48,7 @@ mod_filters_ui <- function(id){
         shinyWidgets::pickerInput(
           inputId = ns("gender_filter_global"),
           label = "Gender",
+          width = "460px",
           choices = NULL,
           selected = NULL,
           multiple = TRUE,
@@ -59,6 +62,7 @@ mod_filters_ui <- function(id){
         shinyWidgets::pickerInput(
           inputId = ns("ethnicity_filter_global"),
           label = "Ethnicity",
+          width = "460px",
           choices = NULL,
           selected = NULL,
           multiple = TRUE,
@@ -72,6 +76,7 @@ mod_filters_ui <- function(id){
         shiny::sliderInput(
           inputId = ns("age_filter_global"),
           label = "Age",
+          width = "460px",
           min = 0,
           max = 18,
           value = c(0, 18)
@@ -182,6 +187,14 @@ mod_filters_server <- function(id, dm){
           )
 
       }
+
+      # Close the global filters pane when the "Apply" button is clicked
+      # This doesn't work; since "control_bar" div is not in this module
+      # bs4Dash::updateControlbar(
+      #   session = session,
+      #   id = "control_bar",
+      #   collapsed = TRUE
+      # )
 
       dm_out |>
         dm::dm_apply_filters()
