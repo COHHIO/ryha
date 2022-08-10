@@ -76,10 +76,10 @@ mod_disabilities_ui <- function(id){
         width = 7,
 
         bs4Dash::box(
-          title = "My Box Title",
+          title = "Trend of Disability Types",
           width = NULL,
           echarts4r::echarts4rOutput(
-            outputId = ns("living_line_chart"),
+            outputId = ns("disabilities_line_chart"),
             height = "600px"
           )
         )
@@ -147,7 +147,7 @@ mod_disabilities_server <- function(id, filtered_dm){
 
     })
 
-    output$living_line_chart <- echarts4r::renderEcharts4r({
+    output$disabilities_line_chart <- echarts4r::renderEcharts4r({
 
       filtered_dm()$disabilities |>
         dplyr::inner_join(
