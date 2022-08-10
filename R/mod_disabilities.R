@@ -59,41 +59,29 @@ mod_disabilities_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 12,
+        width = 5,
 
-        bs4Dash::tabsetPanel(
-          id = "living_tabset_panel",
-          selected = "Most Recent Data",
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Most Recent Data",
-
-            bs4Dash::box(
-              title = "My Box Title",
-              width = NULL,
-              echarts4r::echarts4rOutput(
-                outputId = ns("disabilities_pie_chart"),
-                height = "600px"
-              )
-            )
-
-          ),
-
-          shiny::tabPanel(
-            title = "Trend",
-
-            bs4Dash::box(
-              title = "My Box Title",
-              width = NULL,
-              echarts4r::echarts4rOutput(
-                outputId = ns("living_line_chart"),
-                height = "600px"
-              )
-            )
-
+        bs4Dash::box(
+          title = "# of Disabled Youth by Disability Type",
+          width = NULL,
+          echarts4r::echarts4rOutput(
+            outputId = ns("disabilities_pie_chart"),
+            height = "600px"
           )
+        )
 
+      ),
+
+      shiny::column(
+        width = 7,
+
+        bs4Dash::box(
+          title = "My Box Title",
+          width = NULL,
+          echarts4r::echarts4rOutput(
+            outputId = ns("living_line_chart"),
+            height = "600px"
+          )
         )
 
       )
@@ -161,16 +149,17 @@ mod_disabilities_server <- function(id, filtered_dm){
 
     output$living_line_chart <- echarts4r::renderEcharts4r({
 
-      filtered_dm()$current_living_situation |>
+      filtered_dm()$disabilities |>
         dplyr::inner_join(
           filtered_dm()$submission |> dplyr::select(submission_id, quarter),
           by = "submission_id"
         ) |>
         dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(quarter, personal_id, current_living_situation) |>
-        dplyr::distinct(quarter, personal_id, .keep_all = TRUE) |>
-        dplyr::count(quarter, current_living_situation) |>
-        dplyr::group_by(current_living_situation) |>
+        dplyr::select(quarter, personal_id, disability_type, disability_response) |>
+        dplyr::filter(disability_response == "Yes") |>
+        dplyr::distinct(quarter, personal_id, disability_type) |>
+        dplyr::count(quarter, disability_type) |>
+        dplyr::group_by(disability_type) |>
         echarts4r::e_charts(x = quarter) |>
         echarts4r::e_line(serie = n) |>
         echarts4r::e_tooltip(trigger = "axis")
@@ -182,17 +171,33 @@ mod_disabilities_server <- function(id, filtered_dm){
     output$disabilities_pie_chart <- echarts4r::renderEcharts4r({
 
       filtered_dm()$disabilities |>
+        dplyr::inner_join(
+          filtered_dm()$submission |>
+            dplyr::group_by(project_id) |>
+            dplyr::filter(export_end_date == max(export_end_date)) |>
+            dplyr::ungroup() |>
+            dplyr::select(submission_id, project_id),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(personal_id, disability_type, disability_response) |>
+        dplyr::distinct(personal_id, disability_type, .keep_all = TRUE) |>
         dplyr::filter(disability_response == "Yes") |>
         dplyr::count(disability_type) |>
         dplyr::arrange(dplyr::desc(n)) |>
         echarts4r::e_chart(x = disability_type) |>
-        echarts4r::e_pie(n, legend = FALSE, name = "Disability Type") |>
-        echarts4r::e_title("# of Disabled Youth by Disability Type") |>
-        echarts4r::e_tooltip()
+        echarts4r::e_pie(
+          serie = n,
+          name = "Disability Type",
+          legend = TRUE,
+          label = list(show = TRUE, position = "inside", formatter = "{c}"),
+          radius = c("50%", "70%"),
+          emphasis = list(label = list(show = TRUE, fontSize = "15", fontWeight = "bold"))
+        ) |>
+        echarts4r::e_tooltip(trigger = "item") |>
+        echarts4r::e_grid(containLabel = TRUE)
 
     })
-
-
 
   })
 }
