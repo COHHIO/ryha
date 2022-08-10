@@ -116,6 +116,7 @@ mod_filters_server <- function(id, dm){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    # Grab the min & max ages found in the `client` table
     valid_ages <- shiny::reactive({
 
       dm$client |>
@@ -169,12 +170,24 @@ mod_filters_server <- function(id, dm){
 
     })
 
+    # Disable the "dedup_status" check-box if only 1 program is selected
     shiny::observe({
 
-      shinyjs::toggleState(
-        id = "dedup_status",
-        condition = length(input$project_filter_global) >= 2L
-      )
+      if (length(input$project_filter_global) < 2L) {
+
+        shiny::updateCheckboxInput(
+          session = session,
+          inputId = "dedup_status",
+          value = FALSE
+        )
+
+        shinyjs::disable(id = "dedup_status")
+
+      } else {
+
+        shinyjs::enable(id = "dedup_status")
+
+      }
 
     })
 
