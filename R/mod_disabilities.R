@@ -145,7 +145,8 @@ mod_disabilities_server <- function(id, filtered_dm){
         dplyr::group_by(disability_type) |>
         echarts4r::e_charts(x = quarter) |>
         echarts4r::e_line(serie = n, symbol = "circle") |>
-        echarts4r::e_tooltip(trigger = "axis")
+        echarts4r::e_tooltip(trigger = "axis") |>
+        echarts4r::e_show_loading()
 
     })
 
@@ -181,7 +182,8 @@ mod_disabilities_server <- function(id, filtered_dm){
           subtext = "Chart represents most recent quarter's data for each program selected"
         ) |>
         echarts4r::e_tooltip(trigger = "item") |>
-        echarts4r::e_grid(containLabel = TRUE)
+        echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_show_loading()
 
     })
 
