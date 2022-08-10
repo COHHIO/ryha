@@ -38,11 +38,12 @@ mod_disabilities_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 5,
+        width = 4,
 
         bs4Dash::box(
           title = "# of Disabled Youth by Disability Type",
           width = NULL,
+          maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("disabilities_pie_chart"),
             height = "600px"
@@ -52,11 +53,12 @@ mod_disabilities_ui <- function(id){
       ),
 
       shiny::column(
-        width = 7,
+        width = 8,
 
         bs4Dash::box(
           title = "Trend of Disability Types",
           width = NULL,
+          maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("disabilities_line_chart"),
             height = "600px"
@@ -126,6 +128,7 @@ mod_disabilities_server <- function(id, filtered_dm){
 
     })
 
+    # Create disabilities trend line chart
     output$disabilities_line_chart <- echarts4r::renderEcharts4r({
 
       filtered_dm()$disabilities |>
@@ -138,15 +141,15 @@ mod_disabilities_server <- function(id, filtered_dm){
         dplyr::filter(disability_response == "Yes") |>
         dplyr::distinct(quarter, personal_id, disability_type) |>
         dplyr::count(quarter, disability_type) |>
+        dplyr::arrange(disability_type) |>
         dplyr::group_by(disability_type) |>
         echarts4r::e_charts(x = quarter) |>
-        echarts4r::e_line(serie = n) |>
+        echarts4r::e_line(serie = n, symbol = "circle") |>
         echarts4r::e_tooltip(trigger = "axis")
 
     })
 
-    # TODO // Still need to filter this down to the most *recent* quarter's data
-    # so that we are not duplicating individuals
+    # Create disabilities pie chart
     output$disabilities_pie_chart <- echarts4r::renderEcharts4r({
 
       filtered_dm()$disabilities |>
@@ -163,7 +166,7 @@ mod_disabilities_server <- function(id, filtered_dm){
         dplyr::distinct(personal_id, disability_type, .keep_all = TRUE) |>
         dplyr::filter(disability_response == "Yes") |>
         dplyr::count(disability_type) |>
-        dplyr::arrange(dplyr::desc(n)) |>
+        dplyr::arrange(disability_type) |>
         echarts4r::e_chart(x = disability_type) |>
         echarts4r::e_pie(
           serie = n,
@@ -172,6 +175,10 @@ mod_disabilities_server <- function(id, filtered_dm){
           label = list(show = TRUE, position = "inside", formatter = "{c}"),
           radius = c("50%", "70%"),
           emphasis = list(label = list(show = TRUE, fontSize = "15", fontWeight = "bold"))
+        ) |>
+        echarts4r::e_legend(bottom = 0) |>
+        echarts4r::e_title(
+          subtext = "Chart represents most recent quarter's data for each program selected"
         ) |>
         echarts4r::e_tooltip(trigger = "item") |>
         echarts4r::e_grid(containLabel = TRUE)
