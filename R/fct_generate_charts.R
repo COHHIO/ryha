@@ -3,11 +3,54 @@
 
 #' generate_charts
 #'
+#' @param data
+#' @param category
+#' @param count
+#'
 #' @description A fct function
 #'
 #' @return The return value, if any, from executing the function.
 #'
 #' @noRd
+#'
+#' @examples
+#' pie_chart(
+#'   data = dplyr::count(iris, Species),
+#'   category = "Species",
+#'   count = "n"
+#' )
+pie_chart <- function(data, category, count) {
+
+  data |>
+    echarts4r::e_charts_(x = category) |>
+    echarts4r::e_pie_(
+      serie = count,
+      name = "Disability Type",
+      legend = TRUE,
+      label = list(
+        show = TRUE,
+        position = "inside",
+        formatter = "{c}"   # show the numeric value as the label
+      ),
+      radius = c("50%", "70%"),
+      # emphasize the label when hovered over
+      emphasis = list(
+        label = list(
+          show = TRUE,
+          fontSize = "15",
+          fontWeight = "bold"
+        )
+      )
+    ) |>
+    echarts4r::e_legend(bottom = 0) |>   # place legend below chart
+    echarts4r::e_title(
+      subtext = "Chart represents most recent quarter's data for each program selected"
+    ) |>
+    echarts4r::e_tooltip(trigger = "item") |>
+    echarts4r::e_grid(containLabel = TRUE) |>
+    echarts4r::e_show_loading()
+
+}
 
 
 
