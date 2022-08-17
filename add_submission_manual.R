@@ -1,8 +1,8 @@
 
 
-dir <- "data/stage_for_db/hudx-111_YWCA/"
+dir <- "data/stage_for_db/hudx-111_Bellefaire/"
 
-submission_id <- 3L
+submission_id <- 4L
 
 project <- readr::read_csv(
   file = paste0(dir, "/Project.csv"),
@@ -36,15 +36,27 @@ submission <- tibble::tibble(
   dplyr::bind_cols(project) |>
   dplyr::bind_cols(export)
 
+client <- read_client(
+  file = paste0(dir, "/Client.csv"),
+  submission_id = submission_id
+)
+
 disabilities <- read_disabilities(
   file = paste0(dir, "/Disabilities.csv"),
   submission_id = submission_id
 )
 
+current_living_situation <- read_living(
+  file = paste0(dir, "/CurrentLivingSituation.csv"),
+  submission_id = submission_id
+)
+
+
+
 # Create the table, 'client'
 DBI::dbWriteTable(
   conn = con,
-  name = "disabilities",
-  value = disabilities |> janitor::clean_names(case = "snake"),
+  name = "current_living_situation",
+  value = current_living_situation |> janitor::clean_names(case = "snake"),
   append = TRUE
 )
