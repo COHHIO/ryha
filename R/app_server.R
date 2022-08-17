@@ -7,34 +7,24 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
-  data <- shiny::reactiveValues(
-    con = DBI::dbConnect(
-      drv = RPostgres::Postgres(),
-      dbname = Sys.getenv("POSTGRES_DBNAME"),
-      host = Sys.getenv("POSTGRES_HOST"),
-      port = Sys.getenv("POSTGRES_PORT"),
-      user = Sys.getenv("POSTGRES_USER"),
-      password = Sys.getenv("POSTGRES_PWD")
-    )
-  )
+  # Create dm object. This is run once per session
+  # dm <- create_dm()
+  dm <- readRDS("db_data/db_data.rds")
 
-  shiny::observe({
 
-    data$submission <- DBI::dbReadTable(conn = data$con, name = "submission")
-    data$project <- DBI::dbReadTable(conn = data$con, name = "project")
-    data$client <- DBI::dbReadTable(conn = data$con, name = "client")
+  # Create a reactiveValues list to hold summary statistics
+  # rctv <- shiny::reactiveValues(
+  #   n_youth_total
+  #
+  # )
 
-    on.exit(DBI::dbDisconnect(conn = data$con))
+  # Get filtered dm
+  dm_filtered <- mod_filters_server("filters_1", dm)
 
-  })
+  mod_client_server("client_1", dm_filtered)
 
-  mod_gender_server(
-    "gender_1",
-    gender_data = data$client |>
-      dplyr::select(submission_id, personal_id, female:questioning) |>
-      tidyr::pivot_longer(cols = -c(submission_id, personal_id), names_to = "gender") |>
-      dplyr::filter(value == "Yes") |>
-      dplyr::select(-value)
-  )
+  mod_living_server("living_1", dm_filtered)
+
+  mod_disabilities_server("disabilities_1", dm_filtered)
 
 }

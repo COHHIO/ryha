@@ -5,3 +5,8 @@
   background-color: #07274A !important;
   border-color: #07274A !important;
 }
+
+/* Apply padding between the global filters pane and the filter widgets/labels */
+#control_bar {
+  padding: 20px;
+}
