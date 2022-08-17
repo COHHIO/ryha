@@ -128,30 +128,8 @@ mod_disabilities_server <- function(id, filtered_dm){
 
     })
 
-    # Create disabilities trend line chart
-    output$disabilities_line_chart <- echarts4r::renderEcharts4r({
-
-      filtered_dm()$disabilities |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
-          by = "submission_id"
-        ) |>
-        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(quarter, personal_id, disability_type, disability_response) |>
-        dplyr::filter(disability_response == "Yes") |>
-        dplyr::distinct(quarter, personal_id, disability_type) |>
-        dplyr::count(quarter, disability_type) |>
-        dplyr::arrange(disability_type) |>
-        dplyr::group_by(disability_type) |>
-        echarts4r::e_charts(x = quarter) |>
-        echarts4r::e_line(serie = n, symbol = "circle") |>
-        echarts4r::e_tooltip(trigger = "axis") |>
-        echarts4r::e_show_loading()
-
-    })
-
-    # Create disabilities pie chart
-    output$disabilities_pie_chart <- echarts4r::renderEcharts4r({
+    # Create reactive data frame to data to be displayed in pie chart
+    pie_chart_data <- shiny::reactive({
 
       filtered_dm()$disabilities |>
         dplyr::inner_join(
@@ -167,22 +145,70 @@ mod_disabilities_server <- function(id, filtered_dm){
         dplyr::distinct(personal_id, disability_type, .keep_all = TRUE) |>
         dplyr::filter(disability_response == "Yes") |>
         dplyr::count(disability_type) |>
-        dplyr::arrange(disability_type) |>
+        dplyr::arrange(disability_type)
+
+    })
+
+    # Create disabilities pie chart
+    output$disabilities_pie_chart <- echarts4r::renderEcharts4r({
+
+      pie_chart_data() |>
         echarts4r::e_chart(x = disability_type) |>
         echarts4r::e_pie(
           serie = n,
           name = "Disability Type",
           legend = TRUE,
-          label = list(show = TRUE, position = "inside", formatter = "{c}"),
+          label = list(
+            show = TRUE,
+            position = "inside",
+            formatter = "{c}"   # show the numeric value as the label
+          ),
           radius = c("50%", "70%"),
-          emphasis = list(label = list(show = TRUE, fontSize = "15", fontWeight = "bold"))
+          # emphasize the label when hovered over
+          emphasis = list(
+            label = list(
+              show = TRUE,
+              fontSize = "15",
+              fontWeight = "bold"
+            )
+          )
         ) |>
-        echarts4r::e_legend(bottom = 0) |>
+        echarts4r::e_legend(bottom = 0) |>   # place legend below chart
         echarts4r::e_title(
           subtext = "Chart represents most recent quarter's data for each program selected"
         ) |>
         echarts4r::e_tooltip(trigger = "item") |>
         echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_show_loading()
+
+    })
+
+    # Create reactive data frame to data to be displayed in line chart
+    line_chart_data <- shiny::reactive({
+
+      filtered_dm()$disabilities |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(quarter, personal_id, disability_type, disability_response) |>
+        dplyr::filter(disability_response == "Yes") |>
+        dplyr::distinct(quarter, personal_id, disability_type) |>
+        dplyr::count(quarter, disability_type) |>
+        dplyr::arrange(disability_type) |>
+        dplyr::group_by(disability_type)
+
+    })
+
+    # Create disabilities trend line chart
+    output$disabilities_line_chart <- echarts4r::renderEcharts4r({
+
+      line_chart_data() |>
+        echarts4r::e_charts(x = quarter) |>
+        echarts4r::e_line(serie = n, symbol = "circle") |>
+        echarts4r::e_tooltip(trigger = "axis") |>
+        echarts4r::e_grid(top = "20%") |>
         echarts4r::e_show_loading()
 
     })

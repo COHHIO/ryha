@@ -38,41 +38,31 @@ mod_living_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 12,
+        width = 4,
 
-        bs4Dash::tabsetPanel(
-          id = "living_tabset_panel",
-          selected = "Most Recent Data",
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Most Recent Data",
-
-            bs4Dash::box(
-              title = "My Box Title",
-              width = NULL,
-              echarts4r::echarts4rOutput(
-                outputId = ns("living_bar_chart"),
-                height = "600px"
-              )
-            )
-
-          ),
-
-          shiny::tabPanel(
-            title = "Trend",
-
-            bs4Dash::box(
-              title = "My Box Title",
-              width = NULL,
-              echarts4r::echarts4rOutput(
-                outputId = ns("living_line_chart"),
-                height = "600px"
-              )
-            )
-
+        bs4Dash::box(
+          title = "# of Youth by Current Living Situation",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("living_pie_chart"),
+            height = "600px"
           )
+        )
 
+      ),
+
+      shiny::column(
+        width = 8,
+
+        bs4Dash::box(
+          title = "Trend of Current Living Situation",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("living_line_chart"),
+            height = "600px"
+          )
         )
 
       )
@@ -157,26 +147,8 @@ mod_living_server <- function(id, filtered_dm){
 
     })
 
-    output$living_line_chart <- echarts4r::renderEcharts4r({
-
-      filtered_dm()$current_living_situation |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
-          by = "submission_id"
-        ) |>
-        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(quarter, personal_id, current_living_situation) |>
-        dplyr::distinct(quarter, personal_id, .keep_all = TRUE) |>
-        dplyr::count(quarter, current_living_situation) |>
-        dplyr::group_by(current_living_situation) |>
-        echarts4r::e_charts(x = quarter) |>
-        echarts4r::e_line(serie = n) |>
-        echarts4r::e_tooltip(trigger = "axis") |>
-        echarts4r::e_grid(top = "20%")
-
-    })
-
-    output$living_bar_chart <- echarts4r::renderEcharts4r({
+    # Create reactive data frame to data to be displayed in pie chart
+    pie_chart_data <- shiny::reactive({
 
       filtered_dm()$current_living_situation |>
         dplyr::inner_join(
@@ -188,14 +160,75 @@ mod_living_server <- function(id, filtered_dm){
           by = "submission_id"
         ) |>
         dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(personal_id, current_living_situation) |>
-        dplyr::distinct(personal_id, .keep_all = TRUE) |>
+        dplyr::distinct(personal_id, current_living_situation) |>
         dplyr::count(current_living_situation) |>
+        dplyr::arrange(current_living_situation)
+
+    })
+
+    # Create current living situation pie chart
+    output$living_pie_chart <- echarts4r::renderEcharts4r({
+
+      pie_chart_data() |>
         echarts4r::e_charts(x = current_living_situation) |>
-        echarts4r::e_bar(serie = n, name = "# of Youth") |>
-        echarts4r::e_flip_coords() |>
+        echarts4r::e_pie(
+          serie = n,
+          name = "Current Living Situation",
+          legend = TRUE,
+          label = list(
+            show = TRUE,
+            position = "inside",
+            formatter = "{c}"   # show the numeric value as the label
+          ),
+          radius = c("50%", "70%"),
+          # emphasize the label when hovered over
+          emphasis = list(
+            label = list(
+              show = TRUE,
+              fontSize = "15",
+              fontWeight = "bold"
+            )
+          )
+        ) |>
+        echarts4r::e_legend(
+          bottom = 0,   # place legend below chart
+          type = "scroll"
+        ) |>
+        echarts4r::e_title(
+          subtext = "Chart represents most recent quarter's data for each program selected"
+        ) |>
         echarts4r::e_tooltip(trigger = "item") |>
-        echarts4r::e_grid(containLabel = TRUE)
+        echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_show_loading()
+
+    })
+
+    # Create reactive data frame to data to be displayed in line chart
+    line_chart_data <- shiny::reactive({
+
+      filtered_dm()$current_living_situation |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(quarter, personal_id, current_living_situation) |>
+        dplyr::distinct(quarter, personal_id, .keep_all = TRUE) |>
+        dplyr::count(quarter, current_living_situation) |>
+        dplyr::arrange(current_living_situation) |>
+        dplyr::group_by(current_living_situation)
+
+    })
+
+    # Create current living situation trend line chart
+    output$living_line_chart <- echarts4r::renderEcharts4r({
+
+      line_chart_data() |>
+        echarts4r::e_charts(x = quarter) |>
+        echarts4r::e_line(serie = n, symbol = "circle") |>
+        echarts4r::e_tooltip(trigger = "axis") |>
+        echarts4r::e_grid(top = "20%") |>
+        echarts4r::e_show_loading()
 
     })
 
