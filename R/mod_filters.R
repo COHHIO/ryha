@@ -129,6 +129,14 @@ mod_filters_server <- function(id, dm){
     # Update the values in the filters given the {dm} data
     shiny::observe({
 
+      shiny::showNotification(
+        "Please Wait...",
+        id = "load_notification",
+        duration = NULL,
+        type = "warning",
+        closeButton = FALSE
+      )
+
       shinyWidgets::updatePickerInput(
         session = session,
         inputId = "project_filter_global",
@@ -166,6 +174,10 @@ mod_filters_server <- function(id, dm){
           min( valid_ages() ),
           max( valid_ages() )
         )
+      )
+
+      shiny::removeNotification(
+        id = "load_notification"
       )
 
     })
