@@ -55,16 +55,40 @@ mod_employment_ui <- function(id){
       shiny::column(
         width = 8,
 
-        bs4Dash::box(
-          title = "Trend of Employment Types",
-          width = NULL,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("employment_line_chart"),
-            height = "600px"
-          )
-        )
+        bs4Dash::tabsetPanel(
+          type = "pills",
 
+          shiny::tabPanel(
+            title = "Employed",
+
+            bs4Dash::box(
+              title = "Trend of Employed Type",
+              width = NULL,
+              maximizable = TRUE,
+              echarts4r::echarts4rOutput(
+                outputId = ns("employed_line_chart"),
+                height = "560px"
+              )
+            )
+
+          ),
+
+          shiny::tabPanel(
+            title = "Unemployed",
+
+            bs4Dash::box(
+              title = "Trend of Unemployed Reason",
+              width = NULL,
+              maximizable = TRUE,
+              echarts4r::echarts4rOutput(
+                outputId = ns("unemployed_line_chart"),
+                height = "560px"
+              )
+            )
+
+          )
+
+        )
       )
 
     )
@@ -180,6 +204,80 @@ mod_employment_server <- function(id, filtered_dm){
         ) |>
         echarts4r::e_tooltip(trigger = "item") |>
         echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_show_loading()
+
+    })
+
+    # Create reactive data frame to data to be displayed in line chart
+    employed_line_chart_data <- shiny::reactive({
+
+      filtered_dm()$employment |>
+        dplyr::filter(employed == "Yes") |>
+        dplyr::mutate(
+          employment_type = dplyr::if_else(
+            is.na(employment_type),
+            "Not provided",
+            employment_type
+          )
+        ) |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(quarter, personal_id, employment_type) |>
+        dplyr::distinct(quarter, personal_id, employment_type) |>
+        dplyr::count(quarter, employment_type) |>
+        dplyr::arrange(employment_type) |>
+        dplyr::group_by(employment_type)
+
+    })
+
+    # Create disabilities trend line chart
+    output$employed_line_chart <- echarts4r::renderEcharts4r({
+
+      employed_line_chart_data() |>
+        echarts4r::e_charts(x = quarter) |>
+        echarts4r::e_line(serie = n, symbol = "circle") |>
+        echarts4r::e_tooltip(trigger = "axis") |>
+        echarts4r::e_grid(top = "10%") |>
+        echarts4r::e_show_loading()
+
+    })
+
+    # Create reactive data frame to data to be displayed in line chart
+    unemployed_line_chart_data <- shiny::reactive({
+
+      filtered_dm()$employment |>
+        dplyr::filter(employed == "No") |>
+        dplyr::mutate(
+          not_employed_reason = dplyr::if_else(
+            is.na(not_employed_reason),
+            "Not provided",
+            not_employed_reason
+          )
+        ) |>
+        dplyr::inner_join(
+          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(quarter, personal_id, not_employed_reason) |>
+        dplyr::distinct(quarter, personal_id, not_employed_reason) |>
+        dplyr::count(quarter, not_employed_reason) |>
+        dplyr::arrange(not_employed_reason) |>
+        dplyr::group_by(not_employed_reason)
+
+    })
+
+    # Create unemployed trend line chart
+    output$unemployed_line_chart <- echarts4r::renderEcharts4r({
+
+      unemployed_line_chart_data() |>
+        echarts4r::e_charts(x = quarter) |>
+        echarts4r::e_line(serie = n, symbol = "circle") |>
+        echarts4r::e_tooltip(trigger = "axis") |>
+        echarts4r::e_grid(top = "10%") |>
         echarts4r::e_show_loading()
 
     })
