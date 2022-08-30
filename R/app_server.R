@@ -27,4 +27,6 @@ app_server <- function(input, output, session) {
 
   mod_disabilities_server("disabilities_1", dm_filtered)
 
+  mod_employment_server("employment_1", dm_filtered)
+
 }

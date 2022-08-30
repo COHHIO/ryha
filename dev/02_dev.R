@@ -27,6 +27,8 @@ golem::add_module(name = "filters")
 golem::add_module(name = "client")
 golem::add_module(name = "living")
 golem::add_module(name = "disabilities")
+golem::add_module(name = "employment")
+golem::add_module(name = "education")
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*

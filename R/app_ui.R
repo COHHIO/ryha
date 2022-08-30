@@ -64,7 +64,7 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "employment_page",
-            shiny::p("Placeholder Employment")
+            mod_employment_ui("employment_1")
           ),
 
           bs4Dash::tabItem(
