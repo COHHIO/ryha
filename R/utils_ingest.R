@@ -191,48 +191,28 @@ read_education <- function(file, submission_id) {
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
-      LastGradeCompleted = readr::col_integer(),
-      DataCollectionStage = readr::col_integer(),
-      SchoolStatus = readr::col_integer(),
       InformationDate = readr::col_date(),
+      LastGradeCompleted = readr::col_integer(),
+      SchoolStatus = readr::col_integer(),
+      DataCollectionStage = readr::col_integer(),
       DateUpdated = readr::col_datetime()
     )
   ) |>
-    # join the relevant codes from 'LastGradeCompletedCodes'
-    dplyr::left_join(
-      LastGradeCompletedCodes,
-      by = c("LastGradeCompleted" = "Code")
-    ) |>
-    # replace the codes in 'LastGradeCompleted' column with their descriptions
+    # re-code the integer codes in each attribute column with the related
+    # description
     dplyr::mutate(
-      LastGradeCompleted = Description,
-      Description = NULL   # drop 'Description' column
-    ) |>
-    # join the relevant codes from 'SchoolStatusCodes'
-    dplyr::left_join(
-      SchoolStatusCodes,
-      by = c("SchoolStatus" = "Code")
-    ) |>
-    # replace the codes in 'SchoolStatus' column with their descriptions
-    dplyr::mutate(
-      SchoolStatus = Description,
-      Description = NULL   # drop 'Description' column
-    ) |>
-    dplyr::left_join(
-      DataCollectionStageCodes,
-      by = c("DataCollectionStage" = "Code")
-    ) |>
-    # replace the codes in 'DataCollectionStage' column with their descriptions
-    dplyr::mutate(
-      DataCollectionStage = Description,
-      Description = NULL   # drop 'Description' column
-    ) |>
-    # Mutate datetime into just date in 'DateUpdate' column , to match 'infromationDate' column
-    dplyr::mutate(
-      DateUpdatedDate = as.POSIXct(DateUpdated, format = "%Y-%d-%m %H:%M:%S"),
-      #change the class format of 'DateUpdated' column to date class
-      DateUpdated = as.Date(format(DateUpdatedDate, "%Y-%d-%m")),
-      DateUpdatedDate = NULL   # drop 'DateUpdatedDate' column
+      LastGradeCompleted = lookup_codes(
+        var = LastGradeCompleted,
+        codes = LastGradeCompletedCodes
+      ),
+      SchoolStatus = lookup_codes(
+        var = SchoolStatus,
+        codes = SchoolStatusCodes
+      ),
+      DataCollectionStage = lookup_codes(
+        var = DataCollectionStage,
+        codes = DataCollectionStageCodes
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
@@ -281,49 +261,28 @@ read_employment <- function(file, submission_id) {
       NotEmployedReason = readr::col_integer(),
       DataCollectionStage = readr::col_integer(),
       InformationDate = readr::col_date(),
-      DateUpdated = readr::col_datetime() # this has to be called with character because of the date and time updated structure. hence can't be dealt as date but as charachter
+      DateUpdated = readr::col_datetime()
     )
   ) |>
-    # join the relevant codes from 'EducationCodes'
-    dplyr::left_join(
-      Employment_Yes_Status,
-      by = c("EmploymentType" = "Code")
-    ) |>
-    # replace the codes in 'EmploymentType' column with their descriptions
+    # re-code the integer codes in each attribute column with the related
+    # description
     dplyr::mutate(
-      EmploymentType = Description,
-      Description = NULL   # drop 'Description' column
-    ) |>
-    # join the relevant codes from 'EducationCodes'
-    dplyr::left_join(
-      Employment_NO_Status,
-      by = c("NotEmployedReason" = "Code")
-    ) |>
-    # replace the codes in 'NotEmployedReason' column with their descriptions
-    dplyr::mutate(
-      NotEmployedReason = Description,
-      Description = NULL   # drop 'Description' column
-    ) |>
-    #unite EmploymentType and NotEmployedReason to an Employment Column
-    tidyr::unite("Employment", EmploymentType,NotEmployedReason, na.rm = TRUE) |>
-    # Only keep "1" (affirmative) and "0" (non-formative) status values of employed
-    dplyr::filter(Employed == 1L | Employed == 0L) |>
-    dplyr::select(-Employed) |>
-    dplyr::left_join(
-      DataCollectionStageCodes,
-      by = c("DataCollectionStage" = "Code")
-    ) |>
-      # replace the codes in 'DataCollectionStage' column with their descriptions
-    dplyr::mutate(
-      DataCollectionStage = Description,
-      Description = NULL   # drop 'Description' column
-    ) |>
-    # Mutate datetime into just date in 'DateUpdate' column , to match 'infromationDate' column
-    dplyr::mutate(
-      DateUpdatedDate = as.POSIXct(DateUpdated, format = "%Y-%d-%m %H:%M:%S"),
-      #change the class format of 'DateUpdated' column to date class
-      DateUpdated = as.Date(format(DateUpdatedDate, "%Y-%d-%m")),
-      DateUpdatedDate = NULL   # drop 'DateUpdatedDate' column
+      Employed = lookup_codes(
+        var = Employed,
+        codes = GeneralCodes
+      ),
+      EmploymentType = lookup_codes(
+        var = EmploymentType,
+        codes = EmploymentTypeCodes
+      ),
+      NotEmployedReason = lookup_codes(
+        var = NotEmployedReason,
+        codes = NotEmployedReasonCodes
+      ),
+      DataCollectionStage = lookup_codes(
+        var = DataCollectionStage,
+        codes = DataCollectionStageCodes
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>

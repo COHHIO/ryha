@@ -1,8 +1,8 @@
 
 
-dir <- "data/stage_for_db/hudx-111_Bellefaire/"
+dir <- "data/stage_for_db/hudx-111_1651251197/"
 
-submission_id <- 4L
+submission_id <- 2L
 
 project <- readr::read_csv(
   file = paste0(dir, "/Project.csv"),
@@ -51,12 +51,20 @@ current_living_situation <- read_living(
   submission_id = submission_id
 )
 
+employment <- read_employment(
+  file = paste0(dir, "/EmploymentEducation.csv"),
+  submission_id = submission_id
+)
 
+education <- read_education(
+  file = paste0(dir, "/EmploymentEducation.csv"),
+  submission_id = submission_id
+)
 
 # Create the table, 'client'
 DBI::dbWriteTable(
   conn = con,
-  name = "current_living_situation",
-  value = current_living_situation |> janitor::clean_names(case = "snake"),
+  name = "employment",
+  value = employment |> janitor::clean_names(case = "snake"),
   append = TRUE
 )

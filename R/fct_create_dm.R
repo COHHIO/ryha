@@ -125,6 +125,16 @@ create_dm <- function() {
     name = "disabilities"
   )
 
+  employment <- DBI::dbReadTable(
+    conn = con,
+    name = "employment"
+  )
+
+  education <- DBI::dbReadTable(
+    conn = con,
+    name = "education"
+  )
+
   # Disconnect from the database
   DBI::dbDisconnect(conn = con)
 
@@ -136,7 +146,9 @@ create_dm <- function() {
     gender,
     ethnicity,
     current_living_situation,
-    disabilities
+    disabilities,
+    employment,
+    education
   ) |>
     # setup "project" table
     dm::dm_add_pk(table = project, columns = project_id) |>
@@ -162,7 +174,17 @@ create_dm <- function() {
 
     # setup "disabilities" table
     dm::dm_add_pk(table = disabilities, columns = c(submission_id, disabilities_id)) |>
-    dm::dm_add_fk(table = disabilities, columns = c(submission_id, personal_id), ref_table = client) # |>
+    dm::dm_add_fk(table = disabilities, columns = c(submission_id, personal_id), ref_table = client) |>
+    # dm::dm_add_fk(table = disabilities, columns = c(submission_id, enrollment_id), ref_table = enrollment) |>
+
+    # setup "employment" table
+    # dm::dm_add_pk(table = employment, columns = c(submission_id, employment_education_id)) |>
+    dm::dm_add_fk(table = employment, columns = c(submission_id, personal_id), ref_table = client) |>
+    # dm::dm_add_fk(table = disabilities, columns = c(submission_id, enrollment_id), ref_table = enrollment) |>
+
+    # setup "education" table
+    # dm::dm_add_pk(table = education, columns = c(submission_id, employment_education_id)) |>
+    dm::dm_add_fk(table = education, columns = c(submission_id, personal_id), ref_table = client) # |>
     # dm::dm_add_fk(table = disabilities, columns = c(submission_id, enrollment_id), ref_table = enrollment) |>
 
   return(dm)
