@@ -69,7 +69,7 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "education_page",
-            shiny::p("Placeholder Education")
+            mod_education_ui("education_1")
           ),
 
           bs4Dash::tabItem(

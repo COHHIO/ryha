@@ -174,7 +174,7 @@ mod_employment_server <- function(id, filtered_dm){
 
     })
 
-    # Create disabilities pie chart
+    # Create employment pie chart
     output$employment_pie_chart <- echarts4r::renderEcharts4r({
 
       pie_chart_data() |>
@@ -233,7 +233,7 @@ mod_employment_server <- function(id, filtered_dm){
 
     })
 
-    # Create disabilities trend line chart
+    # Create employed trend line chart
     output$employed_line_chart <- echarts4r::renderEcharts4r({
 
       employed_line_chart_data() |>
