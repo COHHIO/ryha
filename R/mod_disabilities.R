@@ -67,6 +67,20 @@ mod_disabilities_ui <- function(id){
 
       )
 
+    ),
+
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+
+        bs4Dash::box(
+          title = "# of Youth with 2 Disability Statuses",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(outputId = ns("disabilities_crosstab"))
+        )
+
+      )
     )
 
   )
@@ -210,6 +224,68 @@ mod_disabilities_server <- function(id, filtered_dm){
         echarts4r::e_tooltip(trigger = "axis") |>
         echarts4r::e_grid(top = "20%") |>
         echarts4r::e_show_loading()
+
+    })
+
+    crosstab_data <- shiny::reactive({
+
+      filtered_dm()$disabilities |>
+        dplyr::inner_join(
+          filtered_dm()$submission |>
+            dplyr::group_by(project_id) |>
+            dplyr::filter(export_end_date == max(export_end_date)) |>
+            dplyr::ungroup() |>
+            dplyr::select(submission_id, project_id),
+          by = "submission_id"
+        ) |>
+        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
+        dplyr::select(personal_id, disability_type, disability_response) |>
+        dplyr::distinct(personal_id, disability_type, .keep_all = TRUE) |>
+        dplyr::filter(disability_response == "Yes") |>
+        dplyr::select(personal_id, disability_type) %>%
+        dplyr::left_join(x = ., y = ., by = "personal_id") |>
+        dplyr::group_by(disability_type.x, disability_type.y) |>
+        dplyr::count() |>
+        dplyr::ungroup() |>
+        dplyr::mutate(n = ifelse(disability_type.x == disability_type.y, NA, n))
+
+    })
+
+    output$disabilities_crosstab <- echarts4r::renderEcharts4r({
+
+      crosstab_data() |>
+      echarts4r::e_charts(
+        x = disability_type.x,
+        label = list(show = TRUE)   # show values inside cells
+      ) |>
+        echarts4r::e_heatmap(
+          y = disability_type.y,
+          z = n,
+          pointSize = 5
+        ) |>
+        echarts4r::e_visual_map(
+          serie = n,
+          show = FALSE   # hide the interactive legend gradient"
+        ) |>
+        echarts4r::e_tooltip(
+          trigger = "item",
+          # Check out https://echarts4r.john-coene.com/articles/tooltip.html#javascript
+          # for more context on how we created the custom tooltip
+          formatter = htmlwidgets::JS("
+            function(params){
+              return('# of Youth With' +
+              '<br /><em>' + params.value[0] + '</em> & <em>' + params.value[1] + '</em>' +
+              '<br />' + params.marker + ' Count: <strong>' + params.value[2] + '</strong>')
+            }
+          ")
+        ) |>
+        echarts4r::e_grid(
+          left = "20%",
+          bottom = "20%"
+        )
+        # echarts4r::e_x_axis(
+        #   axisLabel = list(rotate = 45)
+        # )
 
     })
 
