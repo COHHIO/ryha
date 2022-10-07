@@ -377,7 +377,7 @@ read_health <- function(file, submission_id) {
     # only read in columns needed for "HEALTH" database table
     col_select = c(
       HealthAndDVID:InformationDate,
-      GeneralHealthStatus:DueDate
+      GeneralHealthStatus:MentalHealthStatus
     ),
     # define schema types
     col_types = readr::cols(
@@ -391,38 +391,10 @@ read_health <- function(file, submission_id) {
   ) |>
     # replace the codes in 'PregnancyStatus' column with their DueDates If pregnant
     dplyr::mutate(
-      PregnancyStatus = DueDate,
-      DueDate = NULL  # drop 'Description' column
-    ) |>
-    # join the relevant codes from 'HealthStatusCodes'
-    dplyr::left_join(
-      HealthStatusCodes,
-      by = c("MentalHealthStatus" = "Code")
-    ) |>
-    # replace the codes in 'MentalHealthStatus' column with their Descriptions
-    dplyr::mutate(
-      MentalHealthStatus = Description,
-      Description = NULL  # drop 'Description' column
-    ) |>
-    # join the relevant codes from 'HealthStatusCodes'
-    dplyr::left_join(
-      HealthStatusCodes,
-      by = c("DentalHealthStatus" = "Code")
-    ) |>
-    # replace the codes in 'DentalHealthStatus' column with their Descriptions
-    dplyr::mutate(
-      DentalHealthStatus = Description,
-      Description = NULL  # drop 'Description' column
-    ) |>
-    # join the relevant codes from 'HealthStatusCodes'
-    dplyr::left_join(
-      HealthStatusCodes,
-      by = c("GeneralHealthStatus" = "Code")
-    ) |>
-    # replace the codes in 'GeneralHealthStatus' column with their Descriptions
-    dplyr::mutate(
-      GeneralHealthStatus = Description,
-      Description = NULL  # drop 'Description' column
+      dplyr::across(
+        .cols = GeneralHealthStatus:MentalHealthStatus,
+        .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
@@ -446,17 +418,17 @@ read_health <- function(file, submission_id) {
 #'
 #' path <- "path/to/HealthAndDV.csv"
 #'
-#' read_domesticViolence(
+#' read_domestic_violence(
 #'   file = path,
 #'   submission_id = 1L
 #' )
 #'
 #' }
-read_domesticViolence <- function(file, submission_id) {
+read_domestic_violence <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
-    # only read in columns needed for "HEALTH" database table
+    # only read in columns needed for "DOMESTIC_VIOLENCE" database table
     col_select = c(
       HealthAndDVID:CurrentlyFleeing
     ),
@@ -469,29 +441,20 @@ read_domesticViolence <- function(file, submission_id) {
       InformationDate = readr::col_date()
     )
   ) |>
-    # keep only "1" (affirmative) DomesticViolenceVictim
-    dplyr::filter(DomesticViolenceVictim == 1L) |>
-    dplyr::select(-DomesticViolenceVictim) |>
-    #if yes for domestic violence victim/survivor
-    # join the relevant codes from 'DVStatusCodes'
-    dplyr::left_join(
-      DVStatusCodes,
-      by = c("WhenOccurred" = "Code")
-    ) |>
-    # replace the codes in 'WhenOccurred' column with their Descriptions
+    # join the descriptions from the lookup codes
     dplyr::mutate(
-      WhenOccurred = Description,
-      Description = NULL  # drop 'Description' column
-    ) |>
-    # join the relevant codes from 'GeneralCodes'
-    dplyr::left_join(
-      GeneralCodes,
-      by = c("CurrentlyFleeing" = "Code")
-    ) |>
-    # replace the codes in 'CurrentlyFleeing' column with their Descriptions
-    dplyr::mutate(
-      CurrentlyFleeing = Description,
-      Description = NULL  # drop 'Description' column
+      DomesticViolenceVictim = lookup_codes(
+        var = DomesticViolenceVictim,
+        codes = GeneralCodes
+      ),
+      WhenOccurred = lookup_codes(
+        var = WhenOccurred,
+        codes = WhenDVOccurredCodes
+      ),
+      CurrentlyFleeing = lookup_codes(
+        var = CurrentlyFleeing,
+        codes = GeneralCodes
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>

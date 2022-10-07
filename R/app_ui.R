@@ -74,12 +74,12 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "exits_page",
-            shiny::p("Placeholder Exits")
+            mod_exits_ui("exits_1")
           ),
 
           bs4Dash::tabItem(
             tabName = "health_page",
-            shiny::p("Placeholder Health")
+            mod_health_ui("health_1")
           ),
 
           bs4Dash::tabItem(

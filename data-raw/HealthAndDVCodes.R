@@ -16,7 +16,7 @@ HealthStatusCodes <- tibble::tribble(
 
 # Domestic Violence Status 4.11 section in Data Dictionary
 #if yes for domestic violence victim/survivor
-DVStatusCodes <- tibble::tribble(
+WhenDVOccurredCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Within the past three months",
   2L, "Three to six months ago (excluding six months exactly)",
@@ -29,6 +29,6 @@ DVStatusCodes <- tibble::tribble(
 
 usethis::use_data(
   HealthStatusCodes,
-  DVStatusCodes,
+  WhenDVOccurredCodes,
   overwrite = TRUE
 )

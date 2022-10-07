@@ -29,6 +29,9 @@ golem::add_module(name = "living")
 golem::add_module(name = "disabilities")
 golem::add_module(name = "employment")
 golem::add_module(name = "education")
+golem::add_module(name = "health")
+golem::add_module(name = "domestic_violence")
+golem::add_module(name = "exits")
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*

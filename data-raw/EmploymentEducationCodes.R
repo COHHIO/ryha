@@ -26,7 +26,7 @@ SchoolStatusCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Attending school regularly",
   2L, "Attending school irregularly",
-  3L, "Graduated from highschool",
+  3L, "Graduated from high school",
   4L, "Obtained GED",
   5L, "Dropped out",
   6L, "Suspended",

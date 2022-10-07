@@ -31,4 +31,8 @@ app_server <- function(input, output, session) {
 
   mod_education_server("education_1", dm_filtered)
 
+  mod_health_server("health_1")
+
+  mod_exits_server("exits_1")
+
 }
