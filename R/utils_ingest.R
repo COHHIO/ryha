@@ -292,7 +292,8 @@ read_employment <- function(file, submission_id) {
 
 }
 
-#' Ingest "CurrentLivingSituation.csv" file and perform ETL prep for "LIVING" database table
+#' Ingest "CurrentLivingSituation.csv" file and perform ETL prep for "LIVING"
+#' database table
 #'
 #' @inheritParams read_client
 #'
@@ -350,7 +351,8 @@ read_living <- function(file, submission_id) {
 
 
 
-#' Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database table
+#' Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database
+#' table
 #'
 #' @inheritParams read_client
 #'
@@ -389,7 +391,8 @@ read_health <- function(file, submission_id) {
       DueDate = readr::col_date()
     )
   ) |>
-    # replace the codes in 'PregnancyStatus' column with their DueDates If pregnant
+    # replace the codes in 'GeneralHealthStatus:MentalHealthStatus' columns with
+    # their descriptions
     dplyr::mutate(
       dplyr::across(
         .cols = GeneralHealthStatus:MentalHealthStatus,
@@ -404,7 +407,8 @@ read_health <- function(file, submission_id) {
 
 }
 
-#' Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE" database table
+#' Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE"
+#' database table
 #'
 #' @inheritParams read_client
 #'
@@ -464,12 +468,13 @@ read_domestic_violence <- function(file, submission_id) {
 
 }
 
-#' Ingest "Enrollment.csv" file and perform ETL prep for "HOUSEHOLD" database table
+#' Ingest "Enrollment.csv" file and perform ETL prep for "ENROLLMENT" database
+#' table
 #'
 #' @inheritParams read_client
 #'
 #' @return A data frame, containing the transformed data to be written out to
-#'   the "HOUSEHOLD" database table
+#'   the "ENROLLMENT" database table
 #'
 #' @export
 #'
@@ -488,22 +493,71 @@ read_enrollment <- function(file, submission_id) {
 
   data <- readr::read_csv(
     file = file,
-    # only read in columns needed for "HOUSEHOLD" database table
+    # only read in columns needed for "ENROLLMENT" database table
     col_select = c(
-      HouseholdID,
-      PersonalID,
-      EntryDate,
-      RelationshipToHoH:DateToStreetESSH
+      EnrollmentID:DisablingCondition,
+      MoveInDate,
+      ReferralSource,
+      RunawayYouth:IncarceratedParent
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
-      HouseholdID = readr::col_character(),
+      EnrollmentID = readr::col_character(),
       PersonalID = readr::col_character(),
+      ProjectID = readr::col_character(),
       EntryDate = readr::col_date(),
-      DateToStreetESSH = readr::col_date()
+      HouseholdID = readr::col_character(),
+      DateToStreetESSH = readr::col_date(),
+      MoveInDate = readr::col_date(),
+      SexualOrientationOther = readr::col_character()
     )
-  )
+  ) |>
+    dplyr::mutate(
+      RelationshipToHoH = lookup_codes(
+        var = RelationshipToHoH,
+        codes = RelationshipToHoHCodes
+      ),
+      LivingSituation = lookup_codes(
+        var = LivingSituation,
+        codes = LivingCodes
+      ),
+      LengthOfStay = lookup_codes(
+        var = LengthOfStay,
+        codes = LengthOfStayCodes
+      ),
+      TimesHomelessPastThreeYears = lookup_codes(
+        var = TimesHomelessPastThreeYears,
+        codes = TimesHomelessPastThreeYearsCodes
+      ),
+      MonthsHomelessPastThreeYears = lookup_codes(
+        var = MonthsHomelessPastThreeYears,
+        codes = MonthsHomelessPastThreeYearsCodes
+      ),
+      ReferralSource = lookup_codes(
+        var = ReferralSource,
+        codes = ReferralSourceCodes
+      ),
+      SexualOrientation = lookup_codes(
+        var = SexualOrientation,
+        codes = SexualOrientationCodes
+      ),
+      dplyr::across(
+        .cols = c(ChildWelfareYears, JuvenileJusticeYears),
+        .fns = function(x) lookup_codes(var = x, codes = RHYNumberOfYearsCodes)
+      ),
+      dplyr::across(
+        .cols = c(
+          LOSUnderThreshold:PreviousStreetESSH,
+          DisablingCondition,
+          RunawayYouth,
+          FormerWardChildWelfare,
+          FormerWardJuvenileJustice,
+          UnemploymentFam:IncarceratedParent
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+      )
+    )
 
   return(data)
 

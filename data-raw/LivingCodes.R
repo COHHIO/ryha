@@ -42,6 +42,4 @@ LivingCodes <- tibble::tribble(
   99L, "Data not collected"
 )
 
-
-
 usethis::use_data(LivingCodes, overwrite = TRUE)
