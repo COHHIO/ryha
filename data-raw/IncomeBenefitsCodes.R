@@ -1,7 +1,7 @@
 ## code to prepare `IncomeBenefits` dataset goes here
 
 # Health Insurance section 4.04 page 31 in Data Dictionary
-HealthInsuranceCodes<- tibble::tribble(
+ReasonNotInsuredCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Applied; decision pending",
   2L, "Applied; client not eligible",
@@ -13,6 +13,6 @@ HealthInsuranceCodes<- tibble::tribble(
 )
 
 usethis::use_data(
-  HealthInsuranceCodes,
+  ReasonNotInsuredCodes,
   overwrite = TRUE
 )

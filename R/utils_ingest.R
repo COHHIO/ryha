@@ -468,6 +468,139 @@ read_domestic_violence <- function(file, submission_id) {
 
 }
 
+
+#' Ingest "IncomeBenefits.csv" file and perform ETL prep for "INCOME"
+#' database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "INCOME" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/IncomeBenefits.csv"
+#'
+#' read_income(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_income <- function(file, submission_id) {
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "INCOME" database table
+    col_select = IncomeBenefitsID:OtherIncomeSourceIdentify,
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      IncomeBenefitsID = readr::col_character(),
+      EnrollmentID = readr::col_character(),
+      PersonalID = readr::col_character(),
+      InformationDate = readr::col_date(),
+      TotalMonthlyIncome = readr::col_double(),
+      EarnedAmount = readr::col_double(),
+      UnemploymentAmount = readr::col_double(),
+      SSIAmount = readr::col_double(),
+      SSDIAmount = readr::col_double(),
+      VADisabilityServiceAmount = readr::col_double(),
+      VADisabilityNonServiceAmount = readr::col_double(),
+      PrivateDisabilityAmount = readr::col_double(),
+      WorkersCompAmount = readr::col_double(),
+      TANFAmount = readr::col_double(),
+      GAAmount = readr::col_double(),
+      SocSecRetirementAmount = readr::col_double(),
+      PensionAmount = readr::col_double(),
+      ChildSupportAmount = readr::col_double(),
+      AlimonyAmount = readr::col_double(),
+      OtherIncomeAmount = readr::col_double(),
+      OtherIncomeSourceIdentify = readr::col_character()
+    )
+  ) |>
+    # replace the integer codes with the plain-English description
+    dplyr::mutate(
+      dplyr::across(
+        .cols = !dplyr::ends_with(
+          match = c("ID", "Date", "Amount", "Identify"),
+          ignore.case = FALSE
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+      )
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+}
+
+
+#' Ingest "IncomeBenefits.csv" file and perform ETL prep for "BENEFITS"
+#' database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "BENEFITS" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/IncomeBenefits.csv"
+#'
+#' read_benefits(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_benefits <- function(file, submission_id) {
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "BENEFITS" database table
+    col_select = c(
+      IncomeBenefitsID:InformationDate,
+      BenefitsFromAnySource:OtherInsuranceIdentify
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_integer(),
+      IncomeBenefitsID = readr::col_character(),
+      EnrollmentID = readr::col_character(),
+      PersonalID = readr::col_character(),
+      InformationDate = readr::col_date(),
+      OtherBenefitsSourceIdentify = readr::col_character(),
+      OtherInsuranceIdentify = readr::col_character()
+    )
+  ) |>
+    # replace the integer codes with the plain-English description
+    dplyr::mutate(
+      dplyr::across(
+        .cols = dplyr::ends_with("Reason"),
+        .fns = function(x) lookup_codes(var = x, codes = ReasonNotInsuredCodes)
+      ),
+      dplyr::across(
+        .cols = !dplyr::ends_with(
+          match = c("ID", "Date", "Identify", "Reason"),
+          ignore.case = FALSE
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+      )
+    ) |>
+    # add the 'SubmissionID' as the first column in the data
+    dplyr::mutate(SubmissionID = submission_id) |>
+    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+
+}
+
+
 #' Ingest "Enrollment.csv" file and perform ETL prep for "ENROLLMENT" database
 #' table
 #'
