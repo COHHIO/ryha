@@ -602,28 +602,16 @@ read_services <- function(file, submission_id) {
       ReferralOutcome = readr::col_integer()
     )
   ) |>
-    # join the relevant codes from 'RecordTypeRHYServicesCodes' Used in Services.csv when RecordType = 142 (RHY service).
-    dplyr::left_join(
-      RecordTypeRHYServicesCodes,
-      by = c("TypeProvided" = "Code")
-    ) |>
     # replace the codes in 'TypeProvided' column with their descriptions
     dplyr::mutate(
-      TypeProvided = Description,
-      Description = NULL  # drop 'Description' column
-    ) |>
-    #uncertain about the index object data sets, hence unsure about this part of the code.
-    # not sure to join the relevant codes from 'ReferralsServiceCodes' or from 'PathReferralOutcomeCodes'
-    #not sure if I should have this section period since we deal with type provided 142 and not 161?
-    dplyr::left_join(
-      # ?? # ReferralsOutcomeCodes,
-      PathReferralOutcomeCodes,
-      by = c("ReferralOutcome" = "Code")
-    ) |>
-    # replace the codes in 'ReferralOutcome' column with their descriptions
-    dplyr::mutate(
-      ReferralOutcome = Description,
-      Description = NULL  # drop 'Description' column
+      TypeProvided = lookup_codes(
+        var = TypeProvided,
+        codes = ServiceCodes
+      ),
+      ReferralOutcome = lookup_codes(
+        var = TypeProvided,
+        codes = PATHReferralOutcomeCodes
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>

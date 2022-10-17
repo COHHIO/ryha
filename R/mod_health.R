@@ -100,7 +100,7 @@ mod_health_server <- function(id){
       read_health(
         file = "data/stage_for_db/hudx-111_1651250747/HealthAndDV.csv",
         submission_id = 1L
-      )|>
+      ) |>
         dplyr::select(GeneralHealthStatus:MentalHealthStatus) |>
         tidyr::drop_na() |>
         tidyr::pivot_longer(cols = dplyr::everything()) |>

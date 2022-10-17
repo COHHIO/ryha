@@ -29,30 +29,26 @@ ServiceCodes <- tibble::tribble(
 # Type provided information R14.2 RHYServices (page 49) in Data Dictionary
 # used in Services.csv when RecordType = 142 (RHY service).
 
-RecordTypeRHYServicesCodes <- tibble::tribble(
-  ~Code, ~Description,
-  2L, "Community service/service learning (CSL)",
-  5L, "Education",
-  6L, "Employment and/or training services",
-  7L, "Criminal justice /legal services",
-  8L, "Life skills training",
-  10L, "Parenting education for youth with children",
-  12L, "Post-natal care for mother",
-  13L, "Pre-natal care",
-  14L, "Health/medical care",
-  17L, "Substance use disorder treatment",
-  18L, "Substance use disorder Ed/Prevention Services",
-  26L, "Home-based Services",
-  27L, "Post-natal newborn care (wellness exams; immunizations)",
-  28L, "STD Testing",
-  29L, "Street-based Services"
-)
+# RecordTypeRHYServicesCodes <- tibble::tribble(
+#   ~Code, ~Description,
+#   2L, "Community service/service learning (CSL)",
+#   5L, "Education",
+#   6L, "Employment and/or training services",
+#   7L, "Criminal justice /legal services",
+#   8L, "Life skills training",
+#   10L, "Parenting education for youth with children",
+#   12L, "Post-natal care for mother",
+#   13L, "Pre-natal care",
+#   14L, "Health/medical care",
+#   17L, "Substance use disorder treatment",
+#   18L, "Substance use disorder Ed/Prevention Services",
+#   26L, "Home-based Services",
+#   27L, "Post-natal newborn care (wellness exams; immunizations)",
+#   28L, "STD Testing",
+#   29L, "Street-based Services"
+# )
 
-#based on 'HMIS CSV FORMAT Specifications FY2022 – May 2021' guide pdf file, I had
-#followed Services.csv informaiton in page 30, 'Null unless RecordType = 161'
-
-
-PathReferralOutcomeCodes <- tibble::tribble(
+PATHReferralOutcomeCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Attained",
   2L, "Not attained",
@@ -60,8 +56,7 @@ PathReferralOutcomeCodes <- tibble::tribble(
 )
 
 
-
 usethis::use_data(ServiceCodes,
-                  RecordTypeRHYServicesCodes,
-                  PathReferralOutcomeCodes,
+                  # RecordTypeRHYServicesCodes,
+                  PATHReferralOutcomeCodes,
                   overwrite = TRUE)
