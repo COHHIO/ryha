@@ -793,7 +793,10 @@ read_project <- function(file, submission_id) {
   ) |>
     # replace the "ProjectType" codes with the plain-English description
     dplyr::mutate(
-      ProjectType = ProjectTypeCodes$Description[match(x = ProjectType, table = ProjectTypeCodes$Code)]
+      ProjectType = lookup_codes(
+        var = ProjectType,
+        codes = ProjectTypeCodes
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
@@ -842,15 +845,38 @@ read_exit <- function(file, submission_id) {
       ExitID = readr::col_character(),
       EnrollmentID = readr::col_character(),
       PersonalID = readr::col_character(),
-      ExitDate = readr::col_date()
+      ExitDate = readr::col_date(),
+      OtherDestination = readr::col_character()
     )
   ) |>
-    # replace the "ProjectType" codes with the plain-English description
+    # replace the integer codes with the plain-English description
     dplyr::mutate(
-     Destination = lookup_codes(
-       var = Destination,
-       codes = LivingCodes
-     )
+      Destination = lookup_codes(
+        var = Destination,
+        codes = LivingCodes
+      ),
+      ProjectCompletionStatus = lookup_codes(
+        var = ProjectCompletionStatus,
+        codes = ProjectCompletionStatusCodes
+      ),
+      dplyr::across(
+        .cols = c(
+          ExchangeForSex,
+          ExchangeForSexPastThreeMonths,
+          AskedOrForcedToExchangeForSex:GroupCounseling,
+          PostExitCounselingPlan,
+          DestinationSafeClient
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+      ),
+      CountOfExchangeForSex = lookup_codes(
+        var = CountOfExchangeForSex,
+        codes = CountExchangeForSexCodes
+      ),
+      dplyr::across(
+        .cols = DestinationSafeWorker:PosCommunityConnections,
+        .fns = function(x) lookup_codes(var = x, codes = WorkerResponseCodes)
+      )
     ) |>
     # add the 'SubmissionID' as the first column in the data
     dplyr::mutate(SubmissionID = submission_id) |>
