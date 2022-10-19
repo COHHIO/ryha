@@ -67,7 +67,8 @@ process_data <- function(file) {
     enrollment = stringr::str_subset(string = files_in_tmp, pattern = "Enrollment.csv$"),
     services = stringr::str_subset(string = files_in_tmp, pattern = "Services.csv$"),
     project = stringr::str_subset(string = files_in_tmp, pattern = "Project.csv$"),
-    exit = stringr::str_subset(string = files_in_tmp, pattern = "Exit.csv$")
+    exit = stringr::str_subset(string = files_in_tmp, pattern = "Exit.csv$"),
+    export = stringr::str_subset(string = files_in_tmp, pattern = "Export.csv$")
   )
 
   funcs_list <- list(
@@ -83,43 +84,76 @@ process_data <- function(file) {
     enrollment = read_enrollment,
     services = read_services,
     project = read_project,
-    exit = read_exit
+    exit = read_exit,
+    export = read_export
   )
 
-  # data <- purrr::map(
-  #   .x = funcs_list,
-  #   .f = rlang::exec,
-  #   files_list
-  # )
+  # This loop ingest each file with its respected `read_*()` function, and
+  # stores each data frame in a list
+  data <- list(
+    client = NULL,
+    disabilities = NULL,
+    education = NULL,
+    employment = NULL,
+    living = NULL,
+    health = NULL,
+    domestic_violence = NULL,
+    income = NULL,
+    benefits = NULL,
+    enrollment = NULL,
+    services = NULL,
+    project = NULL,
+    exit = NULL,
+    export = NULL
+  )
 
 
+  # Read in each file one at a time, creating a list of data frames for each
+  # table; this loop is an all-or-nothing approach, the `data` object will
+  # either include all of the data frames (if successful) or the first
+  # warning/error message encountered
+  for (i in 1:length(files_list)) {
 
-  # Get the data from the individual .csv file
+    temp <- tryCatch(
+      {
+        rlang::exec(funcs_list[[i]], files_list[[i]])
+      },
+      error = function(cond) {
+        out <- glue::glue(
+          "
+          There was an error in processing the \"{basename(files_list[[i]])}\" file.
+          Please check your file export settings, re-download the .zip folder, and try again.
+          "
+        )
+        return(out)
+      },
+      warning = function(cond) {
+        out <- glue::glue(
+          "
+          There was a warning in processing the \"{basename(files_list[[i]])}\" file.
+          Please check your file export settings, re-download the .zip folder, and try again.
+          This is most likely the result of incorrectly formatted dates.
+          "
+        )
+        return(out)
+      }
+    )
 
-  # Perform whatever necessary ETL we need to do on it (joining to lookup table,
-  # specifying columns, pivoting, etc.)
+    if (!"data.frame" %in% class(temp)) {
 
+      data <- temp
 
+      {break}
 
-  # Here's the function that governs
-  # process_client()
+    } else {
 
+      data[[i]] <- temp
 
+    }
 
-  # Move to Dropbox data lake
+  }
 
-
-
-  # TODO // Decide if we need to do this last...
-  # I imagine we *might* still need a temp directory if the user is a non-
-  # grantee (i.e., we aren't storing their data in the Dropbox data lake).
-  # If the user *is* a grantee and we are storing their data in the data lake,
-  # then we should be able to delete this temp directory without issue.
-  fs::dir_delete(tmp_dir)
-
-  # Generate "Submission" data
-
-  return(files_list)
+  return(data)
 
 }
 
