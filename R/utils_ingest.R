@@ -27,7 +27,6 @@ lookup_codes <- function(var, codes) {
 #' Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table
 #'
 #' @param file String, the full path to the .csv file
-#' @param submission_id Integer, the Submission ID associated with this upload
 #'
 #' @return A data frame, containing the transformed data to be written out to
 #'   the "CLIENT" database table
@@ -40,14 +39,13 @@ lookup_codes <- function(var, codes) {
 #' path <- "path/to/Client.csv"
 #'
 #' read_client(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
-read_client <- function(file, submission_id) {
+read_client <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "CLIENT" database table
     col_select = c(
@@ -87,12 +85,7 @@ read_client <- function(file, submission_id) {
         .cols = AmIndAKNative:VeteranStatus,
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
 
@@ -118,9 +111,9 @@ read_client <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_disabilities <- function(file, submission_id) {
+read_disabilities <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
@@ -147,12 +140,7 @@ read_disabilities <- function(file, submission_id) {
         lookup_codes(var = DisabilityResponse, SubstanceUseDisorderCodes),
         lookup_codes(var = DisabilityResponse, GeneralCodes),
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
 
@@ -178,9 +166,9 @@ read_disabilities <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_education <- function(file, submission_id) {
+read_education <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "EDUCATION" database table
     col_select = c(
@@ -213,12 +201,7 @@ read_education <- function(file, submission_id) {
         var = DataCollectionStage,
         codes = DataCollectionStageCodes
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
 
@@ -243,9 +226,9 @@ read_education <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_employment <- function(file, submission_id) {
+read_employment <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "EMPLOYMENT" database table
     col_select = c(
@@ -283,12 +266,7 @@ read_employment <- function(file, submission_id) {
         var = DataCollectionStage,
         codes = DataCollectionStageCodes
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
 
@@ -313,9 +291,9 @@ read_employment <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_living <- function(file, submission_id) {
+read_living <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "LIVING" database table
     col_select = c(
@@ -340,12 +318,7 @@ read_living <- function(file, submission_id) {
         var = LeaveSituation14Days,
         codes = GeneralCodes
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
 
@@ -372,9 +345,9 @@ read_living <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_health <- function(file, submission_id) {
+read_health <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "HEALTH" database table
     col_select = c(
@@ -398,12 +371,7 @@ read_health <- function(file, submission_id) {
         .cols = GeneralHealthStatus:MentalHealthStatus,
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
 
@@ -428,9 +396,9 @@ read_health <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_domestic_violence <- function(file, submission_id) {
+read_domestic_violence <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "DOMESTIC_VIOLENCE" database table
     col_select = c(
@@ -459,12 +427,7 @@ read_domestic_violence <- function(file, submission_id) {
         var = CurrentlyFleeing,
         codes = GeneralCodes
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
 
@@ -490,7 +453,7 @@ read_domestic_violence <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_income <- function(file, submission_id) {
+read_income <- function(file) {
 
   readr::read_csv(
     file = file,
@@ -531,10 +494,7 @@ read_income <- function(file, submission_id) {
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    )
 
 }
 
@@ -560,7 +520,7 @@ read_income <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_benefits <- function(file, submission_id) {
+read_benefits <- function(file) {
 
   readr::read_csv(
     file = file,
@@ -593,10 +553,7 @@ read_benefits <- function(file, submission_id) {
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    )
 
 }
 
@@ -622,9 +579,9 @@ read_benefits <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_enrollment <- function(file, submission_id) {
+read_enrollment <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "ENROLLMENT" database table
     col_select = c(
@@ -692,8 +649,6 @@ read_enrollment <- function(file, submission_id) {
       )
     )
 
-  return(data)
-
 }
 
 
@@ -717,9 +672,9 @@ read_enrollment <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_services <- function(file, submission_id) {
+read_services <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "Services" database table
     col_select = c(
@@ -745,14 +700,10 @@ read_services <- function(file, submission_id) {
         var = TypeProvided,
         codes = PATHReferralOutcomeCodes
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    )
 
 }
+
 
 #' Ingest "Project.csv" file and perform ETL prep for "PROJECT" database table
 #'
@@ -774,11 +725,11 @@ read_services <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_project <- function(file, submission_id) {
+read_project <- function(file) {
 
   readr::read_csv(
     file = file,
-    # only read in columns needed for "PROGRAM" database table
+    # only read in columns needed for "PROJECT" database table
     col_select = c(
       ProjectID,
       OrganizationID,
@@ -797,13 +748,9 @@ read_project <- function(file, submission_id) {
         var = ProjectType,
         codes = ProjectTypeCodes
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    )
 
 }
-
 
 
 #' Ingest "Exit.csv" file and perform ETL prep for "EXIT" database table
@@ -826,7 +773,7 @@ read_project <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_exit <- function(file, submission_id) {
+read_exit <- function(file) {
 
   readr::read_csv(
     file = file,
@@ -877,10 +824,50 @@ read_exit <- function(file, submission_id) {
         .cols = DestinationSafeWorker:PosCommunityConnections,
         .fns = function(x) lookup_codes(var = x, codes = WorkerResponseCodes)
       )
-    ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    )
 
 }
 
+
+#' Ingest "Export.csv" file and perform ETL prep for "PROJECT" and "SUBMISSION"
+#' database tables
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PROJECT" and "SUBMISSION" database tables
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Export.csv"
+#'
+#' read_export(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_export <- function(file) {
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "PROGRAM" database table
+    col_select = c(
+      ExportID,
+      SourceContactFirst,
+      SourceContactLast,
+      SourceContactEmail,
+      ExportStartDate:SoftwareName
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      ExportStartDate = readr::col_date(),
+      ExportEndDate = readr::col_date()
+    )
+  )
+
+}
