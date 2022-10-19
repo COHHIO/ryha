@@ -4,9 +4,9 @@
 #' Process HMIS Data
 #'
 #' @details This is the *"master"* function that governs the entire ETL process
-#'   for processing the uploaded data and, depending on the user (i.e., whether or
-#'   not the user is an approved grantee), writing the data out to the DropBox
-#'   data lake
+#'   for processing the uploaded data and, depending on the user (i.e., whether
+#'   or not the user is an approved grantee), writing the data out to the
+#'   PostgreSQL database.
 #'
 #' @param file String, the full path to the .zip file containing the quarterly
 #'   HMIS data
@@ -18,7 +18,17 @@
 process_data <- function(file) {
 
   # Ensure that the uploaded file is indeed a .zip file
-  # ...
+  is_zip <- stringr::str_detect(
+    string = file,
+    pattern = ".zip$"
+  )
+
+  if (!is_zip) {
+
+    paste0(file, " must be a .zip file") |>
+      rlang::abort()
+
+  }
 
   # Create a temporary directory to unzip the .csv files into
   tmp_dir <- tempfile()
@@ -32,7 +42,7 @@ process_data <- function(file) {
 
   # Unzip the .csv files into the temp directory
   zip::unzip(
-    zipfile = zip_file,
+    zipfile = file,
     exdir = tmp_dir,
     overwrite = TRUE   # overwrite any previous uploads into same temp directory
   )
@@ -40,20 +50,56 @@ process_data <- function(file) {
   # Check that all required HMIS files are present in uploaded .zip file
   check <- check_file_names(dir = tmp_dir)
 
-  # Run more checks...
+  # List the files (full paths) in the temp directory
+  files_in_tmp <- fs::dir_ls(tmp_dir)
+
+  #
+  files_list <- list(
+    client = stringr::str_subset(string = files_in_tmp, pattern = "Client.csv$"),
+    disabilities = stringr::str_subset(string = files_in_tmp, pattern = "Disabilities.csv$"),
+    education = stringr::str_subset(string = files_in_tmp, pattern = "EmploymentEducation.csv$"),
+    employment = stringr::str_subset(string = files_in_tmp, pattern = "EmploymentEducation.csv$"),
+    living = stringr::str_subset(string = files_in_tmp, pattern = "CurrentLivingSituation.csv$"),
+    health = stringr::str_subset(string = files_in_tmp, pattern = "HealthAndDV.csv$"),
+    domestic_violence = stringr::str_subset(string = files_in_tmp, pattern = "HealthAndDV.csv$"),
+    income = stringr::str_subset(string = files_in_tmp, pattern = "IncomeBenefits.csv$"),
+    benefits = stringr::str_subset(string = files_in_tmp, pattern = "IncomeBenefits.csv$"),
+    enrollment = stringr::str_subset(string = files_in_tmp, pattern = "Enrollment.csv$"),
+    services = stringr::str_subset(string = files_in_tmp, pattern = "Services.csv$"),
+    project = stringr::str_subset(string = files_in_tmp, pattern = "Project.csv$"),
+    exit = stringr::str_subset(string = files_in_tmp, pattern = "Exit.csv$")
+  )
+
+  funcs_list <- list(
+    client = read_client,
+    disabilities = read_disabilities,
+    education = read_education,
+    employment = read_employment,
+    living = read_living,
+    health = read_health,
+    domestic_violence = read_domestic_violence,
+    income = read_income,
+    benefits = read_benefits,
+    enrollment = read_enrollment,
+    services = read_services,
+    project = read_project,
+    exit = read_exit
+  )
+
+  # data <- purrr::map(
+  #   .x = funcs_list,
+  #   .f = rlang::exec,
+  #   files_list
+  # )
 
 
-
-  # Process "Client" file
-  client_file_path <- tmp_dir |>
-    stringr::str_subset("Client.csv$")
 
   # Get the data from the individual .csv file
 
   # Perform whatever necessary ETL we need to do on it (joining to lookup table,
   # specifying columns, pivoting, etc.)
 
-  # Creating `.parquet` table that's ready to be written out to data lake
+
 
   # Here's the function that governs
   # process_client()
@@ -73,6 +119,7 @@ process_data <- function(file) {
 
   # Generate "Submission" data
 
+  return(files_list)
 
 }
 
