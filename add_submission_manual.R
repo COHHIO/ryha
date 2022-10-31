@@ -15,9 +15,11 @@ project <- readr::read_csv(
 export <- readr::read_csv(
   file = paste0(dir, "/Export.csv"),
   col_select = c(
-    SourceContactFirst,
-    SourceContactLast,
-    SourceContactEmail,
+    ExportID,
+    SoftwareName,
+    # SourceContactFirst,
+    # SourceContactLast,
+    # SourceContactEmail,
     ExportStartDate,
     ExportEndDate
   ),

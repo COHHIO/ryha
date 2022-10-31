@@ -2,21 +2,21 @@
 % Please edit documentation in R/utils_ingest.R
 \name{read_health}
 \alias{read_health}
-\title{Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database table}
+\title{Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database
+table}
 \usage{
-read_health(file, submission_id)
+read_health(file)
 }
 \arguments{
 \item{file}{String, the full path to the .csv file}
-
-\item{submission_id}{Integer, the Submission ID associated with this upload}
 }
 \value{
 A data frame, containing the transformed data to be written out to
   the "HEALTH" database table
 }
 \description{
-Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database table
+Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database
+table
 }
 \examples{
 \dontrun{

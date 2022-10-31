@@ -18,7 +18,7 @@ Process HMIS Data
 }
 \details{
 This is the *"master"* function that governs the entire ETL process
-  for processing the uploaded data and, depending on the user (i.e., whether or
-  not the user is an approved grantee), writing the data out to the DropBox
-  data lake
+  for processing the uploaded data and, depending on the user (i.e., whether
+  or not the user is an approved grantee), writing the data out to the
+  PostgreSQL database.
 }

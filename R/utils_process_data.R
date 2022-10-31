@@ -67,6 +67,7 @@ process_data <- function(file) {
     enrollment = stringr::str_subset(string = files_in_tmp, pattern = "Enrollment.csv$"),
     services = stringr::str_subset(string = files_in_tmp, pattern = "Services.csv$"),
     project = stringr::str_subset(string = files_in_tmp, pattern = "Project.csv$"),
+    organization = stringr::str_subset(string = files_in_tmp, pattern = "Organization.csv$"),
     exit = stringr::str_subset(string = files_in_tmp, pattern = "Exit.csv$"),
     export = stringr::str_subset(string = files_in_tmp, pattern = "Export.csv$")
   )
@@ -84,6 +85,7 @@ process_data <- function(file) {
     enrollment = read_enrollment,
     services = read_services,
     project = read_project,
+    organization = read_organization,
     exit = read_exit,
     export = read_export
   )
@@ -103,6 +105,7 @@ process_data <- function(file) {
     enrollment = NULL,
     services = NULL,
     project = NULL,
+    organization = NULL,
     exit = NULL,
     export = NULL
   )
@@ -159,80 +162,236 @@ process_data <- function(file) {
 
 
 
+prep_tables <- function(data, conn) {
 
-generate_submission_id <- function(dir, contact_first_name, contact_last_name,
-                                   contact_email, program_id,
-                                   period_start_date, period_end_date) {
+  file_data <- data$project |>
+    dplyr::rename(orig_project_id = project_id) |>
+    dplyr::left_join(
+      data$organization |> dplyr::select(organization_id, organization_name),
+      by = "organization_id"
+    ) |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
 
-  # Handle "first" submission, to generate ID 1, when there is no historical
-  # "submission" file in the data lake
-  existing_sub_files <- fs::dir_info(
-    path = dir,
-    recurse = TRUE,
-    type = "file"
-  )
+  if ("project" %in% DBI::dbListTables(conn = conn)) {
 
-  if (nrow(existing_sub_files) == 0) {
+    res <- DBI::dbSendQuery(
+      conn = conn,
+      statement = "
+      SELECT
+        project_id,
+        project_name,
+        orig_project_id,
+        organization_name,
+        software_name
+      FROM project
+      ORDER BY project_id
+    "
+    )
+    db_data <- DBI::dbFetch(res)
+    DBI::dbClearResult(res)
 
-    submission_id <- 1L
+    file_data <- file_data |>
+      dplyr::left_join(
+        db_data,
+        by = c(
+          "orig_project_id",
+          "project_name",
+          "organization_name",
+          "software_name"
+        )
+      )
+
+    if (any(is.na(file_data$project_id))) {
+
+      max_current_project_id <- max(db_data$project_id)
+
+      file_data_existing_projects <- file_data |>
+        dplyr::filter(!is.na(project_id))
+
+      file_data_new_projects <- file_data |>
+        dplyr::filter(is.na(project_id)) |>
+        dplyr::mutate(project_id = max_current_project_id + dplyr::row_number())
+
+      # Append new projects to "project" database table
+      DBI::dbWriteTable(
+        conn = conn,
+        name = "project",
+        value = file_data_new_projects,
+        append = TRUE
+      )
+
+      file_data <- file_data_existing_projects |>
+        dplyr::bind_rows(file_data_new_projects)
+
+    }
 
   } else {
 
-    max_sub_id <- arrow::read_parquet(
-      file = "some_file",
-      col_select = SubmissionID
-    ) |>
-      dplyr::filter(SubmissionID == max(SubmissionID)) |>
-      dplyr::collect() |>
-      dplyr::pull(SubmissionID)
+    file_data_new_projects <- file_data |>
+      dplyr::mutate(project_id = dplyr::row_number())
 
-    # Stop if there isn't exactly 1 max SubmissionID
-    if (length(max_sub_id) != 1L) {
+    # Append new projects to "project" database table
+    DBI::dbWriteTable(
+      conn = conn,
+      name = "project",
+      value = file_data_new_projects,
+      append = TRUE
+    )
 
-      rlang::abort(
-        "Found the same `max` SubmissionID in the `Submission` data lake table"
-      )
-
-    }
-
-    submission_id <- max_sub_id + 1L
+    file_data <- file_data_new_projects
 
   }
 
-  # TODO // Figure out how to retrieve "ProgramID" from `Program` data lake table
+  # Get current "submission_id" value
+  if ("submission" %in% DBI::dbListTables(conn = conn)) {
 
-  sub_data <- tibble::tibble(
-    SubmissionID = submission_id,
-    DateTimeSubmitted = Sys.time(),
-    DateSubmitted = Sys.Date(),
-    SourceContactFirstName = contact_first_name,
-    SourceContactLastName = contact_last_name,
-    SourceContactEmailAddress = contact_email,
-    ProgramID = program_id,
-    PeriodDateStart = period_start_date,
-    PeriodDateEnd = period_end_date,
+    res <- DBI::dbSendQuery(
+      conn = conn,
+      statement = "
+      SELECT
+        MAX(submission_id) as max_submission_id
+      FROM submission
+    "
+    )
+    db_data <- DBI::dbFetch(res)
+    DBI::dbClearResult(res)
+
+    current_submission_id <- db_data$max_submission_id + 1L
+
+  } else {
+
+    current_submission_id <- 1L
+
+  }
+
+  # https://stackoverflow.com/questions/53720531/postgres-array-column-type-to-tbl-list-column-in-r-and-viceversa
+  # Create submission table
+  data$submission <- data$export |>
+    dplyr::mutate(
+      submission_id = current_submission_id,
+      date_time_submitted = Sys.time(),
+      date_submitted = Sys.Date(),
+      project_id = file_data$project_id |>
+        unique() |>
+        sort() |>
+        paste(collapse = ", ")
+    )
+
+  # Add project_id to "enrollment" file data
+  data$enrollment <- data$enrollment |>
+    dplyr::left_join(
+      file_data |> dplyr::select(project_id, software_name, orig_project_id),
+      by = c("orig_project_id")
+    ) |>
+    dplyr::mutate(
+      submission_id = current_submission_id
+    )
+
+  data$client <- data$client |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$disabilities <- data$disabilities |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$education <- data$education |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$employment <- data$employment |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$living <- data$living |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$health <- data$health |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$domestic_violence <- data$domestic_violence |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$income <- data$income |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$benefits <- data$benefits |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$services <- data$services |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  data$exit <- data$exit |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1],
+      submission_id = current_submission_id
+    )
+
+  out <- c(
+    "submission",
+    "client",
+    "enrollment",
+    "disabilities",
+    "education",
+    "employment",
+    "living",
+    "health",
+    "domestic_violence",
+    "income",
+    "benefits",
+    "services",
+    "exit"
   )
 
+  return(data[out])
 
-  last_submission <- arrow::read_parquet(
-    file = file,
-    col_select = c(SubmissionID, DatetimeSubmitted)
-  ) |>
-    dplyr::filter(SubmissionID == max(SubmissionID)) |>
-    dplyr::collect()
+}
 
-  last_submission_id <- last_submission |>
-    dplyr::pull(SubmissionID)
 
-  if (length(last_submission_id) != 1L) {
 
-    if (length(last_submission_id) == 0) {
+send_to_db <- function(data, conn) {
 
-      rlang::inform("First submission")
+  for (i in 1:length(data)) {
 
-    }
+    table_name <- names(data)[i]
 
-    rlang::abort("Expected ")
+    DBI::dbWriteTable(
+      conn = conn,
+      table_name,
+      data[[table_name]],
+      append = TRUE
+    )
+
+    # Give the PostgreSQL database a second to breathe between writes
+    Sys.sleep(0.5)
 
   }
 

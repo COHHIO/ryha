@@ -4,12 +4,10 @@
 \alias{read_exit}
 \title{Ingest "Exit.csv" file and perform ETL prep for "EXIT" database table}
 \usage{
-read_exit(file, submission_id)
+read_exit(file)
 }
 \arguments{
 \item{file}{String, the full path to the .csv file}
-
-\item{submission_id}{Integer, the Submission ID associated with this upload}
 }
 \value{
 A data frame, containing the transformed data to be written out to

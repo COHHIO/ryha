@@ -4,7 +4,7 @@
 # raw .csv file into an arrow table that is ready to be written to the database
 
 
-#' Lookup Plain-English Definitions from Integer Codes
+#' Look up Plain-English Definitions from Integer Codes
 #'
 #' @description This is a helper function that gets used in most downstream
 #'   `read_*()` functions to replace integer codes with their associated
@@ -85,7 +85,8 @@ read_client <- function(file) {
         .cols = AmIndAKNative:VeteranStatus,
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -140,7 +141,8 @@ read_disabilities <- function(file) {
         lookup_codes(var = DisabilityResponse, SubstanceUseDisorderCodes),
         lookup_codes(var = DisabilityResponse, GeneralCodes),
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -201,7 +203,8 @@ read_education <- function(file) {
         var = DataCollectionStage,
         codes = DataCollectionStageCodes
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -266,7 +269,8 @@ read_employment <- function(file) {
         var = DataCollectionStage,
         codes = DataCollectionStageCodes
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -318,7 +322,8 @@ read_living <- function(file) {
         var = LeaveSituation14Days,
         codes = GeneralCodes
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -371,7 +376,8 @@ read_health <- function(file) {
         .cols = GeneralHealthStatus:MentalHealthStatus,
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -427,7 +433,8 @@ read_domestic_violence <- function(file) {
         var = CurrentlyFleeing,
         codes = GeneralCodes
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -494,7 +501,8 @@ read_income <- function(file) {
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -553,7 +561,8 @@ read_benefits <- function(file) {
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -647,7 +656,9 @@ read_enrollment <- function(file) {
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(orig_project_id = project_id)
 
 }
 
@@ -700,7 +711,8 @@ read_services <- function(file) {
         var = TypeProvided,
         codes = PATHReferralOutcomeCodes
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -734,12 +746,14 @@ read_project <- function(file) {
       ProjectID,
       OrganizationID,
       ProjectName,
-      ProjectType
+      ProjectType,
+      OperatingStartDate
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
-      ProjectType = readr::col_integer()
+      ProjectType = readr::col_integer(),
+      OperatingStartDate = readr::col_date()
     )
   ) |>
     # replace the "ProjectType" codes with the plain-English description
@@ -748,7 +762,47 @@ read_project <- function(file) {
         var = ProjectType,
         codes = ProjectTypeCodes
       )
+    ) |>
+    janitor::clean_names(case = "snake")
+
+}
+
+
+#' Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PROJECT" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Organization.csv"
+#'
+#' read_organization(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_organization <- function(file) {
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "PROJECT" database table
+    col_select = c(
+      OrganizationID,
+      OrganizationName
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character()
     )
+  ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -824,7 +878,8 @@ read_exit <- function(file) {
         .cols = DestinationSafeWorker:PosCommunityConnections,
         .fns = function(x) lookup_codes(var = x, codes = WorkerResponseCodes)
       )
-    )
+    ) |>
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -868,6 +923,7 @@ read_export <- function(file) {
       ExportStartDate = readr::col_date(),
       ExportEndDate = readr::col_date()
     )
-  )
+  ) |>
+    janitor::clean_names(case = "snake")
 
 }
