@@ -38,18 +38,14 @@ mod_filters_ui <- function(id){
           width = "100%"
         ),
 
-        # Submission date (quarter) filter
-        shinyWidgets::pickerInput(
-          inputId = ns("submission_filter_global"),
-          label = "Quarter",
+        # Entry date filter
+        shiny::dateInput(
+          inputId = ns("min_entry_date_filter_global"),
+          label = "Entry Date (on or after)",
           width = "460px",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE,
-          options = list(
-            `actions-box` = TRUE,
-            `selected-text-format` = 'count > 2'
-          )
+          value = NULL,
+          min = NULL,
+          max = NULL
         ),
 
         # Gender filter
@@ -144,11 +140,12 @@ mod_filters_server <- function(id, dm){
         selected = unique( dm$project$project_name ) |> sort()
       )
 
-      shinyWidgets::updatePickerInput(
+      shiny::updateDateInput(
         session = session,
-        inputId = "submission_filter_global",
-        choices = unique( dm$submission$quarter ) |> sort(),
-        selected = unique( dm$submission$quarter ) |> sort()
+        inputId = "min_entry_date_filter_global",
+        value = min( dm$enrollment$entry_date ),
+        min = min( dm$enrollment$entry_date ),
+        max = max( dm$enrollment$entry_date )
       )
 
       shinyWidgets::updatePickerInput(
@@ -204,31 +201,60 @@ mod_filters_server <- function(id, dm){
     })
 
     # Created filtered {dm} data
-    dm_filtered <- shiny::eventReactive(input$apply_filters, {
+    clients_filtered <- shiny::eventReactive(input$apply_filters, {
 
-      dm_out <- dm |>
-        dm::dm_filter(project, project_name %in% input$project_filter_global) |>
-        dm::dm_filter(submission, quarter %in% input$submission_filter_global) |>
-        dm::dm_filter(gender, gender %in% input$gender_filter_global) |>
-        dm::dm_filter(ethnicity, ethnicity %in% input$ethnicity_filter_global)
+     dm$project |>
+        dplyr::filter(project_name %in% input$project_filter_global) |>
+        dplyr::select(project_id) |>
+        dplyr::inner_join(
+          dm$enrollment,
+          by = "project_id"
+        ) |>
+        dplyr::distinct(personal_id, software_name) |>
+        dplyr::inner_join(
+          dm$client |>
+            dplyr::filter(
+              dplyr::between(
+                x = age,
+                left = input$age_filter_global[1],
+                right = input$age_filter_global[2]
+              )
+            ),
+          by = c("personal_id", "software_name")
+        ) |>
+        dplyr::inner_join(
+          dm$gender |>
+            dplyr::filter(
+              gender %in% input$gender_filter_global
+            ),
+          by = c("personal_id", "software_name")
+        ) |>
+        dplyr::inner_join(
+          dm$ethnicity |>
+            dplyr::filter(
+              ethnicity %in% input$ethnicity_filter_global
+            ),
+          by = c("personal_id", "software_name")
+        ) |>
+        dplyr::distinct(personal_id, software_name, ssn, ssn_data_quality)
 
-      if (input$age_missing_global) {
-
-        dm_out <- dm_out |>
-          dm::dm_filter(
-            client,
-            (age >= input$age_filter_global[1] & age <= input$age_filter_global[2]) | is.na(age)
-          )
-
-      } else {
-
-        dm_out <- dm_out |>
-          dm::dm_filter(
-            client,
-            age >= input$age_filter_global[1] & age <= input$age_filter_global[2]
-          )
-
-      }
+      # if (input$age_missing_global) {
+      #
+      #   dm_out <- dm_out |>
+      #     dm::dm_filter(
+      #       client,
+      #       (age >= input$age_filter_global[1] & age <= input$age_filter_global[2]) | is.na(age)
+      #     )
+      #
+      # } else {
+      #
+      #   dm_out <- dm_out |>
+      #     dm::dm_filter(
+      #       client,
+      #       age >= input$age_filter_global[1] & age <= input$age_filter_global[2]
+      #     )
+      #
+      # }
 
       # Close the global filters pane when the "Apply" button is clicked
       # This doesn't work; since "control_bar" div is not in this module
@@ -238,12 +264,9 @@ mod_filters_server <- function(id, dm){
       #   collapsed = TRUE
       # )
 
-      dm_out |>
-        dm::dm_apply_filters()
-
     }, ignoreNULL = FALSE)
 
-    return(dm_filtered)
+    return(clients_filtered)
 
   })
 }

@@ -3,20 +3,39 @@
 #   "FrontLine Service"
 # )
 
-project_filter_global <- c(
-  "YWCA - ODH",
-  "FL - ODH"
+input <- list(
+
+  project_filter_global = c(
+    "YWCA - ODH",
+    "FL - ODH"
+  ),
+
+  min_entry_date_filter_global = as.Date("2021-01-01"),
+
+  age_filter_global = c(18, 24),
+
+  gender_filter_global = "female",
+
+  ethnicity_filter_global = c(
+    "black_af_american", "asian"
+  )
+
 )
 
-age_filter_global <- 18
 
-gender_filter_global <- "female"
-
-ethnicity_filter_global <- c(
-  "black_af_american", "asian"
-)
+# active_start_date <- as.Date("2021-01-01")
+#
+# active_end_date <- as.Date("2021-09-30")
 
 
+# Filter individual datasets
+enrollment_filtered <- enrollment |>
+  dplyr::filter(entry_date <= active_end_date) |>
+  tibble::as_tibble()
+
+exit_filtered <- exit |>
+  dplyr::filter(exit_date >= active_start_date) |>
+  tibble::as_tibble()
 
 
 personal_id_filter <- project |>
