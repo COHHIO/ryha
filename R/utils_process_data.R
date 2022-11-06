@@ -53,7 +53,7 @@ process_data <- function(file) {
   # List the files (full paths) in the temp directory
   files_in_tmp <- fs::dir_ls(tmp_dir)
 
-  #
+  # List the path to each file
   files_list <- list(
     client = stringr::str_subset(string = files_in_tmp, pattern = "Client.csv$"),
     disabilities = stringr::str_subset(string = files_in_tmp, pattern = "Disabilities.csv$"),
@@ -72,6 +72,8 @@ process_data <- function(file) {
     export = stringr::str_subset(string = files_in_tmp, pattern = "Export.csv$")
   )
 
+  # Create a list of the corresponding `read_*()` functions for each file in
+  # `files_list`
   funcs_list <- list(
     client = read_client,
     disabilities = read_disabilities,
@@ -90,8 +92,7 @@ process_data <- function(file) {
     export = read_export
   )
 
-  # This loop ingest each file with its respected `read_*()` function, and
-  # stores each data frame in a list
+  # Create an empty list to store the ingested data for each table
   data <- list(
     client = NULL,
     disabilities = NULL,
@@ -164,6 +165,8 @@ process_data <- function(file) {
 
 prep_tables <- function(data, conn) {
 
+  # Retrieve the project, organization, and software information from the
+  # uploaded data
   file_data <- data$project |>
     dplyr::rename(orig_project_id = project_id) |>
     dplyr::left_join(
@@ -174,8 +177,11 @@ prep_tables <- function(data, conn) {
       software_name = data$export$software_name[1]
     )
 
+  # If the "project" table exists in the database...
   if ("project" %in% DBI::dbListTables(conn = conn)) {
 
+    # Retrieve the existing project, organization, and software information from
+    # the database
     res <- DBI::dbSendQuery(
       conn = conn,
       statement = "
@@ -192,6 +198,8 @@ prep_tables <- function(data, conn) {
     db_data <- DBI::dbFetch(res)
     DBI::dbClearResult(res)
 
+    # Join the database data to the file data; this will allow us to quickly
+    # identify which projects in the uploaded file are not yet in the database
     file_data <- file_data |>
       dplyr::left_join(
         db_data,
@@ -203,13 +211,19 @@ prep_tables <- function(data, conn) {
         )
       )
 
+    # If there are any "new" projects in the file that don't exist in the
+    # database...
     if (any(is.na(file_data$project_id))) {
 
+      # Determine the max "project_id" integer value in the database
       max_current_project_id <- max(db_data$project_id)
 
+      # Isolate the projects in the file that already exist in the database
       file_data_existing_projects <- file_data |>
         dplyr::filter(!is.na(project_id))
 
+      # Isolate the "new" projects in the file that *don't* exist in the
+      # database, and define the `project_id` values for each new project
       file_data_new_projects <- file_data |>
         dplyr::filter(is.na(project_id)) |>
         dplyr::mutate(project_id = max_current_project_id + dplyr::row_number())
@@ -222,13 +236,18 @@ prep_tables <- function(data, conn) {
         append = TRUE
       )
 
+      # Append the new projects (and their newly-defined `project_id` values) to
+      # existing projects
       file_data <- file_data_existing_projects |>
         dplyr::bind_rows(file_data_new_projects)
 
     }
 
+    # If the "project" table does *not* yet exist in the database...
+    # (this handles the first ever submission, if the table hasn't been set up)
   } else {
 
+    # Set the "project_id" value for each project in the uploaded file
     file_data_new_projects <- file_data |>
       dplyr::mutate(project_id = dplyr::row_number())
 
@@ -240,6 +259,7 @@ prep_tables <- function(data, conn) {
       append = TRUE
     )
 
+    #
     file_data <- file_data_new_projects
 
   }
@@ -278,6 +298,26 @@ prep_tables <- function(data, conn) {
         sort() |>
         paste(collapse = ", ")
     )
+
+  # Delete rows in each database table
+  for (i in 1:length(data)) {
+
+    table_name <- names(data)[i]
+
+    # First we need to DELETE the rows from each database table for this
+    # particular project (WHERE project_id = current_project_id)
+
+    DBI::dbWriteTable(
+      conn = conn,
+      table_name,
+      data[[table_name]],
+      append = TRUE
+    )
+
+    # Give the PostgreSQL database a half second to breathe between writes
+    Sys.sleep(0.5)
+
+  }
 
   # Add project_id to "enrollment" file data
   data$enrollment <- data$enrollment |>
@@ -383,6 +423,9 @@ send_to_db <- function(data, conn) {
 
     table_name <- names(data)[i]
 
+    # First we need to DELETE the rows from each database table for this
+    # particular project (WHERE project_id = current_project_id)
+
     DBI::dbWriteTable(
       conn = conn,
       table_name,
@@ -390,7 +433,7 @@ send_to_db <- function(data, conn) {
       append = TRUE
     )
 
-    # Give the PostgreSQL database a second to breathe between writes
+    # Give the PostgreSQL database a half second to breathe between writes
     Sys.sleep(0.5)
 
   }
