@@ -30,13 +30,20 @@ app_server <- function(input, output, session) {
   # )
 
   # Get filtered dm
-  clients_filtered <- mod_filters_server("filters_1", dm)
+  clients_filtered <- mod_filters_server(
+    id = "filters_1",
+    dm = dm
+  )
 
   mod_client_server("client_1", clients_filtered)
 
   mod_living_server("living_1", clients_filtered)
 
-  mod_disabilities_server("disabilities_1", dm$disabilities, clients_filtered)
+  mod_disabilities_server(
+    id = "disabilities_1",
+    disabilities_data = dm$disabilities,
+    clients_filtered = clients_filtered
+  )
 
   mod_employment_server("employment_1", clients_filtered)
 

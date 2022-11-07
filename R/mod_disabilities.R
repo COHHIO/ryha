@@ -105,7 +105,12 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     disabilities_data_filtered <- shiny::reactive({
 
       disabilities_data |>
-        dplyr::filter(personal_id %in% clients_filtered()$personal_id)
+        dplyr::filter(personal_id %in% clients_filtered()$personal_id) |>
+        dplyr::left_join(
+          clients_filtered() |>
+            dplyr::select(personal_id, software_name, exit_date),
+          by = c("personal_id", "software_name")
+        )
 
     })
 
@@ -144,11 +149,27 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     pie_chart_data <- shiny::reactive({
 
-      disabilities_data_filtered() |>
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- disabilities_data_filtered() |>
         dplyr::arrange(personal_id, disability_type, dplyr::desc(information_date)) |>
         dplyr::select(personal_id, disability_type, disability_response) |>
         dplyr::distinct(personal_id, disability_type, .keep_all = TRUE) |>
-        dplyr::filter(disability_response == "Yes") |>
+        dplyr::filter(disability_response == "Yes")
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
         dplyr::count(disability_type) |>
         dplyr::arrange(disability_type)
 
@@ -191,15 +212,47 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     line_chart_data <- shiny::reactive({
 
-      disabilities_data_filtered() |>
+      out <- disabilities_data_filtered() |>
+        dplyr::filter(!is.na(exit_date)) |>
         dplyr::group_by(personal_id) |>
         dplyr::mutate(n = dplyr::n_distinct(information_date)) |>
         dplyr::filter(n >= 2L) |>
-        dplyr::select(-n) |>
-        dplyr::filter(information_date %in% c(min(information_date), max(information_date))) |>
+        dplyr::select(-n)
+
+      shiny::validate(
+        shiny::need(
+          expr = any(
+            nrow(out) >= 1L,
+            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
+          ),
+          message = "No data to display"
+        )
+      )
+
+      out <- out |>
+        dplyr::filter(
+          information_date %in% c(
+            min(information_date, na.rm = TRUE),
+            max(information_date, na.rm = TRUE)
+          )
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = any(
+            nrow(out) >= 1L,
+            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
+          ),
+          message = "No data to display"
+        )
+      )
+
+      out <- out |>
         dplyr::mutate(
           information_date = dplyr::if_else(
-            information_date == min(information_date), "Entry", "Exit"
+            information_date == min(information_date, na.rm = TRUE),
+            "Entry",
+            "Exit"
           ),
           information_date = factor(
             information_date,
@@ -207,7 +260,16 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
           )
         ) |>
         dplyr::ungroup() |>
-        dplyr::filter(disability_response == "Yes") |>
+        dplyr::filter(disability_response == "Yes")
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
         dplyr::count(disability_type, information_date) |>
         dplyr::group_by(disability_type)
 
