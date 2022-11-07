@@ -377,7 +377,8 @@ read_health <- function(file) {
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
       )
     ) |>
-    janitor::clean_names(case = "snake")
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(health_and_dv_id = health_and_dvid)
 
 }
 
@@ -434,7 +435,8 @@ read_domestic_violence <- function(file) {
         codes = GeneralCodes
       )
     ) |>
-    janitor::clean_names(case = "snake")
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(health_and_dv_id = health_and_dvid)
 
 }
 
