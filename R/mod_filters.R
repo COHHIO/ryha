@@ -39,11 +39,12 @@ mod_filters_ui <- function(id){
         ),
 
         # Entry date filter
-        shiny::dateInput(
-          inputId = ns("min_entry_date_filter_global"),
-          label = "Entry Date (on or after)",
+        shiny::dateRangeInput(
+          inputId = ns("entry_date_filter_global"),
+          label = "Entry Date Between",
           width = "460px",
-          value = NULL,
+          start = NULL,
+          end = NULL,
           min = NULL,
           max = NULL
         ),
@@ -140,10 +141,11 @@ mod_filters_server <- function(id, dm){
         selected = unique( dm$project$project_name ) |> sort()
       )
 
-      shiny::updateDateInput(
+      shiny::updateDateRangeInput(
         session = session,
-        inputId = "min_entry_date_filter_global",
-        value = min( dm$enrollment$entry_date ),
+        inputId = "entry_date_filter_global",
+        start = min( dm$enrollment$entry_date ),
+        end = max( dm$enrollment$entry_date ),
         min = min( dm$enrollment$entry_date ),
         max = max( dm$enrollment$entry_date )
       )
@@ -207,7 +209,14 @@ mod_filters_server <- function(id, dm){
         dplyr::filter(project_name %in% input$project_filter_global) |>
         dplyr::select(project_id) |>
         dplyr::inner_join(
-          dm$enrollment,
+          dm$enrollment |>
+            dplyr::filter(
+              dplyr::between(
+                x = entry_date,
+                left = input$entry_date_filter_global[1],
+                right = input$entry_date_filter_global[2]
+              )
+            ),
           by = "project_id"
         ) |>
         dplyr::distinct(personal_id, software_name) |>
@@ -236,7 +245,11 @@ mod_filters_server <- function(id, dm){
             ),
           by = c("personal_id", "software_name")
         ) |>
-        dplyr::distinct(personal_id, software_name, ssn, ssn_data_quality)
+        dplyr::left_join(
+          dm$exit |> dplyr::select(personal_id, software_name, exit_date),
+          by = c("personal_id", "software_name")
+        ) |>
+        dplyr::distinct(personal_id, software_name, ssn, ssn_data_quality, exit_date)
 
       # if (input$age_missing_global) {
       #
