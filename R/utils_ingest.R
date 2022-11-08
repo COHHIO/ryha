@@ -65,6 +65,10 @@ read_client <- function(file) {
       DOB = readr::col_date()
     )
   ) |>
+    # Hash the SSN values
+    dplyr::mutate(
+      SSN = hash(SSN, key = readRDS("hkey.RDS"))
+    ) |>
     # replace the "SSN/DOBDataQuality" codes with the plain-English description
     dplyr::mutate(
       SSNDataQuality = lookup_codes(
@@ -927,5 +931,37 @@ read_export <- function(file) {
     )
   ) |>
     janitor::clean_names(case = "snake")
+
+}
+
+
+
+#' Hash a value with a key
+#'
+#' @param x A character string
+#' @param key A hashing dictionary key
+#'
+#' @return An hashed string
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' hash("blah", key = my_key)
+#'
+#' }
+hash <- function(x, key) {
+
+  x_sep <- strsplit(x, split = "")[[1]]
+
+  out <- c()
+
+  for (s in x_sep) {
+
+    out <- append(out, key[[s]])
+
+  }
+
+  out |> paste(collapse = "")
 
 }
