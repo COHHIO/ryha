@@ -179,33 +179,10 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     output$disabilities_pie_chart <- echarts4r::renderEcharts4r({
 
       pie_chart_data() |>
-        echarts4r::e_chart(x = disability_type) |>
-        echarts4r::e_pie(
-          serie = n,
-          name = "Disability Type",
-          legend = TRUE,
-          label = list(
-            show = TRUE,
-            position = "inside",
-            formatter = "{c}"   # show the numeric value as the label
-          ),
-          radius = c("50%", "70%"),
-          # emphasize the label when hovered over
-          emphasis = list(
-            label = list(
-              show = TRUE,
-              fontSize = "15",
-              fontWeight = "bold"
-            )
-          )
-        ) |>
-        echarts4r::e_legend(bottom = 0) |>   # place legend below chart
-        echarts4r::e_title(
-          subtext = "Chart represents most recent quarter's data for each program selected"
-        ) |>
-        echarts4r::e_tooltip(trigger = "item") |>
-        echarts4r::e_grid(containLabel = TRUE) |>
-        echarts4r::e_show_loading()
+        pie_chart(
+          category = "disability_type",
+          count = "n"
+        )
 
     })
 

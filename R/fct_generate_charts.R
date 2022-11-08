@@ -44,7 +44,7 @@ pie_chart <- function(data, category, count) {
     ) |>
     echarts4r::e_legend(bottom = 0) |>   # place legend below chart
     echarts4r::e_title(
-      subtext = "Chart represents most recent quarter's data for each program selected"
+      subtext = "Chart represents most recent data for each individual"
     ) |>
     echarts4r::e_tooltip(trigger = "item") |>
     echarts4r::e_grid(containLabel = TRUE) |>

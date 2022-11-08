@@ -942,7 +942,6 @@ read_export <- function(file) {
 #' @param key A hashing dictionary key
 #'
 #' @return An hashed string
-#' @export
 #'
 #' @examples
 #' \dontrun{
