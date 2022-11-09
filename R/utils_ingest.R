@@ -45,7 +45,7 @@ lookup_codes <- function(var, codes) {
 #' }
 read_client <- function(file) {
 
-  readr::read_csv(
+  client <- readr::read_csv(
     file = file,
     # only read in columns needed for "CLIENT" database table
     col_select = c(
@@ -65,10 +65,6 @@ read_client <- function(file) {
       DOB = readr::col_date()
     )
   ) |>
-    # Hash the SSN values
-    dplyr::mutate(
-      SSN = hash(SSN, key = readRDS("hkey.RDS"))
-    ) |>
     # replace the "SSN/DOBDataQuality" codes with the plain-English description
     dplyr::mutate(
       SSNDataQuality = lookup_codes(
@@ -91,6 +87,22 @@ read_client <- function(file) {
       )
     ) |>
     janitor::clean_names(case = "snake")
+
+  # Hash the SSN values
+  ssns_hashed <- c()
+
+  for (s in client$ssn) {
+
+    ssns_hashed <- append(
+      ssns_hashed,
+      hash(s, key = readRDS(here::here("hkey.RDS")))
+    )
+
+  }
+
+  client$ssn <- ssns_hashed
+
+  return(client)
 
 }
 
@@ -935,7 +947,6 @@ read_export <- function(file) {
 }
 
 
-
 #' Hash a value with a key
 #'
 #' @param x A character string
@@ -951,16 +962,26 @@ read_export <- function(file) {
 #' }
 hash <- function(x, key) {
 
-  x_sep <- strsplit(x, split = "")[[1]]
+  stringr::str_replace_all(x, "-", "")
 
-  out <- c()
+  if (!is.na(x) & nchar(x) == 9) {
 
-  for (s in x_sep) {
+    x_sep <- strsplit(x, split = "")[[1]]
 
-    out <- append(out, key[[s]])
+    out <- c()
+
+    for (s in x_sep) {
+
+      out <- append(out, key[[s]])
+
+    }
+
+    out |> paste(collapse = "")
+
+  } else {
+
+    NA
 
   }
-
-  out |> paste(collapse = "")
 
 }
