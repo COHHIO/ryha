@@ -7,21 +7,13 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
+  # w$show()
+
   # Use this for testing
   # dm <- readRDS("db_data/db_data.rds")
 
-  # Establish connection to PostgreSQL database
-  con <- DBI::dbConnect(
-    drv = RPostgres::Postgres(),
-    dbname = Sys.getenv("AWS_POSTGRES_DBNAME"),
-    host = Sys.getenv("AWS_POSTGRES_HOST"),
-    port = Sys.getenv("AWS_POSTGRES_PORT"),
-    user = Sys.getenv("AWS_POSTGRES_USER"),
-    password = Sys.getenv("AWS_POSTGRES_PWD")
-  )
-
   # Create dm object. This is run once per session
-  dm <- create_dm(conn = con)
+  dm <- create_dm()
 
   # Create a reactiveValues list to hold summary statistics
   # rctv <- shiny::reactiveValues(
@@ -35,7 +27,9 @@ app_server <- function(input, output, session) {
     dm = dm
   )
 
-  mod_client_server("client_1", clients_filtered)
+  # w$hide()
+
+  # mod_client_server("client_1", clients_filtered)
 
   mod_living_server(
     id = "living_1",
@@ -49,14 +43,18 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
-  mod_employment_server("employment_1", clients_filtered)
+  mod_employment_server(
+    id = "employment_1",
+    employment_data = dm$employment,
+    clients_filtered = clients_filtered
+  )
 
-  mod_education_server("education_1", clients_filtered)
+  # mod_education_server("education_1", clients_filtered)
 
-  mod_health_server("health_1")
+  # mod_health_server("health_1")
 
   # mod_exits_server("exits_1")
 
-  mod_upload_server("upload_1", conn = con)
+  mod_upload_server("upload_1")
 
 }

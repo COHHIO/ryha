@@ -37,7 +37,7 @@ mod_upload_ui <- function(id){
 #' upload Server Functions
 #'
 #' @noRd
-mod_upload_server <- function(id, conn){
+mod_upload_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -55,26 +55,44 @@ mod_upload_server <- function(id, conn){
 
       w$show()
 
-      Sys.sleep(1)
+      # Establish connection to PostgreSQL database
+      con <- DBI::dbConnect(
+        drv = RPostgres::Postgres(),
+        dbname = Sys.getenv("AWS_POSTGRES_DBNAME"),
+        host = Sys.getenv("AWS_POSTGRES_HOST"),
+        port = Sys.getenv("AWS_POSTGRES_PORT"),
+        user = Sys.getenv("AWS_POSTGRES_USER"),
+        password = Sys.getenv("AWS_POSTGRES_PWD")
+      )
 
-      process_data(file = input$choose_zip$datapath) |>
-        prep_tables(conn = conn) |>
-        send_to_db(conn = conn)
+      Sys.sleep(0.5)
+
+      out <- process_data(file = input$choose_zip$datapath)
+
+      if ("character" %in% class(out)) {
+
+        shiny::modalDialog(
+          title = "There was an issue with the upload",
+          out
+        ) |>
+          shiny::showModal()
+
+      } else {
+
+        data <- out |>
+          prep_tables(conn = con)
+
+        delete_from_db(data = data, conn = con)
+
+        send_to_db(data = data, conn = con)
+
+      }
+
+      DBI::dbDisconnect(conn = con)
 
       w$hide()
 
     })
-
-
-
-    # shiny::modalDialog(
-    #   title = "Files Missing from Upload",
-    #   "We could not find the following files in the .zip file you uploaded:",
-    #   shiny::br(),
-    #   vec_to_ul(vec = c("File1", "File2"))
-    # ) |>
-    #   shiny::showModal()
-
 
   })
 }

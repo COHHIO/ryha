@@ -1,17 +1,27 @@
 
 
 
-create_dm <- function(conn) {
+create_dm <- function() {
+
+  # Establish connection to PostgreSQL database
+  con <- DBI::dbConnect(
+    drv = RPostgres::Postgres(),
+    dbname = Sys.getenv("AWS_POSTGRES_DBNAME"),
+    host = Sys.getenv("AWS_POSTGRES_HOST"),
+    port = Sys.getenv("AWS_POSTGRES_PORT"),
+    user = Sys.getenv("AWS_POSTGRES_USER"),
+    password = Sys.getenv("AWS_POSTGRES_PWD")
+  )
 
   # Read "project" table into memory
   project <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "project"
   )
 
   # Read "client" table into memory
   client_tbl <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "client"
   )
 
@@ -86,62 +96,59 @@ create_dm <- function(conn) {
 
   # Read "current_living_situation" table into memory
   current_living_situation <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "living"
   )
 
   disabilities <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "disabilities"
   )
 
   employment <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "employment"
   )
 
   education <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "education"
   )
 
   enrollment <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "enrollment"
   )
 
   health <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "health"
   )
 
   domestic_violence <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "domestic_violence"
   )
 
   income <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "income"
   )
 
   benefits <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "benefits"
   )
 
   services <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "services"
   )
 
   exit <- DBI::dbReadTable(
-    conn = conn,
+    conn = con,
     name = "exit"
   )
-
-  # Disconnect from the database
-  DBI::dbDisconnect(conn = conn)
 
   # Create {dm} object
   dm <- list(
