@@ -216,7 +216,11 @@ prep_tables <- function(data, conn) {
     if (any(is.na(file_data$project_id))) {
 
       # Determine the max "project_id" integer value in the database
-      max_current_project_id <- max(db_data$project_id)
+      max_current_project_id <- ifelse(
+        nrow(db_data) >= 1L,
+        max(db_data$project_id),
+        0L
+      )
 
       # Isolate the projects in the file that already exist in the database
       file_data_existing_projects <- file_data |>
@@ -259,144 +263,94 @@ prep_tables <- function(data, conn) {
       append = TRUE
     )
 
-    #
     file_data <- file_data_new_projects
 
   }
 
-  # Get current "submission_id" value
-  if ("submission" %in% DBI::dbListTables(conn = conn)) {
+  # # Delete rows in each database table
+  # for (i in 1:length(data)) {
+  #
+  #   table_name <- names(data)[i]
+  #
+  #   # First we need to DELETE the rows from each database table for this
+  #   # particular project (WHERE project_id = current_project_id)
+  #
+  #   DBI::dbWriteTable(
+  #     conn = conn,
+  #     table_name,
+  #     data[[table_name]],
+  #     append = TRUE
+  #   )
+  #
+  #   # Give the PostgreSQL database a half second to breathe between writes
+  #   Sys.sleep(0.5)
+  #
+  # }
 
-    res <- DBI::dbSendQuery(
-      conn = conn,
-      statement = "
-      SELECT
-        MAX(submission_id) as max_submission_id
-      FROM submission
-    "
-    )
-    db_data <- DBI::dbFetch(res)
-    DBI::dbClearResult(res)
-
-    current_submission_id <- db_data$max_submission_id + 1L
-
-  } else {
-
-    current_submission_id <- 1L
-
-  }
-
-  # https://stackoverflow.com/questions/53720531/postgres-array-column-type-to-tbl-list-column-in-r-and-viceversa
-  # Create submission table
-  data$submission <- data$export |>
-    dplyr::mutate(
-      submission_id = current_submission_id,
-      date_time_submitted = Sys.time(),
-      date_submitted = Sys.Date(),
-      project_id = file_data$project_id |>
-        unique() |>
-        sort() |>
-        paste(collapse = ", ")
-    )
-
-  # Delete rows in each database table
-  for (i in 1:length(data)) {
-
-    table_name <- names(data)[i]
-
-    # First we need to DELETE the rows from each database table for this
-    # particular project (WHERE project_id = current_project_id)
-
-    DBI::dbWriteTable(
-      conn = conn,
-      table_name,
-      data[[table_name]],
-      append = TRUE
-    )
-
-    # Give the PostgreSQL database a half second to breathe between writes
-    Sys.sleep(0.5)
-
-  }
-
-  # Add project_id to "enrollment" file data
+  # Add `project_id` to "enrollment" file data
   data$enrollment <- data$enrollment |>
     dplyr::left_join(
       file_data |> dplyr::select(project_id, software_name, orig_project_id),
       by = c("orig_project_id")
-    ) |>
-    dplyr::mutate(
-      submission_id = current_submission_id
     )
 
+  # Add `software_name` to remaining files
   data$client <- data$client |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$disabilities <- data$disabilities |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$education <- data$education |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$employment <- data$employment |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$living <- data$living |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$health <- data$health |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$domestic_violence <- data$domestic_violence |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$income <- data$income |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$benefits <- data$benefits |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$services <- data$services |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   data$exit <- data$exit |>
     dplyr::mutate(
-      software_name = data$export$software_name[1],
-      submission_id = current_submission_id
+      software_name = data$export$software_name[1]
     )
 
   out <- c(
-    "submission",
     "client",
     "enrollment",
     "disabilities",
@@ -412,6 +366,65 @@ prep_tables <- function(data, conn) {
   )
 
   return(data[out])
+
+}
+
+
+delete_from_db <- function(data, conn) {
+
+  id_str <- c(
+    "personal_id",
+    "enrollment_id",
+    "disabilities_id",
+    "employment_education_id",
+    "employment_education_id",
+    "current_living_sit_id",
+    "health_and_dv_id",
+    "health_and_dv_id",
+    "income_benefits_id",
+    "income_benefits_id",
+    "services_id",
+    "exit_id"
+  )
+
+  # Loop through each table in the database (except 'project') and delete any
+  # records that match on the table's `id` value & and `software_name` value,
+  # when compared to the respective uploaded file data
+  for (i in 1:length(data)) {
+
+    table_name <- glue::glue_sql(
+      names(data)[i],
+      .con = conn
+    )
+
+    id_name <- glue::glue_sql(
+      id_str[i],
+      .con = conn
+    )
+
+    software_name <- data[[i]] |>
+      dplyr::slice(1) |>
+      dplyr::pull(software_name) |>
+      glue::glue_sql(.con = conn)
+
+    ids_in_data <- data[[i]] |>
+      dplyr::pull(id_str[i]) |>
+      glue::glue_sql_collapse(sep = "', '")
+
+    sql_stmt <- glue::glue_sql(
+      "
+      DELETE FROM {table_name}
+      WHERE {id_name} IN ('{ids_in_data}') AND software_name = '{software_name}'
+      ",
+      .con = conn
+    )
+
+    DBI::dbExecute(
+      conn = conn,
+      statement = sql_stmt
+    )
+
+  }
 
 }
 
@@ -434,7 +447,7 @@ send_to_db <- function(data, conn) {
     )
 
     # Give the PostgreSQL database a half second to breathe between writes
-    Sys.sleep(0.5)
+    # Sys.sleep(0.5)
 
   }
 
