@@ -231,8 +231,8 @@ mod_living_server <- function(id, living_data, clients_filtered){
     output$living_line_chart <- echarts4r::renderEcharts4r({
 
       line_chart_data() |>
-        echarts4r::e_charts(x = quarter) |>
-        echarts4r::e_line(serie = n, symbol = "circle") |>
+        echarts4r::e_charts(information_date) |>
+        echarts4r::e_line(n) |>
         echarts4r::e_tooltip(trigger = "axis") |>
         echarts4r::e_grid(top = "20%") |>
         echarts4r::e_show_loading()

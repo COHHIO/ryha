@@ -46,49 +46,59 @@ mod_employment_ui <- function(id){
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("employment_pie_chart"),
-            height = "600px"
+            height = "450px"
           )
         )
 
       ),
 
       shiny::column(
-        width = 8,
+        width = 4,
 
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Employed",
-
-            bs4Dash::box(
-              title = "Trend of Employed Type",
-              width = NULL,
-              maximizable = TRUE,
-              echarts4r::echarts4rOutput(
-                outputId = ns("employed_line_chart"),
-                height = "560px"
-              )
-            )
-
-          ),
-
-          shiny::tabPanel(
-            title = "Unemployed",
-
-            bs4Dash::box(
-              title = "Trend of Unemployed Reason",
-              width = NULL,
-              maximizable = TRUE,
-              echarts4r::echarts4rOutput(
-                outputId = ns("unemployed_line_chart"),
-                height = "560px"
-              )
-            )
-
+        bs4Dash::box(
+          title = "# of Youth by Employment Type",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("employment_type_pie_chart"),
+            height = "450px"
           )
-
         )
+
+      ),
+
+      shiny::column(
+        width = 4,
+
+        bs4Dash::box(
+          title = "# of Youth by Reason Not Employed",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("not_employed_reason_pie_chart"),
+            height = "450px"
+          )
+        )
+
+      )
+
+    ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 12,
+
+        bs4Dash::box(
+          title = "Trend of Employed Type",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("employed_line_chart"),
+            height = "560px"
+          )
+        )
+
       )
 
     )
@@ -99,34 +109,38 @@ mod_employment_ui <- function(id){
 #' employment Server Functions
 #'
 #' @noRd
-mod_employment_server <- function(id, filtered_dm){
+mod_employment_server <- function(id, employment_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
     # Total number of Youth in program(s), based on `client.csv` file
     n_youth <- shiny::reactive({
 
-      filtered_dm()$client |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, project_id),
-          by = "submission_id"
-        ) |>
-        dplyr::distinct(project_id, personal_id) |>
+      clients_filtered() |>
         nrow()
 
     })
 
-    # Total number of Youth in program(s) that exist in the `disabilities.csv`
+    # Apply the filters to the employment data
+    employment_data_filtered <- shiny::reactive({
+
+      employment_data |>
+        dplyr::filter(personal_id %in% clients_filtered()$personal_id) |>
+        dplyr::filter(employed %in% c("Yes", "No")) |>
+        dplyr::left_join(
+          clients_filtered() |>
+            dplyr::select(personal_id, software_name, exit_date),
+          by = c("personal_id", "software_name")
+        )
+
+    })
+
+    # Total number of Youth in program(s) that exist in the `employment.csv`
     # file
     n_youth_with_employment_data <- shiny::reactive(
 
-      filtered_dm()$employment |>
-        dplyr::filter(employed %in% c("Yes", "No")) |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, project_id),
-          by = "submission_id"
-        ) |>
-        dplyr::distinct(project_id, personal_id) |>
+      employment_data_filtered() |>
+        dplyr::distinct(personal_id, software_name) |>
         nrow()
 
     )
@@ -156,21 +170,28 @@ mod_employment_server <- function(id, filtered_dm){
     # Create reactive data frame to data to be displayed in pie chart
     pie_chart_data <- shiny::reactive({
 
-      filtered_dm()$employment |>
-        dplyr::inner_join(
-          filtered_dm()$submission |>
-            dplyr::group_by(project_id) |>
-            dplyr::filter(export_end_date == max(export_end_date)) |>
-            dplyr::ungroup() |>
-            dplyr::select(submission_id, project_id),
-          by = "submission_id"
-        ) |>
-        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(personal_id, employed) |>
-        dplyr::distinct(personal_id, employed, .keep_all = TRUE) |>
-        dplyr::count(employed) |>
-        dplyr::arrange(employed) |>
-        tidyr::drop_na()
+      shiny::validate(
+        shiny::need(
+          expr = nrow(employment_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- employment_data_filtered() |>
+        dplyr::select(personal_id, information_date, employed) |>
+        dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
+        dplyr::distinct(personal_id, .keep_all = TRUE) |>
+        dplyr::select(employed)
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(employed, sort = TRUE)
 
     })
 
@@ -178,58 +199,146 @@ mod_employment_server <- function(id, filtered_dm){
     output$employment_pie_chart <- echarts4r::renderEcharts4r({
 
       pie_chart_data() |>
-        echarts4r::e_chart(x = employed) |>
-        echarts4r::e_pie(
-          serie = n,
-          name = "Employed Status",
-          legend = TRUE,
-          label = list(
-            show = TRUE,
-            position = "inside",
-            formatter = "{c}"   # show the numeric value as the label
-          ),
-          radius = c("50%", "70%"),
-          # emphasize the label when hovered over
-          emphasis = list(
-            label = list(
-              show = TRUE,
-              fontSize = "15",
-              fontWeight = "bold"
-            )
-          )
-        ) |>
-        echarts4r::e_legend(bottom = 0) |>   # place legend below chart
-        echarts4r::e_title(
-          subtext = "Chart represents most recent quarter's data for each program selected"
-        ) |>
-        echarts4r::e_tooltip(trigger = "item") |>
-        echarts4r::e_grid(containLabel = TRUE) |>
-        echarts4r::e_show_loading()
+        pie_chart(
+          category = "employed",
+          count = "n"
+        )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    employment_type_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(employment_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- employment_data_filtered() |>
+        dplyr::filter(!is.na(employment_type)) |>
+        dplyr::select(personal_id, information_date, employment_type) |>
+        dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
+        dplyr::distinct(personal_id, .keep_all = TRUE) |>
+        dplyr::select(employment_type)
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(employment_type, sort = TRUE)
+
+    })
+
+    # Create employment type pie chart
+    output$employment_type_pie_chart <- echarts4r::renderEcharts4r({
+
+      employment_type_pie_chart_data() |>
+        pie_chart(
+          category = "employment_type",
+          count = "n"
+        )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    not_employed_reason_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(employment_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- employment_data_filtered() |>
+        dplyr::filter(!is.na(not_employed_reason)) |>
+        dplyr::select(personal_id, information_date, not_employed_reason) |>
+        dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
+        dplyr::distinct(personal_id, .keep_all = TRUE) |>
+        dplyr::select(not_employed_reason)
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(not_employed_reason, sort = TRUE)
+
+    })
+
+    # Create "not employed reason" type pie chart
+    output$not_employed_reason_pie_chart <- echarts4r::renderEcharts4r({
+
+      not_employed_reason_pie_chart_data() |>
+        pie_chart(
+          category = "not_employed_reason",
+          count = "n"
+        )
 
     })
 
     # Create reactive data frame to data to be displayed in line chart
     employed_line_chart_data <- shiny::reactive({
 
-      filtered_dm()$employment |>
-        dplyr::filter(employed == "Yes") |>
+      out <- employment_data_filtered() |>
+        dplyr::filter(!is.na(exit_date)) |>
+        dplyr::group_by(personal_id) |>
+        dplyr::mutate(n = dplyr::n_distinct(information_date)) |>
+        dplyr::filter(n >= 2L) |>
+        dplyr::select(-n)
+
+      shiny::validate(
+        shiny::need(
+          expr = any(
+            nrow(out) >= 1L,
+            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
+          ),
+          message = "No data to display"
+        )
+      )
+
+      out <- out |>
+        dplyr::filter(
+          information_date %in% c(
+            min(information_date, na.rm = TRUE),
+            max(information_date, na.rm = TRUE)
+          )
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = any(
+            nrow(out) >= 1L,
+            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
+          ),
+          message = "No data to display"
+        )
+      )
+
+      out <- out |>
         dplyr::mutate(
-          employment_type = dplyr::if_else(
-            is.na(employment_type),
-            "Not provided",
-            employment_type
+          information_date = dplyr::if_else(
+            information_date == min(information_date, na.rm = TRUE),
+            "Entry",
+            "Exit"
+          ),
+          information_date = factor(
+            information_date,
+            levels = c("Entry", "Exit")
           )
         ) |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
-          by = "submission_id"
-        ) |>
-        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(quarter, personal_id, employment_type) |>
-        dplyr::distinct(quarter, personal_id, employment_type) |>
-        dplyr::count(quarter, employment_type) |>
-        dplyr::arrange(employment_type) |>
-        dplyr::group_by(employment_type)
+        dplyr::ungroup() |>
+        dplyr::count(employed, information_date, sort = TRUE) |>
+        dplyr::group_by(employed)
 
     })
 
@@ -237,47 +346,10 @@ mod_employment_server <- function(id, filtered_dm){
     output$employed_line_chart <- echarts4r::renderEcharts4r({
 
       employed_line_chart_data() |>
-        echarts4r::e_charts(x = quarter) |>
-        echarts4r::e_line(serie = n, symbol = "circle") |>
+        echarts4r::e_charts(information_date) |>
+        echarts4r::e_line(n) |>
         echarts4r::e_tooltip(trigger = "axis") |>
-        echarts4r::e_grid(top = "10%") |>
-        echarts4r::e_show_loading()
-
-    })
-
-    # Create reactive data frame to data to be displayed in line chart
-    unemployed_line_chart_data <- shiny::reactive({
-
-      filtered_dm()$employment |>
-        dplyr::filter(employed == "No") |>
-        dplyr::mutate(
-          not_employed_reason = dplyr::if_else(
-            is.na(not_employed_reason),
-            "Not provided",
-            not_employed_reason
-          )
-        ) |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
-          by = "submission_id"
-        ) |>
-        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(quarter, personal_id, not_employed_reason) |>
-        dplyr::distinct(quarter, personal_id, not_employed_reason) |>
-        dplyr::count(quarter, not_employed_reason) |>
-        dplyr::arrange(not_employed_reason) |>
-        dplyr::group_by(not_employed_reason)
-
-    })
-
-    # Create unemployed trend line chart
-    output$unemployed_line_chart <- echarts4r::renderEcharts4r({
-
-      unemployed_line_chart_data() |>
-        echarts4r::e_charts(x = quarter) |>
-        echarts4r::e_line(serie = n, symbol = "circle") |>
-        echarts4r::e_tooltip(trigger = "axis") |>
-        echarts4r::e_grid(top = "10%") |>
+        echarts4r::e_grid(top = "20%") |>
         echarts4r::e_show_loading()
 
     })
