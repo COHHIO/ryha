@@ -10,10 +10,10 @@ app_server <- function(input, output, session) {
   # w$show()
 
   # Use this for testing
-  # dm <- readRDS("db_data/db_data.rds")
+  dm <- readRDS("db_data/db_data.rds")
 
   # Create dm object. This is run once per session
-  dm <- create_dm()
+  # dm <- create_dm()
 
   # Create a reactiveValues list to hold summary statistics
   # rctv <- shiny::reactiveValues(
