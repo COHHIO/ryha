@@ -38,15 +38,16 @@ mod_filters_ui <- function(id){
           width = "100%"
         ),
 
-        # Entry date filter
+
+        # Active date filter
         shiny::dateRangeInput(
-          inputId = ns("entry_date_filter_global"),
-          label = "Entry Date Between",
+          inputId = ns("active_date_filter_global"),
+          label = "Active During Period",
           width = "460px",
           start = NULL,
-          end = NULL,
+          end = lubridate::today(),
           min = NULL,
-          max = NULL
+          max = lubridate::today()
         ),
 
         # Gender filter
@@ -143,11 +144,9 @@ mod_filters_server <- function(id, dm){
 
       shiny::updateDateRangeInput(
         session = session,
-        inputId = "entry_date_filter_global",
+        inputId = "active_date_filter_global",
         start = min( dm$enrollment$entry_date ),
-        end = max( dm$enrollment$entry_date ),
-        min = min( dm$enrollment$entry_date ),
-        max = max( dm$enrollment$entry_date )
+        min = min( dm$enrollment$entry_date )
       )
 
       shinyWidgets::updatePickerInput(
@@ -203,6 +202,7 @@ mod_filters_server <- function(id, dm){
     })
 
     # Created filtered {dm} data
+
     clients_filtered <- shiny::eventReactive(input$apply_filters, {
 
      dm$project |>
@@ -210,12 +210,9 @@ mod_filters_server <- function(id, dm){
         dplyr::select(project_id) |>
         dplyr::inner_join(
           dm$enrollment |>
+            # Remove individuals who entered *after* the later active date
             dplyr::filter(
-              dplyr::between(
-                x = entry_date,
-                left = input$entry_date_filter_global[1],
-                right = input$entry_date_filter_global[2]
-              )
+              entry_date < input$active_date_filter_global[2]
             ),
           by = "project_id"
         ) |>
@@ -246,9 +243,12 @@ mod_filters_server <- function(id, dm){
           by = c("personal_id", "software_name")
         ) |>
         dplyr::left_join(
-          dm$exit |> dplyr::select(personal_id, software_name, exit_date),
+          dm$exit |>
+            dplyr::select(personal_id, software_name, exit_date),
           by = c("personal_id", "software_name")
         ) |>
+        # Remove individuals who exited *before* the first active date
+        dplyr::filter(is.na(exit_date) | exit_date > input$active_date_filter_global[1]) |>
         dplyr::distinct(personal_id, software_name, ssn, ssn_data_quality, exit_date)
 
       # if (input$age_missing_global) {
