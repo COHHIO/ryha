@@ -9,7 +9,7 @@
 #'
 #' @description A fct function
 #'
-#' @return The return value, if any, from executing the function.
+#' @return An {echarts4r} interactive pie chart
 #'
 #' @noRd
 #'
@@ -25,7 +25,7 @@ pie_chart <- function(data, category, count) {
     echarts4r::e_charts_(x = category) |>
     echarts4r::e_pie_(
       serie = count,
-      name = "Disability Type",
+      name = category |> janitor::make_clean_names(case = "title"),
       legend = TRUE,
       label = list(
         show = TRUE,
@@ -44,7 +44,7 @@ pie_chart <- function(data, category, count) {
     ) |>
     echarts4r::e_legend(bottom = 0) |>   # place legend below chart
     echarts4r::e_title(
-      subtext = "Chart represents most recent quarter's data for each program selected"
+      subtext = "Chart represents most recent data\nfor each individual"
     ) |>
     echarts4r::e_tooltip(trigger = "item") |>
     echarts4r::e_grid(containLabel = TRUE) |>

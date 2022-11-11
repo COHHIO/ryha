@@ -4,12 +4,10 @@
 \alias{read_client}
 \title{Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table}
 \usage{
-read_client(file, submission_id)
+read_client(file)
 }
 \arguments{
 \item{file}{String, the full path to the .csv file}
-
-\item{submission_id}{Integer, the Submission ID associated with this upload}
 }
 \value{
 A data frame, containing the transformed data to be written out to
@@ -24,8 +22,7 @@ Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table
 path <- "path/to/Client.csv"
 
 read_client(
-  file = path,
-  submission_id = 1L
+  file = path
 )
 
 }

@@ -431,16 +431,15 @@
     },
     "dm": {
       "Package": "dm",
-      "Version": "0.2.8",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "1ca151bdd8047ec3fc343f3b1a844247",
+      "Hash": "875dcd0297f056177e68d58b050294b2",
       "Requirements": [
         "DBI",
         "backports",
         "cli",
         "dplyr",
-        "ellipsis",
         "glue",
         "igraph",
         "lifecycle",
@@ -457,10 +456,10 @@
     },
     "dplyr": {
       "Package": "dplyr",
-      "Version": "1.0.8",
+      "Version": "1.0.10",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ef47665e64228a17609d6df877bf86f2",
+      "Hash": "539412282059f7f0c07295723d23f987",
       "Requirements": [
         "R6",
         "generics",
@@ -967,15 +966,14 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.6.2",
+      "Version": "1.8.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "43f228eb4b49093d1c8a5c93cae9efe9",
+      "Hash": "f2316df30902c81729ae9de95ad5a608",
       "Requirements": [
         "cli",
-        "crayon",
-        "ellipsis",
         "fansi",
+        "glue",
         "lifecycle",
         "rlang",
         "utf8",
@@ -1135,10 +1133,10 @@
     },
     "readr": {
       "Package": "readr",
-      "Version": "2.1.2",
+      "Version": "2.1.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "9c59de1357dc209868b5feb5c9f0fe2f",
+      "Hash": "2dfbfc673ccb3de3d8836b4b3bd23d14",
       "Requirements": [
         "R6",
         "cli",
@@ -1378,6 +1376,18 @@
         "shiny"
       ]
     },
+    "shinyjs": {
+      "Package": "shinyjs",
+      "Version": "2.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "802e4786b353a4bb27116957558548d5",
+      "Requirements": [
+        "digest",
+        "jsonlite",
+        "shiny"
+      ]
+    },
     "snakecase": {
       "Package": "snakecase",
       "Version": "0.11.0",
@@ -1570,12 +1580,12 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.3.8",
+      "Version": "0.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ecf749a1b39ea72bd9b51b76292261f1",
+      "Hash": "0e3dfc070b2a8f0478fcdf86fb33355d",
       "Requirements": [
-        "ellipsis",
+        "cli",
         "glue",
         "rlang"
       ]
@@ -1590,10 +1600,10 @@
     },
     "vroom": {
       "Package": "vroom",
-      "Version": "1.5.7",
+      "Version": "1.6.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "976507b5a105bc3bdf6a5a5f29e0684f",
+      "Hash": "64f81fdead6e0d250fb041e175d123ab",
       "Requirements": [
         "bit64",
         "cli",

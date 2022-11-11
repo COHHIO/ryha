@@ -53,7 +53,7 @@ process_data <- function(file) {
   # List the files (full paths) in the temp directory
   files_in_tmp <- fs::dir_ls(tmp_dir)
 
-  #
+  # List the path to each file
   files_list <- list(
     client = stringr::str_subset(string = files_in_tmp, pattern = "Client.csv$"),
     disabilities = stringr::str_subset(string = files_in_tmp, pattern = "Disabilities.csv$"),
@@ -67,9 +67,13 @@ process_data <- function(file) {
     enrollment = stringr::str_subset(string = files_in_tmp, pattern = "Enrollment.csv$"),
     services = stringr::str_subset(string = files_in_tmp, pattern = "Services.csv$"),
     project = stringr::str_subset(string = files_in_tmp, pattern = "Project.csv$"),
-    exit = stringr::str_subset(string = files_in_tmp, pattern = "Exit.csv$")
+    organization = stringr::str_subset(string = files_in_tmp, pattern = "Organization.csv$"),
+    exit = stringr::str_subset(string = files_in_tmp, pattern = "Exit.csv$"),
+    export = stringr::str_subset(string = files_in_tmp, pattern = "Export.csv$")
   )
 
+  # Create a list of the corresponding `read_*()` functions for each file in
+  # `files_list`
   funcs_list <- list(
     client = read_client,
     disabilities = read_disabilities,
@@ -83,122 +87,367 @@ process_data <- function(file) {
     enrollment = read_enrollment,
     services = read_services,
     project = read_project,
-    exit = read_exit
+    organization = read_organization,
+    exit = read_exit,
+    export = read_export
   )
 
-  # data <- purrr::map(
-  #   .x = funcs_list,
-  #   .f = rlang::exec,
-  #   files_list
-  # )
+  # Create an empty list to store the ingested data for each table
+  data <- list(
+    client = NULL,
+    disabilities = NULL,
+    education = NULL,
+    employment = NULL,
+    living = NULL,
+    health = NULL,
+    domestic_violence = NULL,
+    income = NULL,
+    benefits = NULL,
+    enrollment = NULL,
+    services = NULL,
+    project = NULL,
+    organization = NULL,
+    exit = NULL,
+    export = NULL
+  )
 
 
+  # Read in each file one at a time, creating a list of data frames for each
+  # table; this loop is an all-or-nothing approach, the `data` object will
+  # either include all of the data frames (if successful) or the first
+  # warning/error message encountered
+  for (i in 1:length(files_list)) {
 
-  # Get the data from the individual .csv file
+    temp <- tryCatch(
+      {
+        rlang::exec(funcs_list[[i]], files_list[[i]])
+      },
+      error = function(cond) {
+        out <- glue::glue(
+          "
+          There was an error in processing the \"{basename(files_list[[i]])}\" file.
+          Please check your file export settings, re-download the .zip folder, and try again.
+          "
+        )
+        return(out)
+      },
+      warning = function(cond) {
+        out <- glue::glue(
+          "
+          There was a warning in processing the \"{basename(files_list[[i]])}\" file.
+          Please check your file export settings, re-download the .zip folder, and try again.
+          This is most likely the result of incorrectly formatted dates.
+          "
+        )
+        return(out)
+      }
+    )
 
-  # Perform whatever necessary ETL we need to do on it (joining to lookup table,
-  # specifying columns, pivoting, etc.)
+    if (!"data.frame" %in% class(temp)) {
 
+      data <- temp
 
+      {break}
 
-  # Here's the function that governs
-  # process_client()
+    } else {
 
+      data[[i]] <- temp
 
+    }
 
-  # Move to Dropbox data lake
+  }
 
-
-
-  # TODO // Decide if we need to do this last...
-  # I imagine we *might* still need a temp directory if the user is a non-
-  # grantee (i.e., we aren't storing their data in the Dropbox data lake).
-  # If the user *is* a grantee and we are storing their data in the data lake,
-  # then we should be able to delete this temp directory without issue.
-  fs::dir_delete(tmp_dir)
-
-  # Generate "Submission" data
-
-  return(files_list)
+  return(data)
 
 }
 
 
 
+prep_tables <- function(data, conn) {
 
-generate_submission_id <- function(dir, contact_first_name, contact_last_name,
-                                   contact_email, program_id,
-                                   period_start_date, period_end_date) {
-
-  # Handle "first" submission, to generate ID 1, when there is no historical
-  # "submission" file in the data lake
-  existing_sub_files <- fs::dir_info(
-    path = dir,
-    recurse = TRUE,
-    type = "file"
-  )
-
-  if (nrow(existing_sub_files) == 0) {
-
-    submission_id <- 1L
-
-  } else {
-
-    max_sub_id <- arrow::read_parquet(
-      file = "some_file",
-      col_select = SubmissionID
+  # Retrieve the project, organization, and software information from the
+  # uploaded data
+  file_data <- data$project |>
+    dplyr::rename(orig_project_id = project_id) |>
+    dplyr::left_join(
+      data$organization |> dplyr::select(organization_id, organization_name),
+      by = "organization_id"
     ) |>
-      dplyr::filter(SubmissionID == max(SubmissionID)) |>
-      dplyr::collect() |>
-      dplyr::pull(SubmissionID)
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
 
-    # Stop if there isn't exactly 1 max SubmissionID
-    if (length(max_sub_id) != 1L) {
+  # If the "project" table exists in the database...
+  if ("project" %in% DBI::dbListTables(conn = conn)) {
 
-      rlang::abort(
-        "Found the same `max` SubmissionID in the `Submission` data lake table"
+    # Retrieve the existing project, organization, and software information from
+    # the database
+    res <- DBI::dbSendQuery(
+      conn = conn,
+      statement = "
+      SELECT
+        project_id,
+        project_name,
+        orig_project_id,
+        organization_name,
+        software_name
+      FROM project
+      ORDER BY project_id
+    "
+    )
+    db_data <- DBI::dbFetch(res)
+    DBI::dbClearResult(res)
+
+    # Join the database data to the file data; this will allow us to quickly
+    # identify which projects in the uploaded file are not yet in the database
+    file_data <- file_data |>
+      dplyr::left_join(
+        db_data,
+        by = c(
+          "orig_project_id",
+          "project_name",
+          "organization_name",
+          "software_name"
+        )
       )
+
+    # If there are any "new" projects in the file that don't exist in the
+    # database...
+    if (any(is.na(file_data$project_id))) {
+
+      # Determine the max "project_id" integer value in the database
+      max_current_project_id <- ifelse(
+        nrow(db_data) >= 1L,
+        max(db_data$project_id),
+        0L
+      )
+
+      # Isolate the projects in the file that already exist in the database
+      file_data_existing_projects <- file_data |>
+        dplyr::filter(!is.na(project_id))
+
+      # Isolate the "new" projects in the file that *don't* exist in the
+      # database, and define the `project_id` values for each new project
+      file_data_new_projects <- file_data |>
+        dplyr::filter(is.na(project_id)) |>
+        dplyr::mutate(project_id = max_current_project_id + dplyr::row_number())
+
+      # Append new projects to "project" database table
+      DBI::dbWriteTable(
+        conn = conn,
+        name = "project",
+        value = file_data_new_projects,
+        append = TRUE
+      )
+
+      # Append the new projects (and their newly-defined `project_id` values) to
+      # existing projects
+      file_data <- file_data_existing_projects |>
+        dplyr::bind_rows(file_data_new_projects)
 
     }
 
-    submission_id <- max_sub_id + 1L
+    # If the "project" table does *not* yet exist in the database...
+    # (this handles the first ever submission, if the table hasn't been set up)
+  } else {
+
+    # Set the "project_id" value for each project in the uploaded file
+    file_data_new_projects <- file_data |>
+      dplyr::mutate(project_id = dplyr::row_number())
+
+    # Append new projects to "project" database table
+    DBI::dbWriteTable(
+      conn = conn,
+      name = "project",
+      value = file_data_new_projects,
+      append = TRUE
+    )
+
+    file_data <- file_data_new_projects
 
   }
 
-  # TODO // Figure out how to retrieve "ProgramID" from `Program` data lake table
+  # # Delete rows in each database table
+  # for (i in 1:length(data)) {
+  #
+  #   table_name <- names(data)[i]
+  #
+  #   # First we need to DELETE the rows from each database table for this
+  #   # particular project (WHERE project_id = current_project_id)
+  #
+  #   DBI::dbWriteTable(
+  #     conn = conn,
+  #     table_name,
+  #     data[[table_name]],
+  #     append = TRUE
+  #   )
+  #
+  #   # Give the PostgreSQL database a half second to breathe between writes
+  #   Sys.sleep(0.5)
+  #
+  # }
 
-  sub_data <- tibble::tibble(
-    SubmissionID = submission_id,
-    DateTimeSubmitted = Sys.time(),
-    DateSubmitted = Sys.Date(),
-    SourceContactFirstName = contact_first_name,
-    SourceContactLastName = contact_last_name,
-    SourceContactEmailAddress = contact_email,
-    ProgramID = program_id,
-    PeriodDateStart = period_start_date,
-    PeriodDateEnd = period_end_date,
+  # Add `project_id` to "enrollment" file data
+  data$enrollment <- data$enrollment |>
+    dplyr::left_join(
+      file_data |> dplyr::select(project_id, software_name, orig_project_id),
+      by = c("orig_project_id")
+    )
+
+  # Add `software_name` to remaining files
+  data$client <- data$client |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$disabilities <- data$disabilities |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$education <- data$education |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$employment <- data$employment |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$living <- data$living |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$health <- data$health |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$domestic_violence <- data$domestic_violence |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$income <- data$income |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$benefits <- data$benefits |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$services <- data$services |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  data$exit <- data$exit |>
+    dplyr::mutate(
+      software_name = data$export$software_name[1]
+    )
+
+  out <- c(
+    "client",
+    "enrollment",
+    "disabilities",
+    "education",
+    "employment",
+    "living",
+    "health",
+    "domestic_violence",
+    "income",
+    "benefits",
+    "services",
+    "exit"
   )
 
+  return(data[out])
 
-  last_submission <- arrow::read_parquet(
-    file = file,
-    col_select = c(SubmissionID, DatetimeSubmitted)
-  ) |>
-    dplyr::filter(SubmissionID == max(SubmissionID)) |>
-    dplyr::collect()
+}
 
-  last_submission_id <- last_submission |>
-    dplyr::pull(SubmissionID)
 
-  if (length(last_submission_id) != 1L) {
+delete_from_db <- function(data, conn) {
 
-    if (length(last_submission_id) == 0) {
+  id_str <- c(
+    "personal_id",
+    "enrollment_id",
+    "disabilities_id",
+    "employment_education_id",
+    "employment_education_id",
+    "current_living_sit_id",
+    "health_and_dv_id",
+    "health_and_dv_id",
+    "income_benefits_id",
+    "income_benefits_id",
+    "services_id",
+    "exit_id"
+  )
 
-      rlang::inform("First submission")
+  # Loop through each table in the database (except 'project') and delete any
+  # records that match on the table's `id` value & and `software_name` value,
+  # when compared to the respective uploaded file data
+  for (i in 1:length(data)) {
 
-    }
+    table_name <- glue::glue_sql(
+      names(data)[i],
+      .con = conn
+    )
 
-    rlang::abort("Expected ")
+    id_name <- glue::glue_sql(
+      id_str[i],
+      .con = conn
+    )
+
+    software_name <- data[[i]] |>
+      dplyr::slice(1) |>
+      dplyr::pull(software_name) |>
+      glue::glue_sql(.con = conn)
+
+    ids_in_data <- data[[i]] |>
+      dplyr::pull(id_str[i]) |>
+      glue::glue_sql_collapse(sep = "', '")
+
+    sql_stmt <- glue::glue_sql(
+      "
+      DELETE FROM {table_name}
+      WHERE {id_name} IN ('{ids_in_data}') AND software_name = '{software_name}'
+      ",
+      .con = conn
+    )
+
+    DBI::dbExecute(
+      conn = conn,
+      statement = sql_stmt
+    )
+
+  }
+
+}
+
+
+
+send_to_db <- function(data, conn) {
+
+  for (i in 1:length(data)) {
+
+    table_name <- names(data)[i]
+
+    # First we need to DELETE the rows from each database table for this
+    # particular project (WHERE project_id = current_project_id)
+
+    DBI::dbWriteTable(
+      conn = conn,
+      table_name,
+      data[[table_name]],
+      append = TRUE
+    )
+
+    # Give the PostgreSQL database a half second to breathe between writes
+    # Sys.sleep(0.5)
 
   }
 

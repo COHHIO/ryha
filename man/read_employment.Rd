@@ -4,12 +4,10 @@
 \alias{read_employment}
 \title{Ingest "EmploymentEducation.csv" file and perform ETL prep for "EMPLOYMENT" database table}
 \usage{
-read_employment(file, submission_id)
+read_employment(file)
 }
 \arguments{
 \item{file}{String, the full path to the .csv file}
-
-\item{submission_id}{Integer, the Submission ID associated with this upload}
 }
 \value{
 A data frame, containing the transformed data to be written out to

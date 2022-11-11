@@ -5,3 +5,5 @@ data_lake/
 db_data/
 *.csv
 *.zip
+hkey.RDS
+unhash.R

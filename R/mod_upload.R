@@ -17,9 +17,14 @@ mod_upload_ui <- function(id){
         width = 3,
 
         shiny::fileInput(
-          inputId = "upload_zip",
-          label = "Upload HMIS .Zip File",
+          inputId = ns("choose_zip"),
+          label = "Choose HMIS .Zip File",
           accept = ".zip"
+        ),
+
+        shiny::actionButton(
+          inputId = ns("upload_btn"),
+          label = "Upload"
         )
 
       )
@@ -36,29 +41,58 @@ mod_upload_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    uploaded_data <- shiny::reactive({
+    w <- waiter::Waiter$new(
+      html = shiny::tagList(
+        waiter::spin_fading_circles(),
+        "Please Wait..."
+      )
+    )
 
-      file <- input$upload_zip
+    # Process the data in the uploaded .zip & write to Postgres
+    shiny::observeEvent(input$upload_btn, {
 
-      # Require that the uploaded file is indeed a .zip file
-      ext <- tools::file_ext(file$datapath)
+      shiny::req(input$choose_zip$datapath)
 
-      shiny::req(file)
+      w$show()
 
-      shiny::validate(
-        shiny::need(ext == "csv", "Please upload a .zip file")
+      # Establish connection to PostgreSQL database
+      con <- DBI::dbConnect(
+        drv = RPostgres::Postgres(),
+        dbname = Sys.getenv("AWS_POSTGRES_DBNAME"),
+        host = Sys.getenv("AWS_POSTGRES_HOST"),
+        port = Sys.getenv("AWS_POSTGRES_PORT"),
+        user = Sys.getenv("AWS_POSTGRES_USER"),
+        password = Sys.getenv("AWS_POSTGRES_PWD")
       )
 
+      Sys.sleep(0.5)
+
+      out <- process_data(file = input$choose_zip$datapath)
+
+      if ("character" %in% class(out)) {
+
+        shiny::modalDialog(
+          title = "There was an issue with the upload",
+          out
+        ) |>
+          shiny::showModal()
+
+      } else {
+
+        data <- out |>
+          prep_tables(conn = con)
+
+        delete_from_db(data = data, conn = con)
+
+        send_to_db(data = data, conn = con)
+
+      }
+
+      DBI::dbDisconnect(conn = con)
+
+      w$hide()
+
     })
-
-    shiny::modalDialog(
-      title = "Files Missing from Upload",
-      "We could not find the following files in the .zip file you uploaded:",
-      shiny::br(),
-      vec_to_ul(vec = c("File1", "File2"))
-    ) |>
-      shiny::showModal()
-
 
   })
 }

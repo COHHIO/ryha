@@ -4,7 +4,7 @@
 # raw .csv file into an arrow table that is ready to be written to the database
 
 
-#' Lookup Plain-English Definitions from Integer Codes
+#' Look up Plain-English Definitions from Integer Codes
 #'
 #' @description This is a helper function that gets used in most downstream
 #'   `read_*()` functions to replace integer codes with their associated
@@ -27,7 +27,6 @@ lookup_codes <- function(var, codes) {
 #' Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table
 #'
 #' @param file String, the full path to the .csv file
-#' @param submission_id Integer, the Submission ID associated with this upload
 #'
 #' @return A data frame, containing the transformed data to be written out to
 #'   the "CLIENT" database table
@@ -40,14 +39,13 @@ lookup_codes <- function(var, codes) {
 #' path <- "path/to/Client.csv"
 #'
 #' read_client(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
-read_client <- function(file, submission_id) {
+read_client <- function(file) {
 
-  data <- readr::read_csv(
+  client <- readr::read_csv(
     file = file,
     # only read in columns needed for "CLIENT" database table
     col_select = c(
@@ -88,11 +86,23 @@ read_client <- function(file, submission_id) {
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    janitor::clean_names(case = "snake")
 
-  return(data)
+  # Hash the SSN values
+  ssns_hashed <- c()
+
+  for (s in client$ssn) {
+
+    ssns_hashed <- append(
+      ssns_hashed,
+      hash(s, key = readRDS(here::here("hkey.RDS")))
+    )
+
+  }
+
+  client$ssn <- ssns_hashed
+
+  return(client)
 
 }
 
@@ -118,9 +128,9 @@ read_client <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_disabilities <- function(file, submission_id) {
+read_disabilities <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
@@ -148,11 +158,7 @@ read_disabilities <- function(file, submission_id) {
         lookup_codes(var = DisabilityResponse, GeneralCodes),
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -178,9 +184,9 @@ read_disabilities <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_education <- function(file, submission_id) {
+read_education <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "EDUCATION" database table
     col_select = c(
@@ -214,11 +220,7 @@ read_education <- function(file, submission_id) {
         codes = DataCollectionStageCodes
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -243,9 +245,9 @@ read_education <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_employment <- function(file, submission_id) {
+read_employment <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "EMPLOYMENT" database table
     col_select = c(
@@ -284,11 +286,7 @@ read_employment <- function(file, submission_id) {
         codes = DataCollectionStageCodes
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -313,9 +311,9 @@ read_employment <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_living <- function(file, submission_id) {
+read_living <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "LIVING" database table
     col_select = c(
@@ -341,11 +339,7 @@ read_living <- function(file, submission_id) {
         codes = GeneralCodes
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -372,9 +366,9 @@ read_living <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_health <- function(file, submission_id) {
+read_health <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "HEALTH" database table
     col_select = c(
@@ -399,11 +393,8 @@ read_health <- function(file, submission_id) {
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(health_and_dv_id = health_and_dvid)
 
 }
 
@@ -428,9 +419,9 @@ read_health <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_domestic_violence <- function(file, submission_id) {
+read_domestic_violence <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "DOMESTIC_VIOLENCE" database table
     col_select = c(
@@ -460,11 +451,8 @@ read_domestic_violence <- function(file, submission_id) {
         codes = GeneralCodes
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(health_and_dv_id = health_and_dvid)
 
 }
 
@@ -490,7 +478,7 @@ read_domestic_violence <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_income <- function(file, submission_id) {
+read_income <- function(file) {
 
   readr::read_csv(
     file = file,
@@ -532,9 +520,7 @@ read_income <- function(file, submission_id) {
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -560,7 +546,7 @@ read_income <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_benefits <- function(file, submission_id) {
+read_benefits <- function(file) {
 
   readr::read_csv(
     file = file,
@@ -594,9 +580,7 @@ read_benefits <- function(file, submission_id) {
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    janitor::clean_names(case = "snake")
 
 }
 
@@ -622,9 +606,9 @@ read_benefits <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_enrollment <- function(file, submission_id) {
+read_enrollment <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "ENROLLMENT" database table
     col_select = c(
@@ -690,9 +674,9 @@ read_enrollment <- function(file, submission_id) {
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
       )
-    )
-
-  return(data)
+    ) |>
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(orig_project_id = project_id)
 
 }
 
@@ -717,9 +701,9 @@ read_enrollment <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_services <- function(file, submission_id) {
+read_services <- function(file) {
 
-  data <- readr::read_csv(
+  readr::read_csv(
     file = file,
     # only read in columns needed for "Services" database table
     col_select = c(
@@ -746,13 +730,10 @@ read_services <- function(file, submission_id) {
         codes = PATHReferralOutcomeCodes
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
-
-  return(data)
+    janitor::clean_names(case = "snake")
 
 }
+
 
 #' Ingest "Project.csv" file and perform ETL prep for "PROJECT" database table
 #'
@@ -774,21 +755,23 @@ read_services <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_project <- function(file, submission_id) {
+read_project <- function(file) {
 
   readr::read_csv(
     file = file,
-    # only read in columns needed for "PROGRAM" database table
+    # only read in columns needed for "PROJECT" database table
     col_select = c(
       ProjectID,
       OrganizationID,
       ProjectName,
-      ProjectType
+      ProjectType,
+      OperatingStartDate
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
-      ProjectType = readr::col_integer()
+      ProjectType = readr::col_integer(),
+      OperatingStartDate = readr::col_date()
     )
   ) |>
     # replace the "ProjectType" codes with the plain-English description
@@ -798,12 +781,48 @@ read_project <- function(file, submission_id) {
         codes = ProjectTypeCodes
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    janitor::clean_names(case = "snake")
 
 }
 
+
+#' Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PROJECT" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Organization.csv"
+#'
+#' read_organization(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_organization <- function(file) {
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "PROJECT" database table
+    col_select = c(
+      OrganizationID,
+      OrganizationName
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character()
+    )
+  ) |>
+    janitor::clean_names(case = "snake")
+
+}
 
 
 #' Ingest "Exit.csv" file and perform ETL prep for "EXIT" database table
@@ -826,7 +845,7 @@ read_project <- function(file, submission_id) {
 #' )
 #'
 #' }
-read_exit <- function(file, submission_id) {
+read_exit <- function(file) {
 
   readr::read_csv(
     file = file,
@@ -878,9 +897,91 @@ read_exit <- function(file, submission_id) {
         .fns = function(x) lookup_codes(var = x, codes = WorkerResponseCodes)
       )
     ) |>
-    # add the 'SubmissionID' as the first column in the data
-    dplyr::mutate(SubmissionID = submission_id) |>
-    dplyr::relocate(SubmissionID, .before = dplyr::everything())
+    janitor::clean_names(case = "snake")
 
 }
 
+
+#' Ingest "Export.csv" file and perform ETL prep for "PROJECT" and "SUBMISSION"
+#' database tables
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PROJECT" and "SUBMISSION" database tables
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Export.csv"
+#'
+#' read_export(
+#'   file = path,
+#'   submission_id = 1L
+#' )
+#'
+#' }
+read_export <- function(file) {
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "PROGRAM" database table
+    col_select = c(
+      ExportID,
+      SourceContactFirst,
+      SourceContactLast,
+      SourceContactEmail,
+      ExportStartDate:SoftwareName
+    ),
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      ExportStartDate = readr::col_date(),
+      ExportEndDate = readr::col_date()
+    )
+  ) |>
+    janitor::clean_names(case = "snake")
+
+}
+
+
+#' Hash a value with a key
+#'
+#' @param x A character string
+#' @param key A hashing dictionary key
+#'
+#' @return An hashed string
+#'
+#' @examples
+#' \dontrun{
+#'
+#' hash("blah", key = my_key)
+#'
+#' }
+hash <- function(x, key) {
+
+  stringr::str_replace_all(x, "-", "")
+
+  if (!is.na(x) & nchar(x) == 9) {
+
+    x_sep <- strsplit(x, split = "")[[1]]
+
+    out <- c()
+
+    for (s in x_sep) {
+
+      out <- append(out, key[[s]])
+
+    }
+
+    out |> paste(collapse = "")
+
+  } else {
+
+    NA
+
+  }
+
+}

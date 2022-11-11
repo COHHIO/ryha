@@ -75,52 +75,37 @@ mod_living_ui <- function(id){
 #' living Server Functions
 #'
 #' @noRd
-mod_living_server <- function(id, filtered_dm){
+mod_living_server <- function(id, living_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # filtered_living_data <- shiny::reactive({
-    #
-    #   if (input$dedup_status) {
-    #
-    #     out <- filtered_dm() |>
-    #       # ensure only valid SSNs
-    #       dm::dm_filter(client, ssn_data_quality == "Full SSN reported") |>
-    #       dm::
-    #
-    #       dplyr::filter(ssn_data_quality == "Full SSN reported")
-    #     dplyr::distinct()
-    #
-    #   } else {
-    #
-    #
-    #
-    #   }
-    #
-    # })
-
-    # TODO // This assumes that the same individual is not in two different
-    # projects/grantees (i.e., not de-duplicating across projects)
+    # Total number of Youth in program(s), based on `client.csv` file
     n_youth <- shiny::reactive({
 
-      filtered_dm()$client |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, project_id),
-          by = "submission_id"
-        ) |>
-        dplyr::distinct(project_id, personal_id) |>
+      clients_filtered() |>
         nrow()
 
     })
 
+    # Apply the filters to the living data
+    living_data_filtered <- shiny::reactive({
+
+      living_data |>
+        dplyr::filter(personal_id %in% clients_filtered()$personal_id) |>
+        dplyr::left_join(
+          clients_filtered() |>
+            dplyr::select(personal_id, software_name, exit_date),
+          by = c("personal_id", "software_name")
+        )
+
+    })
+
+    # Total number of Youth in program(s) that exist in the
+    # `current_living_situation.csv` file
     n_youth_with_living_data <- shiny::reactive(
 
-      filtered_dm()$current_living_situation |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, project_id),
-          by = "submission_id"
-        ) |>
-        dplyr::distinct(project_id, personal_id) |>
+      living_data_filtered() |>
+        dplyr::distinct(personal_id, software_name) |>
         nrow()
 
     )
@@ -150,19 +135,28 @@ mod_living_server <- function(id, filtered_dm){
     # Create reactive data frame to data to be displayed in pie chart
     pie_chart_data <- shiny::reactive({
 
-      filtered_dm()$current_living_situation |>
-        dplyr::inner_join(
-          filtered_dm()$submission |>
-            dplyr::group_by(project_id) |>
-            dplyr::filter(export_end_date == max(export_end_date)) |>
-            dplyr::ungroup() |>
-            dplyr::select(submission_id, project_id),
-          by = "submission_id"
-        ) |>
-        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::distinct(personal_id, current_living_situation) |>
-        dplyr::count(current_living_situation) |>
-        dplyr::arrange(current_living_situation)
+      shiny::validate(
+        shiny::need(
+          expr = nrow(living_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- living_data_filtered() |>
+        dplyr::select(personal_id, information_date, current_living_situation) |>
+        dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
+        dplyr::distinct(personal_id, .keep_all = TRUE) |>
+        dplyr::select(current_living_situation)
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(current_living_situation, sort = TRUE)
 
     })
 
@@ -170,52 +164,65 @@ mod_living_server <- function(id, filtered_dm){
     output$living_pie_chart <- echarts4r::renderEcharts4r({
 
       pie_chart_data() |>
-        echarts4r::e_charts(x = current_living_situation) |>
-        echarts4r::e_pie(
-          serie = n,
-          name = "Current Living Situation",
-          legend = TRUE,
-          label = list(
-            show = TRUE,
-            position = "inside",
-            formatter = "{c}"   # show the numeric value as the label
-          ),
-          radius = c("50%", "70%"),
-          # emphasize the label when hovered over
-          emphasis = list(
-            label = list(
-              show = TRUE,
-              fontSize = "15",
-              fontWeight = "bold"
-            )
-          )
-        ) |>
-        echarts4r::e_legend(
-          bottom = 0,   # place legend below chart
-          type = "scroll"
-        ) |>
-        echarts4r::e_title(
-          subtext = "Chart represents most recent quarter's data for each program selected"
-        ) |>
-        echarts4r::e_tooltip(trigger = "item") |>
-        echarts4r::e_grid(containLabel = TRUE) |>
-        echarts4r::e_show_loading()
+        pie_chart(
+          category = "current_living_situation",
+          count = "n"
+        )
 
     })
 
     # Create reactive data frame to data to be displayed in line chart
     line_chart_data <- shiny::reactive({
 
-      filtered_dm()$current_living_situation |>
-        dplyr::inner_join(
-          filtered_dm()$submission |> dplyr::select(submission_id, quarter),
-          by = "submission_id"
+      out <- living_data_filtered() |>
+        dplyr::filter(!is.na(exit_date)) |>
+        dplyr::group_by(personal_id) |>
+        dplyr::mutate(n = dplyr::n_distinct(information_date)) |>
+        dplyr::filter(n >= 2L) |>
+        dplyr::select(-n)
+
+      shiny::validate(
+        shiny::need(
+          expr = any(
+            nrow(out) >= 1L,
+            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
+          ),
+          message = "No data to display"
+        )
+      )
+
+      out <- out |>
+        dplyr::filter(
+          information_date %in% c(
+            min(information_date, na.rm = TRUE),
+            max(information_date, na.rm = TRUE)
+          )
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = any(
+            nrow(out) >= 1L,
+            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
+          ),
+          message = "No data to display"
+        )
+      )
+
+      out <- out |>
+        dplyr::mutate(
+          information_date = dplyr::if_else(
+            information_date == min(information_date, na.rm = TRUE),
+            "Entry",
+            "Exit"
+          ),
+          information_date = factor(
+            information_date,
+            levels = c("Entry", "Exit")
+          )
         ) |>
-        dplyr::arrange(submission_id, personal_id, dplyr::desc(information_date)) |>
-        dplyr::select(quarter, personal_id, current_living_situation) |>
-        dplyr::distinct(quarter, personal_id, .keep_all = TRUE) |>
-        dplyr::count(quarter, current_living_situation) |>
-        dplyr::arrange(current_living_situation) |>
+        dplyr::ungroup() |>
+        dplyr::count(current_living_situation, information_date, sort = TRUE) |>
         dplyr::group_by(current_living_situation)
 
     })
@@ -224,8 +231,8 @@ mod_living_server <- function(id, filtered_dm){
     output$living_line_chart <- echarts4r::renderEcharts4r({
 
       line_chart_data() |>
-        echarts4r::e_charts(x = quarter) |>
-        echarts4r::e_line(serie = n, symbol = "circle") |>
+        echarts4r::e_charts(information_date) |>
+        echarts4r::e_line(n) |>
         echarts4r::e_tooltip(trigger = "axis") |>
         echarts4r::e_grid(top = "20%") |>
         echarts4r::e_show_loading()

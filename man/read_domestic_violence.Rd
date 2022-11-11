@@ -2,21 +2,21 @@
 % Please edit documentation in R/utils_ingest.R
 \name{read_domestic_violence}
 \alias{read_domestic_violence}
-\title{Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE" database table}
+\title{Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE"
+database table}
 \usage{
-read_domestic_violence(file, submission_id)
+read_domestic_violence(file)
 }
 \arguments{
 \item{file}{String, the full path to the .csv file}
-
-\item{submission_id}{Integer, the Submission ID associated with this upload}
 }
 \value{
 A data frame, containing the transformed data to be written out to
   the "DOMESTIC_VIOLENCE" database table
 }
 \description{
-Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE" database table
+Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE"
+database table
 }
 \examples{
 \dontrun{
