@@ -373,7 +373,8 @@ read_health <- function(file) {
     # only read in columns needed for "HEALTH" database table
     col_select = c(
       HealthAndDVID:InformationDate,
-      GeneralHealthStatus:MentalHealthStatus
+      GeneralHealthStatus:MentalHealthStatus,
+      DataCollectionStage
     ),
     # define schema types
     col_types = readr::cols(
@@ -391,6 +392,10 @@ read_health <- function(file) {
       dplyr::across(
         .cols = GeneralHealthStatus:MentalHealthStatus,
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
+      ),
+      DataCollectionStage = lookup_codes(
+        var = DataCollectionStage,
+        codes = DataCollectionStageCodes
       )
     ) |>
     janitor::clean_names(case = "snake") |>
@@ -425,7 +430,8 @@ read_domestic_violence <- function(file) {
     file = file,
     # only read in columns needed for "DOMESTIC_VIOLENCE" database table
     col_select = c(
-      HealthAndDVID:CurrentlyFleeing
+      HealthAndDVID:CurrentlyFleeing,
+      DataCollectionStage
     ),
     # define schema types
     col_types = readr::cols(
@@ -449,6 +455,10 @@ read_domestic_violence <- function(file) {
       CurrentlyFleeing = lookup_codes(
         var = CurrentlyFleeing,
         codes = GeneralCodes
+      ),
+      DataCollectionStage = lookup_codes(
+        var = DataCollectionStage,
+        codes = DataCollectionStageCodes
       )
     ) |>
     janitor::clean_names(case = "snake") |>
@@ -483,7 +493,10 @@ read_income <- function(file) {
   readr::read_csv(
     file = file,
     # only read in columns needed for "INCOME" database table
-    col_select = IncomeBenefitsID:OtherIncomeSourceIdentify,
+    col_select = c(
+      IncomeBenefitsID:OtherIncomeSourceIdentify,
+      DataCollectionStage
+    ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
@@ -518,6 +531,10 @@ read_income <- function(file) {
           ignore.case = FALSE
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+      ),
+      DataCollectionStage = lookup_codes(
+        var = DataCollectionStage,
+        codes = DataCollectionStageCodes
       )
     ) |>
     janitor::clean_names(case = "snake")
@@ -553,7 +570,8 @@ read_benefits <- function(file) {
     # only read in columns needed for "BENEFITS" database table
     col_select = c(
       IncomeBenefitsID:InformationDate,
-      BenefitsFromAnySource:OtherInsuranceIdentify
+      BenefitsFromAnySource:OtherInsuranceIdentify,
+      DataCollectionStage
     ),
     # define schema types
     col_types = readr::cols(
@@ -578,6 +596,10 @@ read_benefits <- function(file) {
           ignore.case = FALSE
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+      ),
+      DataCollectionStage = lookup_codes(
+        var = DataCollectionStage,
+        codes = DataCollectionStageCodes
       )
     ) |>
     janitor::clean_names(case = "snake")
