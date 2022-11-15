@@ -78,6 +78,11 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
+            tabName = "services_page",
+            mod_services_ui("services_1")
+          ),
+
+          bs4Dash::tabItem(
             tabName = "health_page",
             mod_health_ui("health_1")
           ),

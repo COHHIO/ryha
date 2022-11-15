@@ -92,3 +92,39 @@ generate_bar_chart <- function(data, group) {
     echarts4r::e_flip_coords()
 
 }
+
+
+sankey_chart <- function() {
+
+  # data.frame(
+  #   source = c("a_start", "b_start", "c_start", "b_start", "c_start"),
+  #   target = c("b_end", "b_end", "a_end", "c_end", "c_end"),
+  #   value = ceiling(rnorm(5, 10, 1)),
+  #   stringsAsFactors = FALSE
+  # ) |>
+  #   echarts4r::e_charts() |>
+  #   echarts4r::e_sankey(source, target, value) |>
+  #   echarts4r::e_tooltip(trigger = "item") |>
+  #   echarts4r::e_title("Sankey chart")
+
+  # read_health() |>
+  #   # do data prep to get just one observation at entry and one observation at
+  #   # exit, by individual (keeping only individuals who exited)
+  # migrate::migrate(
+  #   data = for_migrate,
+  #   id = personal_id,
+  #   time = information_date,
+  #   state = general_health_status,
+  #   percent = FALSE
+  # ) |>
+  #   dplyr::mutate(
+  #     general_health_status_start = paste0(general_health_status_start, " (Entry)"),
+  #     general_health_status_end = paste0(general_health_status_end, " (Exit)")
+  #   ) |>
+  #   dplyr::filter(count > 0L) |>
+  #   echarts4r::e_charts() |>
+  #   echarts4r::e_sankey(source = general_health_status_start, target = general_health_status_end, value = count) |>
+  #   echarts4r::e_tooltip()
+
+}
+

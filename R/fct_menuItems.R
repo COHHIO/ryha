@@ -19,6 +19,7 @@ define_menu <- function() {
     "Employment"       , "employment_page"       , "briefcase",
     "Education"        , "education_page"        , "book-open",
     "Exits"            , "exits_page"            , "door-open",
+    "Services"         , "services_page"         , "hands-helping",
     "Health"           , "health_page"           , "stethoscope",
     "Domestic Violence", "domestic_violence_page", "user-shield",
     "Upload Data"      , "upload_page"           , "upload"
