@@ -212,7 +212,7 @@ mod_filters_server <- function(id, dm){
           dm$enrollment |>
             # Remove individuals who entered *after* the later active date
             dplyr::filter(
-              entry_date < input$active_date_filter_global[2]
+              entry_date <= input$active_date_filter_global[2]
             ),
           by = "project_id"
         ) |>
@@ -248,7 +248,7 @@ mod_filters_server <- function(id, dm){
           by = c("personal_id", "software_name")
         ) |>
         # Remove individuals who exited *before* the first active date
-        dplyr::filter(is.na(exit_date) | exit_date > input$active_date_filter_global[1]) |>
+        dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1]) |>
         dplyr::distinct(personal_id, software_name, ssn, ssn_data_quality, exit_date)
 
       # if (input$age_missing_global) {
