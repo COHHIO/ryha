@@ -842,7 +842,8 @@ read_organization <- function(file) {
       .default = readr::col_character()
     )
   ) |>
-    janitor::clean_names(case = "snake")
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(orig_organization_id = organization_id)
 
 }
 

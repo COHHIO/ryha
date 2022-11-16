@@ -111,51 +111,12 @@ process_data <- function(file) {
     export = NULL
   )
 
-
-  # Read in each file one at a time, creating a list of data frames for each
-  # table; this loop is an all-or-nothing approach, the `data` object will
-  # either include all of the data frames (if successful) or the first
-  # warning/error message encountered
-  for (i in 1:length(files_list)) {
-
-    temp <- tryCatch(
-      {
-        rlang::exec(funcs_list[[i]], files_list[[i]])
-      },
-      error = function(cond) {
-        out <- glue::glue(
-          "
-          There was an error in processing the \"{basename(files_list[[i]])}\" file.
-          Please check your file export settings, re-download the .zip folder, and try again.
-          "
-        )
-        return(out)
-      },
-      warning = function(cond) {
-        out <- glue::glue(
-          "
-          There was a warning in processing the \"{basename(files_list[[i]])}\" file.
-          Please check your file export settings, re-download the .zip folder, and try again.
-          This is most likely the result of incorrectly formatted dates.
-          "
-        )
-        return(out)
-      }
-    )
-
-    if (!"data.frame" %in% class(temp)) {
-
-      data <- temp
-
-      {break}
-
-    } else {
-
-      data[[i]] <- temp
-
-    }
-
-  }
+  # Execute the list of functions against the list of files
+  data <- purrr::map2(
+    .x = funcs_list,
+    .y = files_list,
+    .f = rlang::exec
+  )
 
   return(data)
 
@@ -165,16 +126,92 @@ process_data <- function(file) {
 
 prep_tables <- function(data, conn) {
 
+  # Retrieve the information from the file for the "organization" table
+  if (nrow(data$organization) != 1L) {
+
+      glue::glue(
+        "{nrow(data$organization)} organizations were found; ",
+        "expected exactly 1 organization in .zip upload."
+      ) |>
+      rlang::abort()
+
+  }
+
+  # If the "organization" table exists in the database...
+  if ("organization" %in% DBI::dbListTables(conn = conn)) {
+
+    # Retrieve the existing organization information from the database
+    res <- DBI::dbSendQuery(
+      conn = conn,
+      statement = "
+      SELECT
+        organization_id,
+        orig_organization_id,
+        organization_name
+      FROM organization
+      ORDER BY organization_id
+    "
+    )
+    db_data <- DBI::dbFetch(res)
+    DBI::dbClearResult(res)
+
+    # Join the database data to the file data; this will allow us to quickly
+    # identify which organizations in the uploaded file are not yet in the
+    # database
+    data$organization <- data$organization |>
+      dplyr::left_join(
+        db_data,
+        by = c(
+          "orig_organization_id",
+          "organization_name"
+        )
+      )
+
+    # If the organization in the file doesn't exist in the database...
+    if (is.na(data$organization$organization_id[1])) {
+
+      # Determine the max "organization_id" integer value in the database
+      max_current_organization_id <- ifelse(
+        nrow(db_data) >= 1L,
+        max(db_data$organization_id),
+        0L
+      )
+
+      # Set the next "organization_id" value
+      data$organization$organization_id[1] <- max_current_organization_id + 1L
+
+      # Append new organizations to "organization" database table
+      DBI::dbWriteTable(
+        conn = conn,
+        name = "organization",
+        value = data$organization,
+        append = TRUE
+      )
+
+    }
+
+    # If the "organization" table does *not* yet exist in the database...
+    # (this handles the first ever submission, if the table hasn't been set up)
+  } else {
+
+    # Set the "organization_id" value as 1
+    data$organization$organization_id <- 1L
+
+    # Create the "organization" database table
+    DBI::dbWriteTable(
+      conn = conn,
+      name = "organization",
+      value = data$organization
+    )
+
+  }
+
   # Retrieve the project, organization, and software information from the
   # uploaded data
   file_data <- data$project |>
     dplyr::rename(orig_project_id = project_id) |>
-    dplyr::left_join(
-      data$organization |> dplyr::select(organization_id, organization_name),
-      by = "organization_id"
-    ) |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   # If the "project" table exists in the database...
@@ -189,8 +226,7 @@ prep_tables <- function(data, conn) {
         project_id,
         project_name,
         orig_project_id,
-        organization_name,
-        software_name
+        organization_id
       FROM project
       ORDER BY project_id
     "
@@ -204,10 +240,9 @@ prep_tables <- function(data, conn) {
       dplyr::left_join(
         db_data,
         by = c(
-          "orig_project_id",
           "project_name",
-          "organization_name",
-          "software_name"
+          "orig_project_id",
+          "organization_id"
         )
       )
 
@@ -267,87 +302,67 @@ prep_tables <- function(data, conn) {
 
   }
 
-  # # Delete rows in each database table
-  # for (i in 1:length(data)) {
-  #
-  #   table_name <- names(data)[i]
-  #
-  #   # First we need to DELETE the rows from each database table for this
-  #   # particular project (WHERE project_id = current_project_id)
-  #
-  #   DBI::dbWriteTable(
-  #     conn = conn,
-  #     table_name,
-  #     data[[table_name]],
-  #     append = TRUE
-  #   )
-  #
-  #   # Give the PostgreSQL database a half second to breathe between writes
-  #   Sys.sleep(0.5)
-  #
-  # }
-
-  # Add `project_id` to "enrollment" file data
+  # Add `project_id` and 'organization_id' columns to "enrollment" file data
   data$enrollment <- data$enrollment |>
     dplyr::left_join(
-      file_data |> dplyr::select(project_id, software_name, orig_project_id),
+      file_data |> dplyr::select(project_id, orig_project_id, organization_id),
       by = c("orig_project_id")
     )
 
   # Add `software_name` to remaining files
   data$client <- data$client |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$disabilities <- data$disabilities |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$education <- data$education |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$employment <- data$employment |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$living <- data$living |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$health <- data$health |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$domestic_violence <- data$domestic_violence |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$income <- data$income |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$benefits <- data$benefits |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$services <- data$services |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   data$exit <- data$exit |>
     dplyr::mutate(
-      software_name = data$export$software_name[1]
+      organization_id = data$organization$organization_id[1]
     )
 
   out <- c(
@@ -372,57 +387,39 @@ prep_tables <- function(data, conn) {
 
 delete_from_db <- function(data, conn) {
 
-  id_str <- c(
-    "personal_id",
-    "enrollment_id",
-    "disabilities_id",
-    "employment_education_id",
-    "employment_education_id",
-    "current_living_sit_id",
-    "health_and_dv_id",
-    "health_and_dv_id",
-    "income_benefits_id",
-    "income_benefits_id",
-    "services_id",
-    "exit_id"
-  )
-
-  # Loop through each table in the database (except 'project') and delete any
-  # records that match on the table's `id` value & and `software_name` value,
-  # when compared to the respective uploaded file data
+  # Loop through each table in the database (except 'organization' and 'project')
+  # and delete any records that match on the table's `*_id` value and
+  # `organization_id` value, when compared to the respective uploaded file data
   for (i in 1:length(data)) {
 
-    table_name <- glue::glue_sql(
-      names(data)[i],
-      .con = conn
-    )
+    # Ensure that there exists a valid 'organization_id' value in the input `data`
+    # to use in the DELETE statement's WHERE clause
+    if (nrow(data[[i]]) >= 1L) {
 
-    id_name <- glue::glue_sql(
-      id_str[i],
-      .con = conn
-    )
+      table_name <- glue::glue_sql(
+        names(data)[i],
+        .con = conn
+      )
 
-    software_name <- data[[i]] |>
-      dplyr::slice(1) |>
-      dplyr::pull(software_name) |>
-      glue::glue_sql(.con = conn)
+      organization_id <- data[[i]] |>
+        dplyr::slice(1) |>
+        dplyr::pull(organization_id) |>
+        glue::glue_sql(.con = conn)
 
-    ids_in_data <- data[[i]] |>
-      dplyr::pull(id_str[i]) |>
-      glue::glue_sql_collapse(sep = "', '")
-
-    sql_stmt <- glue::glue_sql(
+      sql_stmt <- glue::glue_sql(
       "
       DELETE FROM {table_name}
-      WHERE {id_name} IN ('{ids_in_data}') AND software_name = '{software_name}'
+      WHERE organization_id = {organization_id}
       ",
-      .con = conn
-    )
+        .con = conn
+      )
 
-    DBI::dbExecute(
-      conn = conn,
-      statement = sql_stmt
-    )
+      DBI::dbExecute(
+        conn = conn,
+        statement = sql_stmt
+      )
+
+    }
 
   }
 
@@ -435,9 +432,6 @@ send_to_db <- function(data, conn) {
   for (i in 1:length(data)) {
 
     table_name <- names(data)[i]
-
-    # First we need to DELETE the rows from each database table for this
-    # particular project (WHERE project_id = current_project_id)
 
     DBI::dbWriteTable(
       conn = conn,
@@ -452,104 +446,3 @@ send_to_db <- function(data, conn) {
   }
 
 }
-
-
-
-
-# TODO // Since we are handling ingest into an R data frame elsewhere, the
-# function argument here should be 'data' instead of a directory...
-# I think we can assume that the data was read into an R data frame successfully
-
-#' Retrieve Export Dates
-#'
-#' @param dir String, the location of the
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_export_dates <- function(dir) {
-
-  # Make sure that the "ExportStartDate" and "ExportEndDate" columns exist in
-  # the .csv
-  header <- readLines(
-    con = fs::path(dir, "Export.csv"),
-    n = 1
-  )
-
-  # Check to see if the "ExportStartDate" and "ExportEndDate" columns exist in
-  # the data
-  col_names_check <- c(
-    stringr::str_detect(
-      string = header,
-      pattern = "ExportStartDate",
-      negate = TRUE
-    ),
-    stringr::str_detect(
-      string = header,
-      pattern = "ExportEndDate",
-      negate = TRUE
-    )
-  )
-
-  # Stop if column names are not found
-  if (any(col_names_check)) {
-
-    paste0(
-      "Could not find ",
-      ifelse(col_names_check[1], "`ExportStartDate` "),
-      ifelse(all(col_names_check), "and "),
-      ifelse(col_names_check[2], "`ExportEndDate` "),
-      "columns in the `Export.csv` file"
-    ) |>
-      rlang::abort()
-
-  }
-
-  # Get the date range of the export
-  export_data <- readr::read_csv(
-    file = fs::path(dir, "Export.csv"),
-    col_select = c(ExportStartDate, ExportEndDate),
-    col_types = readr::cols(
-      .default = readr::col_date(format = "%m/%d/%Y")
-    )
-  )
-
-  # Ensure that neither of the two dates are NA values
-  check_nas <- c(
-    export_data$ExportStartDate[1],
-    export_data$ExportEndDate[1]
-  ) |>
-    is.na()
-
-  if (any(check_nas)) {
-
-    paste0(
-      "A valid ",
-      ifelse(check_nas[1], "`ExportStartDate` ", ""),
-      ifelse(all(check_nas), "and ", ""),
-      ifelse(check_nas[2], "`ExportEndDate` ", ""),
-      "could not be found in `Export.csv`"
-    ) |>
-      rlang::abort()
-
-  }
-
-  num_rows <- nrow(export_data)
-
-  # Ensure that there was exactly one row
-  if (num_rows != 1L) {
-
-    glue::glue("Expected exactly 1 row of data, but found {num_rows} rows.") |>
-      rlang::abort()
-
-  }
-
-  # Return the start and end dates of the exported data
-  list(
-    export_start_date = export_data$ExportStartDate[1],
-    export_end_date = export_data$ExportEndDate[1]
-  )
-
-}
-
