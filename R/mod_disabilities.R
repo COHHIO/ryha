@@ -82,7 +82,7 @@ mod_disabilities_ui <- function(id){
         width = 12,
 
         bs4Dash::tabBox(
-          title = "Changes in Disability Status (Entry -> Exit)",
+          title = "Changes in Disability Status (Entry --> Exit)",
           type = "tabs",
           side = "right",
           width = NULL,
@@ -125,24 +125,6 @@ mod_disabilities_ui <- function(id){
       )
 
     )
-
-
-
-    #,
-
-    # shiny::fluidRow(
-    #   shiny::column(
-    #     width = 12,
-    #
-    #     bs4Dash::box(
-    #       title = "# of Youth with 2 Disability Statuses",
-    #       width = NULL,
-    #       maximizable = TRUE,
-    #       echarts4r::echarts4rOutput(outputId = ns("disabilities_crosstab"))
-    #     )
-    #
-    #   )
-    # )
 
   )
 }
