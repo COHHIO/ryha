@@ -54,7 +54,8 @@ read_client <- function(file) {
       SSNDataQuality,
       DOB,
       DOBDataQuality,
-      AmIndAKNative:VeteranStatus
+      AmIndAKNative:VeteranStatus,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
@@ -62,7 +63,8 @@ read_client <- function(file) {
       PersonalID = readr::col_character(),
       SSN = readr::col_character(),
       SSNDataQuality = readr::col_integer(),
-      DOB = readr::col_date()
+      DOB = readr::col_date(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # replace the "SSN/DOBDataQuality" codes with the plain-English description
@@ -134,14 +136,17 @@ read_disabilities <- function(file) {
     file = file,
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
-      DisabilitiesID:DisabilityResponse
+      DisabilitiesID:DisabilityResponse,
+      DataCollectionStage,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
       InformationDate = readr::col_date(),
       DisabilityType = readr::col_integer(),
-      DisabilityResponse = readr::col_integer()
+      DisabilityResponse = readr::col_integer(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # join the relevant codes from 'DisabilityTypeCodes'
@@ -149,6 +154,10 @@ read_disabilities <- function(file) {
       DisabilityType = lookup_codes(
         var = DisabilityType,
         codes = DisabilityTypeCodes
+      ),
+      DataCollectionStage = lookup_codes(
+        var = DataCollectionStage,
+        codes = DataCollectionStageCodes
       )
     ) |>
     dplyr::mutate(
@@ -318,14 +327,16 @@ read_living <- function(file) {
     # only read in columns needed for "LIVING" database table
     col_select = c(
       CurrentLivingSitID:CurrentLivingSituation,
-      LeaveSituation14Days
+      LeaveSituation14Days,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
       InformationDate = readr::col_date(),
       CurrentLivingSituation = readr::col_integer(),
-      LeaveSituation14Days = readr::col_integer()
+      LeaveSituation14Days = readr::col_integer(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # join the relevant codes from 'CurrentLivingSituationCodes' dataset
@@ -374,7 +385,8 @@ read_health <- function(file) {
     col_select = c(
       HealthAndDVID:InformationDate,
       GeneralHealthStatus:MentalHealthStatus,
-      DataCollectionStage
+      DataCollectionStage,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
@@ -383,7 +395,8 @@ read_health <- function(file) {
       EnrollmentID = readr::col_character(),
       PersonalID = readr::col_character(),
       InformationDate = readr::col_date(),
-      DueDate = readr::col_date()
+      DueDate = readr::col_date(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # replace the codes in 'GeneralHealthStatus:MentalHealthStatus' columns with
@@ -431,7 +444,8 @@ read_domestic_violence <- function(file) {
     # only read in columns needed for "DOMESTIC_VIOLENCE" database table
     col_select = c(
       HealthAndDVID:CurrentlyFleeing,
-      DataCollectionStage
+      DataCollectionStage,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
@@ -439,7 +453,8 @@ read_domestic_violence <- function(file) {
       HealthAndDVID = readr::col_character(),
       EnrollmentID = readr::col_character(),
       PersonalID = readr::col_character(),
-      InformationDate = readr::col_date()
+      InformationDate = readr::col_date(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # join the descriptions from the lookup codes
@@ -495,7 +510,8 @@ read_income <- function(file) {
     # only read in columns needed for "INCOME" database table
     col_select = c(
       IncomeBenefitsID:OtherIncomeSourceIdentify,
-      DataCollectionStage
+      DataCollectionStage,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
@@ -520,7 +536,8 @@ read_income <- function(file) {
       ChildSupportAmount = readr::col_double(),
       AlimonyAmount = readr::col_double(),
       OtherIncomeAmount = readr::col_double(),
-      OtherIncomeSourceIdentify = readr::col_character()
+      OtherIncomeSourceIdentify = readr::col_character(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # replace the integer codes with the plain-English description
@@ -571,7 +588,8 @@ read_benefits <- function(file) {
     col_select = c(
       IncomeBenefitsID:InformationDate,
       BenefitsFromAnySource:OtherInsuranceIdentify,
-      DataCollectionStage
+      DataCollectionStage,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
@@ -581,7 +599,8 @@ read_benefits <- function(file) {
       PersonalID = readr::col_character(),
       InformationDate = readr::col_date(),
       OtherBenefitsSourceIdentify = readr::col_character(),
-      OtherInsuranceIdentify = readr::col_character()
+      OtherInsuranceIdentify = readr::col_character(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # replace the integer codes with the plain-English description
@@ -637,7 +656,8 @@ read_enrollment <- function(file) {
       EnrollmentID:DisablingCondition,
       MoveInDate,
       ReferralSource,
-      RunawayYouth:IncarceratedParent
+      RunawayYouth:IncarceratedParent,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
@@ -649,7 +669,8 @@ read_enrollment <- function(file) {
       HouseholdID = readr::col_character(),
       DateToStreetESSH = readr::col_date(),
       MoveInDate = readr::col_date(),
-      SexualOrientationOther = readr::col_character()
+      SexualOrientationOther = readr::col_character(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     dplyr::mutate(
@@ -731,14 +752,16 @@ read_services <- function(file) {
     col_select = c(
       ServicesID:DateProvided,
       TypeProvided,
-      ReferralOutcome
+      ReferralOutcome,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
       DateProvided = readr::col_date(),
       TypeProvided = readr::col_integer(),
-      ReferralOutcome = readr::col_integer()
+      ReferralOutcome = readr::col_integer(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # replace the codes in 'TypeProvided' column with their descriptions
@@ -879,7 +902,8 @@ read_exit <- function(file) {
       PersonalID,
       ExitDate:OtherDestination,
       ProjectCompletionStatus,
-      ExchangeForSex:PosCommunityConnections
+      ExchangeForSex:PosCommunityConnections,
+      DateUpdated
     ),
     # define schema types
     col_types = readr::cols(
@@ -888,7 +912,8 @@ read_exit <- function(file) {
       EnrollmentID = readr::col_character(),
       PersonalID = readr::col_character(),
       ExitDate = readr::col_date(),
-      OtherDestination = readr::col_character()
+      OtherDestination = readr::col_character(),
+      DateUpdated = readr::col_datetime()
     )
   ) |>
     # replace the integer codes with the plain-English description
