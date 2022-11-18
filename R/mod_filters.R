@@ -32,7 +32,7 @@ mod_filters_ui <- function(id){
 
         # SSN De-Dup checkbox
         shiny::checkboxInput(
-          inputId = ns("dedup_status"),
+          inputId = ns("dedup_status_global"),
           label = "De-duplicate Youth Across Programs by SSN?",
           value = FALSE,
           width = "100%"
@@ -135,6 +135,8 @@ mod_filters_server <- function(id, dm){
         closeButton = FALSE
       )
 
+      shiny::req(dm)
+
       shinyWidgets::updatePickerInput(
         session = session,
         inputId = "project_filter_global",
@@ -180,32 +182,56 @@ mod_filters_server <- function(id, dm){
 
     })
 
-    # Disable the "dedup_status" check-box if only 1 program is selected
+    # Disable the "dedup_status_global" check-box if only 1 program is selected
     shiny::observe({
 
       if (length(input$project_filter_global) < 2L) {
 
         shiny::updateCheckboxInput(
           session = session,
-          inputId = "dedup_status",
+          inputId = "dedup_status_global",
           value = FALSE
         )
 
-        shinyjs::disable(id = "dedup_status")
+        shinyjs::disable(id = "dedup_status_global")
 
       } else {
 
-        shinyjs::enable(id = "dedup_status")
+        shinyjs::enable(id = "dedup_status_global")
 
       }
 
     })
 
     # Created filtered {dm} data
-
     clients_filtered <- shiny::eventReactive(input$apply_filters, {
 
-     dm$project |>
+      # Filter client data to allow/disallow missing ages
+      if (input$age_missing_global == TRUE) {
+
+        client <- dm$client |>
+          dplyr::filter(
+            dplyr::between(
+              x = age,
+              left = input$age_filter_global[1],
+              right = input$age_filter_global[2]
+            ) | is.na(age)
+          )
+
+      } else {
+
+        client <- dm$client |>
+          dplyr::filter(
+            dplyr::between(
+              x = age,
+              left = input$age_filter_global[1],
+              right = input$age_filter_global[2]
+            )
+          )
+
+      }
+
+      out <- dm$project |>
         dplyr::filter(project_name %in% input$project_filter_global) |>
         dplyr::select(project_id) |>
         dplyr::inner_join(
@@ -216,58 +242,45 @@ mod_filters_server <- function(id, dm){
             ),
           by = "project_id"
         ) |>
-        dplyr::distinct(personal_id, software_name) |>
+        dplyr::distinct(personal_id, organization_id) |>
         dplyr::inner_join(
-          dm$client |>
-            dplyr::filter(
-              dplyr::between(
-                x = age,
-                left = input$age_filter_global[1],
-                right = input$age_filter_global[2]
-              )
-            ),
-          by = c("personal_id", "software_name")
+          client,
+          by = c("personal_id", "organization_id")
         ) |>
         dplyr::inner_join(
           dm$gender |>
             dplyr::filter(
               gender %in% input$gender_filter_global
             ),
-          by = c("personal_id", "software_name")
+          by = c("personal_id", "organization_id")
         ) |>
         dplyr::inner_join(
           dm$ethnicity |>
             dplyr::filter(
               ethnicity %in% input$ethnicity_filter_global
             ),
-          by = c("personal_id", "software_name")
+          by = c("personal_id", "organization_id")
         ) |>
         dplyr::left_join(
           dm$exit |>
-            dplyr::select(personal_id, software_name, exit_date),
-          by = c("personal_id", "software_name")
+            dplyr::select(personal_id, organization_id, exit_date),
+          by = c("personal_id", "organization_id")
         ) |>
         # Remove individuals who exited *before* the first active date
-        dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1]) |>
-        dplyr::distinct(personal_id, software_name, ssn, ssn_data_quality, exit_date)
+        dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1])
 
-      # if (input$age_missing_global) {
-      #
-      #   dm_out <- dm_out |>
-      #     dm::dm_filter(
-      #       client,
-      #       (age >= input$age_filter_global[1] & age <= input$age_filter_global[2]) | is.na(age)
-      #     )
-      #
-      # } else {
-      #
-      #   dm_out <- dm_out |>
-      #     dm::dm_filter(
-      #       client,
-      #       age >= input$age_filter_global[1] & age <= input$age_filter_global[2]
-      #     )
-      #
-      # }
+
+        if (input$dedup_status_global == TRUE) {
+
+          out <- out |>
+            dplyr::filter(ssn_data_quality == "Full SSN reported") |>
+            dplyr::arrange(ssn, dplyr::desc(date_updated)) |>
+            dplyr::distinct(ssn, .keep_all = TRUE)
+
+        }
+
+        out |>
+          dplyr::distinct(personal_id, organization_id)
 
       # Close the global filters pane when the "Apply" button is clicked
       # This doesn't work; since "control_bar" div is not in this module
