@@ -365,6 +365,11 @@ prep_tables <- function(data, conn) {
       organization_id = data$organization$organization_id[1]
     )
 
+  data$export <- data$export |>
+    dplyr::mutate(
+      organization_id = data$organization$organization_id[1]
+    )
+
   out <- c(
     "client",
     "enrollment",
@@ -377,7 +382,8 @@ prep_tables <- function(data, conn) {
     "income",
     "benefits",
     "services",
-    "exit"
+    "exit",
+    "export"
   )
 
   return(data[out])
@@ -393,8 +399,8 @@ delete_from_db <- function(data, conn) {
   for (i in 1:length(data)) {
 
     # Ensure that there exists a valid 'organization_id' value in the input `data`
-    # to use in the DELETE statement's WHERE clause
-    if (nrow(data[[i]]) >= 1L) {
+    # to use in the DELETE statement's WHERE clause, and a valid database table
+    if (nrow(data[[i]]) >= 1L & names(data)[i] %in% DBI::dbListTables(conn = conn)) {
 
       table_name <- glue::glue_sql(
         names(data)[i],
@@ -439,9 +445,6 @@ send_to_db <- function(data, conn) {
       data[[table_name]],
       append = TRUE
     )
-
-    # Give the PostgreSQL database a half second to breathe between writes
-    # Sys.sleep(0.5)
 
   }
 
