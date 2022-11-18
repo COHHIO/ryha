@@ -94,37 +94,96 @@ generate_bar_chart <- function(data, group) {
 }
 
 
-sankey_chart <- function() {
 
-  # data.frame(
-  #   source = c("a_start", "b_start", "c_start", "b_start", "c_start"),
-  #   target = c("b_end", "b_end", "a_end", "c_end", "c_end"),
-  #   value = ceiling(rnorm(5, 10, 1)),
-  #   stringsAsFactors = FALSE
-  # ) |>
-  #   echarts4r::e_charts() |>
-  #   echarts4r::e_sankey(source, target, value) |>
-  #   echarts4r::e_tooltip(trigger = "item") |>
-  #   echarts4r::e_title("Sankey chart")
+sankey_chart <- function(data, entry_status, exit_status, count,
+                         color = "blue") {
 
-  # read_health() |>
-  #   # do data prep to get just one observation at entry and one observation at
-  #   # exit, by individual (keeping only individuals who exited)
-  # migrate::migrate(
-  #   data = for_migrate,
-  #   id = personal_id,
-  #   time = information_date,
-  #   state = general_health_status,
-  #   percent = FALSE
-  # ) |>
-  #   dplyr::mutate(
-  #     general_health_status_start = paste0(general_health_status_start, " (Entry)"),
-  #     general_health_status_end = paste0(general_health_status_end, " (Exit)")
-  #   ) |>
-  #   dplyr::filter(count > 0L) |>
-  #   echarts4r::e_charts() |>
-  #   echarts4r::e_sankey(source = general_health_status_start, target = general_health_status_end, value = count) |>
-  #   echarts4r::e_tooltip()
+  data |>
+    echarts4r::e_charts() |>
+    echarts4r::e_sankey_(
+      source = entry_status,
+      target = exit_status,
+      value = count
+    ) |>
+    echarts4r::e_tooltip(trigger = "item") |>
+    echarts4r::e_color(color = color)
 
 }
+
+
+get_ids_for_sankey <- function(data) {
+
+  data |>
+    dplyr::filter(
+      data_collection_stage %in% c("Project start", "Project exit")
+    ) |>
+    dplyr::arrange(
+      organization_id,
+      personal_id,
+      data_collection_stage,
+      # we'll keep only the most recently updated data
+      dplyr::desc(date_updated)
+    ) |>
+    dplyr::distinct(
+      organization_id,
+      personal_id,
+      data_collection_stage
+    ) |>
+    dplyr::group_by(organization_id, personal_id) |>
+    # ensure there's exactly 2 rows of data by individual (an entry & an exit)
+    dplyr::filter(dplyr::n() == 2L) |>
+    dplyr::ungroup() |>
+    dplyr::distinct(organization_id, personal_id)
+
+}
+
+
+prep_sankey_data <- function(data, state_var) {
+
+  data |>
+    dplyr::filter(
+      data_collection_stage %in% c("Project start", "Project exit")
+    ) |>
+    dplyr::arrange(
+      organization_id,
+      personal_id,
+      data_collection_stage,
+      # keep only the most recently updated data
+      dplyr::desc(date_updated)
+    ) |>
+    dplyr::select(
+      organization_id,
+      personal_id,
+      data_collection_stage,
+      {{ state_var }}
+    ) |>
+    dplyr::distinct(
+      organization_id,
+      personal_id,
+      data_collection_stage,
+      .keep_all = TRUE
+    ) |>
+    dplyr::mutate(
+      id = paste0(organization_id, "_", personal_id)
+    ) |>
+    dplyr::select(id, data_collection_stage, {{ state_var }}) |>
+    dplyr::mutate(
+      data_collection_stage = dplyr::case_when(
+        data_collection_stage == "Project start" ~ "Entry",
+        data_collection_stage == "Project exit" ~ "Exit"
+      )
+    ) |>
+    tidyr::pivot_wider(
+      id_cols = id,
+      names_from = data_collection_stage,
+      values_from = {{ state_var }}
+    ) |>
+    dplyr::mutate(
+      Entry = paste0(Exit, " (Entry)"),
+      Exit = paste0(Exit, " (Exit)")
+    ) |>
+    dplyr::count(Entry, Exit)
+
+}
+
 
