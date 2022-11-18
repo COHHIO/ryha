@@ -33,9 +33,13 @@ for (t in DBI::dbListTables(conn = con)) {
 }
 
 # Re-populate tables
-process_data(file = "data/app_testing/one_org.zip") |>
-  prep_tables(conn = con) |>
-  send_to_db(conn = con)
+data <- process_data(file = "data/app_testing/one_org.zip")
+
+data <- prep_tables(data = data, conn = con)
+
+delete_from_db(data = data, conn = con)
+
+send_to_db(data = data, conn = con)
 
 # Or, drop all tables
 # Truncate all tables
