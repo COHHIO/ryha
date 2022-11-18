@@ -39,7 +39,7 @@ create_dm <- function() {
       ssn_data_quality,
       age,
       veteran_status,
-      software_name
+      organization_id
     )
 
   # Prep "gender" table
@@ -47,7 +47,7 @@ create_dm <- function() {
     dplyr::select(
       personal_id,
       female:questioning,
-      software_name
+      organization_id
     ) |>
     tidyr::pivot_longer(
       cols = female:questioning,
@@ -58,13 +58,17 @@ create_dm <- function() {
     dplyr::select(-value) |>
     dplyr::right_join(
       client |> dplyr::select(-c(age, veteran_status)),
-      by = c("personal_id", "software_name")
+      by = c("personal_id", "organization_id")
     ) |>
     dplyr::mutate(
-      gender = dplyr::if_else(is.na(gender), "missing data", gender)
+      gender = dplyr::if_else(
+        is.na(gender),
+        "missing data",
+        gender
+      )
     ) |>
     dplyr::arrange(
-      software_name,
+      organization_id,
       personal_id
     )
 
@@ -73,7 +77,7 @@ create_dm <- function() {
     dplyr::select(
       personal_id,
       am_ind_ak_native:white, hispanic_latinaox,
-      software_name,
+      organization_id,
     ) |>
     tidyr::pivot_longer(
       cols = am_ind_ak_native:hispanic_latinaox,
@@ -84,13 +88,17 @@ create_dm <- function() {
     dplyr::select(-value) |>
     dplyr::right_join(
       client |> dplyr::select(-c(age, veteran_status)),
-      by = c("personal_id", "software_name")
+      by = c("personal_id", "organization_id")
     ) |>
     dplyr::mutate(
-      ethnicity = dplyr::if_else(ethnicity == "race_none", "missing data", ethnicity)
+      ethnicity = dplyr::if_else(
+        ethnicity == "race_none",
+        "missing data",
+        ethnicity
+      )
     ) |>
     dplyr::arrange(
-      software_name,
+      organization_id,
       personal_id
     )
 
