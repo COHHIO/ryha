@@ -45,8 +45,8 @@ mod_employment_ui <- function(id){
           width = NULL,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("employment_pie_chart"),
-            height = "450px"
+            outputId = ns("employed_pie_chart"),
+            height = "350px"
           )
         )
 
@@ -85,7 +85,6 @@ mod_employment_ui <- function(id){
     ),
 
     shiny::fluidRow(
-
       shiny::column(
         width = 12,
 
@@ -100,7 +99,22 @@ mod_employment_ui <- function(id){
         )
 
       )
+    ),
 
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+
+        bs4Dash::box(
+          title = "Data Quality Statistics",
+          width = NULL,
+          maximizable = TRUE,
+          reactable::reactableOutput(
+            outputId = ns("missingness_stats_tbl")
+          )
+        )
+
+      )
     )
 
   )
@@ -165,45 +179,60 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     })
 
-    # # Create reactive data frame to data to be displayed in pie chart
-    # pie_chart_data <- shiny::reactive({
-    #
-    #   shiny::validate(
-    #     shiny::need(
-    #       expr = nrow(employment_data_filtered()) >= 1L,
-    #       message = "No data to display"
-    #     )
-    #   )
-    #
-    #   out <- employment_data_filtered() |>
-    #     dplyr::select(personal_id, information_date, employed) |>
-    #     dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
-    #     dplyr::distinct(personal_id, .keep_all = TRUE) |>
-    #     dplyr::select(employed)
-    #
-    #   shiny::validate(
-    #     shiny::need(
-    #       expr = nrow(out) >= 1L,
-    #       message = "No data to display"
-    #     )
-    #   )
-    #
-    #   out |>
-    #     dplyr::count(employed, sort = TRUE)
-    #
-    # })
-    #
-    # # Create employment pie chart
-    # output$employment_pie_chart <- echarts4r::renderEcharts4r({
-    #
-    #   pie_chart_data() |>
-    #     pie_chart(
-    #       category = "employed",
-    #       count = "n"
-    #     )
-    #
-    # })
-    #
+    # Create reactive data frame to data to be displayed in pie chart
+    employed_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(employment_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- employment_data_filtered() |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          employed,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          employed
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          employed,
+          .keep_all = TRUE
+        ) |>
+        dplyr::filter(employed %in% c("Yes", "No"))
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(employed) |>
+        dplyr::arrange(employed)
+
+    })
+
+    # Create employment pie chart
+    output$employed_pie_chart <- echarts4r::renderEcharts4r({
+
+      employed_pie_chart_data() |>
+        pie_chart(
+          category = "employed",
+          count = "n"
+        )
+
+    })
+
     # # Create reactive data frame to data to be displayed in pie chart
     # employment_type_pie_chart_data <- shiny::reactive({
     #
@@ -323,6 +352,26 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
         )
 
     })
+
+    missingness_stats <- shiny::reactive({
+
+      employment_data_filtered() |>
+        dplyr::mutate(employed = ifelse(
+          is.na(employed),
+          "(Blank)",
+          employed
+        )) |>
+        dplyr::filter(!employed %in% c("Yes", "No")) |>
+        dplyr::count(employed, name = "Count") |>
+        dplyr::rename(Response = employed)
+
+    })
+
+    output$missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        missingness_stats()
+      )
+    )
 
   })
 }

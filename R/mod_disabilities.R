@@ -124,6 +124,22 @@ mod_disabilities_ui <- function(id){
 
       )
 
+    ),
+
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+
+        bs4Dash::box(
+          title = "Data Quality Statistics",
+          width = NULL,
+          maximizable = TRUE,
+          reactable::reactableOutput(
+            outputId = ns("missingness_stats_tbl")
+          )
+        )
+
+      )
     )
 
   )
@@ -491,6 +507,31 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )
 
     })
+
+    missingness_stats <- shiny::reactive({
+
+      disabilities_data_filtered() |>
+        dplyr::mutate(disability_response = ifelse(
+          is.na(disability_response),
+          "(Blank)",
+          disability_response
+        )) |>
+        dplyr::filter(disability_response %in% c(
+          "Client doesn't know",
+          "Client refused",
+          "Data not collected",
+          "(Blank)"
+        )) |>
+        dplyr::count(disability_response, name = "Count") |>
+        dplyr::rename(Response = disability_response)
+
+    })
+
+    output$missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        missingness_stats()
+      )
+    )
 
   })
 }
