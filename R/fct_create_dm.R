@@ -92,7 +92,7 @@ create_dm <- function() {
     ) |>
     dplyr::mutate(
       ethnicity = dplyr::if_else(
-        ethnicity == "race_none",
+        ethnicity == "race_none" | is.na(ethnicity),
         "missing data",
         ethnicity
       )
