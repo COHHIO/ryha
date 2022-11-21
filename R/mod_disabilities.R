@@ -242,6 +242,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       )
 
       out <- disabilities_data_filtered() |>
+        dplyr::filter(disability_response == "Yes") |>
         dplyr::arrange(
           organization_id,
           personal_id,
@@ -259,8 +260,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
           personal_id,
           disability_type,
           .keep_all = TRUE
-        ) |>
-        dplyr::filter(disability_response == "Yes")
+        )
 
       shiny::validate(
         shiny::need(
@@ -343,6 +343,13 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     physical_sankey_chart_data <- shiny::reactive({
 
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
           disability_type == "Physical Disability",
@@ -384,6 +391,13 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in line chart
     developmental_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
@@ -427,6 +441,13 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     chronic_sankey_chart_data <- shiny::reactive({
 
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
           disability_type == "Chronic Health Condition",
@@ -468,6 +489,13 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in line chart
     mental_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
