@@ -49,7 +49,11 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
-  # mod_education_server("education_1", clients_filtered)
+  mod_education_server(
+    id = "education_1",
+    education_data = dm$education,
+    clients_filtered = clients_filtered
+  )
 
   mod_health_server(
     id = "health_1",
