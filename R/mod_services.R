@@ -80,15 +80,24 @@ mod_services_server <- function(id, services_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Update the "Date Provided" date range filter
-    shiny::updateDateRangeInput(
-      session = session,
-      inputId = "date_provided_filter",
-      start = min(services_data$date_provided),
-      end = max(services_data$date_provided),
-      min = min(services_data$date_provided),
-      max = max(services_data$date_provided)
-    )
+    shiny::observe({
+
+      shiny::req(
+        nrow(services_data) >= 1L,
+        any(!is.na(services_data$date_provided))
+      )
+
+      # Update the "Date Provided" date range filter
+      shiny::updateDateRangeInput(
+        session = session,
+        inputId = "date_provided_filter",
+        start = min(services_data$date_provided),
+        end = max(services_data$date_provided),
+        min = min(services_data$date_provided),
+        max = max(services_data$date_provided)
+      )
+
+    })
 
     # Total number of Youth in program(s), based on `client.csv` file
     n_youth <- shiny::reactive({
@@ -98,22 +107,20 @@ mod_services_server <- function(id, services_data, clients_filtered){
 
     })
 
-    # Apply the filters to the health data
+    # Apply the filters to the services data
     services_data_filtered <- shiny::reactive({
 
       services_data |>
         dplyr::filter(
-          personal_id %in% clients_filtered()$personal_id,
           dplyr::between(
             date_provided,
             left = input$date_provided_filter[1],
             right = input$date_provided_filter[2]
           )
         ) |>
-        dplyr::left_join(
-          clients_filtered() |>
-            dplyr::select(personal_id, software_name, exit_date),
-          by = c("personal_id", "software_name")
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
         )
 
     })
@@ -123,7 +130,8 @@ mod_services_server <- function(id, services_data, clients_filtered){
     n_youth_with_services_data <- shiny::reactive(
 
       services_data_filtered() |>
-        dplyr::distinct(personal_id, software_name) |>
+        dplyr::filter(!is.na(type_provided)) |>
+        dplyr::distinct(personal_id, organization_id) |>
         nrow()
 
     )
@@ -161,7 +169,7 @@ mod_services_server <- function(id, services_data, clients_filtered){
       )
 
       services_data_filtered() |>
-        dplyr::distinct(personal_id, type_provided) |>
+        dplyr::distinct(personal_id, organization_id, type_provided) |>
         dplyr::count(type_provided) |>
         dplyr::arrange(n)
 
