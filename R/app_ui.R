@@ -89,7 +89,7 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "domestic_violence_page",
-            shiny::p("Placeholder Domestic Violence")
+            mod_domestic_violence_ui("domestic_violence_1")
           ),
 
           bs4Dash::tabItem(
