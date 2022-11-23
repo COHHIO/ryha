@@ -12,6 +12,7 @@ define_menu <- function() {
 
   tibble::tribble(
     ~text              , ~tabName                , ~icon,
+    "Welcome"          , "welcome_page"          , "hand-paper",
     "Overview"         , "overview_page"         , "home",
     "Client"           , "client_page"           , "user",
     "Living Situation" , "living_situation_page" , "home",

@@ -31,6 +31,15 @@ app_server <- function(input, output, session) {
 
   # mod_client_server("client_1", clients_filtered)
 
+  mod_overview_server(
+    id = "overview_1",
+    client_data = dm$client,
+    gender_data = dm$gender,
+    enrollment_data = dm$enrollment,
+    ethnicity_data = dm$ethnicity,
+    clients_filtered = clients_filtered
+  )
+
   mod_living_server(
     id = "living_1",
     living_data = dm$current_living_situation,
@@ -72,8 +81,6 @@ app_server <- function(input, output, session) {
     services_data = dm$services,
     clients_filtered = clients_filtered
   )
-
-
 
   # mod_exits_server("exits_1")
 

@@ -43,8 +43,13 @@ app_ui <- function(request) {
         bs4Dash::tabItems(
 
           bs4Dash::tabItem(
+            tabName = "welcome_page",
+            shiny::h2("Welcome to the Youth Homelessness Analyzer")
+          ),
+
+          bs4Dash::tabItem(
             tabName = "overview_page",
-            shiny::p("Placeholder Overview")
+            mod_overview_ui("overview_1")
           ),
 
           bs4Dash::tabItem(

@@ -67,26 +67,31 @@ prep_heatmap <- function(data) {
 
 
 
-generate_bar_chart <- function(data, group) {
+bar_chart <- function(data, x, y, axis_flip = TRUE) {
 
-  data |>
-    dplyr::count(
-      .data[[group]],
-      name = "Count"
-    ) |>
-    dplyr::arrange(Count) |>
-    echarts4r::e_charts_(x = group) |>
-    echarts4r::e_bar(
-      serie = Count,
+  out <- data |>
+    echarts4r::e_charts_(x = x) |>
+    echarts4r::e_bar_(
+      serie = y,
       name = "# of Youth",
-      legend = FALSE,
-      label = list(
-        formatter = '{@[0]}',
-        show = TRUE,
-        position = "right"
-      )
+      legend = FALSE
+      # label = list(
+      #   formatter = '{@[0]}',
+      #   show = TRUE,
+      #   position = "right"
+      # )
     ) |>
-    echarts4r::e_flip_coords()
+    echarts4r::e_tooltip(trigger = "item") |>
+    echarts4r::e_grid(containLabel = TRUE)
+
+  if (axis_flip) {
+
+    out <- out |>
+      echarts4r::e_flip_coords()
+
+  }
+
+  out
 
 }
 

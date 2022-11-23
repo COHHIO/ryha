@@ -63,8 +63,8 @@ create_dm <- function() {
     dplyr::mutate(
       gender = dplyr::if_else(
         is.na(gender),
-        "missing data",
-        gender
+        "Missing Data",
+        tools::toTitleCase(gender)
       )
     ) |>
     dplyr::arrange(
@@ -94,7 +94,7 @@ create_dm <- function() {
       ethnicity = dplyr::if_else(
         ethnicity == "race_none" | is.na(ethnicity),
         "missing data",
-        ethnicity
+        janitor::make_clean_names(ethnicity, case = "title")
       )
     ) |>
     dplyr::arrange(
