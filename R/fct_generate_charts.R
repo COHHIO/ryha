@@ -108,7 +108,8 @@ sankey_chart <- function(data, entry_status, exit_status, count,
       value = count
     ) |>
     echarts4r::e_tooltip(trigger = "item") |>
-    echarts4r::e_color(color = color)
+    echarts4r::e_color(color = color) |>
+    echarts4r::e_grid(containLabel = TRUE)
 
 }
 

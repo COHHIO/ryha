@@ -281,7 +281,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
       ethnicity_data_filtered() |>
         dplyr::filter(!is.na(ethnicity)) |>
         dplyr::count(ethnicity) |>
-        dplyr::arrange(ethnicity)
+        dplyr::arrange(n)
 
     })
 
