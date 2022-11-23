@@ -52,10 +52,10 @@ app_ui <- function(request) {
             mod_overview_ui("overview_1")
           ),
 
-          bs4Dash::tabItem(
-            tabName = "client_page",
-            mod_client_ui("client_1")
-          ),
+          # bs4Dash::tabItem(
+          #   tabName = "client_page",
+          #   mod_client_ui("client_1")
+          # ),
 
           bs4Dash::tabItem(
             tabName = "living_situation_page",

@@ -40,11 +40,11 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
-  mod_living_server(
-    id = "living_1",
-    living_data = dm$current_living_situation,
-    clients_filtered = clients_filtered
-  )
+  # mod_living_server(
+  #   id = "living_1",
+  #   living_data = dm$current_living_situation,
+  #   clients_filtered = clients_filtered
+  # )
 
   mod_disabilities_server(
     id = "disabilities_1",
