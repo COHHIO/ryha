@@ -39,7 +39,8 @@ create_dm <- function() {
       ssn_data_quality,
       age,
       veteran_status,
-      organization_id
+      organization_id,
+      date_updated
     )
 
   # Prep "gender" table
@@ -64,7 +65,7 @@ create_dm <- function() {
       gender = dplyr::if_else(
         is.na(gender),
         "Missing Data",
-        tools::toTitleCase(gender)
+        stringr::str_replace_all(gender, "_", " ") |> tools::toTitleCase()
       )
     ) |>
     dplyr::arrange(
@@ -93,8 +94,8 @@ create_dm <- function() {
     dplyr::mutate(
       ethnicity = dplyr::if_else(
         ethnicity == "race_none" | is.na(ethnicity),
-        "missing data",
-        janitor::make_clean_names(ethnicity, case = "title")
+        "Missing Data",
+        stringr::str_replace_all(ethnicity, "_", " ") |> tools::toTitleCase()
       )
     ) |>
     dplyr::arrange(
