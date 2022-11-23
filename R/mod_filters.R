@@ -18,7 +18,7 @@ mod_filters_ui <- function(id){
         # Project filter
         shinyWidgets::pickerInput(
           inputId = ns("project_filter_global"),
-          label = "Organization/Grantee",
+          label = "Project",
           width = "460px",
           choices = NULL,
           selected = NULL,
@@ -33,7 +33,7 @@ mod_filters_ui <- function(id){
         # SSN De-Dup checkbox
         shiny::checkboxInput(
           inputId = ns("dedup_status_global"),
-          label = "De-duplicate Youth Across Programs by SSN?",
+          label = "De-duplicate Youth Across Projects by SSN?",
           value = FALSE,
           width = "100%"
         ),
@@ -99,7 +99,12 @@ mod_filters_ui <- function(id){
         bs4Dash::actionButton(
           inputId = ns("apply_filters"),
           label = "Apply"
-        )
+        ),
+
+        # Add padding under "Apply" button
+        shiny::br(),
+        shiny::br(),
+        shiny::br()
 
       )
     )
@@ -141,7 +146,13 @@ mod_filters_server <- function(id, dm){
         session = session,
         inputId = "project_filter_global",
         choices = unique( dm$project$project_name ) |> sort(),
-        selected = unique( dm$project$project_name ) |> sort()
+        selected = unique( dm$project$project_name ) |> sort(),
+        choicesOpt = list(
+          style = rep_len(
+            "font-size: 75%;",
+            unique( dm$project$project_name ) |> length()
+          )
+        )
       )
 
       shiny::updateDateRangeInput(
