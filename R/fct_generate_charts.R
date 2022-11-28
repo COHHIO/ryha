@@ -182,7 +182,7 @@ prep_sankey_data <- function(data, state_var) {
       values_from = {{ state_var }}
     ) |>
     dplyr::mutate(
-      Entry = paste0(Exit, " (Entry)"),
+      Entry = paste0(Entry, " (Entry)"),
       Exit = paste0(Exit, " (Exit)")
     ) |>
     dplyr::count(Entry, Exit)
