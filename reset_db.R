@@ -33,7 +33,7 @@ for (t in DBI::dbListTables(conn = con)) {
 }
 
 # Re-populate tables
-data <- process_data(file = "data/app_testing/one_org.zip")
+data <- process_data(file = "data/app_testing/hudx-111_1667240256.zip")
 
 data <- prep_tables(data = data, conn = con)
 
