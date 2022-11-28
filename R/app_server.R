@@ -76,6 +76,12 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
+  mod_benefits_server(
+    id = "benefits_1",
+    benefits_data = dm$benefits,
+    clients_filtered = clients_filtered
+  )
+
   mod_services_server(
     id = "services_1",
     services_data = dm$services,

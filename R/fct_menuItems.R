@@ -23,6 +23,7 @@ define_menu <- function() {
     "Services"         , "services_page"         , "hands-helping",
     "Health"           , "health_page"           , "stethoscope",
     "Domestic Violence", "domestic_violence_page", "user-shield",
+    "Benefits"         , "benefits_page"         , "hand-holding-medical",
     "Upload Data"      , "upload_page"           , "upload"
   )
 

@@ -98,6 +98,11 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
+            tabName = "benefits_page",
+            mod_benefits_ui("benefits_1")
+          ),
+
+          bs4Dash::tabItem(
             tabName = "upload_page",
             mod_upload_ui("upload_1")
           )
