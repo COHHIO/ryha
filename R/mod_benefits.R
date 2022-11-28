@@ -1,4 +1,4 @@
-#' education UI Function
+#' benefits UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_education_ui <- function(id){
+mod_benefits_ui <- function(id){
   ns <- NS(id)
   tagList(
 
@@ -15,7 +15,7 @@ mod_education_ui <- function(id){
 
       shiny::column(
         width = 6,
-        # Number of clients (post filters)
+        # Number of youth (post filters)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_box"),
           width = "100%"
@@ -24,9 +24,9 @@ mod_education_ui <- function(id){
 
       shiny::column(
         width = 6,
-        # Number of projects (post filters)
+        # Number of youth with benefits data (post filters)
         bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_education_data_box"),
+          outputId = ns("n_youth_with_benefits_data_box"),
           width = "100%"
         )
       )
@@ -44,7 +44,7 @@ mod_education_ui <- function(id){
           type = "pills",
 
           shiny::tabPanel(
-            title = "Last Grade Completed",
+            title = "Benefits (from any source)",
 
             shiny::fluidRow(
 
@@ -52,11 +52,11 @@ mod_education_ui <- function(id){
                 width = 4,
 
                 bs4Dash::box(
-                  title = "# of Youth by Last Grade Completed",
+                  title = "# of Youth by Benefits Response",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("last_grade_completed_pie_chart"),
+                    outputId = ns("benefits_pie_chart"),
                     height = "400px"
                   )
                 )
@@ -67,11 +67,11 @@ mod_education_ui <- function(id){
                 width = 8,
 
                 bs4Dash::box(
-                  title = "Changes in Last Grade Completed (Entry --> Exit)",
+                  title = "Changes in Benefits Response (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("last_grade_completed_sankey_chart"),
+                    outputId = ns("benefits_sankey_chart"),
                     height = "400px"
                   )
                 )
@@ -89,7 +89,7 @@ mod_education_ui <- function(id){
                   width = NULL,
                   maximizable = TRUE,
                   reactable::reactableOutput(
-                    outputId = ns("last_grade_completed_missingness_stats_tbl")
+                    outputId = ns("benefits_missingness_stats_tbl")
                   )
                 )
 
@@ -99,7 +99,7 @@ mod_education_ui <- function(id){
           ),
 
           shiny::tabPanel(
-            title = "School Status",
+            title = "Insurance (from any source)",
 
             shiny::fluidRow(
 
@@ -107,11 +107,11 @@ mod_education_ui <- function(id){
                 width = 4,
 
                 bs4Dash::box(
-                  title = "# of Youth by School Status",
+                  title = "# of Youth by Insurance Response",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("school_status_pie_chart"),
+                    outputId = ns("insurance_pie_chart"),
                     height = "400px"
                   )
                 )
@@ -122,11 +122,11 @@ mod_education_ui <- function(id){
                 width = 8,
 
                 bs4Dash::box(
-                  title = "Changes in School Status (Entry --> Exit)",
+                  title = "Changes in Insurance Response (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("school_status_sankey_chart"),
+                    outputId = ns("insurance_sankey_chart"),
                     height = "400px"
                   )
                 )
@@ -144,7 +144,7 @@ mod_education_ui <- function(id){
                   width = NULL,
                   maximizable = TRUE,
                   reactable::reactableOutput(
-                    outputId = ns("school_status_missingness_stats_tbl")
+                    outputId = ns("insurance_missingness_stats_tbl")
                   )
                 )
 
@@ -162,25 +162,25 @@ mod_education_ui <- function(id){
   )
 }
 
-#' education Server Functions
+#' benefits Server Functions
 #'
 #' @noRd
-mod_education_server <- function(id, education_data, clients_filtered){
+mod_benefits_server <- function(id, benefits_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
     # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive({
+    n_youth <- shiny::reactive(
 
       clients_filtered() |>
         nrow()
 
-    })
+    )
 
-    # Apply the filters to the education data
-    education_data_filtered <- shiny::reactive({
+    # Apply the filters to the benefits data
+    benefits_data_filtered <- shiny::reactive({
 
-      education_data |>
+      benefits_data |>
         dplyr::inner_join(
           clients_filtered(),
           by = c("personal_id", "organization_id")
@@ -188,18 +188,13 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     })
 
-    # Total number of Youth in program(s) that exist in the `education.csv`
+    # Total number of Youth in program(s) that exist in the `benefits.csv`
     # file
-    n_youth_with_education_data <- shiny::reactive(
+    n_youth_with_benefits_data <- shiny::reactive(
 
-      education_data_filtered() |>
+      benefits_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(last_grade_completed)
+          benefits_from_any_source %in% c("Yes", "No")
         ) |>
         dplyr::distinct(personal_id, organization_id) |>
         nrow()
@@ -207,7 +202,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
     )
 
     # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
+    output$n_youth_box <- bs4Dash::renderbs4ValueBox(
 
       bs4Dash::bs4ValueBox(
         value = n_youth(),
@@ -215,314 +210,278 @@ mod_education_server <- function(id, education_data, clients_filtered){
         icon = shiny::icon("user")
       )
 
-    })
+    )
 
     # Render number of projects box
-    output$n_youth_with_education_data_box <- bs4Dash::renderbs4ValueBox({
+    output$n_youth_with_benefits_data_box <- bs4Dash::renderbs4ValueBox(
 
       bs4Dash::bs4ValueBox(
-        value = n_youth_with_education_data(),
-        subtitle = "Total # of Youth with Education Data Available",
+        value = n_youth_with_benefits_data(),
+        subtitle = "Total # of Youth with Benefits Data Available",
         icon = shiny::icon("home")
       )
 
-    })
-
-    # Create reactive data frame to data to be displayed in pie chart
-    last_grade_completed_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out <- education_data_filtered() |>
-        dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(last_grade_completed)
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          last_grade_completed,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          last_grade_completed
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          last_grade_completed,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(last_grade_completed) |>
-        dplyr::arrange(last_grade_completed)
-
-    })
-
-    # Create education pie chart
-    output$last_grade_completed_pie_chart <- echarts4r::renderEcharts4r({
-
-      last_grade_completed_pie_chart_data() |>
-        pie_chart(
-          category = "last_grade_completed",
-          count = "n"
-        )
-
-    })
-
-    # Create reactive data frame to data to be displayed in pie chart
-    school_status_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out <- education_data_filtered() |>
-        dplyr::filter(
-          !school_status %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(school_status)
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          school_status,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          school_status
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          school_status,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(school_status) |>
-        dplyr::arrange(school_status)
-
-    })
-
-    # Create education pie chart
-    output$school_status_pie_chart <- echarts4r::renderEcharts4r({
-
-      school_status_pie_chart_data() |>
-        pie_chart(
-          category = "school_status",
-          count = "n"
-        )
-
-    })
-
-    # Create reactive data frame to data to be displayed in line chart
-    last_grade_completed_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- education_data_filtered() |>
-        dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(last_grade_completed)
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      education_data_filtered() |>
-        dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(last_grade_completed)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = last_grade_completed)
-
-    })
-
-    # Create disabilities trend line chart
-    output$last_grade_completed_sankey_chart <- echarts4r::renderEcharts4r({
-
-      last_grade_completed_sankey_chart_data() |>
-        sankey_chart(
-          entry_status = "Entry",
-          exit_status = "Exit",
-          count = "n"
-        )
-
-    })
-
-    # Create reactive data frame to data to be displayed in line chart
-    school_status_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- education_data_filtered() |>
-        dplyr::filter(
-          !school_status %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(school_status)
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      education_data_filtered() |>
-        dplyr::filter(
-          !school_status %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(school_status)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = school_status)
-
-    })
-
-    # Create "School Status" sankey chart
-    output$school_status_sankey_chart <- echarts4r::renderEcharts4r({
-
-      school_status_sankey_chart_data() |>
-        sankey_chart(
-          entry_status = "Entry",
-          exit_status = "Exit",
-          count = "n"
-        )
-
-    })
-
-    last_grade_completed_missingness_stats <- shiny::reactive({
-
-      education_data_filtered() |>
-        dplyr::mutate(last_grade_completed = ifelse(
-          is.na(last_grade_completed),
-          "(Blank)",
-          last_grade_completed
-        )) |>
-        dplyr::filter(
-          last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(last_grade_completed, name = "Count") |>
-        dplyr::rename(Response = last_grade_completed)
-
-    })
-
-    output$last_grade_completed_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        last_grade_completed_missingness_stats()
-      )
     )
 
-    school_status_missingness_stats <- shiny::reactive({
+    # Create reactive data frame to data to be displayed in pie chart
+    benefits_pie_chart_data <- shiny::reactive({
 
-      education_data_filtered() |>
-        dplyr::mutate(school_status = ifelse(
-          is.na(school_status),
-          "(Blank)",
-          school_status
-        )) |>
+      shiny::validate(
+        shiny::need(
+          expr = nrow(benefits_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- benefits_data_filtered() |>
         dplyr::filter(
-          school_status %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected",
-            "(Blank)"
-          )
+          benefits_from_any_source %in% c("Yes", "No")
         ) |>
-        dplyr::count(school_status, name = "Count") |>
-        dplyr::rename(Response = school_status)
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          benefits_from_any_source,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          benefits_from_any_source
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          benefits_from_any_source,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(benefits_from_any_source) |>
+        dplyr::arrange(benefits_from_any_source)
 
     })
 
-    output$school_status_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        school_status_missingness_stats()
+    # Create benefits pie chart
+    output$benefits_pie_chart <- echarts4r::renderEcharts4r(
+
+      benefits_pie_chart_data() |>
+        pie_chart(
+          category = "benefits_from_any_source",
+          count = "n"
+        )
+
+    )
+
+    # Create reactive data frame to data to be displayed in pie chart
+    insurance_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(benefits_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
       )
+
+      out <- benefits_data_filtered() |>
+        dplyr::filter(
+          insurance_from_any_source %in% c("Yes", "No")
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          insurance_from_any_source,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          insurance_from_any_source
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          insurance_from_any_source,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(insurance_from_any_source) |>
+        dplyr::arrange(insurance_from_any_source)
+
+    })
+
+    # Create benefits pie chart
+    output$insurance_pie_chart <- echarts4r::renderEcharts4r({
+
+      insurance_pie_chart_data() |>
+        pie_chart(
+          category = "insurance_from_any_source",
+          count = "n"
+        )
+
+    })
+
+    # Create reactive data frame to data to be displayed in line chart
+    benefits_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(benefits_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- benefits_data_filtered() |>
+        dplyr::filter(
+          benefits_from_any_source %in% c("Yes", "No")
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      benefits_data_filtered() |>
+        dplyr::filter(
+          benefits_from_any_source %in% c("Yes", "No")
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = benefits_from_any_source)
+
+    })
+
+    # Create benefits sankey chart
+    output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
+
+      benefits_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    )
+
+    # Create reactive data frame to data to be displayed in line chart
+    insurance_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(benefits_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- benefits_data_filtered() |>
+        dplyr::filter(
+          insurance_from_any_source %in% c("Yes", "No")
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      benefits_data_filtered() |>
+        dplyr::filter(
+          insurance_from_any_source %in% c("Yes", "No")
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = insurance_from_any_source)
+
+    })
+
+    # Create insurance sankey chart
+    output$insurance_sankey_chart <- echarts4r::renderEcharts4r(
+
+      insurance_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    )
+
+    benefits_missingness_stats <- shiny::reactive(
+
+      benefits_data_filtered() |>
+        dplyr::mutate(benefits_from_any_source = ifelse(
+          is.na(benefits_from_any_source),
+          "(Blank)",
+          benefits_from_any_source
+        )) |>
+        dplyr::filter(
+          !benefits_from_any_source %in% c("Yes", "No")
+        ) |>
+        dplyr::count(benefits_from_any_source, name = "Count") |>
+        dplyr::rename(Response = benefits_from_any_source)
+
+    )
+
+    output$benefits_missingness_stats_tbl <- reactable::renderReactable(
+
+      reactable::reactable(
+        benefits_missingness_stats()
+      )
+
+    )
+
+    insurance_missingness_stats <- shiny::reactive({
+
+      benefits_data_filtered() |>
+        dplyr::mutate(insurance_from_any_source = ifelse(
+          is.na(insurance_from_any_source),
+          "(Blank)",
+          insurance_from_any_source
+        )) |>
+        dplyr::filter(
+          !insurance_from_any_source %in% c("Yes", "No")
+        ) |>
+        dplyr::count(insurance_from_any_source, name = "Count") |>
+        dplyr::rename(Response = insurance_from_any_source)
+
+    })
+
+    output$insurance_missingness_stats_tbl <- reactable::renderReactable(
+
+      reactable::reactable(
+        insurance_missingness_stats()
+      )
+
     )
 
   })
 }
 
 ## To be copied in the UI
-# mod_education_ui("education_1")
+# mod_benefits_ui("benefits_1")
 
 ## To be copied in the server
-# mod_education_server("education_1")
+# mod_benefits_server("benefits_1")

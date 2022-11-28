@@ -31,11 +31,20 @@ app_server <- function(input, output, session) {
 
   # mod_client_server("client_1", clients_filtered)
 
-  mod_living_server(
-    id = "living_1",
-    living_data = dm$current_living_situation,
+  mod_overview_server(
+    id = "overview_1",
+    client_data = dm$client,
+    gender_data = dm$gender,
+    enrollment_data = dm$enrollment,
+    ethnicity_data = dm$ethnicity,
     clients_filtered = clients_filtered
   )
+
+  # mod_living_server(
+  #   id = "living_1",
+  #   living_data = dm$current_living_situation,
+  #   clients_filtered = clients_filtered
+  # )
 
   mod_disabilities_server(
     id = "disabilities_1",
@@ -49,11 +58,33 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
-  # mod_education_server("education_1", clients_filtered)
+  mod_education_server(
+    id = "education_1",
+    education_data = dm$education,
+    clients_filtered = clients_filtered
+  )
 
   mod_health_server(
     id = "health_1",
     health_data = dm$health,
+    clients_filtered = clients_filtered
+  )
+
+  mod_domestic_violence_server(
+    id = "domestic_violence_1",
+    domestic_violence_data = dm$domestic_violence,
+    clients_filtered = clients_filtered
+  )
+
+  mod_benefits_server(
+    id = "benefits_1",
+    benefits_data = dm$benefits,
+    clients_filtered = clients_filtered
+  )
+
+  mod_services_server(
+    id = "services_1",
+    services_data = dm$services,
     clients_filtered = clients_filtered
   )
 

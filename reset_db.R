@@ -32,10 +32,36 @@ for (t in DBI::dbListTables(conn = con)) {
 
 }
 
-
 # Re-populate tables
-process_data(file = "data/app_testing/hudx-111_1667240256.zip") |>
-  prep_tables(conn = con) |>
-  send_to_db(conn = con)
+data <- process_data(file = "data/app_testing/hudx-111_1667240256.zip")
+
+data <- prep_tables(data = data, conn = con)
+
+delete_from_db(data = data, conn = con)
+
+send_to_db(data = data, conn = con)
+
+# Or, drop all tables
+# Truncate all tables
+for (t in DBI::dbListTables(conn = con)) {
+
+  table_name <- glue::glue_sql(
+    t,
+    .con = con
+  )
+
+  sql_stmt <- glue::glue_sql(
+    "
+      DROP TABLE {table_name}
+    ",
+    .con = con
+  )
+
+  DBI::dbExecute(
+    conn = con,
+    statement = sql_stmt
+  )
+
+}
 
 

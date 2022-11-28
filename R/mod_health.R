@@ -10,11 +10,12 @@
 mod_health_ui <- function(id){
   ns <- NS(id)
   tagList(
+
     shiny::fluidRow(
 
       shiny::column(
         width = 6,
-        # Number of clients (post filters)
+        # Number of youth (post global filters)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_box"),
           width = "100%"
@@ -23,7 +24,7 @@ mod_health_ui <- function(id){
 
       shiny::column(
         width = 6,
-        # Number of projects (post filters)
+        # Number of youth with health data available
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_with_health_data_box"),
           width = "100%"
@@ -37,59 +38,176 @@ mod_health_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 4,
-        bs4Dash::box(
-          title = "# of Youth by General Health Status",
-          width = NULL,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("general_health_pie_chart"),
-            height = "450px"
-          )
-        )
-      ),
-
-      shiny::column(
-        width = 4,
-        bs4Dash::box(
-          title = "# of Youth by Dental Health Status",
-          width = NULL,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("dental_health_pie_chart"),
-            height = "450px"
-          )
-        )
-      ),
-
-      shiny::column(
-        width = 4,
-        bs4Dash::box(
-          title = "# of Youth by Mental Health Status",
-          width = NULL,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("mental_health_pie_chart"),
-            height = "450px"
-          )
-        )
-      )
-
-    ),
-
-    shiny::fluidRow(
-
-      shiny::column(
         width = 12,
 
-        bs4Dash::box(
-          title = "Trend of General Health Status",
-          width = NULL,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("health_line_chart"),
-            height = "560px"
+        bs4Dash::tabsetPanel(
+          type = "pills",
+
+          shiny::tabPanel(
+            title = "General",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 4,
+
+                bs4Dash::box(
+                  title = "# of Youth by General Health Status",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("general_pie_chart"),
+                    height = "400px"
+                  )
+                )
+
+              ),
+
+              shiny::column(
+                width = 8,
+
+                bs4Dash::box(
+                  title = "Changes in General Health Status (Entry --> Exit)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("general_sankey_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+
+            ),
+
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("general_missingness_stats_tbl")
+                  )
+                )
+
+              )
+            )
+
+          ),
+
+          shiny::tabPanel(
+            title = "Dental",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 4,
+
+                bs4Dash::box(
+                  title = "# of Youth by Dental Health Status",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("dental_pie_chart"),
+                    height = "400px"
+                  )
+                )
+
+              ),
+
+              shiny::column(
+                width = 8,
+
+                bs4Dash::box(
+                  title = "Changes in Dental Health Status (Entry --> Exit)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("dental_sankey_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+
+            ),
+
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("dental_missingness_stats_tbl")
+                  )
+                )
+
+              )
+            )
+
+          ),
+
+          shiny::tabPanel(
+            title = "Mental",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 4,
+
+                bs4Dash::box(
+                  title = "# of Youth by Mental Health Status",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("mental_pie_chart"),
+                    height = "400px"
+                  )
+                )
+
+              ),
+
+              shiny::column(
+                width = 8,
+
+                bs4Dash::box(
+                  title = "Changes in Mental Health Status (Entry --> Exit)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("mental_sankey_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+
+            ),
+
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("mental_missingness_stats_tbl")
+                  )
+                )
+
+              )
+            )
+
           )
+
         )
 
       )
@@ -118,17 +236,9 @@ mod_health_server <- function(id, health_data, clients_filtered){
     health_data_filtered <- shiny::reactive({
 
       health_data |>
-        dplyr::filter(personal_id %in% clients_filtered()$personal_id) |>
-        dplyr::left_join(
-          clients_filtered() |>
-            dplyr::select(personal_id, software_name, exit_date),
-          by = c("personal_id", "software_name")
-        ) |>
-        dplyr::mutate(
-          dplyr::across(
-            .cols = general_health_status:mental_health_status,
-            .fns = function(x) factor(x, levels = HealthStatusCodes$Description)
-          )
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
         )
 
     })
@@ -138,7 +248,12 @@ mod_health_server <- function(id, health_data, clients_filtered){
     n_youth_with_health_data <- shiny::reactive(
 
       health_data_filtered() |>
-        dplyr::distinct(personal_id, software_name) |>
+        dplyr::filter(
+          general_health_status %in% HealthStatusCodes$Description[1:5] |
+            dental_health_status %in% HealthStatusCodes$Description[1:5] |
+            mental_health_status %in% HealthStatusCodes$Description[1:5]
+        ) |>
+        dplyr::distinct(personal_id, organization_id) |>
         nrow()
 
     )
@@ -176,10 +291,31 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
 
       out <- health_data_filtered() |>
-        dplyr::select(personal_id, information_date, general_health_status) |>
-        dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
-        dplyr::distinct(personal_id, .keep_all = TRUE) |>
-        dplyr::select(general_health_status)
+        dplyr::filter(
+          !general_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(general_health_status)
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          general_health_status,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          general_health_status
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          general_health_status,
+          .keep_all = TRUE
+        )
 
       shiny::validate(
         shiny::need(
@@ -189,12 +325,13 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
 
       out |>
-        dplyr::count(general_health_status, sort = TRUE)
+        dplyr::count(general_health_status) |>
+        dplyr::arrange(general_health_status)
 
     })
 
-    # Create health pie chart
-    output$general_health_pie_chart <- echarts4r::renderEcharts4r({
+    # Create general health status pie chart
+    output$general_pie_chart <- echarts4r::renderEcharts4r({
 
       general_pie_chart_data() |>
         pie_chart(
@@ -203,6 +340,92 @@ mod_health_server <- function(id, health_data, clients_filtered){
         )
 
     })
+
+    # Create reactive data frame to data to be displayed in sankey chart
+    general_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(health_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- health_data_filtered() |>
+        dplyr::filter(
+          !general_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(general_health_status)
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      health_data_filtered() |>
+        dplyr::filter(
+          !general_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(general_health_status)
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = general_health_status)
+
+    })
+
+    # Create general health status sankey chart
+    output$general_sankey_chart <- echarts4r::renderEcharts4r({
+
+      general_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    })
+
+    # Capture the data quality statistics for "general_health_status" field
+    general_missingness_stats <- shiny::reactive({
+
+      health_data_filtered() |>
+        dplyr::mutate(general_health_status = ifelse(
+          is.na(general_health_status),
+          "(Blank)",
+          general_health_status
+        )) |>
+        dplyr::filter(
+          general_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected",
+            "(Blank)"
+          )
+        ) |>
+        dplyr::count(general_health_status, name = "Count") |>
+        dplyr::rename(Response = general_health_status)
+
+    })
+
+    # Create the {reactable} table to hold the missingness stats
+    output$general_missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        general_missingness_stats()
+      )
+    )
 
     # Create reactive data frame to data to be displayed in pie chart
     dental_pie_chart_data <- shiny::reactive({
@@ -215,10 +438,31 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
 
       out <- health_data_filtered() |>
-        dplyr::select(personal_id, information_date, dental_health_status) |>
-        dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
-        dplyr::distinct(personal_id, .keep_all = TRUE) |>
-        dplyr::select(dental_health_status)
+        dplyr::filter(
+          !dental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(dental_health_status)
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          dental_health_status,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          dental_health_status
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          dental_health_status,
+          .keep_all = TRUE
+        )
 
       shiny::validate(
         shiny::need(
@@ -228,12 +472,13 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
 
       out |>
-        dplyr::count(dental_health_status, sort = TRUE)
+        dplyr::count(dental_health_status) |>
+        dplyr::arrange(dental_health_status)
 
     })
 
-    # Create health pie chart
-    output$dental_health_pie_chart <- echarts4r::renderEcharts4r({
+    # Create dental health status pie chart
+    output$dental_pie_chart <- echarts4r::renderEcharts4r({
 
       dental_pie_chart_data() |>
         pie_chart(
@@ -242,6 +487,92 @@ mod_health_server <- function(id, health_data, clients_filtered){
         )
 
     })
+
+    # Create reactive data frame to data to be displayed in sankey chart
+    dental_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(health_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- health_data_filtered() |>
+        dplyr::filter(
+          !dental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(dental_health_status)
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      health_data_filtered() |>
+        dplyr::filter(
+          !dental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(dental_health_status)
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = dental_health_status)
+
+    })
+
+    # Create dental health status sankey chart
+    output$dental_sankey_chart <- echarts4r::renderEcharts4r({
+
+      dental_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    })
+
+    # Capture the data quality statistics for "dental_health_status" field
+    dental_missingness_stats <- shiny::reactive({
+
+      health_data_filtered() |>
+        dplyr::mutate(dental_health_status = ifelse(
+          is.na(dental_health_status),
+          "(Blank)",
+          dental_health_status
+        )) |>
+        dplyr::filter(
+          dental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected",
+            "(Blank)"
+          )
+        ) |>
+        dplyr::count(dental_health_status, name = "Count") |>
+        dplyr::rename(Response = dental_health_status)
+
+    })
+
+    # Create the {reactable} table to hold the missingness stats
+    output$dental_missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        dental_missingness_stats()
+      )
+    )
 
     # Create reactive data frame to data to be displayed in pie chart
     mental_pie_chart_data <- shiny::reactive({
@@ -254,10 +585,31 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
 
       out <- health_data_filtered() |>
-        dplyr::select(personal_id, information_date, mental_health_status) |>
-        dplyr::arrange(personal_id, dplyr::desc(information_date)) |>
-        dplyr::distinct(personal_id, .keep_all = TRUE) |>
-        dplyr::select(mental_health_status)
+        dplyr::filter(
+          !mental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(mental_health_status)
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          mental_health_status,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          mental_health_status
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          mental_health_status,
+          .keep_all = TRUE
+        )
 
       shiny::validate(
         shiny::need(
@@ -267,12 +619,13 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
 
       out |>
-        dplyr::count(mental_health_status, sort = TRUE)
+        dplyr::count(mental_health_status) |>
+        dplyr::arrange(mental_health_status)
 
     })
 
-    # Create health pie chart
-    output$mental_health_pie_chart <- echarts4r::renderEcharts4r({
+    # Create mental health status pie chart
+    output$mental_pie_chart <- echarts4r::renderEcharts4r({
 
       mental_pie_chart_data() |>
         pie_chart(
@@ -282,73 +635,91 @@ mod_health_server <- function(id, health_data, clients_filtered){
 
     })
 
-    # Create reactive data frame to data to be displayed in line chart
-    health_line_chart_data <- shiny::reactive({
-
-      out <- health_data_filtered() |>
-        dplyr::filter(!is.na(exit_date)) |>
-        dplyr::group_by(personal_id) |>
-        dplyr::mutate(n = dplyr::n_distinct(information_date)) |>
-        dplyr::filter(n >= 2L) |>
-        dplyr::select(-n)
+    # Create reactive data frame to data to be displayed in sankey chart
+    mental_sankey_chart_data <- shiny::reactive({
 
       shiny::validate(
         shiny::need(
-          expr = any(
-            nrow(out) >= 1L,
-            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
-          ),
+          expr = nrow(health_data_filtered()) >= 1L,
           message = "No data to display"
         )
       )
 
-      out <- out |>
+      ids_exited <- health_data_filtered() |>
         dplyr::filter(
-          information_date %in% c(
-            min(information_date, na.rm = TRUE),
-            max(information_date, na.rm = TRUE)
-          )
-        )
+          !mental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(mental_health_status)
+        ) |>
+        get_ids_for_sankey()
 
       shiny::validate(
         shiny::need(
-          expr = any(
-            nrow(out) >= 1L,
-            nrow(dplyr::filter(out, !is.na(information_date))) >= 1L
-          ),
+          expr = nrow(ids_exited) >= 1L,
           message = "No data to display"
         )
       )
 
-      out <- out |>
-        dplyr::mutate(
-          information_date = dplyr::if_else(
-            information_date == min(information_date, na.rm = TRUE),
-            "Entry",
-            "Exit"
+      health_data_filtered() |>
+        dplyr::filter(
+          !mental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
           ),
-          information_date = factor(
-            information_date,
-            levels = c("Entry", "Exit")
+          !is.na(mental_health_status)
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = mental_health_status)
+
+    })
+
+    # Create mental health status sankey chart
+    output$mental_sankey_chart <- echarts4r::renderEcharts4r({
+
+      mental_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    })
+
+    # Capture the data quality statistics for "mental_health_status" field
+    mental_missingness_stats <- shiny::reactive({
+
+      health_data_filtered() |>
+        dplyr::mutate(mental_health_status = ifelse(
+          is.na(mental_health_status),
+          "(Blank)",
+          mental_health_status
+        )) |>
+        dplyr::filter(
+          mental_health_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected",
+            "(Blank)"
           )
         ) |>
-        dplyr::ungroup() |>
-        dplyr::count(general_health_status, information_date, sort = TRUE) |>
-        dplyr::group_by(general_health_status)
+        dplyr::count(mental_health_status, name = "Count") |>
+        dplyr::rename(Response = mental_health_status)
 
     })
 
-    # Create health trend line chart
-    output$health_line_chart <- echarts4r::renderEcharts4r({
-
-      health_line_chart_data() |>
-        echarts4r::e_charts(information_date) |>
-        echarts4r::e_line(n) |>
-        echarts4r::e_tooltip(trigger = "axis") |>
-        echarts4r::e_grid(top = "20%") |>
-        echarts4r::e_show_loading()
-
-    })
+    # Create the {reactable} table to hold the missingness stats
+    output$mental_missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        mental_missingness_stats()
+      )
+    )
 
   })
 }

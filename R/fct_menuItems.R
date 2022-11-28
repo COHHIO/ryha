@@ -12,15 +12,18 @@ define_menu <- function() {
 
   tibble::tribble(
     ~text              , ~tabName                , ~icon,
+    "Welcome"          , "welcome_page"          , "hand-paper",
     "Overview"         , "overview_page"         , "home",
-    "Client"           , "client_page"           , "user",
-    "Living Situation" , "living_situation_page" , "home",
+    # "Client"           , "client_page"           , "user",
+    # "Living Situation" , "living_situation_page" , "home",
     "Disabilities"     , "disabilities_page"     , "accessible-icon",
     "Employment"       , "employment_page"       , "briefcase",
     "Education"        , "education_page"        , "book-open",
-    "Exits"            , "exits_page"            , "door-open",
+    # "Exits"            , "exits_page"            , "door-open",
+    "Services"         , "services_page"         , "hands-helping",
     "Health"           , "health_page"           , "stethoscope",
     "Domestic Violence", "domestic_violence_page", "user-shield",
+    "Benefits"         , "benefits_page"         , "hand-holding-medical",
     "Upload Data"      , "upload_page"           , "upload"
   )
 

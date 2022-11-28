@@ -11,15 +11,87 @@ mod_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    fluidRow(
-      column(
-        width = 12,
+    shiny::fluidRow(
 
-        h3("Crosstable of All Project Youth Demographics"),
+      shiny::column(
+        width = 4,
 
-        echarts4r::echarts4rOutput(outputId = ns("heatmap"))
+        bs4Dash::box(
+          title = "# of Youth by Gender",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("gender_pie_chart"),
+            height = "400px"
+          )
+        )
+
+      ),
+
+      shiny::column(
+        width = 4,
+
+        bs4Dash::box(
+          title = "# of Youth by Sexual Orientation",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("sexual_orientation_pie_chart"),
+            height = "400px"
+          )
+        )
+
+      ),
+
+      shiny::column(
+        width = 4,
+
+        bs4Dash::box(
+          title = "# of Youth by Veteran Status",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("veteran_pie_chart"),
+            height = "400px"
+          )
+        )
 
       )
+
+    ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = "# of Youth by Age",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("age_bar_chart"),
+            height = "400px"
+          )
+        )
+
+      ),
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = "# of Youth by Ethnicity",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("ethnicity_bar_chart"),
+            height = "400px"
+          )
+        )
+
+      )
+
     )
 
   )
@@ -28,46 +100,197 @@ mod_overview_ui <- function(id){
 #' overview Server Functions
 #'
 #' @noRd
-mod_overview_server <- function(id, data){
+mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
+                                ethnicity_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    heatmap_data <- reactive({
+    # Apply the filters to the gender data
+    gender_data_filtered <- shiny::reactive({
 
-      prep_heatmap(data = data)
+      gender_data |>
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
+        )
 
     })
 
-    output$heatmap <- echarts4r::renderEcharts4r({
+    # Create reactive data frame to data to be displayed in pie chart
+    gender_pie_chart_data <- shiny::reactive({
 
-      heatmap_data() |>
-        echarts4r::e_charts(
-          x = name.x,
-          label = list(show = TRUE)   # show values inside cells
+      shiny::validate(
+        shiny::need(
+          expr = nrow(gender_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      gender_data_filtered() |>
+        dplyr::count(gender) |>
+        dplyr::arrange(gender)
+
+    })
+
+    output$gender_pie_chart <- echarts4r::renderEcharts4r({
+
+      gender_pie_chart_data() |>
+        pie_chart(
+          category = "gender",
+          count = "n"
+        )
+
+    })
+
+    # Apply the filters to the client data
+    enrollment_data_filtered <- shiny::reactive({
+
+      enrollment_data |>
+        dplyr::select(personal_id, organization_id, sexual_orientation) |>
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
+        )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    sexual_orientation_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(enrollment_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      enrollment_data_filtered() |>
+        dplyr::mutate(sexual_orientation = ifelse(
+          is.na(sexual_orientation),
+          "Missing Data",
+          sexual_orientation
+        )) |>
+        dplyr::count(sexual_orientation) |>
+        dplyr::arrange(sexual_orientation)
+
+    })
+
+    output$sexual_orientation_pie_chart <- echarts4r::renderEcharts4r({
+
+      sexual_orientation_pie_chart_data() |>
+        pie_chart(
+          category = "sexual_orientation",
+          count = "n"
+        )
+
+    })
+
+    # Apply the filters to the client data
+    client_data_filtered <- shiny::reactive({
+
+      client_data |>
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
+        )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    veteran_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(client_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      client_data_filtered() |>
+        dplyr::mutate(veteran_status = ifelse(
+          is.na(veteran_status),
+          "Missing Data",
+          veteran_status
+        )) |>
+        dplyr::count(veteran_status) |>
+        dplyr::arrange(veteran_status)
+
+    })
+
+    output$veteran_pie_chart <- echarts4r::renderEcharts4r({
+
+      veteran_pie_chart_data() |>
+        pie_chart(
+          category = "veteran_status",
+          count = "n"
+        )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    age_bar_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(client_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      client_data_filtered() |>
+        dplyr::filter(!is.na(age)) |>
+        dplyr::count(age) |>
+        dplyr::arrange(age) |>
+        dplyr::mutate(age = as.factor(age))
+
+    })
+
+    output$age_bar_chart <- echarts4r::renderEcharts4r({
+
+      age_bar_chart_data() |>
+        bar_chart(
+          x = "age",
+          y = "n",
+          axis_flip = FALSE
         ) |>
-        echarts4r::e_heatmap(
-          y = name.y,
-          z = n,
-          pointSize = 5
-        ) |>
-        echarts4r::e_visual_map(
-          serie = n,
-          show = FALSE   # hide the interactive legend gradient"
-        ) |>
-        echarts4r::e_tooltip(
-          trigger = "item",
-          # Check out https://echarts4r.john-coene.com/articles/tooltip.html#javascript
-          # for more context on how we created the custom tooltip
-          formatter = htmlwidgets::JS("
-            function(params){
-              return('# of Youth Who Identify as' +
-              '<br /><em>' + params.value[0] + '</em> & <em>' + params.value[1] + '</em>' +
-              '<br />' + params.marker + ' Count: <strong>' + params.value[2] + '</strong>')
-            }
-          ")
-        ) |>
-        echarts4r::e_x_axis(
-          axisLabel = list(rotate = 45)
+        echarts4r::e_axis_labels(x = "Age", y = "# of Youth")
+
+    })
+
+    # Apply the filters to the ethnicity data
+    ethnicity_data_filtered <- shiny::reactive({
+
+      ethnicity_data |>
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
+        )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    ethnicity_bar_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ethnicity_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ethnicity_data_filtered() |>
+        dplyr::filter(!is.na(ethnicity)) |>
+        dplyr::count(ethnicity) |>
+        dplyr::arrange(n)
+
+    })
+
+    output$ethnicity_bar_chart <- echarts4r::renderEcharts4r({
+
+      ethnicity_bar_chart_data() |>
+        bar_chart(
+          x = "ethnicity",
+          y = "n"
         )
 
     })

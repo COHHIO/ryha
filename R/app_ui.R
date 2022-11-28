@@ -43,14 +43,19 @@ app_ui <- function(request) {
         bs4Dash::tabItems(
 
           bs4Dash::tabItem(
-            tabName = "overview_page",
-            shiny::p("Placeholder Overview")
+            tabName = "welcome_page",
+            shiny::h2("Welcome to the Youth Homelessness Analyzer")
           ),
 
           bs4Dash::tabItem(
-            tabName = "client_page",
-            mod_client_ui("client_1")
+            tabName = "overview_page",
+            mod_overview_ui("overview_1")
           ),
+
+          # bs4Dash::tabItem(
+          #   tabName = "client_page",
+          #   mod_client_ui("client_1")
+          # ),
 
           bs4Dash::tabItem(
             tabName = "living_situation_page",
@@ -78,13 +83,23 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
+            tabName = "services_page",
+            mod_services_ui("services_1")
+          ),
+
+          bs4Dash::tabItem(
             tabName = "health_page",
             mod_health_ui("health_1")
           ),
 
           bs4Dash::tabItem(
             tabName = "domestic_violence_page",
-            shiny::p("Placeholder Domestic Violence")
+            mod_domestic_violence_ui("domestic_violence_1")
+          ),
+
+          bs4Dash::tabItem(
+            tabName = "benefits_page",
+            mod_benefits_ui("benefits_1")
           ),
 
           bs4Dash::tabItem(

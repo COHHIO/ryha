@@ -86,6 +86,12 @@ mod_upload_server <- function(id){
 
         send_to_db(data = data, conn = con)
 
+        shiny::modalDialog(
+          title = "Data uploaded successfully!",
+          "Please refresh the app to see your data populate in the charts."
+        ) |>
+          shiny::showModal()
+
       }
 
       DBI::dbDisconnect(conn = con)
