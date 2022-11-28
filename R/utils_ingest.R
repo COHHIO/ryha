@@ -544,7 +544,14 @@ read_income <- function(file) {
     dplyr::mutate(
       dplyr::across(
         .cols = !dplyr::ends_with(
-          match = c("ID", "Date", "Amount", "Identify"),
+          match = c(
+            "ID",
+            "Date",
+            "Amount",
+            "Identify",
+            "DataCollectionStage",
+            "DateUpdated"
+          ),
           ignore.case = FALSE
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
@@ -611,7 +618,14 @@ read_benefits <- function(file) {
       ),
       dplyr::across(
         .cols = !dplyr::ends_with(
-          match = c("ID", "Date", "Identify", "Reason"),
+          match = c(
+            "ID",
+            "Date",
+            "Identify",
+            "Reason",
+            "DataCollectionStage",
+            "DateUpdated"
+          ),
           ignore.case = FALSE
         ),
         .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
