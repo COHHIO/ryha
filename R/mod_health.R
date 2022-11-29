@@ -223,6 +223,32 @@ mod_health_ui <- function(id){
 
           ),
 
+          # Pregnancy Status ----
+
+          shiny::tabPanel(
+            title = "Pregnancy",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "# of Youth by Pregnancy Status",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("pregnancy_pie_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+
+            )
+
+          ),
+
           # Counseling ----
 
           shiny::tabPanel(
@@ -231,7 +257,7 @@ mod_health_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Counseling Received Response",
@@ -246,7 +272,7 @@ mod_health_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
                   title = "Data Quality Statistics",
@@ -818,6 +844,64 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         mental_missingness_stats()
       )
     )
+
+    # Pregancy Status ----
+
+    # Create reactive data frame to data to be displayed in pie chart
+    pregnancy_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(health_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- health_data_filtered() |>
+        dplyr::filter(
+          pregnancy_status %in% c("Yes", "No")
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          pregnancy_status,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          pregnancy_status
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          pregnancy_status,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(pregnancy_status) |>
+        dplyr::arrange(pregnancy_status)
+
+    })
+
+    # Create mental health status pie chart
+    output$pregnancy_pie_chart <- echarts4r::renderEcharts4r({
+
+      pregnancy_pie_chart_data() |>
+        pie_chart(
+          category = "pregnancy_status",
+          count = "n"
+        )
+
+    })
 
     # Counseling ----
 

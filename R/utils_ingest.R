@@ -384,7 +384,7 @@ read_health <- function(file) {
     # only read in columns needed for "HEALTH" database table
     col_select = c(
       HealthAndDVID:InformationDate,
-      GeneralHealthStatus:MentalHealthStatus,
+      GeneralHealthStatus:PregnancyStatus,
       DataCollectionStage,
       DateUpdated
     ),
@@ -405,6 +405,10 @@ read_health <- function(file) {
       dplyr::across(
         .cols = GeneralHealthStatus:MentalHealthStatus,
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
+      ),
+      PregnancyStatus = lookup_codes(
+        var = PregnancyStatus,
+        codes = GeneralCodes
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
