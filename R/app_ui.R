@@ -103,6 +103,11 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
+            tabName = "trafficking_page",
+            mod_trafficking_ui("trafficking_1")
+          ),
+
+          bs4Dash::tabItem(
             tabName = "upload_page",
             mod_upload_ui("upload_1")
           )

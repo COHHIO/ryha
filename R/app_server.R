@@ -67,6 +67,7 @@ app_server <- function(input, output, session) {
   mod_health_server(
     id = "health_1",
     health_data = dm$health,
+    counseling_data = dm$exit,
     clients_filtered = clients_filtered
   )
 
@@ -86,6 +87,12 @@ app_server <- function(input, output, session) {
     id = "services_1",
     services_data = dm$services,
     referral_data = dm$enrollment,
+    clients_filtered = clients_filtered
+  )
+
+  mod_trafficking_server(
+    id = "trafficking_1",
+    trafficking_data = dm$exit,
     clients_filtered = clients_filtered
   )
 
