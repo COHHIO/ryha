@@ -16,6 +16,8 @@ mod_overview_ui <- function(id){
       shiny::column(
         width = 4,
 
+        # Gender ----
+
         bs4Dash::box(
           title = "# of Youth by Gender",
           width = NULL,
@@ -31,6 +33,8 @@ mod_overview_ui <- function(id){
       shiny::column(
         width = 4,
 
+        # Sexual Orientation ----
+
         bs4Dash::box(
           title = "# of Youth by Sexual Orientation",
           width = NULL,
@@ -45,6 +49,8 @@ mod_overview_ui <- function(id){
 
       shiny::column(
         width = 4,
+
+        # Veteran Status ----
 
         bs4Dash::box(
           title = "# of Youth by Veteran Status",
@@ -65,6 +71,8 @@ mod_overview_ui <- function(id){
       shiny::column(
         width = 6,
 
+        # Age ----
+
         bs4Dash::box(
           title = "# of Youth by Age",
           width = NULL,
@@ -80,6 +88,8 @@ mod_overview_ui <- function(id){
       shiny::column(
         width = 6,
 
+        # Ethnicity ----
+
         bs4Dash::box(
           title = "# of Youth by Ethnicity",
           width = NULL,
@@ -87,6 +97,44 @@ mod_overview_ui <- function(id){
           echarts4r::echarts4rOutput(
             outputId = ns("ethnicity_bar_chart"),
             height = "400px"
+          )
+        )
+
+      )
+
+    ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 6,
+
+        # Welfare ----
+
+        bs4Dash::box(
+          title = "# of Youth by Former Ward Child Welfare Response",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("welfare_pie_chart"),
+            height = "350px"
+          )
+        )
+
+      ),
+
+      shiny::column(
+        width = 6,
+
+        # Juvenile ----
+
+        bs4Dash::box(
+          title = "# of Youth by Former Ward Juvenile Justice Response",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("juvenile_pie_chart"),
+            height = "350px"
           )
         )
 
@@ -104,6 +152,8 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
                                 ethnicity_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+
+    # Gender ----
 
     # Apply the filters to the gender data
     gender_data_filtered <- shiny::reactive({
@@ -146,13 +196,21 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     enrollment_data_filtered <- shiny::reactive({
 
       enrollment_data |>
-        dplyr::select(personal_id, organization_id, sexual_orientation) |>
+        dplyr::select(
+          personal_id,
+          organization_id,
+          sexual_orientation,
+          former_ward_child_welfare,
+          former_ward_juvenile_justice
+        ) |>
         dplyr::inner_join(
           clients_filtered(),
           by = c("personal_id", "organization_id")
         )
 
     })
+
+    # Sexual Orientation ----
 
     # Create reactive data frame to data to be displayed in pie chart
     sexual_orientation_pie_chart_data <- shiny::reactive({
@@ -196,6 +254,8 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
 
     })
 
+    # Veteran ----
+
     # Create reactive data frame to data to be displayed in pie chart
     veteran_pie_chart_data <- shiny::reactive({
 
@@ -227,6 +287,8 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
 
     })
 
+    # Age ----
+
     # Create reactive data frame to data to be displayed in pie chart
     age_bar_chart_data <- shiny::reactive({
 
@@ -256,6 +318,8 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
         echarts4r::e_axis_labels(x = "Age", y = "# of Youth")
 
     })
+
+    # Ethnicity ----
 
     # Apply the filters to the ethnicity data
     ethnicity_data_filtered <- shiny::reactive({
@@ -294,6 +358,72 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
         )
 
     })
+
+    # Welfare ----
+
+    # Create reactive data frame to data to be displayed in pie chart
+    welfare_pie_chart_data <- shiny::reactive({
+
+      shiny::req(enrollment_data_filtered())
+
+      out <- enrollment_data_filtered() |>
+        dplyr::filter(!is.na(former_ward_child_welfare))
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(former_ward_child_welfare) |>
+        dplyr::arrange(former_ward_child_welfare)
+
+    })
+
+    output$welfare_pie_chart <- echarts4r::renderEcharts4r(
+
+      welfare_pie_chart_data() |>
+        pie_chart(
+          category = "former_ward_child_welfare",
+          count = "n"
+        )
+
+    )
+
+    # Juvenile ----
+
+    # Create reactive data frame to data to be displayed in pie chart
+    juvenile_pie_chart_data <- shiny::reactive({
+
+      shiny::req(enrollment_data_filtered())
+
+      out <- enrollment_data_filtered() |>
+        dplyr::filter(!is.na(former_ward_juvenile_justice))
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(former_ward_juvenile_justice) |>
+        dplyr::arrange(former_ward_juvenile_justice)
+
+    })
+
+    output$juvenile_pie_chart <- echarts4r::renderEcharts4r(
+
+      juvenile_pie_chart_data() |>
+        pie_chart(
+          category = "former_ward_juvenile_justice",
+          count = "n"
+        )
+
+    )
 
   })
 }
