@@ -14,7 +14,7 @@ mod_health_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 6,
+        width = 4,
         # Number of youth (post global filters)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_box"),
@@ -23,10 +23,19 @@ mod_health_ui <- function(id){
       ),
 
       shiny::column(
-        width = 6,
+        width = 4,
         # Number of youth with health data available
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_with_health_data_box"),
+          width = "100%"
+        )
+      ),
+
+      shiny::column(
+        width = 4,
+        # Number of youth with counseling data available
+        bs4Dash::bs4ValueBoxOutput(
+          outputId = ns("n_youth_with_counseling_data_box"),
           width = "100%"
         )
       )
@@ -42,6 +51,8 @@ mod_health_ui <- function(id){
 
         bs4Dash::tabsetPanel(
           type = "pills",
+
+          # General Health ----
 
           shiny::tabPanel(
             title = "General",
@@ -98,6 +109,8 @@ mod_health_ui <- function(id){
 
           ),
 
+          # Dental Health ----
+
           shiny::tabPanel(
             title = "Dental",
 
@@ -153,6 +166,8 @@ mod_health_ui <- function(id){
 
           ),
 
+          # Mental Health ----
+
           shiny::tabPanel(
             title = "Mental",
 
@@ -206,6 +221,50 @@ mod_health_ui <- function(id){
               )
             )
 
+          ),
+
+          # Counseling ----
+
+          shiny::tabPanel(
+            title = "Counseling",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 4,
+
+                bs4Dash::box(
+                  title = "# of Youth by Counseling Received Response",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("counseling_pie_chart"),
+                    height = "400px"
+                  )
+                )
+
+              ),
+
+              shiny::column(
+                width = 8,
+
+                bs4Dash::box(
+                  title = "Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("counseling_missingness_stats_tbl")
+                  )
+                )
+
+              )
+
+            ),
+
+            shiny::fluidRow(
+
+            )
+
           )
 
         )
@@ -220,7 +279,7 @@ mod_health_ui <- function(id){
 #' health Server Functions
 #'
 #' @noRd
-mod_health_server <- function(id, health_data, clients_filtered){
+mod_health_server <- function(id, health_data, counseling_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -243,8 +302,18 @@ mod_health_server <- function(id, health_data, clients_filtered){
 
     })
 
-    # Total number of Youth in program(s) that exist in the `health.csv`
-    # file
+    # Apply the filters to the counseling data
+    counseling_data_filtered <- shiny::reactive({
+
+      counseling_data |>
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
+        )
+
+    })
+
+    # Total number of Youth in with health data available
     n_youth_with_health_data <- shiny::reactive(
 
       health_data_filtered() |>
@@ -252,6 +321,18 @@ mod_health_server <- function(id, health_data, clients_filtered){
           general_health_status %in% HealthStatusCodes$Description[1:5] |
             dental_health_status %in% HealthStatusCodes$Description[1:5] |
             mental_health_status %in% HealthStatusCodes$Description[1:5]
+        ) |>
+        dplyr::distinct(personal_id, organization_id) |>
+        nrow()
+
+    )
+
+    # Total number of Youth in with counseling data available
+    n_youth_with_counseling_data <- shiny::reactive(
+
+      counseling_data_filtered() |>
+        dplyr::filter(
+          counseling_received %in% c("Yes", "No")
         ) |>
         dplyr::distinct(personal_id, organization_id) |>
         nrow()
@@ -279,6 +360,19 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
 
     })
+
+    # Render number of projects box
+    output$n_youth_with_counseling_data_box <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth_with_counseling_data(),
+        subtitle = "Total # of Youth with Counseling Data Available",
+        icon = shiny::icon("home")
+      )
+
+    })
+
+    # General Health ----
 
     # Create reactive data frame to data to be displayed in pie chart
     general_pie_chart_data <- shiny::reactive({
@@ -427,6 +521,8 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
     )
 
+    # Dental Health ----
+
     # Create reactive data frame to data to be displayed in pie chart
     dental_pie_chart_data <- shiny::reactive({
 
@@ -574,6 +670,8 @@ mod_health_server <- function(id, health_data, clients_filtered){
       )
     )
 
+    # Mental Health ----
+
     # Create reactive data frame to data to be displayed in pie chart
     mental_pie_chart_data <- shiny::reactive({
 
@@ -693,7 +791,7 @@ mod_health_server <- function(id, health_data, clients_filtered){
     })
 
     # Capture the data quality statistics for "mental_health_status" field
-    mental_missingness_stats <- shiny::reactive({
+    mental_missingness_stats <- shiny::reactive(
 
       health_data_filtered() |>
         dplyr::mutate(mental_health_status = ifelse(
@@ -712,7 +810,7 @@ mod_health_server <- function(id, health_data, clients_filtered){
         dplyr::count(mental_health_status, name = "Count") |>
         dplyr::rename(Response = mental_health_status)
 
-    })
+    )
 
     # Create the {reactable} table to hold the missingness stats
     output$mental_missingness_stats_tbl <- reactable::renderReactable(
@@ -720,6 +818,91 @@ mod_health_server <- function(id, health_data, clients_filtered){
         mental_missingness_stats()
       )
     )
+
+    # Counseling ----
+
+    # Create reactive data frame to data to be displayed in pie chart
+    counseling_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(counseling_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      # Keep the most recently updated data for each individual
+      out <- counseling_data_filtered() |>
+        dplyr::filter(
+          counseling_received %in% c("Yes", "No")
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          counseling_received,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          counseling_received
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          counseling_received,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(counseling_received) |>
+        dplyr::arrange(counseling_received)
+
+    })
+
+    # Create counseling pie chart
+    output$counseling_pie_chart <- echarts4r::renderEcharts4r(
+
+      counseling_pie_chart_data() |>
+        pie_chart(
+          category = "counseling_received",
+          count = "n"
+        )
+
+    )
+
+    # Capture the data quality statistics for "counseling_received" field
+    counseling_missingness_stats <- shiny::reactive(
+
+      counseling_data_filtered() |>
+        dplyr::mutate(counseling_received = ifelse(
+          is.na(counseling_received),
+          "(Blank)",
+          counseling_received
+        )) |>
+        dplyr::filter(
+          !counseling_received %in% c("Yes", "No")
+        ) |>
+        dplyr::count(counseling_received, name = "Count") |>
+        dplyr::rename(Response = counseling_received)
+
+    )
+
+    # Create the {reactable} table to hold the missingness stats
+    output$counseling_missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        counseling_missingness_stats()
+      )
+    )
+
+
 
   })
 }
