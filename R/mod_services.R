@@ -14,7 +14,7 @@ mod_services_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 6,
+        width = 4,
         # Number of clients (post filters)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_box"),
@@ -23,10 +23,19 @@ mod_services_ui <- function(id){
       ),
 
       shiny::column(
-        width = 6,
+        width = 4,
         # Number of projects (post filters)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_with_services_data_box"),
+          width = "100%"
+        )
+      ),
+
+      shiny::column(
+        width = 4,
+        # Number of projects (post filters)
+        bs4Dash::bs4ValueBoxOutput(
+          outputId = ns("n_youth_with_referral_data_box"),
           width = "100%"
         )
       )
@@ -62,7 +71,24 @@ mod_services_ui <- function(id){
           width = NULL,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("bar_chart"),
+            outputId = ns("services_bar_chart"),
+            height = "450px"
+          )
+        )
+      )
+
+    ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 12,
+        bs4Dash::box(
+          title = "# of Youth by Referral Source",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("referral_bar_chart"),
             height = "450px"
           )
         )
@@ -76,7 +102,7 @@ mod_services_ui <- function(id){
 #' services Server Functions
 #'
 #' @noRd
-mod_services_server <- function(id, services_data, clients_filtered){
+mod_services_server <- function(id, services_data, referral_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -108,7 +134,7 @@ mod_services_server <- function(id, services_data, clients_filtered){
     })
 
     # Apply the filters to the services data
-    services_data_filtered <- shiny::reactive({
+    services_data_filtered <- shiny::reactive(
 
       services_data |>
         dplyr::filter(
@@ -123,7 +149,7 @@ mod_services_server <- function(id, services_data, clients_filtered){
           by = c("personal_id", "organization_id")
         )
 
-    })
+    )
 
     # Total number of Youth in program(s) that exist in the `services.csv`
     # file
@@ -131,6 +157,34 @@ mod_services_server <- function(id, services_data, clients_filtered){
 
       services_data_filtered() |>
         dplyr::filter(!is.na(type_provided)) |>
+        dplyr::distinct(personal_id, organization_id) |>
+        nrow()
+
+    )
+
+    # Apply the filters to the referral data
+    referral_data_filtered <- shiny::reactive({
+
+      shiny::req(services_data_filtered())
+
+      referral_data |>
+        dplyr::inner_join(
+          services_data_filtered() |>
+            dplyr::select(personal_id, organization_id),
+          by = c("personal_id", "organization_id")
+        ) |>
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
+        )
+
+    })
+
+    # Total number of Youth with referral data available
+    n_youth_with_referral_data <- shiny::reactive(
+
+      referral_data_filtered() |>
+        dplyr::filter(!is.na(referral_source)) |>
         dplyr::distinct(personal_id, organization_id) |>
         nrow()
 
@@ -158,8 +212,19 @@ mod_services_server <- function(id, services_data, clients_filtered){
 
     })
 
+    # Render number of youth w/ referral data box
+    output$n_youth_with_referral_data_box <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth_with_referral_data(),
+        subtitle = "Total # of Youth with Referral Data Available",
+        icon = shiny::icon("home")
+      )
+
+    })
+
     # Create reactive data frame to data to be displayed in bar chart
-    bar_chart_data <- shiny::reactive({
+    services_bar_chart_data <- shiny::reactive({
 
       shiny::validate(
         shiny::need(
@@ -169,6 +234,7 @@ mod_services_server <- function(id, services_data, clients_filtered){
       )
 
       services_data_filtered() |>
+        dplyr::filter(!is.na(type_provided)) |>
         dplyr::distinct(personal_id, organization_id, type_provided) |>
         dplyr::count(type_provided) |>
         dplyr::arrange(n)
@@ -176,10 +242,50 @@ mod_services_server <- function(id, services_data, clients_filtered){
     })
 
     # Create services chart
-    output$bar_chart <- echarts4r::renderEcharts4r({
+    output$services_bar_chart <- echarts4r::renderEcharts4r({
 
-      bar_chart_data() |>
+      services_bar_chart_data() |>
         echarts4r::e_charts(x = type_provided) |>
+        echarts4r::e_bar(
+          serie = n,
+          name = "# of Youth",
+          legend = FALSE,
+          label = list(
+            formatter = '{@[0]}',
+            show = TRUE,
+            position = "right"
+          )
+        ) |>
+        echarts4r::e_tooltip(trigger = "item") |>
+        echarts4r::e_flip_coords() |>
+        echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_show_loading()
+
+    })
+
+    # Create reactive data frame to data to be displayed in bar chart
+    referral_bar_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(referral_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      referral_data_filtered() |>
+        dplyr::filter(!is.na(referral_source)) |>
+        dplyr::distinct(personal_id, organization_id, referral_source) |>
+        dplyr::count(referral_source) |>
+        dplyr::arrange(n)
+
+    })
+
+    # Create referral source chart
+    output$referral_bar_chart <- echarts4r::renderEcharts4r({
+
+      referral_bar_chart_data() |>
+        echarts4r::e_charts(x = referral_source) |>
         echarts4r::e_bar(
           serie = n,
           name = "# of Youth",
