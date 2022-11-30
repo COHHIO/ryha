@@ -554,7 +554,8 @@ read_income <- function(file) {
             "Amount",
             "Identify",
             "DataCollectionStage",
-            "DateUpdated"
+            "DateUpdated",
+            "TotalMonthlyIncome"
           ),
           ignore.case = FALSE
         ),
