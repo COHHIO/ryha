@@ -91,7 +91,7 @@ mod_overview_ui <- function(id){
         # Ethnicity ----
 
         bs4Dash::box(
-          title = "# of Youth by Ethnicity",
+          title = "# of Youth by Race & Ethnicity",
           width = NULL,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(

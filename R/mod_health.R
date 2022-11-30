@@ -519,7 +519,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     })
 
     # Capture the data quality statistics for "general_health_status" field
-    general_missingness_stats <- shiny::reactive({
+    general_missingness_stats <- shiny::reactive(
 
       health_data_filtered() |>
         dplyr::mutate(general_health_status = ifelse(
@@ -538,7 +538,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::count(general_health_status, name = "Count") |>
         dplyr::rename(Response = general_health_status)
 
-    })
+    )
 
     # Create the {reactable} table to hold the missingness stats
     output$general_missingness_stats_tbl <- reactable::renderReactable(

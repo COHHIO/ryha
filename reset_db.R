@@ -63,4 +63,25 @@ for (t in DBI::dbListTables(conn = con)) {
 
 }
 
+# Or delete a specific organization
+for (t in DBI::dbListTables(conn = con)) {
 
+  table_name <- glue::glue_sql(
+    t,
+    .con = con
+  )
+
+  sql_stmt <- glue::glue_sql(
+    "
+      DELETE FROM {table_name}
+      WHERE organization_id = 3
+    ",
+    .con = con
+  )
+
+  DBI::dbExecute(
+    conn = con,
+    statement = sql_stmt
+  )
+
+}
