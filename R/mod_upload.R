@@ -14,12 +14,18 @@ mod_upload_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 3,
+        width = 5,
 
         shiny::fileInput(
           inputId = ns("choose_zip"),
           label = "Choose HMIS .Zip File",
           accept = ".zip"
+        ),
+
+        shiny::passwordInput(
+          inputId = ns("upload_pwd"),
+          label = "Enter Upload Password",
+          placeholder = "password"
         ),
 
         shiny::actionButton(
@@ -48,6 +54,20 @@ mod_upload_server <- function(id){
       )
     )
 
+    shiny::observe({
+
+      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD")) {
+
+        shinyjs::disable(id = "upload_btn")
+
+      } else {
+
+        shinyjs::enable(id = "upload_btn")
+
+      }
+
+    })
+
     # Process the data in the uploaded .zip & write to Postgres
     shiny::observeEvent(input$upload_btn, {
 
@@ -67,30 +87,79 @@ mod_upload_server <- function(id){
 
       Sys.sleep(0.5)
 
-      out <- process_data(file = input$choose_zip$datapath)
+      data <- process_data_safely(file = input$choose_zip$datapath)
 
-      if ("character" %in% class(out)) {
+      if (!is.null(data$error)) {
 
         shiny::modalDialog(
           title = "There was an issue with the upload",
-          out
+          data$error$message,
+          shiny::br(),
+          "Failed during stage: `process_data()`"
         ) |>
           shiny::showModal()
 
       } else {
 
-        data <- out |>
-          prep_tables(conn = con)
+        data <- data$result |>
+          prep_tables_safely(conn = con)
 
-        delete_from_db(data = data, conn = con)
+        if (!is.null(data$error)) {
 
-        send_to_db(data = data, conn = con)
+          shiny::modalDialog(
+            title = "There was an issue with the upload",
+            data$error$message,
+            shiny::br(),
+            "Failed during stage: `prep_tables()`"
+          ) |>
+            shiny::showModal()
 
-        shiny::modalDialog(
-          title = "Data uploaded successfully!",
-          "Please refresh the app to see your data populate in the charts."
-        ) |>
-          shiny::showModal()
+        } else {
+
+          out <- data$result |>
+            delete_from_db_safely(conn = con)
+
+          if (!is.null(out$error)) {
+
+            shiny::modalDialog(
+              title = "There was an issue with the upload",
+              out$error$message,
+              shiny::br(),
+              "Failed during stage: `delete_from_db()`"
+            ) |>
+              shiny::showModal()
+
+          } else {
+
+            out <- data$result |>
+              send_to_db_safely(conn = con)
+
+            if (!is.null(out$error)) {
+
+              data$result |>
+                delete_from_db(conn = con)
+
+              shiny::modalDialog(
+                title = "There was an issue with the upload",
+                out$error$message,
+                shiny::br(),
+                "Failed during stage: `send_to_db()`"
+              ) |>
+                shiny::showModal()
+
+            } else {
+
+              shiny::modalDialog(
+                title = "Data uploaded successfully!",
+                "Please refresh the app to see your data populate in the charts."
+              ) |>
+                shiny::showModal()
+
+            }
+
+          }
+
+        }
 
       }
 

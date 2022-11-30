@@ -129,10 +129,10 @@ prep_tables <- function(data, conn) {
   # Retrieve the information from the file for the "organization" table
   if (nrow(data$organization) != 1L) {
 
-      glue::glue(
-        "{nrow(data$organization)} organizations were found; ",
-        "expected exactly 1 organization in .zip upload."
-      ) |>
+    glue::glue(
+      "{nrow(data$organization)} organizations were found; ",
+      "expected exactly 1 organization in .zip upload."
+    ) |>
       rlang::abort()
 
   }
@@ -449,3 +449,13 @@ send_to_db <- function(data, conn) {
   }
 
 }
+
+
+
+# Create "safe" equivalents for each function
+process_data_safely <- purrr::safely(process_data)
+prep_tables_safely <- purrr::safely(prep_tables)
+delete_from_db_safely <- purrr::safely(delete_from_db)
+send_to_db_safely <- purrr::safely(send_to_db)
+
+
