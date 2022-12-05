@@ -1,17 +1,49 @@
 
 
 
+#' Connect to PostgreSQL Database
+#'
+#' @description Establish a `{DBI}` database connection to the PostgreSQL
+#'   database, using environment variables for the connection information
+#'
+#' @return A {DBI} database connection
+#'
+#' @examples
+#' \dontrun{
+#' con <- connect_to_db()
+#' }
+connect_to_db <- function() {
+
+  DBI::dbConnect(
+    drv = RPostgres::Postgres(),
+    dbname = Sys.getenv("DB_NAME"),
+    host = Sys.getenv("DB_HOST"),
+    port = Sys.getenv("DB_PORT"),
+    user = Sys.getenv("DB_USER"),
+    password = Sys.getenv("DB_PWD")
+  )
+
+}
+
+
+#' Create the data model
+#'
+#' @description Create a
+#'
+#' @return List of data frames, based upon the tables in the PostgreSQL database,
+#'   with some minor manipulations to reduce the number of data transformations
+#'   on-the-fly in the server-side of the app
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dm <- create_dm()
+#' }
 create_dm <- function() {
 
   # Establish connection to PostgreSQL database
-  con <- DBI::dbConnect(
-    drv = RPostgres::Postgres(),
-    dbname = Sys.getenv("AWS_POSTGRES_DBNAME"),
-    host = Sys.getenv("AWS_POSTGRES_HOST"),
-    port = Sys.getenv("AWS_POSTGRES_PORT"),
-    user = Sys.getenv("AWS_POSTGRES_USER"),
-    password = Sys.getenv("AWS_POSTGRES_PWD")
-  )
+  con <- connect_to_db()
 
   # Read "project" table into memory
   project <- DBI::dbReadTable(

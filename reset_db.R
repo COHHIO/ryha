@@ -1,16 +1,16 @@
 
 
 
-con <- DBI::dbConnect(
-  drv = RPostgres::Postgres(),
-  dbname = Sys.getenv("AWS_POSTGRES_DBNAME"),
-  host = Sys.getenv("AWS_POSTGRES_HOST"),
-  port = Sys.getenv("AWS_POSTGRES_PORT"),
-  user = Sys.getenv("AWS_POSTGRES_USER"),
-  password = Sys.getenv("AWS_POSTGRES_PWD")
-)
+# devtools::load_all()
+con <- connect_to_db()
 
-# Truncate all tables
+# Re-populate tables ----
+data <- process_data(file = "app_testing/app_testing/hudx-111_1667240256.zip")
+data <- prep_tables(data = data, conn = con)
+delete_from_db(data = data, conn = con)
+send_to_db(data = data, conn = con)
+
+# Truncate all tables ----
 for (t in DBI::dbListTables(conn = con)) {
 
   table_name <- glue::glue_sql(
@@ -32,16 +32,7 @@ for (t in DBI::dbListTables(conn = con)) {
 
 }
 
-# Re-populate tables
-data <- process_data(file = "app_testing/app_testing/hudx-111_1667240256.zip")
-
-data <- prep_tables(data = data, conn = con)
-
-delete_from_db(data = data, conn = con)
-
-send_to_db(data = data, conn = con)
-
-# Or, drop all tables
+# Drop all tables ----
 for (t in DBI::dbListTables(conn = con)) {
 
   table_name <- glue::glue_sql(
@@ -63,7 +54,7 @@ for (t in DBI::dbListTables(conn = con)) {
 
 }
 
-# Or delete a specific organization
+# Delete a specific organization ----
 for (t in DBI::dbListTables(conn = con)) {
 
   table_name <- glue::glue_sql(
@@ -71,6 +62,8 @@ for (t in DBI::dbListTables(conn = con)) {
     .con = con
   )
 
+  # Change "3" in the statement below to the appropriate `organization_id` of
+  # the organization you want to remove
   sql_stmt <- glue::glue_sql(
     "
       DELETE FROM {table_name}

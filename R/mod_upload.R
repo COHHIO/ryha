@@ -76,14 +76,7 @@ mod_upload_server <- function(id){
       w$show()
 
       # Establish connection to PostgreSQL database
-      con <- DBI::dbConnect(
-        drv = RPostgres::Postgres(),
-        dbname = Sys.getenv("AWS_POSTGRES_DBNAME"),
-        host = Sys.getenv("AWS_POSTGRES_HOST"),
-        port = Sys.getenv("AWS_POSTGRES_PORT"),
-        user = Sys.getenv("AWS_POSTGRES_USER"),
-        password = Sys.getenv("AWS_POSTGRES_PWD")
-      )
+      con <- connect_to_db()
 
       Sys.sleep(0.5)
 

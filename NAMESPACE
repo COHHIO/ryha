@@ -2,6 +2,7 @@
 
 export("%>%")
 export(check_file_names)
+export(create_dm)
 export(process_data)
 export(read_benefits)
 export(read_client)
