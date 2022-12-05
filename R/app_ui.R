@@ -15,7 +15,7 @@ app_ui <- function(request) {
 
       header = bs4Dash::dashboardHeader(
         title = bs4Dash::dashboardBrand(
-          title = "RYHA",
+          title = "Youth Data Dashboard",
           color = "secondary",
           href = "https://cohhio.org/youthhealth/",
           image = "www/favicon.ico"
@@ -25,7 +25,7 @@ app_ui <- function(request) {
       sidebar = bs4Dash::dashboardSidebar(
 
         bs4Dash::sidebarMenu(
-          # menuItems is created in R/fct_menuItems.R
+          # Sidebar menu items are created in R/fct_menuItems.R
           create_menuItems(define_menu())
         )
 
@@ -44,18 +44,13 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "welcome_page",
-            shiny::h2("Welcome to the Youth Homelessness Analyzer")
+            shiny::h2("Welcome to the Youth Data Dashboard")
           ),
 
           bs4Dash::tabItem(
             tabName = "overview_page",
             mod_overview_ui("overview_1")
           ),
-
-          # bs4Dash::tabItem(
-          #   tabName = "client_page",
-          #   mod_client_ui("client_1")
-          # ),
 
           bs4Dash::tabItem(
             tabName = "living_situation_page",
@@ -136,7 +131,7 @@ golem_add_external_resources <- function() {
     favicon(),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "COHHIO Youth Homelessness Analyzer"
+      app_title = "COHHIO Youth Data Dashboard"
     ),
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
