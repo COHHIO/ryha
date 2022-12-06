@@ -9,9 +9,6 @@ check_file_names(dir)
 \arguments{
 \item{dir}{}
 }
-\value{
-
-}
 \description{
 Ensure All HMIS Data was Uploaded
 }
