@@ -4,3 +4,5 @@ example_data_lake/
 data_lake/
 *.csv
 *.zip
+hkey.RDS
+unhash.R
