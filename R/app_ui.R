@@ -53,11 +53,6 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
-            tabName = "living_situation_page",
-            mod_living_ui("living_1")
-          ),
-
-          bs4Dash::tabItem(
             tabName = "disabilities_page",
             mod_disabilities_ui("disabilities_1")
           ),
@@ -70,11 +65,6 @@ app_ui <- function(request) {
           bs4Dash::tabItem(
             tabName = "education_page",
             mod_education_ui("education_1")
-          ),
-
-          bs4Dash::tabItem(
-            tabName = "exits_page",
-            mod_exits_ui("exits_1")
           ),
 
           bs4Dash::tabItem(
