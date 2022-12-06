@@ -115,7 +115,7 @@ mod_filters_ui <- function(id){
 #' filters Server Functions
 #'
 #' @noRd
-mod_filters_server <- function(id, dm){
+mod_filters_server <- function(id, dm, w){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -131,14 +131,6 @@ mod_filters_server <- function(id, dm){
 
     # Update the values in the filters given the {dm} data
     shiny::observe({
-
-      shiny::showNotification(
-        "Please Wait...",
-        id = "load_notification",
-        duration = NULL,
-        type = "warning",
-        closeButton = FALSE
-      )
 
       shiny::req(dm)
 
@@ -187,9 +179,7 @@ mod_filters_server <- function(id, dm){
         )
       )
 
-      shiny::removeNotification(
-        id = "load_notification"
-      )
+      w$hide()
 
     })
 
