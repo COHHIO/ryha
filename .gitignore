@@ -2,5 +2,8 @@
 .Renviron
 example_data_lake/
 data_lake/
+db_data/
 *.csv
 *.zip
+hkey.RDS
+unhash.R

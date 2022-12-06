@@ -14,12 +14,23 @@ mod_upload_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 3,
+        width = 5,
 
         shiny::fileInput(
-          inputId = "upload_zip",
-          label = "Upload HMIS .Zip File",
+          inputId = ns("choose_zip"),
+          label = "Choose HMIS .Zip File",
           accept = ".zip"
+        ),
+
+        shiny::passwordInput(
+          inputId = ns("upload_pwd"),
+          label = "Enter Upload Password",
+          placeholder = "password"
+        ),
+
+        shiny::actionButton(
+          inputId = ns("upload_btn"),
+          label = "Upload"
         )
 
       )
@@ -32,33 +43,117 @@ mod_upload_ui <- function(id){
 #' upload Server Functions
 #'
 #' @noRd
-mod_upload_server <- function(id){
+mod_upload_server <- function(id, w){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    uploaded_data <- shiny::reactive({
+    shiny::observe({
 
-      file <- input$upload_zip
+      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD")) {
 
-      # Require that the uploaded file is indeed a .zip file
-      ext <- tools::file_ext(file$datapath)
+        shinyjs::disable(id = "upload_btn")
 
-      shiny::req(file)
+      } else {
 
-      shiny::validate(
-        shiny::need(ext == "csv", "Please upload a .zip file")
-      )
+        shinyjs::enable(id = "upload_btn")
+
+      }
 
     })
 
-    shiny::modalDialog(
-      title = "Files Missing from Upload",
-      "We could not find the following files in the .zip file you uploaded:",
-      shiny::br(),
-      vec_to_ul(vec = c("File1", "File2"))
-    ) |>
-      shiny::showModal()
+    # Process the data in the uploaded .zip & write to Postgres
+    shiny::observeEvent(input$upload_btn, {
 
+      shiny::req(input$choose_zip$datapath)
+
+      w$show()
+
+      # Establish connection to PostgreSQL database
+      con <- connect_to_db()
+
+      Sys.sleep(0.5)
+
+      data <- process_data_safely(file = input$choose_zip$datapath)
+
+      if (!is.null(data$error)) {
+
+        shiny::modalDialog(
+          title = "There was an issue with the upload",
+          data$error$message,
+          shiny::br(),
+          "Failed during stage: `process_data()`"
+        ) |>
+          shiny::showModal()
+
+      } else {
+
+        data <- data$result |>
+          prep_tables_safely(conn = con)
+
+        if (!is.null(data$error)) {
+
+          shiny::modalDialog(
+            title = "There was an issue with the upload",
+            data$error$message,
+            shiny::br(),
+            "Failed during stage: `prep_tables()`"
+          ) |>
+            shiny::showModal()
+
+        } else {
+
+          out <- data$result |>
+            delete_from_db_safely(conn = con)
+
+          if (!is.null(out$error)) {
+
+            shiny::modalDialog(
+              title = "There was an issue with the upload",
+              out$error$message,
+              shiny::br(),
+              "Failed during stage: `delete_from_db()`"
+            ) |>
+              shiny::showModal()
+
+          } else {
+
+            out <- data$result |>
+              send_to_db_safely(conn = con)
+
+            if (!is.null(out$error)) {
+
+              data$result |>
+                delete_from_db(conn = con)
+
+              shiny::modalDialog(
+                title = "There was an issue with the upload",
+                out$error$message,
+                shiny::br(),
+                "Failed during stage: `send_to_db()`"
+              ) |>
+                shiny::showModal()
+
+            } else {
+
+              shiny::modalDialog(
+                title = "Data uploaded successfully!",
+                "Please refresh the app to see your data populate in the charts."
+              ) |>
+                shiny::showModal()
+
+            }
+
+          }
+
+        }
+
+      }
+
+      DBI::dbDisconnect(conn = con)
+
+      w$hide()
+
+    })
 
   })
 }
