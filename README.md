@@ -7,8 +7,8 @@
 <!-- badges: end -->
 
 The goal of `{ryha}` is to provide a web-based application for in-depth,
-user-friendly consumption of Youth Homelessness data across the State of
-Ohio.
+user-friendly provision & consumption of Youth Homelessness data across
+the State of Ohio.
 
 ## Installation
 
@@ -26,6 +26,21 @@ devtools::install_github("ketchbrookanalytics/ryha")
 
 ## Running the App
 
+Before launching the app, you must have the following configurations in
+place for interacting with to the external database:
+
+- Environment Variables (for *reading from* & *writing to* the
+  database):
+  - `DB_NAME`
+  - `DB_HOST`
+  - `DB_PORT`
+  - `DB_USER`
+  - `DB_PWD`
+  - `UPLOAD_PWD`
+- The hash keys developed for encrypting the data during write/read
+  to/from the database (stored at the root of the directory, needed for
+  *writing to* the database)
+
 After installing the package, you can launch the app using the package’s
 `run_app()` function.
 
@@ -35,79 +50,50 @@ ryha::run_app()
 
 ## Data
 
-### Definitions
-
--   *“Youth”* is defined as any person within the program who is age 24
-    or younger.
-
 ### Source
 
 The data within this application are collected by each grantee in a
-format compliant with the *HMIS Data Standards*.
+format compliant with the *HMIS Data Standards*. This data originates
+from one of a few separate HMIS databases in the State. The HMIS
+databases have the capability to query the database and export a .zip
+file. This .zip file can be uploaded into the **COHHIO Youth Data
+Dashboard** app via the app’s “*Upload*” page.
 
-The data dictionary for each element across each file can be found here:
-<https://files.hudexchange.info/resources/documents/FY-2022-HMIS-Data-Dictionary.pdf>
+### Requirements
 
-### Methodology for Analysis
+The following requirements must be satisfied in order for the .zip file
+to be successfully processed and its data written to the database:
 
-This app gives users the ability to slice & filter the data across many
-different demographic variables and attributes about each individual in
-the program. These attributes are grouped into the following categories
-within the app:
+- The file must be *.zip* extension
+- The .zip file must contain (at least) the following .csv files
+  - **Client.csv**
+  - **Disabilities.csv**
+  - **EmploymentEducation.csv**
+  - **CurrentLivingSituation.csv**
+  - **HealthAndDV.csv**
+  - **IncomeBenefits.csv**
+  - **Enrollment.csv**
+  - **Services.csv**
+  - **Project.csv**
+  - **Organization.csv**
+  - **Exit.csv**
+  - **Export.csv**
+- The **Organization.csv** file must contain exactly one (1)
+  organization
+- The column naming conventions must match the expectations of the
+  *ryha* database
 
-| Attribute                                    | Source File               |
-|:---------------------------------------------|:--------------------------|
-| Age                                          | *Client.csv*              |
-| Ethnicity                                    | *Client.csv*              |
-| Gender                                       | *Client.csv*              |
-| Military History                             | *Client.csv*              |
-| Disabilities                                 | *Disabilities.csv*        |
-| Education                                    | *EmploymentEducation.csv* |
-| Employment                                   | *EmploymentEducation.csv* |
-| Living Situation                             | *Enrollment.csv*          |
-| Welfare History                              | *Enrollment.csv*          |
-| Program Exit Status                          | *Exit.csv*                |
-| Trafficking                                  | *Exit.csv*                |
-| Domestic Violence History                    | *HealthAndDV.csv*         |
-| Overall Health (General, Dental, and Mental) | *HealthAndDV.csv*         |
-| Pregnancy Status                             | *HealthAndDV.csv*         |
-| Income                                       | *IncomeBenefits.csv*      |
-| Unemployment & Other Benefits Received       | *IncomeBenefits.csv*      |
-| Insurance                                    | *IncomeBenefits.csv*      |
+### Data Dictionary
 
-*Table 1*
+The data dictionary for each element across each file can be found
+[here](https://files.hudexchange.info/resources/documents/FY-2022-HMIS-Data-Dictionary.pdf).
+This data dictionary was used to develop the package datasets, which are
+created in [data-raw](data-raw) and stored in [data](data).
 
-### Historical Database
+## Architecture
 
-Privileged users have access to historical data within the application,
-which gives the ability to view trends over time across metrics.
+The following architecture diagram shows how the app can be used for
+both uploading (.zip file) HMIS data, and visualizing previously
+uploaded HMIS data.
 
-### Individual Program File Upload
-
-Non-privileged users have the ability to upload their own (individual
-program) data into the app for analysis.
-
-#### File Storage
-
-Users can upload one Zip file containing *.csv* files representing a
-single export of HMIS data for their individual program (i.e., grantee).
-The uploaded data will pass through a data processing script, which will
-break the *.csv* files up into smaller, more modular datasets that align
-with the attributes described in [Table 1](#methodology-for-analysis),
-and stored as *.parquet* files in the data lake.
-
-The data lake is partitioned by **program (grantee)** and **export date
-range**. An example of the data lake directory structure across two
-example programs (and three example files) can be seen below:
-
-    #> example_data_lake
-    #> +-- ProgramABCD
-    #> |   \-- 2022-01-01_2022-03-31
-    #> |       +-- ethnicity.parquet
-    #> |       +-- gender.parquet
-    #> |       \-- military.parquet
-    #> \-- ProgramEFGH
-    #>     \-- 2022-02-01_2022-04-30
-    #>         +-- ethnicity.parquet
-    #>         +-- gender.parquet
-    #>         \-- military.parquet
+![](man/figures/README-architecture-diagram.png)
