@@ -29,8 +29,8 @@ pie_chart <- function(data, category, count) {
       legend = TRUE,
       label = list(
         show = TRUE,
-        position = "inside",
-        formatter = "{c}"   # show the numeric value as the label
+        position = "outside",
+        formatter = "{d}%"   # show the numeric value as the label
       ),
       radius = c("50%", "70%"),
       # emphasize the label when hovered over
@@ -44,7 +44,12 @@ pie_chart <- function(data, category, count) {
     ) |>
     echarts4r::e_legend(bottom = 0) |>   # place legend below chart
     echarts4r::e_tooltip(trigger = "item") |>
-    echarts4r::e_grid(containLabel = TRUE) |>
+    echarts4r::e_grid(
+      top = "10",
+      left = "60",
+      right = "60",
+      containLabel = TRUE
+    ) |>
     echarts4r::e_show_loading()
 
 }
