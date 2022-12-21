@@ -44,7 +44,7 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "welcome_page",
-            shiny::h2("Welcome to the Youth Data Dashboard")
+            shiny::includeMarkdown( app_sys("app/www/welcome_text.md") )
           ),
 
           bs4Dash::tabItem(
