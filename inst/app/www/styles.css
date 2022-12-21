@@ -16,3 +16,12 @@
   padding-left: 10px;
   padding-right: 10px;
 }
+
+/* Widen the left-hand sidebar to accomodate the sidebar title text */
+.layout-fixed .main-sidebar {
+  width: 265px;
+}
+
+.layout-fixed .brand-link{
+  width: 265px;
+}
