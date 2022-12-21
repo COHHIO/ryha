@@ -95,6 +95,11 @@ app_ui <- function(request) {
           bs4Dash::tabItem(
             tabName = "upload_page",
             mod_upload_ui("upload_1")
+          ),
+
+          bs4Dash::tabItem(
+            tabName = "help_page",
+            shiny::p("Placeholder")
           )
 
         )

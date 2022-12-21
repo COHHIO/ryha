@@ -22,7 +22,8 @@ define_menu <- function() {
     "Domestic Violence", "domestic_violence_page", "user-shield",
     "Benefits"         , "benefits_page"         , "hand-holding-medical",
     "Trafficking"      , "trafficking_page"      , "exclamation-circle",
-    "Upload Data"      , "upload_page"           , "upload"
+    "Upload Data"      , "upload_page"           , "upload",
+    "Help"             , "help_page"             , "question"
   )
 
 }
