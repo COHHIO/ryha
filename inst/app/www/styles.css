@@ -10,3 +10,9 @@
 #control_bar {
   padding: 20px;
 }
+
+/* Apply padding between the images on the "Welcome" page */
+#welcome-text > p > img {
+  padding-left: 10px;
+  padding-right: 10px;
+}
