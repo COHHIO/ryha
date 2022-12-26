@@ -11,11 +11,12 @@ mod_benefits_ui <- function(id){
   ns <- NS(id)
   tagList(
 
+    # Info Boxes ----
     shiny::fluidRow(
 
       shiny::column(
         width = 6,
-        # Number of youth (post filters)
+        ## Number of youth (post filters) ----
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_box"),
           width = "100%"
@@ -24,7 +25,7 @@ mod_benefits_ui <- function(id){
 
       shiny::column(
         width = 6,
-        # Number of youth with benefits data (post filters)
+        ## Number of youth with benefits data (post filters) ----
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_with_benefits_data_box"),
           width = "100%"
@@ -35,6 +36,7 @@ mod_benefits_ui <- function(id){
 
     shiny::hr(),
 
+    # Visuals ----
     shiny::fluidRow(
 
       shiny::column(
@@ -43,6 +45,7 @@ mod_benefits_ui <- function(id){
         bs4Dash::tabsetPanel(
           type = "pills",
 
+          ## Benefits Tab Panel ----
           shiny::tabPanel(
             title = "Benefits (from any source)",
 
@@ -51,6 +54,7 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 4,
 
+                ### Benefits Pie Chart ----
                 bs4Dash::box(
                   title = "# of Youth by Benefits Response",
                   width = NULL,
@@ -66,6 +70,7 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 8,
 
+                ### Benefits Sankey Chart ----
                 bs4Dash::box(
                   title = "Changes in Benefits Response (Entry --> Exit)",
                   width = NULL,
@@ -84,6 +89,7 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 12,
 
+                ### Benefits Data Quality Table ----
                 bs4Dash::box(
                   title = "Data Quality Statistics",
                   width = NULL,
@@ -98,6 +104,7 @@ mod_benefits_ui <- function(id){
 
           ),
 
+          ## Insurance Tab Panel ----
           shiny::tabPanel(
             title = "Insurance (from any source)",
 
@@ -106,6 +113,7 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 4,
 
+                ### Insurance Pie Chart ----
                 bs4Dash::box(
                   title = "# of Youth by Insurance Response",
                   width = NULL,
@@ -121,6 +129,7 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 8,
 
+                ### Insurance Sankey Chart ----
                 bs4Dash::box(
                   title = "Changes in Insurance Response (Entry --> Exit)",
                   width = NULL,
@@ -139,6 +148,7 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 12,
 
+                ### Insurance Data Quality Table ----
                 bs4Dash::box(
                   title = "Data Quality Statistics",
                   width = NULL,
@@ -169,7 +179,9 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of Youth in program(s), based on `client.csv` file
+    # Info Boxes ----
+
+    ## Total number of youth (post filters) ----
     n_youth <- shiny::reactive(
 
       clients_filtered() |>
@@ -177,7 +189,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
-    # Apply the filters to the benefits data
+    ## Apply the filters to the benefits data ----
     benefits_data_filtered <- shiny::reactive({
 
       benefits_data |>
@@ -188,8 +200,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
-    # Total number of Youth in program(s) that exist in the `benefits.csv`
-    # file
+    ## Filtered number of youth with benefits data ----
     n_youth_with_benefits_data <- shiny::reactive(
 
       benefits_data_filtered() |>
@@ -201,7 +212,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
-    # Render number of clients box
+    ## Render "number of clients" info box ----
     output$n_youth_box <- bs4Dash::renderbs4ValueBox(
 
       bs4Dash::bs4ValueBox(
@@ -212,7 +223,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
-    # Render number of projects box
+    ## Render "number of youth with benefits data" info box ----
     output$n_youth_with_benefits_data_box <- bs4Dash::renderbs4ValueBox(
 
       bs4Dash::bs4ValueBox(
@@ -223,6 +234,9 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ## Benefits Pie Chart ----
+
+    ### Get data for benefits pie chart ----
     # Create reactive data frame to data to be displayed in pie chart
     benefits_pie_chart_data <- shiny::reactive({
 
@@ -268,7 +282,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
-    # Create benefits pie chart
+    ### Render benefits pie chart ----
     output$benefits_pie_chart <- echarts4r::renderEcharts4r(
 
       benefits_pie_chart_data() |>
@@ -279,6 +293,9 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ## Insurance Pie Chart ----
+
+    ### Get data for insurance pie chart ----
     # Create reactive data frame to data to be displayed in pie chart
     insurance_pie_chart_data <- shiny::reactive({
 
@@ -324,7 +341,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
-    # Create benefits pie chart
+    ### Render insurance pie chart ----
     output$insurance_pie_chart <- echarts4r::renderEcharts4r({
 
       insurance_pie_chart_data() |>
@@ -335,6 +352,9 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
+    ## Benefits Sankey Chart ----
+
+    ### Get data for benefits sankey chart ----
     # Create reactive data frame to data to be displayed in line chart
     benefits_sankey_chart_data <- shiny::reactive({
 
@@ -370,7 +390,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
-    # Create benefits sankey chart
+    ### Render benefits sankey chart ----
     output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
 
       benefits_sankey_chart_data() |>
@@ -382,6 +402,9 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ## Insurance Sankey Chart ----
+
+    ### Get data for insurance sankey chart ----
     # Create reactive data frame to data to be displayed in line chart
     insurance_sankey_chart_data <- shiny::reactive({
 
@@ -417,7 +440,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
-    # Create insurance sankey chart
+    ### Render insurance sankey chart ----
     output$insurance_sankey_chart <- echarts4r::renderEcharts4r(
 
       insurance_sankey_chart_data() |>
@@ -429,6 +452,9 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ## Data Quality Statistics ----
+
+    ### Get data for benefits data quality table ----
     benefits_missingness_stats <- shiny::reactive(
 
       benefits_data_filtered() |>
@@ -445,6 +471,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ### Render benefits data quality table ----
     output$benefits_missingness_stats_tbl <- reactable::renderReactable(
 
       reactable::reactable(
@@ -453,6 +480,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ### Get data for insurance data quality table ----
     insurance_missingness_stats <- shiny::reactive({
 
       benefits_data_filtered() |>
@@ -469,6 +497,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
+    ### Render insurance data quality table ----
     output$insurance_missingness_stats_tbl <- reactable::renderReactable(
 
       reactable::reactable(
