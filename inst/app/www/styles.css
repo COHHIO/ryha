@@ -17,7 +17,7 @@
   padding-right: 10px;
 }
 
-/* Widen the left-hand sidebar to accomodate the sidebar title text */
+/* Widen the left-hand sidebar to accommodate the sidebar title text */
 .layout-fixed .main-sidebar {
   width: 265px;
 }
@@ -25,3 +25,10 @@
 .layout-fixed .brand-link{
   width: 265px;
 }
+
+/* Decrease the padding around {bs4Dash} boxes to accommodate more chart labels at
+smaller screen widths */
+.card-body {
+  padding: 0.5rem;
+}
+
