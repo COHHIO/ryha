@@ -47,16 +47,16 @@ mod_benefits_ui <- function(id){
 
           ## Benefits Tab Panel ----
           shiny::tabPanel(
-            title = "Benefits (from any source)",
+            title = "Benefits",
 
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 ### Benefits Pie Chart ----
                 bs4Dash::box(
-                  title = "# of Youth by Benefits Response",
+                  title = "Benefits Received (from Any Source)",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
@@ -68,15 +68,15 @@ mod_benefits_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
-                ### Benefits Sankey Chart ----
+                ### Benefits Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Changes in Benefits Response (Entry --> Exit)",
+                  title = "Benefits Received by Source",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("benefits_sankey_chart"),
+                    outputId = ns("benefits_source_pie_chart"),
                     height = "400px"
                   )
                 )
@@ -89,9 +89,27 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 12,
 
+                ### Benefits Sankey Chart ----
+                bs4Dash::box(
+                  title = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("benefits_sankey_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+            ),
+
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+
                 ### Benefits Data Quality Table ----
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Benefits Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
                   reactable::reactableOutput(
@@ -106,16 +124,16 @@ mod_benefits_ui <- function(id){
 
           ## Insurance Tab Panel ----
           shiny::tabPanel(
-            title = "Insurance (from any source)",
+            title = "Insurance",
 
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 ### Insurance Pie Chart ----
                 bs4Dash::box(
-                  title = "# of Youth by Insurance Response",
+                  title = "Insurance Received (from Any Source)",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
@@ -127,15 +145,15 @@ mod_benefits_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
-                ### Insurance Sankey Chart ----
+                ### Insurance Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Changes in Insurance Response (Entry --> Exit)",
+                  title = "Insurance Received by Source",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("insurance_sankey_chart"),
+                    outputId = ns("insurance_source_pie_chart"),
                     height = "400px"
                   )
                 )
@@ -148,9 +166,27 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 12,
 
+                ### Insurance Sankey Chart ----
+                bs4Dash::box(
+                  title = "Changes in Insurance (from Any Source) Response (Entry --> Exit)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("insurance_sankey_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+            ),
+
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+
                 ### Insurance Data Quality Table ----
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Insurance Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
                   reactable::reactableOutput(
@@ -347,6 +383,159 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
       insurance_pie_chart_data() |>
         pie_chart(
           category = "insurance_from_any_source",
+          count = "n"
+        )
+
+    })
+
+    ## Benefits Source Pie Chart ----
+
+    ### Get data for benefits source pie chart ----
+    benefits_source_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(benefits_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- benefits_data_filtered() |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          snap:other_benefits_source,
+          date_updated
+        ) |>
+        tidyr::pivot_longer(
+          cols = snap:other_benefits_source,
+          names_to = "benefits_source",
+          values_to = "response"
+        ) |>
+        dplyr::filter(response == "Yes") |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          benefits_source,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          benefits_source
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(benefits_source) |>
+        dplyr::mutate(
+          benefits_source = janitor::make_clean_names(
+            string = benefits_source,
+            case = "title"
+          )
+        ) |>
+        dplyr::arrange(benefits_source)
+
+    })
+
+    ### Render benefits source pie chart ----
+    output$benefits_source_pie_chart <- echarts4r::renderEcharts4r({
+
+      benefits_source_pie_chart_data() |>
+        pie_chart(
+          category = "benefits_source",
+          count = "n"
+        )
+
+    })
+
+    ## Insurance Source Pie Chart ----
+
+    ### Get data for insurance source pie chart ----
+    insurance_source_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(benefits_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- benefits_data_filtered() |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          medicaid,
+          medicare,
+          schip,
+          va_medical_services,
+          employer_provided,
+          cobra,
+          private_pay,
+          state_health_ins,
+          indian_health_services,
+          other_insurance,
+          date_updated
+        ) |>
+        tidyr::pivot_longer(
+          cols = medicaid:other_insurance,
+          names_to = "insurance_source",
+          values_to = "response"
+        ) |>
+        dplyr::filter(response == "Yes") |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          insurance_source,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          insurance_source
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(insurance_source) |>
+        dplyr::mutate(
+          insurance_source = janitor::make_clean_names(
+            string = insurance_source,
+            case = "title"
+          )
+        ) |>
+        dplyr::arrange(insurance_source)
+
+    })
+
+    ### Render insurance source pie chart ----
+    output$insurance_source_pie_chart <- echarts4r::renderEcharts4r({
+
+      insurance_source_pie_chart_data() |>
+        pie_chart(
+          category = "insurance_source",
           count = "n"
         )
 
