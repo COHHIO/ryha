@@ -32,3 +32,7 @@ smaller screen widths */
   padding: 0.5rem;
 }
 
+/* Hide the "Upload Complete" text in the `fileInput` progress bar */
+.progress-bar {
+  color: transparent !important;
+}
