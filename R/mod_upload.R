@@ -14,18 +14,41 @@ mod_upload_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 5,
+        width = 12,
+
+        shiny::h2("Instructions for Uploading:"),
+
+        shiny::br(),
+
+        shiny::tags$ol(
+          shiny::tags$li(
+            "Click the \"Browse...\" button and open the HMIS export .zip file on your local computer"
+          ),
+          shiny::tags$li(
+            "Enter the password needed to upload the .zip file to the app database"
+          ),
+          shiny::tags$li(
+            "If the correct password has been entered, the \"Upload\" button will be enabled. Click the button to upload the file"
+          ),
+          shiny::tags$li(
+            "If you encounter an error screen during the upload process, please copy and paste the error and email amandawilson@cohhio.org"
+          )
+        ),
+
+        shiny::hr(),
 
         shiny::fileInput(
           inputId = ns("choose_zip"),
           label = "Choose HMIS .Zip File",
-          accept = ".zip"
+          accept = ".zip",
+          width = "50%"
         ),
 
         shiny::passwordInput(
           inputId = ns("upload_pwd"),
           label = "Enter Upload Password",
-          placeholder = "password"
+          placeholder = "password",
+          width = "40%"
         ),
 
         shiny::actionButton(
