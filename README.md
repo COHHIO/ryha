@@ -21,7 +21,7 @@ You can install the development version of `{ryha}` from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("ketchbrookanalytics/ryha")
+devtools::install_github("COHHIO/ryha")
 ```
 
 ## Running the App
