@@ -228,6 +228,10 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     })
 
+    # Last Grade Completed ----
+
+    ## Pie Chart ----
+
     # Create reactive data frame to data to be displayed in pie chart
     last_grade_completed_pie_chart_data <- shiny::reactive({
 
@@ -288,6 +292,100 @@ mod_education_server <- function(id, education_data, clients_filtered){
         )
 
     })
+
+    ## Sankey Chart ----
+
+    # Create reactive data frame to data to be displayed in line chart
+    last_grade_completed_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(education_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- education_data_filtered() |>
+        dplyr::filter(
+          !last_grade_completed %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(last_grade_completed)
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      education_data_filtered() |>
+        dplyr::filter(
+          !last_grade_completed %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected"
+          ),
+          !is.na(last_grade_completed)
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = last_grade_completed) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = paste0(
+              c(
+                LastGradeCompletedCodes$Description[6],
+                LastGradeCompletedCodes$Description[1:5],
+                LastGradeCompletedCodes$Description[7:9],
+                LastGradeCompletedCodes$Description[12],
+                LastGradeCompletedCodes$Description[10:11]
+              ),
+              " (Entry)"
+            ),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = paste0(
+              c(
+                LastGradeCompletedCodes$Description[6],
+                LastGradeCompletedCodes$Description[1:5],
+                LastGradeCompletedCodes$Description[7:9],
+                LastGradeCompletedCodes$Description[12],
+                LastGradeCompletedCodes$Description[10:11]
+              ),
+              " (Exit)"
+            ),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
+
+    })
+
+    # Create disabilities trend line chart
+    output$last_grade_completed_sankey_chart <- echarts4r::renderEcharts4r({
+
+      last_grade_completed_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    })
+
+    # School Status ----
+
+    ## Pie Chart ----
 
     # Create reactive data frame to data to be displayed in pie chart
     school_status_pie_chart_data <- shiny::reactive({
@@ -350,62 +448,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     })
 
-    # Create reactive data frame to data to be displayed in line chart
-    last_grade_completed_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- education_data_filtered() |>
-        dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(last_grade_completed)
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      education_data_filtered() |>
-        dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
-          !is.na(last_grade_completed)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = last_grade_completed)
-
-    })
-
-    # Create disabilities trend line chart
-    output$last_grade_completed_sankey_chart <- echarts4r::renderEcharts4r({
-
-      last_grade_completed_sankey_chart_data() |>
-        sankey_chart(
-          entry_status = "Entry",
-          exit_status = "Exit",
-          count = "n"
-        )
-
-    })
+    ## Sankey Chart ----
 
     # Create reactive data frame to data to be displayed in line chart
     school_status_sankey_chart_data <- shiny::reactive({
@@ -448,7 +491,40 @@ mod_education_server <- function(id, education_data, clients_filtered){
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = school_status)
+        prep_sankey_data(state_var = school_status) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = paste0(
+              c(
+                SchoolStatusCodes$Description[4],
+                SchoolStatusCodes$Description[3],
+                SchoolStatusCodes$Description[1:2],
+                SchoolStatusCodes$Description[6],
+                SchoolStatusCodes$Description[7],
+                SchoolStatusCodes$Description[5]
+              ),
+              " (Entry)"
+            ),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = paste0(
+              c(
+                SchoolStatusCodes$Description[4],
+                SchoolStatusCodes$Description[3],
+                SchoolStatusCodes$Description[1:2],
+                SchoolStatusCodes$Description[6],
+                SchoolStatusCodes$Description[7],
+                SchoolStatusCodes$Description[5]
+              ),
+              " (Exit)"
+            ),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
 
     })
 

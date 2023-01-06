@@ -1,24 +1,6 @@
 
 
 
-#' generate_charts
-#'
-#' @param data
-#' @param category
-#' @param count
-#'
-#' @description A fct function
-#'
-#' @return An {echarts4r} interactive pie chart
-#'
-#' @noRd
-#'
-#' @examples
-#' pie_chart(
-#'   data = dplyr::count(iris, Species),
-#'   category = "Species",
-#'   count = "n"
-#' )
 pie_chart <- function(data, category, count) {
 
   data |>

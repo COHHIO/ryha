@@ -521,12 +521,12 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::mutate(
           Entry = factor(
             Entry,
-            levels = c("Excellent (Entry)", "Very good (Entry)", "Good (Entry)", "Fair (Entry)", "Poor (Entry)"),
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
             ordered = TRUE
           ),
           Exit = factor(
             Exit,
-            levels = c("Excellent (Exit)", "Very good (Exit)", "Good (Exit)", "Fair (Exit)", "Poor (Exit)"),
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
             ordered = TRUE
           )
         ) |>
@@ -683,12 +683,12 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::mutate(
           Entry = factor(
             Entry,
-            levels = c("Excellent (Entry)", "Very good (Entry)", "Good (Entry)", "Fair (Entry)", "Poor (Entry)"),
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
             ordered = TRUE
           ),
           Exit = factor(
             Exit,
-            levels = c("Excellent (Exit)", "Very good (Exit)", "Good (Exit)", "Fair (Exit)", "Poor (Exit)"),
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
             ordered = TRUE
           )
         ) |>
@@ -845,12 +845,12 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::mutate(
           Entry = factor(
             Entry,
-            levels = c("Excellent (Entry)", "Very good (Entry)", "Good (Entry)", "Fair (Entry)", "Poor (Entry)"),
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
             ordered = TRUE
           ),
           Exit = factor(
             Exit,
-            levels = c("Excellent (Exit)", "Very good (Exit)", "Good (Exit)", "Fair (Exit)", "Poor (Exit)"),
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
             ordered = TRUE
           )
         ) |>
