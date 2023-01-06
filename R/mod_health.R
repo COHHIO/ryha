@@ -517,7 +517,20 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = general_health_status)
+        prep_sankey_data(state_var = general_health_status) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = c("Excellent (Entry)", "Very good (Entry)", "Good (Entry)", "Fair (Entry)", "Poor (Entry)"),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = c("Excellent (Exit)", "Very good (Exit)", "Good (Exit)", "Fair (Exit)", "Poor (Exit)"),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
 
     })
 
@@ -666,7 +679,20 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = dental_health_status)
+        prep_sankey_data(state_var = dental_health_status) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = c("Excellent (Entry)", "Very good (Entry)", "Good (Entry)", "Fair (Entry)", "Poor (Entry)"),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = c("Excellent (Exit)", "Very good (Exit)", "Good (Exit)", "Fair (Exit)", "Poor (Exit)"),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
 
     })
 
@@ -815,7 +841,20 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = mental_health_status)
+        prep_sankey_data(state_var = mental_health_status) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = c("Excellent (Entry)", "Very good (Entry)", "Good (Entry)", "Fair (Entry)", "Poor (Entry)"),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = c("Excellent (Exit)", "Very good (Exit)", "Good (Exit)", "Fair (Exit)", "Poor (Exit)"),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
 
     })
 
