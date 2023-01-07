@@ -106,6 +106,7 @@ app_ui <- function(request) {
 
       ),
 
+      # remove ability to toggle b/w "light" and "dark" mode
       dark = NULL
 
     )

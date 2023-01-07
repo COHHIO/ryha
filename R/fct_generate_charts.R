@@ -12,7 +12,7 @@ pie_chart <- function(data, category, count) {
       label = list(
         show = TRUE,
         position = "outside",
-        formatter = "{d}%"   # show the numeric value as the label
+        formatter = "{d}%"   # show the percentage as the label
       ),
       radius = c("50%", "70%"),
       # emphasize the label when hovered over
