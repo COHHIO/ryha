@@ -44,7 +44,7 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "welcome_page",
-            shiny::h2("Welcome to the Youth Data Dashboard")
+            shiny::includeMarkdown( app_sys("app/www/welcome_text.md") )
           ),
 
           bs4Dash::tabItem(
@@ -95,10 +95,20 @@ app_ui <- function(request) {
           bs4Dash::tabItem(
             tabName = "upload_page",
             mod_upload_ui("upload_1")
-          )
+          )#,
+
+          # bs4Dash::tabItem(
+          #   tabName = "help_page",
+          #   shiny::p("Placeholder")
+          # )
 
         )
-      )
+
+      ),
+
+      # remove ability to toggle b/w "light" and "dark" mode
+      dark = NULL
+
     )
   )
 }

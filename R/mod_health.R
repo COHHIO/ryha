@@ -231,7 +231,7 @@ mod_health_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 12,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Pregnancy Status",
@@ -243,7 +243,22 @@ mod_health_ui <- function(id){
                   )
                 )
 
+              ),
+
+              shiny::column(
+                width = 6,
+
+                bs4Dash::box(
+                  title = "Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("pregnancy_missingness_stats_tbl")
+                  )
+                )
+
               )
+
 
             )
 
@@ -502,7 +517,20 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = general_health_status)
+        prep_sankey_data(state_var = general_health_status) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
 
     })
 
@@ -651,7 +679,20 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = dental_health_status)
+        prep_sankey_data(state_var = dental_health_status) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
 
     })
 
@@ -800,7 +841,20 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = mental_health_status)
+        prep_sankey_data(state_var = mental_health_status) |>
+        dplyr::mutate(
+          Entry = factor(
+            Entry,
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
+            ordered = TRUE
+          ),
+          Exit = factor(
+            Exit,
+            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
+            ordered = TRUE
+          )
+        ) |>
+        dplyr::arrange(Entry, Exit)
 
     })
 
@@ -892,7 +946,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     })
 
-    # Create mental health status pie chart
+    # Create pregnancy status pie chart
     output$pregnancy_pie_chart <- echarts4r::renderEcharts4r({
 
       pregnancy_pie_chart_data() |>
@@ -902,6 +956,35 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         )
 
     })
+
+    # Capture the data quality statistics for "mental_health_status" field
+    pregnancy_missingness_stats <- shiny::reactive(
+
+      health_data_filtered() |>
+        dplyr::mutate(pregnancy_status = ifelse(
+          is.na(pregnancy_status),
+          "(Blank)",
+          pregnancy_status
+        )) |>
+        dplyr::filter(
+          pregnancy_status %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected",
+            "(Blank)"
+          )
+        ) |>
+        dplyr::count(pregnancy_status, name = "Count") |>
+        dplyr::rename(Response = pregnancy_status)
+
+    )
+
+    # Create the {reactable} table to hold the missingness stats
+    output$pregnancy_missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        pregnancy_missingness_stats()
+      )
+    )
 
     # Counseling ----
 
