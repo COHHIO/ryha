@@ -250,7 +250,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
       trafficking_data_filtered() |>
         dplyr::filter(
-          workplace_violence_threats %in% c("Yes", "No") |
+          work_place_violence_threats %in% c("Yes", "No") |
             workplace_promise_difference %in% c("Yes", "No") |
             coerced_to_continue_work %in% c("Yes", "No")
         ) |>
@@ -515,23 +515,23 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
-          workplace_violence_threats %in% c("Yes", "No")
+          work_place_violence_threats %in% c("Yes", "No")
         ) |>
         dplyr::arrange(
           organization_id,
           personal_id,
-          workplace_violence_threats,
+          work_place_violence_threats,
           dplyr::desc(date_updated)
         ) |>
         dplyr::select(
           organization_id,
           personal_id,
-          workplace_violence_threats
+          work_place_violence_threats
         ) |>
         dplyr::distinct(
           organization_id,
           personal_id,
-          workplace_violence_threats,
+          work_place_violence_threats,
           .keep_all = TRUE
         )
 
@@ -543,8 +543,8 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
       )
 
       out |>
-        dplyr::count(workplace_violence_threats) |>
-        dplyr::arrange(workplace_violence_threats)
+        dplyr::count(work_place_violence_threats) |>
+        dplyr::arrange(work_place_violence_threats)
 
     })
 
@@ -553,7 +553,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
       violence_labor_pie_chart_data() |>
         pie_chart(
-          category = "workplace_violence_threats",
+          category = "work_place_violence_threats",
           count = "n"
         )
 
@@ -563,16 +563,16 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     labor_missingness_stats <- shiny::reactive({
 
       trafficking_data_filtered() |>
-        dplyr::mutate(workplace_violence_threats = ifelse(
-          is.na(workplace_violence_threats),
+        dplyr::mutate(work_place_violence_threats = ifelse(
+          is.na(work_place_violence_threats),
           "(Blank)",
-          workplace_violence_threats
+          work_place_violence_threats
         )) |>
         dplyr::filter(
-          !workplace_violence_threats %in% c("Yes", "No")
+          !work_place_violence_threats %in% c("Yes", "No")
         ) |>
-        dplyr::count(workplace_violence_threats, name = "Count") |>
-        dplyr::rename(Response = workplace_violence_threats)
+        dplyr::count(work_place_violence_threats, name = "Count") |>
+        dplyr::rename(Response = work_place_violence_threats)
 
     })
 
