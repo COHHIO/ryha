@@ -912,7 +912,7 @@ read_organization <- function(file) {
 #' }
 read_exit <- function(file) {
 
-  readr::read_csv(
+  exit <- readr::read_csv(
     file = file,
     # only read in columns needed for "PROGRAM" database table
     col_select = c(
@@ -965,6 +965,18 @@ read_exit <- function(file) {
       )
     ) |>
     janitor::clean_names(case = "snake")
+
+  # If necessary, rename the column "workplace_violence_threats" to
+  # "work_place_violence_threats" (this stems from differences in the HMIS
+  # database systems)
+  if ("workplace_violence_threats" %in% colnames(exit)) {
+
+    exit <- exit |>
+      dplyr::rename(work_place_violence_threats = workplace_violence_threats)
+
+  }
+
+  return(exit)
 
 }
 
