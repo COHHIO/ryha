@@ -16,4 +16,4 @@ In 2022, COHHIO entered into a contract with [Ketchbrook Analytics](https://www.
 
 This app utilizes the HMIS CSV to provide information on the ODH program. If you have any questions about the app, please email Amanda Wilson, Youth Housing Initiative Director at COHHIO, at [amandawilson@cohhio.org](mailto:amandawilson@cohhio.org).
 
-<!--- Please see the [Help](#tab-help_page) page on the left-hand sidebar menu for more information on how to navigate the app. --->
+Please see the [Help](#tab-help_page) page on the left-hand sidebar menu for more information on how to navigate the app.

@@ -26,8 +26,8 @@ devtools::install_github("COHHIO/ryha")
 
 ## Running the App
 
-Before launching the app, you must have the following configurations in
-place for interacting with to the external database:
+Before launching the app, you must have the following configurations
+set, for the purposes of interacting with the external database:
 
 - Environment Variables (for *reading from* & *writing to* the
   database):
