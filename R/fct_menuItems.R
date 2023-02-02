@@ -22,17 +22,18 @@ define_menu <- function() {
     "Domestic Violence", "domestic_violence_page", "user-shield",
     "Benefits"         , "benefits_page"         , "hand-holding-medical",
     "Trafficking"      , "trafficking_page"      , "exclamation-circle",
-    "Upload Data"      , "upload_page"           , "upload"#,
-    # "Help"             , "help_page"             , "question"
+    "Living Situation" , "living_situation_page" , "door-open",
+    "Upload Data"      , "upload_page"           , "upload",
+    "Help"             , "help_page"             , "question"
   )
 
 }
 
 
 
-#' Create {bs4Dash} `menuItems` based on a dataset
+#' Create {bs4Dash} `menuItems` based on a data frame
 #'
-#' @details The input dataset to this function should be managed by the custom
+#' @details The input data frame to this function should be managed by the custom
 #'   `define_menu()` function
 #'
 #' @param menuItems A tibble with columns `text`, `tabName`, and `icon`; this

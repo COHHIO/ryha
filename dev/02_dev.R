@@ -32,6 +32,7 @@ golem::add_module(name = "exits")
 golem::add_module(name = "services")
 golem::add_module(name = "benefits")
 golem::add_module(name = "trafficking")
+golem::add_module(name = "living_situation")
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
