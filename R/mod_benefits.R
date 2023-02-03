@@ -122,18 +122,18 @@ mod_benefits_ui <- function(id){
 
           ),
 
-          ## Insurance Tab Panel ----
+          ## Health Insurance Tab Panel ----
           shiny::tabPanel(
-            title = "Insurance",
+            title = "Health Insurance",
 
             shiny::fluidRow(
 
               shiny::column(
                 width = 6,
 
-                ### Insurance Pie Chart ----
+                ### Health Insurance Pie Chart ----
                 bs4Dash::box(
-                  title = "Insurance Received (from Any Source)",
+                  title = "Health Insurance Received (from Any Source)",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
@@ -147,9 +147,9 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 6,
 
-                ### Insurance Source Pie Chart ----
+                ### Health Insurance Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Insurance Received by Source",
+                  title = "Health Insurance Received by Source",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
@@ -166,9 +166,9 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 12,
 
-                ### Insurance Sankey Chart ----
+                ### Health Insurance Sankey Chart ----
                 bs4Dash::box(
-                  title = "Changes in Insurance (from Any Source) Response (Entry --> Exit)",
+                  title = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
@@ -184,9 +184,9 @@ mod_benefits_ui <- function(id){
               shiny::column(
                 width = 12,
 
-                ### Insurance Data Quality Table ----
+                ### Health Insurance Data Quality Table ----
                 bs4Dash::box(
-                  title = "Insurance Data Quality Statistics",
+                  title = "Health Insurance Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
                   reactable::reactableOutput(
@@ -329,7 +329,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
-    ## Insurance Pie Chart ----
+    ## Health Insurance Pie Chart ----
 
     ### Get data for insurance pie chart ----
     # Create reactive data frame to data to be displayed in pie chart
@@ -373,7 +373,8 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
       out |>
         dplyr::count(insurance_from_any_source) |>
-        dplyr::arrange(insurance_from_any_source)
+        dplyr::arrange(insurance_from_any_source) |>
+        dplyr::rename(health_insurance_from_any_source = insurance_from_any_source)
 
     })
 
@@ -382,7 +383,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
       insurance_pie_chart_data() |>
         pie_chart(
-          category = "insurance_from_any_source",
+          category = "health_insurance_from_any_source",
           count = "n"
         )
 
@@ -460,7 +461,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     })
 
-    ## Insurance Source Pie Chart ----
+    ## Health Insurance Source Pie Chart ----
 
     ### Get data for insurance source pie chart ----
     insurance_source_pie_chart_data <- shiny::reactive({
@@ -526,7 +527,8 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
             case = "title"
           )
         ) |>
-        dplyr::arrange(insurance_source)
+        dplyr::arrange(insurance_source) |>
+        dplyr::rename(health_insurance_source = insurance_source)
 
     })
 
@@ -535,7 +537,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
       insurance_source_pie_chart_data() |>
         pie_chart(
-          category = "insurance_source",
+          category = "health_insurance_source",
           count = "n"
         )
 
@@ -591,7 +593,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
-    ## Insurance Sankey Chart ----
+    ## Health Insurance Sankey Chart ----
 
     ### Get data for insurance sankey chart ----
     # Create reactive data frame to data to be displayed in line chart
