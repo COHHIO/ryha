@@ -112,7 +112,7 @@ mod_living_situation_ui <- function(id){
       ),
 
       shiny::tabPanel(
-        title = "Destination (Entry)",
+        title = "Destination (Exit)",
 
         shiny::fluidRow(
           shiny::column(
@@ -378,7 +378,8 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
           living_situation != "Not enough data",
           destination != "Not enough data"
         ) |>
-        dplyr::count(living_situation, destination)
+        dplyr::count(living_situation, destination) |>
+        dplyr::arrange(living_situation, destination)
 
       shiny::validate(
         shiny::need(
