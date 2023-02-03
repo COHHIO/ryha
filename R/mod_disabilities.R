@@ -132,6 +132,14 @@ mod_disabilities_ui <- function(id){
               outputId = ns("mental_sankey_chart"),
               height = "350px"
             )
+          ),
+
+          shiny::tabPanel(
+            title = "Substance Use",
+            echarts4r::echarts4rOutput(
+              outputId = ns("substance_sankey_chart"),
+              height = "350px"
+            )
           )
 
         )
@@ -619,6 +627,65 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
+    ## Substance Use Disorder ----
+
+    # Create reactive data frame to data to be displayed in line chart
+    substance_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- disabilities_data_filtered() |>
+        dplyr::filter(
+          disability_type == "Substance Use Disorder",
+          disability_response %in% SubstanceUseDisorderCodes$Description[1:4]
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      disabilities_data_filtered() |>
+        dplyr::filter(
+          disability_type == "Substance Use Disorder",
+          disability_response %in% SubstanceUseDisorderCodes$Description[1:4]
+        ) |>
+        # Recode 'disability_response' to either "Yes" or "No"
+        dplyr::mutate(
+          disability_response = dplyr::case_when(
+            disability_response == "No" ~ "No",
+            TRUE ~ "Yes"
+          )
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = disability_response)
+
+    })
+
+    # Create substance trend line chart
+    output$substance_sankey_chart <- echarts4r::renderEcharts4r({
+
+      substance_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    })
+
+    # Missingness Statistics ----
     missingness_stats <- shiny::reactive({
 
       disabilities_data_filtered() |>
