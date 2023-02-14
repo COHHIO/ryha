@@ -44,6 +44,8 @@ mod_disabilities_ui <- function(id){
 
     ),
 
+    shiny::hr(),
+
     # Pie Charts ----
 
     shiny::fluidRow(

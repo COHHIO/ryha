@@ -23,6 +23,7 @@ define_menu <- function() {
     "Benefits"         , "benefits_page"         , "hand-holding-medical",
     "Trafficking"      , "trafficking_page"      , "exclamation-circle",
     "Living Situation" , "living_situation_page" , "door-open",
+    "Parenting"        , "parenting_page"        , "baby-carriage",
     "Upload Data"      , "upload_page"           , "upload",
     "Help"             , "help_page"             , "question"
   )

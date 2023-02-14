@@ -98,6 +98,13 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
+  mod_parenting_server(
+    id = "parenting_1",
+    health_data = dm$health,
+    enrollment_data = dm$enrollment,
+    clients_filtered = clients_filtered
+  )
+
   mod_upload_server(
     id = "upload_1",
     w = w
