@@ -20,7 +20,7 @@ define_menu <- function() {
     "Services"         , "services_page"         , "hands-helping",
     "Health"           , "health_page"           , "stethoscope",
     "Domestic Violence", "domestic_violence_page", "user-shield",
-    "Benefits"         , "benefits_page"         , "hand-holding-medical",
+    "Income & Benefits", "income_benefits_page"  , "dollar-sign",
     "Trafficking"      , "trafficking_page"      , "exclamation-circle",
     "Living Situation" , "living_situation_page" , "door-open",
     "Parenting"        , "parenting_page"        , "baby-carriage",

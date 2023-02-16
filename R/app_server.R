@@ -72,8 +72,9 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
-  mod_benefits_server(
-    id = "benefits_1",
+  mod_income_benefits_server(
+    id = "income_benefits_1",
+    income_data = dm$income,
     benefits_data = dm$benefits,
     clients_filtered = clients_filtered
   )

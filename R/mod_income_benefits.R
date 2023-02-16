@@ -1,4 +1,4 @@
-#' benefits UI Function
+#' income_benefits UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_benefits_ui <- function(id){
+mod_income_benefits_ui <- function(id){
   ns <- NS(id)
   tagList(
 
@@ -15,7 +15,7 @@ mod_benefits_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 6,
+        width = 4,
         ## Number of youth (post filters) ----
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_box"),
@@ -24,7 +24,16 @@ mod_benefits_ui <- function(id){
       ),
 
       shiny::column(
-        width = 6,
+        width = 4,
+        ## Number of youth with income data (post filters) ----
+        bs4Dash::bs4ValueBoxOutput(
+          outputId = ns("n_youth_with_income_data_box"),
+          width = "100%"
+        )
+      ),
+
+      shiny::column(
+        width = 4,
         ## Number of youth with benefits data (post filters) ----
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_with_benefits_data_box"),
@@ -44,6 +53,87 @@ mod_benefits_ui <- function(id){
 
         bs4Dash::tabsetPanel(
           type = "pills",
+
+          ## Income Tab Panel ----
+          shiny::tabPanel(
+            title = "Income",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 6,
+
+                ### Income Pie Chart ----
+                bs4Dash::box(
+                  title = "Income Received (from Any Source)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("income_pie_chart"),
+                    height = "400px"
+                  )
+                )
+
+              ),
+
+              shiny::column(
+                width = 6,
+
+                ### Income Source Pie Chart ----
+                bs4Dash::box(
+                  title = "Income Received by Source (# of Youth)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("income_source_pie_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+
+            ),
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 12,
+
+                ### Income Bar Chart ----
+                bs4Dash::box(
+                  title = "Income Received by Source ($ Amount)",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("income_bar_chart"),
+                    height = "400px"
+                  )
+                )
+
+              )
+
+            ),
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 12,
+
+                ### Benefits Data Quality Table ----
+                bs4Dash::box(
+                  title = "Income Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("income_missingness_stats_tbl")
+                  )
+                )
+
+              )
+
+            )
+
+          ),
 
           ## Benefits Tab Panel ----
           shiny::tabPanel(
@@ -208,10 +298,10 @@ mod_benefits_ui <- function(id){
   )
 }
 
-#' benefits Server Functions
+#' income_benefits Server Functions
 #'
 #' @noRd
-mod_benefits_server <- function(id, benefits_data, clients_filtered){
+mod_income_benefits_server <- function(id, income_data, benefits_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -225,6 +315,17 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ## Apply the filters to the income data ----
+    income_data_filtered <- shiny::reactive({
+
+      income_data |>
+        dplyr::inner_join(
+          clients_filtered(),
+          by = c("personal_id", "organization_id")
+        )
+
+    })
+
     ## Apply the filters to the benefits data ----
     benefits_data_filtered <- shiny::reactive({
 
@@ -235,6 +336,18 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
         )
 
     })
+
+    ## Filtered number of youth with income data ----
+    n_youth_with_income_data <- shiny::reactive(
+
+      income_data_filtered() |>
+        dplyr::filter(
+          !is.na(total_monthly_income)
+        ) |>
+        dplyr::distinct(personal_id, organization_id) |>
+        nrow()
+
+    )
 
     ## Filtered number of youth with benefits data ----
     n_youth_with_benefits_data <- shiny::reactive(
@@ -259,6 +372,17 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     )
 
+    ## Render "number of youth with income data" info box ----
+    output$n_youth_with_income_data_box <- bs4Dash::renderbs4ValueBox(
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth_with_income_data(),
+        subtitle = "Total # of Youth with Income Data Available",
+        icon = shiny::icon("home")
+      )
+
+    )
+
     ## Render "number of youth with benefits data" info box ----
     output$n_youth_with_benefits_data_box <- bs4Dash::renderbs4ValueBox(
 
@@ -267,6 +391,182 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
         subtitle = "Total # of Youth with Benefits Data Available",
         icon = shiny::icon("home")
       )
+
+    )
+
+    ## Income Pie Chart ----
+
+    ### Get data for income pie chart ----
+    # Create reactive data frame to data to be displayed in pie chart
+    income_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(income_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- income_data_filtered() |>
+        dplyr::filter(
+          income_from_any_source %in% c("Yes", "No")
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          income_from_any_source,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          income_from_any_source
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          income_from_any_source,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(income_from_any_source) |>
+        dplyr::arrange(income_from_any_source)
+
+    })
+
+    ### Render income pie chart ----
+    output$income_pie_chart <- echarts4r::renderEcharts4r(
+
+      income_pie_chart_data() |>
+        pie_chart(
+          category = "income_from_any_source",
+          count = "n"
+        )
+
+    )
+
+    ## Income Bar Chart ----
+
+    # Create reactive data frame to data to be displayed in bar chart
+    income_bar_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(income_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- income_data_filtered() |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          earned_amount:other_income_amount,
+          date_updated
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          dplyr::ends_with("_amount", ignore.case = FALSE),
+          date_updated
+        ) |>
+        tidyr::pivot_longer(
+          cols = earned_amount:other_income_amount,
+          names_to = "income_source",
+          values_to = "amount"
+        ) |>
+        dplyr::filter(!is.na(amount)) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          income_source,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          income_source,
+          amount
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          income_source,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::group_by(income_source) |>
+        dplyr::summarise(amount = round(sum(amount), 0), .groups = "drop") |>
+        dplyr::mutate(
+          income_source = dplyr::case_when(
+            income_source == "earned_amount" ~ "Earned",
+            income_source == "unemployment_amount" ~ "Unemployment",
+            income_source == "ssi_amount" ~ "SSI",
+            income_source == "ssdi_amount" ~ "SSDI",
+            income_source == "va_disability_service_amount" ~ "VA Disability Service",
+            income_source == "va_disability_non_service_amount" ~ "VA Disability Non Service",
+            income_source == "private_disability_amount" ~ "Private Disability",
+            income_source == "workers_comp_amount" ~ "Workers Comp",
+            income_source == "tanf_amount" ~ "TANF",
+            income_source == "ga_amount" ~ "GA",
+            income_source == "soc_sec_retirement_amount" ~ "Social Security Retirement",
+            income_source == "pension_amount" ~ "Pension",
+            income_source == "child_support_amount" ~ "Child Support",
+            income_source == "alimony_amount" ~ "Alimony",
+            income_source == "other_income_amount" ~ "Other"
+          )
+        ) |>
+        dplyr::arrange(amount)
+
+    })
+
+    ### Render income bar chart ----
+    output$income_bar_chart <- echarts4r::renderEcharts4r(
+
+      income_bar_chart_data() |>
+        echarts4r::e_charts(x = income_source) |>
+        echarts4r::e_bar(
+          serie = amount,
+          name = "Amount Received",
+          legend = FALSE,
+          label = list(
+            formatter = htmlwidgets::JS("
+            function(params){
+              return('$' + String(params.value[0]).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ','))
+            }
+          "),
+            show = TRUE,
+            position = "right"
+          )
+        ) |>
+        echarts4r::e_tooltip(
+          formatter = htmlwidgets::JS("
+            function(params){
+              return('<strong>' + params.value[1] +
+                     '</strong><br />' + params.marker + 'Amount Received: $' + String(params.value[0]).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ','))
+                     }
+          ")
+        ) |>
+        echarts4r::e_flip_coords() |>
+        echarts4r::e_x_axis(formatter = echarts4r::e_axis_formatter(style = "currency")) |>
+        echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_show_loading()
 
     )
 
@@ -384,6 +684,97 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
       insurance_pie_chart_data() |>
         pie_chart(
           category = "health_insurance_from_any_source",
+          count = "n"
+        )
+
+    })
+
+    ## Income Source Pie Chart ----
+
+    ### Get data for income source pie chart ----
+    income_source_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(income_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- income_data_filtered() |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          earned:other_income_source,
+          date_updated
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          !dplyr::ends_with("_amount", ignore.case = FALSE)
+        ) |>
+        tidyr::pivot_longer(
+          cols = earned:other_income_source,
+          names_to = "income_source",
+          values_to = "response"
+        ) |>
+        dplyr::filter(response == "Yes") |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          income_source,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          income_source
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          income_source,
+          .keep_all = TRUE
+        )
+
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(income_source) |>
+        dplyr::mutate(
+          income_source = dplyr::case_when(
+            income_source == "earned" ~ "Earned",
+            income_source == "unemployment" ~ "Unemployment",
+            income_source == "ssi" ~ "SSI",
+            income_source == "ssdi" ~ "SSDI",
+            income_source == "va_disability_service" ~ "VA Disability Service",
+            income_source == "va_disability_non_service" ~ "VA Disability Non Service",
+            income_source == "private_disability" ~ "Private Disability",
+            income_source == "workers_comp" ~ "Workers Comp",
+            income_source == "tanf" ~ "TANF",
+            income_source == "ga" ~ "GA",
+            income_source == "soc_sec_retirement" ~ "Social Security Retirement",
+            income_source == "pension" ~ "Pension",
+            income_source == "child_support" ~ "Child Support",
+            income_source == "alimony" ~ "Alimony",
+            income_source == "other_income_source" ~ "Other"
+          )
+        )
+
+    })
+
+    ### Render income source pie chart ----
+    output$income_source_pie_chart <- echarts4r::renderEcharts4r({
+
+      income_source_pie_chart_data() |>
+        pie_chart(
+          category = "income_source",
           count = "n"
         )
 
@@ -645,6 +1036,32 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 
     ## Data Quality Statistics ----
 
+    ### Get data for income data quality table ----
+    income_missingness_stats <- shiny::reactive(
+
+      income_data_filtered() |>
+        dplyr::mutate(income_from_any_source = ifelse(
+          is.na(income_from_any_source),
+          "(Blank)",
+          income_from_any_source
+        )) |>
+        dplyr::filter(
+          !income_from_any_source %in% c("Yes", "No")
+        ) |>
+        dplyr::count(income_from_any_source, name = "Count") |>
+        dplyr::rename(Response = income_from_any_source)
+
+    )
+
+    ### Render income data quality table ----
+    output$income_missingness_stats_tbl <- reactable::renderReactable(
+
+      reactable::reactable(
+        income_missingness_stats()
+      )
+
+    )
+
     ### Get data for benefits data quality table ----
     benefits_missingness_stats <- shiny::reactive(
 
@@ -701,7 +1118,7 @@ mod_benefits_server <- function(id, benefits_data, clients_filtered){
 }
 
 ## To be copied in the UI
-# mod_benefits_ui("benefits_1")
+# mod_income_benefits_ui("income_benefits_1")
 
 ## To be copied in the server
-# mod_benefits_server("benefits_1")
+# mod_income_benefits_server("income_benefits_1")
