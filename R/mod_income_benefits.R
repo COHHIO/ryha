@@ -101,7 +101,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Bar Chart ----
                 bs4Dash::box(
-                  title = "Income Received by Source ($ Amount)",
+                  title = "Total Monthly Income (# of Youth)",
                   width = NULL,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
@@ -469,37 +469,20 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
         dplyr::select(
           organization_id,
           personal_id,
-          earned_amount:other_income_amount,
+          total_monthly_income,
           date_updated
         ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          dplyr::ends_with("_amount", ignore.case = FALSE),
-          date_updated
-        ) |>
-        tidyr::pivot_longer(
-          cols = earned_amount:other_income_amount,
-          names_to = "income_source",
-          values_to = "amount"
-        ) |>
-        dplyr::filter(!is.na(amount)) |>
+        dplyr::filter(!is.na(total_monthly_income)) |>
         dplyr::arrange(
           organization_id,
           personal_id,
-          income_source,
+          total_monthly_income,
           dplyr::desc(date_updated)
         ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          income_source,
-          amount
-        ) |>
+        dplyr::select(-date_updated) |>
         dplyr::distinct(
           organization_id,
           personal_id,
-          income_source,
           .keep_all = TRUE
         )
 
@@ -511,28 +494,36 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       )
 
       out |>
-        dplyr::group_by(income_source) |>
-        dplyr::summarise(amount = round(sum(amount), 0), .groups = "drop") |>
         dplyr::mutate(
-          income_source = dplyr::case_when(
-            income_source == "earned_amount" ~ "Earned",
-            income_source == "unemployment_amount" ~ "Unemployment",
-            income_source == "ssi_amount" ~ "SSI",
-            income_source == "ssdi_amount" ~ "SSDI",
-            income_source == "va_disability_service_amount" ~ "VA Disability Service",
-            income_source == "va_disability_non_service_amount" ~ "VA Disability Non Service",
-            income_source == "private_disability_amount" ~ "Private Disability",
-            income_source == "workers_comp_amount" ~ "Workers Comp",
-            income_source == "tanf_amount" ~ "TANF",
-            income_source == "ga_amount" ~ "GA",
-            income_source == "soc_sec_retirement_amount" ~ "Social Security Retirement",
-            income_source == "pension_amount" ~ "Pension",
-            income_source == "child_support_amount" ~ "Child Support",
-            income_source == "alimony_amount" ~ "Alimony",
-            income_source == "other_income_amount" ~ "Other"
+          total_monthly_income = as.integer(round(total_monthly_income, 0)),
+          total_monthly_income = dplyr::case_when(
+            total_monthly_income == 0L ~ "No Income",
+            total_monthly_income > 0L & total_monthly_income <= 500L ~ "$1-$500",
+            total_monthly_income > 500L & total_monthly_income <= 1000L ~ "$551-$1,000",
+            total_monthly_income > 1000L & total_monthly_income <= 2000L ~ "$1,001-$2,000",
+            total_monthly_income > 2000L & total_monthly_income <= 3000L ~ "$2,001-$3,000",
+            total_monthly_income > 3000L & total_monthly_income <= 4000L ~ "$3,001-$4,000",
+            total_monthly_income > 4000L & total_monthly_income <= 5000L ~ "$4,001-$5,000",
+            total_monthly_income > 5000L ~ "$5,001 or more"
+          ),
+          total_monthly_income = factor(
+            total_monthly_income,
+            levels = c(
+              "No Income",
+              "$1-$500",
+              "$551-$1,000",
+              "$1,001-$2,000",
+              "$2,001-$3,000",
+              "$3,001-$4,000",
+              "$4,001-$5,000",
+              "$5,001 or more"
+            ),
+            ordered = TRUE
           )
         ) |>
-        dplyr::arrange(amount)
+        dplyr::count(total_monthly_income) |>
+        dplyr::arrange(total_monthly_income) |>
+        dplyr::mutate(total_monthly_income = as.character(total_monthly_income))
 
     })
 
@@ -540,31 +531,19 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     output$income_bar_chart <- echarts4r::renderEcharts4r(
 
       income_bar_chart_data() |>
-        echarts4r::e_charts(x = income_source) |>
+        echarts4r::e_charts(x = total_monthly_income) |>
         echarts4r::e_bar(
-          serie = amount,
-          name = "Amount Received",
+          serie = n,
+          name = "# of Youth",
           legend = FALSE,
           label = list(
-            formatter = htmlwidgets::JS("
-            function(params){
-              return('$' + String(params.value[0]).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ','))
-            }
-          "),
+            formatter = "{@[0]}",
             show = TRUE,
             position = "right"
           )
         ) |>
-        echarts4r::e_tooltip(
-          formatter = htmlwidgets::JS("
-            function(params){
-              return('<strong>' + params.value[1] +
-                     '</strong><br />' + params.marker + 'Amount Received: $' + String(params.value[0]).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ','))
-                     }
-          ")
-        ) |>
+        echarts4r::e_tooltip(trigger = "item") |>
         echarts4r::e_flip_coords() |>
-        echarts4r::e_x_axis(formatter = echarts4r::e_axis_formatter(style = "currency")) |>
         echarts4r::e_grid(containLabel = TRUE) |>
         echarts4r::e_show_loading()
 
