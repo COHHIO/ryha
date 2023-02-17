@@ -976,6 +976,16 @@ read_exit <- function(file) {
 
   }
 
+  # If necessary, rename the column "work_place_promise_difference" to
+  # "workplace_promise_difference" (this stems from differences in the HMIS
+  # database systems)
+  if ("work_place_promise_difference" %in% colnames(exit)) {
+
+    exit <- exit |>
+      dplyr::rename(workplace_promise_difference = work_place_promise_difference)
+
+  }
+
   return(exit)
 
 }
