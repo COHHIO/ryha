@@ -19,12 +19,14 @@ app_ui <- function(request) {
           color = "secondary",
           href = "https://cohhio.org/youthhealth/",
           image = "www/favicon.ico"
-        )
+        ),
+        controlbarIcon = shiny::icon("filter")
       ),
 
       sidebar = bs4Dash::dashboardSidebar(
 
         bs4Dash::sidebarMenu(
+          id = "left_sidebar_menu",
           # Sidebar menu items are created in R/fct_menuItems.R
           create_menuItems(define_menu())
         )
@@ -83,8 +85,8 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
-            tabName = "benefits_page",
-            mod_benefits_ui("benefits_1")
+            tabName = "income_benefits_page",
+            mod_income_benefits_ui("income_benefits_1")
           ),
 
           bs4Dash::tabItem(
@@ -93,20 +95,30 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
+            tabName = "living_situation_page",
+            mod_living_situation_ui("living_situation_1")
+          ),
+
+          bs4Dash::tabItem(
+            tabName = "parenting_page",
+            mod_parenting_ui("parenting_1")
+          ),
+
+          bs4Dash::tabItem(
             tabName = "upload_page",
             mod_upload_ui("upload_1")
-          )#,
+          ),
 
-          # bs4Dash::tabItem(
-          #   tabName = "help_page",
-          #   shiny::p("Placeholder")
-          # )
+          bs4Dash::tabItem(
+            tabName = "help_page",
+            shiny::includeMarkdown( app_sys("app/www/help_text.md") )
+          )
 
         )
 
       ),
 
-      # remove ability to toggle b/w "light" and "dark" mode
+      # remove ability to toggle between "light" and "dark" mode
       dark = NULL
 
     )

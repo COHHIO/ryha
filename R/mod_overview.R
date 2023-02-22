@@ -14,7 +14,7 @@ mod_overview_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 4,
+        width = 6,
 
         # Gender ----
 
@@ -31,7 +31,7 @@ mod_overview_ui <- function(id){
       ),
 
       shiny::column(
-        width = 4,
+        width = 6,
 
         # Sexual Orientation ----
 
@@ -45,23 +45,6 @@ mod_overview_ui <- function(id){
           )
         )
 
-      ),
-
-      shiny::column(
-        width = 4,
-
-        # Veteran Status ----
-
-        bs4Dash::box(
-          title = "# of Youth by Veteran Status",
-          width = NULL,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("veteran_pie_chart"),
-            height = "400px"
-          )
-        )
-
       )
 
     ),
@@ -71,14 +54,14 @@ mod_overview_ui <- function(id){
       shiny::column(
         width = 6,
 
-        # Age ----
+        # Veteran Status ----
 
         bs4Dash::box(
-          title = "# of Youth by Age",
+          title = "# of Youth by Veteran Status",
           width = NULL,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("age_bar_chart"),
+            outputId = ns("veteran_pie_chart"),
             height = "400px"
           )
         )
@@ -103,6 +86,28 @@ mod_overview_ui <- function(id){
       )
 
     ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 12,
+
+        # Age ----
+
+        bs4Dash::box(
+          title = "# of Youth by Age",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("age_bar_chart"),
+            height = "400px"
+          )
+        )
+
+      )
+
+    ),
+
 
     shiny::fluidRow(
 

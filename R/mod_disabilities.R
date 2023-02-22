@@ -11,6 +11,8 @@ mod_disabilities_ui <- function(id){
   ns <- NS(id)
   tagList(
 
+    # Boxes ----
+
     shiny::fluidRow(
 
       shiny::column(
@@ -41,6 +43,10 @@ mod_disabilities_ui <- function(id){
       )
 
     ),
+
+    shiny::hr(),
+
+    # Pie Charts ----
 
     shiny::fluidRow(
 
@@ -75,6 +81,8 @@ mod_disabilities_ui <- function(id){
       )
 
     ),
+
+    # Sankey Charts ----
 
     shiny::fluidRow(
 
@@ -113,9 +121,25 @@ mod_disabilities_ui <- function(id){
           ),
 
           shiny::tabPanel(
+            title = "HIV/AIDS",
+            echarts4r::echarts4rOutput(
+              outputId = ns("hiv_sankey_chart"),
+              height = "350px"
+            )
+          ),
+
+          shiny::tabPanel(
             title = "Mental",
             echarts4r::echarts4rOutput(
               outputId = ns("mental_sankey_chart"),
+              height = "350px"
+            )
+          ),
+
+          shiny::tabPanel(
+            title = "Substance Use",
+            echarts4r::echarts4rOutput(
+              outputId = ns("substance_sankey_chart"),
               height = "350px"
             )
           )
@@ -125,6 +149,8 @@ mod_disabilities_ui <- function(id){
       )
 
     ),
+
+    # Data Quality Stats ----
 
     shiny::fluidRow(
       shiny::column(
@@ -231,6 +257,10 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
+    # Pie Charts ----
+
+    ## Disabilities Pie Chart ----
+
     # Create reactive data frame to data to be displayed in pie chart
     disabilities_pie_chart_data <- shiny::reactive({
 
@@ -286,6 +316,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
+    ## Substance Use Disorder Pie Chart ----
+
     # Create reactive data frame to data to be displayed in pie chart
     substance_pie_chart_data <- shiny::reactive({
 
@@ -329,7 +361,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Create disabilities pie chart
+    # Create substance use pie chart
     output$substance_pie_chart <- echarts4r::renderEcharts4r({
 
       substance_pie_chart_data() |>
@@ -339,6 +371,10 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )
 
     })
+
+    # Sankey Charts ----
+
+    ## Physical Disabilities ----
 
     # Create reactive data frame to data to be displayed in line chart
     physical_sankey_chart_data <- shiny::reactive({
@@ -377,7 +413,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Create disabilities trend line chart
+    # Create physical sankey chart
     output$physical_sankey_chart <- echarts4r::renderEcharts4r({
 
       physical_sankey_chart_data() |>
@@ -388,6 +424,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )
 
     })
+
+    ## Developmental Disabilities ----
 
     # Create reactive data frame to data to be displayed in line chart
     developmental_sankey_chart_data <- shiny::reactive({
@@ -426,7 +464,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Create disabilities trend line chart
+    # Create developmental sankey chart
     output$developmental_sankey_chart <- echarts4r::renderEcharts4r({
 
       developmental_sankey_chart_data() |>
@@ -437,6 +475,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )
 
     })
+
+    ## Chronic Health Condition ----
 
     # Create reactive data frame to data to be displayed in line chart
     chronic_sankey_chart_data <- shiny::reactive({
@@ -475,7 +515,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Create disabilities trend line chart
+    # Create chronic sankey chart
     output$chronic_sankey_chart <- echarts4r::renderEcharts4r({
 
       chronic_sankey_chart_data() |>
@@ -486,6 +526,59 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )
 
     })
+
+    ## HIV/AIDS ----
+
+    # Create reactive data frame to data to be displayed in line chart
+    hiv_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- disabilities_data_filtered() |>
+        dplyr::filter(
+          disability_type == "HIV/AIDS",
+          disability_response %in% c("Yes", "No")
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      disabilities_data_filtered() |>
+        dplyr::filter(
+          disability_type == "HIV/AIDS",
+          disability_response %in% c("Yes", "No")
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = disability_response)
+
+    })
+
+    # Create chronic sankey chart
+    output$hiv_sankey_chart <- echarts4r::renderEcharts4r({
+
+      hiv_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    })
+
+    ## Mental Health Disorder ----
 
     # Create reactive data frame to data to be displayed in line chart
     mental_sankey_chart_data <- shiny::reactive({
@@ -536,6 +629,65 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
+    ## Substance Use Disorder ----
+
+    # Create reactive data frame to data to be displayed in line chart
+    substance_sankey_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(disabilities_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      ids_exited <- disabilities_data_filtered() |>
+        dplyr::filter(
+          disability_type == "Substance Use Disorder",
+          disability_response %in% SubstanceUseDisorderCodes$Description[1:4]
+        ) |>
+        get_ids_for_sankey()
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(ids_exited) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      disabilities_data_filtered() |>
+        dplyr::filter(
+          disability_type == "Substance Use Disorder",
+          disability_response %in% SubstanceUseDisorderCodes$Description[1:4]
+        ) |>
+        # Recode 'disability_response' to either "Yes" or "No"
+        dplyr::mutate(
+          disability_response = dplyr::case_when(
+            disability_response == "No" ~ "No",
+            TRUE ~ "Yes"
+          )
+        ) |>
+        dplyr::inner_join(
+          ids_exited,
+          by = c("organization_id", "personal_id")
+        ) |>
+        prep_sankey_data(state_var = disability_response)
+
+    })
+
+    # Create substance trend line chart
+    output$substance_sankey_chart <- echarts4r::renderEcharts4r({
+
+      substance_sankey_chart_data() |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
+          count = "n"
+        )
+
+    })
+
+    # Missingness Statistics ----
     missingness_stats <- shiny::reactive({
 
       disabilities_data_filtered() |>
