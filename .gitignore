@@ -1,3 +1,6 @@
 .Rproj.user
 .Renviron
 hkey.RDS
+.DS_Store
+.Rhistory
+rsconnect/
