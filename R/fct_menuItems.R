@@ -13,7 +13,7 @@ define_menu <- function() {
   tibble::tribble(
     ~text              , ~tabName                , ~icon,
     "Welcome"          , "welcome_page"          , "hand-paper",
-    "Overview"         , "overview_page"         , "home",
+    "Overview"         , "overview_page"         , "eye",
     "Disabilities"     , "disabilities_page"     , "accessible-icon",
     "Employment"       , "employment_page"       , "briefcase",
     "Education"        , "education_page"        , "book-open",
@@ -22,8 +22,9 @@ define_menu <- function() {
     "Domestic Violence", "domestic_violence_page", "user-shield",
     "Income & Benefits", "income_benefits_page"  , "dollar-sign",
     "Trafficking"      , "trafficking_page"      , "exclamation-circle",
-    "Living Situation" , "living_situation_page" , "door-open",
+    "Living Situation" , "living_situation_page" , "bed",
     "Parenting"        , "parenting_page"        , "baby-carriage",
+    "Exit"             , "exit_page"             , "door-open",
     "Upload Data"      , "upload_page"           , "upload",
     "Help"             , "help_page"             , "question"
   )
