@@ -33,7 +33,26 @@ mod_exit_ui <- function(id){
 
     ),
 
-    shiny::hr()
+    shiny::hr(),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = "# of Youth by Project Completion Status",
+          width = NULL,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("completion_pie_chart"),
+            height = "350px"
+          )
+        )
+
+      )
+
+    )
 
   )
 }
@@ -94,6 +113,60 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
         subtitle = "Total # of Youth with Services Data Available",
         icon = shiny::icon("home")
       )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    completion_pie_chart_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(exit_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- exit_data_filtered() |>
+        dplyr::filter(!is.na(project_completion_status)) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          project_completion_status,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          project_completion_status
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          project_completion_status,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(project_completion_status) |>
+        dplyr::arrange(project_completion_status)
+
+    })
+
+    # Create employment pie chart
+    output$completion_pie_chart <- echarts4r::renderEcharts4r({
+
+      completion_pie_chart_data() |>
+        pie_chart(
+          category = "project_completion_status",
+          count = "n"
+        )
 
     })
 
