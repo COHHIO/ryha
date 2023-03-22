@@ -38,16 +38,59 @@ mod_exit_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 6,
+        width = 12,
 
-        bs4Dash::box(
-          title = "# of Youth by Project Completion Status",
-          width = NULL,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("completion_pie_chart"),
-            height = "350px"
+        bs4Dash::tabsetPanel(
+          type = "pills",
+
+          shiny::tabPanel(
+            title = "Project Completion Status",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "# of Youth by Project Completion Status",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("completion_pie_chart"),
+                    height = "350px"
+                  )
+                )
+
+              )
+
+            )
+
+          ),
+
+          shiny::tabPanel(
+            title = "Safe & Appropriate Exit",
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "# of Youth by Safe & Appropriate Exit Response",
+                  width = NULL,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("exit_heatmap"),
+                    height = "350px"
+                  )
+                )
+
+              )
+
+            )
+
           )
+
         )
 
       )
@@ -110,7 +153,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
 
       bs4Dash::bs4ValueBox(
         value = n_youth_with_exit_data(),
-        subtitle = "Total # of Youth with Services Data Available",
+        subtitle = "Total # of Youth with Exit Data Available",
         icon = shiny::icon("home")
       )
 
@@ -167,6 +210,106 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
           category = "project_completion_status",
           count = "n"
         )
+
+    })
+
+    # Create reactive data frame to data to be displayed in pie chart
+    exit_heatmap_data <- shiny::reactive({
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(exit_data_filtered()) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out <- exit_data_filtered() |>
+        dplyr::filter(
+          !is.na(destination_safe_client) & !is.na(destination_safe_client)
+        ) |>
+        dplyr::arrange(
+          organization_id,
+          personal_id,
+          destination_safe_client,
+          destination_safe_worker,
+          dplyr::desc(date_updated)
+        ) |>
+        dplyr::select(
+          organization_id,
+          personal_id,
+          destination_safe_client,
+          destination_safe_worker
+        ) |>
+        dplyr::distinct(
+          organization_id,
+          personal_id,
+          destination_safe_client,
+          destination_safe_worker,
+          .keep_all = TRUE
+        )
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(out) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      out |>
+        dplyr::count(destination_safe_client, destination_safe_worker) |>
+        dplyr::mutate(
+          dplyr::across(
+            .cols = -n,
+            .fns = function(x) ifelse(is.na(x), "(Blank)", x)
+          )
+        ) |>
+        dplyr::arrange(destination_safe_client, destination_safe_worker)
+
+    })
+
+    # Create employment pie chart
+    output$exit_heatmap <- echarts4r::renderEcharts4r({
+
+      exit_heatmap_data() |>
+        echarts4r::e_charts(
+          x = destination_safe_client,
+          label = list(show = TRUE, fontSize = 16)
+        ) |>
+        echarts4r::e_heatmap(
+          y = destination_safe_worker,
+          z = n
+        ) |>
+        echarts4r::e_visual_map(
+          serie = n,
+          show = FALSE
+        ) |>
+        echarts4r::e_axis_labels(
+          x = "Youth Response",
+          y = "Worker Response"
+        ) |>
+        echarts4r::e_x_axis(
+          nameLocation = "middle",
+          nameGap = 40,
+          nameTextStyle = list(fontSize = 14)
+        ) |>
+        echarts4r::e_y_axis(
+          nameLocation = "middle",
+          nameGap = 160,
+          nameTextStyle = list(fontSize = 14)
+        ) |>
+        echarts4r::e_tooltip(
+          trigger = "item",
+          formatter = htmlwidgets::JS("
+            function(params){
+                return('<strong>Youth Response: </strong>' + params.value[0] + '<br />' +
+                        '<strong>Worker Response: </strong>' + params.value[1] + '<br />' +
+                        params.marker + '# of Youth: ' + params.value[2]
+                )
+            }
+          ")
+        ) |>
+        echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_show_loading()
 
     })
 
