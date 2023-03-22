@@ -103,6 +103,22 @@ mod_exit_ui <- function(id){
 
               )
 
+            ),
+
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("exit_missingness_stats_tbl")
+                  )
+                )
+
+              )
             )
 
           )
@@ -344,6 +360,44 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
     output$completion_missingness_stats_tbl <- reactable::renderReactable(
       reactable::reactable(
         completion_missingness_stats()
+      )
+    )
+
+    # Compute "Safe & Appropriate Exit" missingness stats
+    exit_missingness_stats <- shiny::reactive({
+
+      client <- exit_data_filtered() |>
+        dplyr::mutate(destination_safe_client = ifelse(
+          is.na(destination_safe_client),
+          "(Blank)",
+          destination_safe_client
+        )) |>
+        dplyr::filter(
+          destination_safe_client %in% c(
+            "Client doesn't know",
+            "Client refused",
+            "Data not collected",
+            "(Blank)"
+          )
+        ) |>
+        dplyr::count(destination_safe_client, name = "Count (Youth)") |>
+        dplyr::rename(Response = destination_safe_client)
+
+      worker <- exit_data_filtered() |>
+        dplyr::filter(is.na(destination_safe_worker)) |>
+        dplyr::mutate(destination_safe_worker = "(Blank)") |>
+        dplyr::count(destination_safe_worker, name = "Count (Worker)") |>
+        dplyr::rename(Response = destination_safe_worker)
+
+      client |>
+        dplyr::full_join(worker, by = "Response")
+
+    })
+
+    # Create "Safe & Appropriate Exit" missingness stats table
+    output$exit_missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        exit_missingness_stats()
       )
     )
 
