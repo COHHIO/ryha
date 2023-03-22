@@ -63,6 +63,22 @@ mod_exit_ui <- function(id){
 
               )
 
+            ),
+
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+
+                bs4Dash::box(
+                  title = "Data Quality Statistics",
+                  width = NULL,
+                  maximizable = TRUE,
+                  reactable::reactableOutput(
+                    outputId = ns("completion_missingness_stats_tbl")
+                  )
+                )
+
+              )
             )
 
           ),
@@ -312,6 +328,24 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
         echarts4r::e_show_loading()
 
     })
+
+    # Compute "Project Completion Status" missingness stats
+    completion_missingness_stats <- shiny::reactive(
+
+      exit_data_filtered() |>
+        dplyr::filter(is.na(project_completion_status)) |>
+        dplyr::mutate(project_completion_status = "(Blank)") |>
+        dplyr::count(project_completion_status, name = "Count") |>
+        dplyr::rename(Response = project_completion_status)
+
+    )
+
+    # Create "Project Completion Status" missingness stats table
+    output$completion_missingness_stats_tbl <- reactable::renderReactable(
+      reactable::reactable(
+        completion_missingness_stats()
+      )
+    )
 
   })
 }
