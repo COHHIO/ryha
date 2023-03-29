@@ -115,7 +115,7 @@ mod_filters_ui <- function(id){
 #' filters Server Functions
 #'
 #' @noRd
-mod_filters_server <- function(id, dm, w){
+mod_filters_server <- function(id, dm, w, rctv){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -183,6 +183,15 @@ mod_filters_server <- function(id, dm, w){
 
     })
 
+    # Capture the selected projects in a global reactiveValues object
+    shiny::observe({
+
+      shiny::req(input$project_filter_global)
+
+      rctv$selected_projects <- input$project_filter_global
+
+    })
+
     # Disable the "dedup_status_global" check-box if only 1 program is selected
     shiny::observe({
 
@@ -204,7 +213,7 @@ mod_filters_server <- function(id, dm, w){
 
     })
 
-    # Created filtered {dm} data
+    # Create filtered {dm} data
     clients_filtered <- shiny::eventReactive(input$apply_filters, {
 
       # Filter client data to allow/disallow missing ages
@@ -252,14 +261,16 @@ mod_filters_server <- function(id, dm, w){
           dm$gender |>
             dplyr::filter(
               gender %in% input$gender_filter_global
-            ),
+            ) |>
+            dplyr::select(personal_id, organization_id),
           by = c("personal_id", "organization_id")
         ) |>
         dplyr::inner_join(
           dm$ethnicity |>
             dplyr::filter(
               ethnicity %in% input$ethnicity_filter_global
-            ),
+            ) |>
+            dplyr::select(personal_id, organization_id),
           by = c("personal_id", "organization_id")
         ) |>
         dplyr::left_join(
