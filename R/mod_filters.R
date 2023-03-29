@@ -183,15 +183,6 @@ mod_filters_server <- function(id, dm, w, rctv){
 
     })
 
-    # Capture the selected projects in a global reactiveValues object
-    shiny::observe({
-
-      shiny::req(input$project_filter_global)
-
-      rctv$selected_projects <- input$project_filter_global
-
-    })
-
     # Disable the "dedup_status_global" check-box if only 1 program is selected
     shiny::observe({
 
@@ -281,26 +272,23 @@ mod_filters_server <- function(id, dm, w, rctv){
         # Remove individuals who exited *before* the first active date
         dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1])
 
+      # If the "De-duplicate by SSN" checkbox is clicked, limit the data to the
+      # most recent `personal_id` value for each unique SSN
+      if (input$dedup_status_global == TRUE) {
 
-        if (input$dedup_status_global == TRUE) {
+        out <- out |>
+          dplyr::filter(ssn_data_quality == "Full SSN reported") |>
+          dplyr::arrange(ssn, dplyr::desc(date_updated)) |>
+          dplyr::distinct(ssn, .keep_all = TRUE)
 
-          out <- out |>
-            dplyr::filter(ssn_data_quality == "Full SSN reported") |>
-            dplyr::arrange(ssn, dplyr::desc(date_updated)) |>
-            dplyr::distinct(ssn, .keep_all = TRUE)
+      }
 
-        }
+      # Update the reactiveValues list of selected projects
+      rctv$selected_projects <- input$project_filter_global
 
-        out |>
-          dplyr::distinct(personal_id, organization_id)
-
-      # Close the global filters pane when the "Apply" button is clicked
-      # This doesn't work; since "control_bar" div is not in this module
-      # bs4Dash::updateControlbar(
-      #   session = session,
-      #   id = "control_bar",
-      #   collapsed = TRUE
-      # )
+      # Return the filtered data
+      out |>
+        dplyr::distinct(personal_id, organization_id)
 
     }, ignoreNULL = FALSE)
 
