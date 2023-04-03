@@ -58,7 +58,7 @@ mod_trafficking_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Exchange for Sex Response",
@@ -73,7 +73,7 @@ mod_trafficking_ui <- function(id){
               ),
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Count of Exchange for Sex Response",
@@ -85,10 +85,14 @@ mod_trafficking_ui <- function(id){
                   )
                 )
 
-              ),
+              )
+
+            ),
+
+            shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Asked or Forced to Exchange Response",
@@ -100,14 +104,10 @@ mod_trafficking_ui <- function(id){
                   )
                 )
 
-              )
-
-            ),
-
-            shiny::fluidRow(
+              ),
 
               shiny::column(
-                width = 12,
+                width = 6,
 
                 bs4Dash::box(
                   title = "Data Quality Statistics",
@@ -130,7 +130,7 @@ mod_trafficking_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Workplace Violence/Threats Response",
@@ -145,7 +145,7 @@ mod_trafficking_ui <- function(id){
               ),
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Workplace Promise Difference Response",
@@ -157,10 +157,14 @@ mod_trafficking_ui <- function(id){
                   )
                 )
 
-              ),
+              )
+
+            ),
+
+            shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Coerced to Continue Work Response",
@@ -172,14 +176,10 @@ mod_trafficking_ui <- function(id){
                   )
                 )
 
-              )
-
-            ),
-
-            shiny::fluidRow(
+              ),
 
               shiny::column(
-                width = 12,
+                width = 6,
 
                 bs4Dash::box(
                   title = "Data Quality Statistics",

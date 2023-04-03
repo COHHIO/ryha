@@ -49,7 +49,7 @@ mod_domestic_violence_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Domestic Violence Victim Response",
@@ -64,15 +64,14 @@ mod_domestic_violence_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("victim_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("victim_missingness_stats_tbl")
                   )
                 )
 
@@ -85,11 +84,12 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("victim_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("victim_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
@@ -104,7 +104,7 @@ mod_domestic_violence_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by When Occurred Response",
@@ -119,15 +119,14 @@ mod_domestic_violence_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in When Occurred (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("when_occurred_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("when_occurred_missingness_stats_tbl")
                   )
                 )
 
@@ -140,11 +139,12 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in When Occurred (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("when_occurred_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("when_occurred_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
@@ -159,7 +159,7 @@ mod_domestic_violence_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Currently Fleeing Response",
@@ -174,15 +174,14 @@ mod_domestic_violence_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in Currently Fleeing (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("currently_fleeing_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("currently_fleeing_missingness_stats_tbl")
                   )
                 )
 
@@ -195,11 +194,12 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in Currently Fleeing (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("currently_fleeing_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("currently_fleeing_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
