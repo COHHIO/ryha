@@ -105,6 +105,11 @@ app_ui <- function(request) {
           ),
 
           bs4Dash::tabItem(
+            tabName = "exit_page",
+            mod_exit_ui("exit_1")
+          ),
+
+          bs4Dash::tabItem(
             tabName = "upload_page",
             mod_upload_ui("upload_1")
           ),

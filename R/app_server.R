@@ -99,6 +99,12 @@ app_server <- function(input, output, session) {
     clients_filtered = clients_filtered
   )
 
+  mod_exit_server(
+    id = "exit_1",
+    exit_data = dm$exit,
+    clients_filtered = clients_filtered
+  )
+
   mod_upload_server(
     id = "upload_1"
   )
