@@ -13,10 +13,15 @@ app_server <- function(input, output, session) {
   # Create dm object. This is run once per session
   dm <- create_dm()
 
+  # Create a reactiveValues list to hold some global variables
+  rctv <- shiny::reactiveValues()
+
   # Get filtered dm
   clients_filtered <- mod_filters_server(
     id = "filters_1",
-    dm = dm
+    dm = dm,
+    w = w,
+    rctv = rctv
   )
 
   mod_overview_server(
@@ -83,7 +88,8 @@ app_server <- function(input, output, session) {
     id = "living_situation_1",
     enrollment_data = dm$enrollment,
     exit_data = dm$exit,
-    clients_filtered = clients_filtered
+    clients_filtered = clients_filtered,
+    rctv = rctv
   )
 
   mod_parenting_server(

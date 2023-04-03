@@ -140,7 +140,7 @@ mod_living_situation_ui <- function(id){
 #' living_situation Server Functions
 #'
 #' @noRd
-mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered){
+mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered, rctv){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -155,29 +155,27 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
     # Apply the filters to the enrollment data
     living_data_filtered <- shiny::reactive({
 
+      shiny::req(rctv$selected_projects)
+
+      project_ids <- dm$project |>
+        dplyr::filter(project_name %in% rctv$selected_projects) |>
+        dplyr::pull(project_id)
+
       enrollment_data |>
         dplyr::inner_join(
           clients_filtered(),
           by = c("personal_id", "organization_id")
         ) |>
+        dplyr::filter(project_id %in% project_ids) |>
         dplyr::left_join(
           exit_data |>
             dplyr::select(
-              personal_id,
+              enrollment_id,
               organization_id,
               destination
             ),
-          by = c("personal_id", "organization_id")
-        ) #|>
-      # dplyr::inner_join(
-      #   LivingCodes |>
-      #     dplyr::select(
-      #       living_situation = Description,
-      #       category = Category,
-      #       general_category = GeneralCategory
-      #     ),
-      #   by = "living_situation"
-      # )
+          by = c("enrollment_id", "organization_id")
+        )
 
     })
 

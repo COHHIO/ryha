@@ -115,7 +115,7 @@ mod_filters_ui <- function(id){
 #' filters Server Functions
 #'
 #' @noRd
-mod_filters_server <- function(id, dm, w){
+mod_filters_server <- function(id, dm, w, rctv){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -202,7 +202,7 @@ mod_filters_server <- function(id, dm, w){
 
     })
 
-    # Created filtered {dm} data
+    # Create filtered {dm} data
     clients_filtered <- shiny::eventReactive(input$apply_filters, {
 
       # Filter client data to allow/disallow missing ages
@@ -250,14 +250,16 @@ mod_filters_server <- function(id, dm, w){
           dm$gender |>
             dplyr::filter(
               gender %in% input$gender_filter_global
-            ),
+            ) |>
+            dplyr::select(personal_id, organization_id),
           by = c("personal_id", "organization_id")
         ) |>
         dplyr::inner_join(
           dm$ethnicity |>
             dplyr::filter(
               ethnicity %in% input$ethnicity_filter_global
-            ),
+            ) |>
+            dplyr::select(personal_id, organization_id),
           by = c("personal_id", "organization_id")
         ) |>
         dplyr::left_join(
@@ -268,26 +270,23 @@ mod_filters_server <- function(id, dm, w){
         # Remove individuals who exited *before* the first active date
         dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1])
 
+      # If the "De-duplicate by SSN" checkbox is clicked, limit the data to the
+      # most recent `personal_id` value for each unique SSN
+      if (input$dedup_status_global == TRUE) {
 
-        if (input$dedup_status_global == TRUE) {
+        out <- out |>
+          dplyr::filter(ssn_data_quality == "Full SSN reported") |>
+          dplyr::arrange(ssn, dplyr::desc(date_updated)) |>
+          dplyr::distinct(ssn, .keep_all = TRUE)
 
-          out <- out |>
-            dplyr::filter(ssn_data_quality == "Full SSN reported") |>
-            dplyr::arrange(ssn, dplyr::desc(date_updated)) |>
-            dplyr::distinct(ssn, .keep_all = TRUE)
+      }
 
-        }
+      # Update the reactiveValues list of selected projects
+      rctv$selected_projects <- input$project_filter_global
 
-        out |>
-          dplyr::distinct(personal_id, organization_id)
-
-      # Close the global filters pane when the "Apply" button is clicked
-      # This doesn't work; since "control_bar" div is not in this module
-      # bs4Dash::updateControlbar(
-      #   session = session,
-      #   id = "control_bar",
-      #   collapsed = TRUE
-      # )
+      # Return the filtered data
+      out |>
+        dplyr::distinct(personal_id, organization_id)
 
     }, ignoreNULL = FALSE)
 
