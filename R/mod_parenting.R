@@ -326,8 +326,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
           )
         ) |>
         dplyr::count(relationship_to_ho_h, name = "Count", sort = TRUE) |>
-        dplyr::mutate(Percent = Count / n_youth_with_parenting_data()) |>
-        janitor::adorn_totals()
+        dplyr::mutate(Percent = Count / n_youth_with_parenting_data())
 
     })
 
@@ -339,16 +338,24 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
           columns = list(
             relationship_to_ho_h = reactable::colDef(
               name = "Relationship to Head of Household",
-              minWidth = 200
+              minWidth = 200,
+              footer = "Total"
             ),
-            Count = reactable::colDef(minWidth = 100),
+            Count = reactable::colDef(
+              minWidth = 100,
+              footer = function(values) sum(values)
+            ),
             Percent = reactable::colDef(
               format = reactable::colFormat(
                 percent = TRUE,
                 digits = 2L
               ),
-              minWidth = 100
+              minWidth = 100,
+              footer = function(values) scales::percent(sum(values), accuracy = 0.01)
             )
+          ),
+          defaultColDef = reactable::colDef(
+            footerStyle = list(fontWeight = "bold")
           )
         )
 
