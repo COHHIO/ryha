@@ -49,7 +49,7 @@ mod_education_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Last Grade Completed",
@@ -64,15 +64,14 @@ mod_education_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in Last Grade Completed (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("last_grade_completed_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("last_grade_completed_missingness_stats_tbl")
                   )
                 )
 
@@ -85,11 +84,12 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in Last Grade Completed (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("last_grade_completed_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("last_grade_completed_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
@@ -104,7 +104,7 @@ mod_education_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by School Status",
@@ -119,15 +119,14 @@ mod_education_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in School Status (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("school_status_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("school_status_missingness_stats_tbl")
                   )
                 )
 
@@ -140,11 +139,12 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in School Status (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("school_status_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("school_status_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
