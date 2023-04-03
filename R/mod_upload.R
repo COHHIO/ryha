@@ -66,9 +66,17 @@ mod_upload_ui <- function(id){
 #' upload Server Functions
 #'
 #' @noRd
-mod_upload_server <- function(id, w){
+mod_upload_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+
+    # Create the {waiter} loading screen
+    w <- waiter::Waiter$new(
+      html = shiny::tagList(
+        waiter::spin_fading_circles(),
+        "Please Wait..."
+      )
+    )
 
     shiny::observe({
 

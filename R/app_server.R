@@ -7,16 +7,6 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
-  # Create the {waiter} loading screen
-  w <- waiter::Waiter$new(
-    html = shiny::tagList(
-      waiter::spin_fading_circles(),
-      "Please Wait..."
-    )
-  )
-
-  w$show()
-
   # Use this for testing
   # dm <- readRDS("db_data/dm.rds")
 
@@ -33,8 +23,6 @@ app_server <- function(input, output, session) {
     w = w,
     rctv = rctv
   )
-
-  # w$hide()
 
   mod_overview_server(
     id = "overview_1",
@@ -112,8 +100,7 @@ app_server <- function(input, output, session) {
   )
 
   mod_upload_server(
-    id = "upload_1",
-    w = w
+    id = "upload_1"
   )
 
 }

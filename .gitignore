@@ -4,3 +4,4 @@ hkey.RDS
 .DS_Store
 .Rhistory
 rsconnect/
+.Rprofile

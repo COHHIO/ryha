@@ -179,8 +179,6 @@ mod_filters_server <- function(id, dm, w, rctv){
         )
       )
 
-      w$hide()
-
     })
 
     # Disable the "dedup_status_global" check-box if only 1 program is selected
@@ -291,6 +289,8 @@ mod_filters_server <- function(id, dm, w, rctv){
         dplyr::distinct(personal_id, organization_id)
 
     }, ignoreNULL = FALSE)
+
+    waiter::waiter_hide()
 
     return(clients_filtered)
 

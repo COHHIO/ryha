@@ -60,7 +60,7 @@ mod_health_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by General Health Status",
@@ -75,15 +75,14 @@ mod_health_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in General Health Status (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("general_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("general_missingness_stats_tbl")
                   )
                 )
 
@@ -96,11 +95,12 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in General Health Status (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("general_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("general_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
@@ -117,7 +117,7 @@ mod_health_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Dental Health Status",
@@ -132,18 +132,16 @@ mod_health_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in Dental Health Status (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("dental_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("dental_missingness_stats_tbl")
                   )
                 )
-
               )
 
             ),
@@ -153,11 +151,12 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in Dental Health Status (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("dental_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("dental_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
@@ -174,7 +173,7 @@ mod_health_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 4,
+                width = 6,
 
                 bs4Dash::box(
                   title = "# of Youth by Mental Health Status",
@@ -189,15 +188,14 @@ mod_health_ui <- function(id){
               ),
 
               shiny::column(
-                width = 8,
+                width = 6,
 
                 bs4Dash::box(
-                  title = "Changes in Mental Health Status (Entry --> Exit)",
+                  title = "Data Quality Statistics",
                   width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("mental_sankey_chart"),
-                    height = "400px"
+                  reactable::reactableOutput(
+                    outputId = ns("mental_missingness_stats_tbl")
                   )
                 )
 
@@ -210,11 +208,12 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = "Changes in Mental Health Status (Entry --> Exit)",
                   width = NULL,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("mental_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("mental_sankey_chart"),
+                    height = "400px"
                   )
                 )
 
@@ -258,10 +257,6 @@ mod_health_ui <- function(id){
                 )
 
               )
-
-            ),
-
-            shiny::fluidRow(
 
             )
 
@@ -940,8 +935,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         counseling_missingness_stats()
       )
     )
-
-
 
   })
 }

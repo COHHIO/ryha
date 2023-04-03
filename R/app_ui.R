@@ -119,7 +119,17 @@ app_ui <- function(request) {
       ),
 
       # remove ability to toggle between "light" and "dark" mode
-      dark = NULL
+      dark = NULL,
+
+      # Show {waiter} on load
+      preloader = list(
+        html = shiny::tagList(
+          waiter::spin_fading_circles(),
+          "Welcome!",
+          shiny::br(),
+          "Data is loading, please wait..."
+        )
+      )
 
     )
   )

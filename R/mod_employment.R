@@ -38,7 +38,7 @@ mod_employment_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 4,
+        width = 6,
 
         bs4Dash::box(
           title = "# of Youth by Employment Status",
@@ -53,7 +53,7 @@ mod_employment_ui <- function(id){
       ),
 
       shiny::column(
-        width = 4,
+        width = 6,
 
         bs4Dash::box(
           title = "# of Youth by Employment Type",
@@ -65,10 +65,14 @@ mod_employment_ui <- function(id){
           )
         )
 
-      ),
+      )
+
+    ),
+
+    shiny::fluidRow(
 
       shiny::column(
-        width = 4,
+        width = 6,
 
         bs4Dash::box(
           title = "# of Youth by Reason Not Employed",
@@ -77,6 +81,20 @@ mod_employment_ui <- function(id){
           echarts4r::echarts4rOutput(
             outputId = ns("not_employed_reason_pie_chart"),
             height = "350px"
+          )
+        )
+
+      ),
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = "Data Quality Statistics",
+          width = NULL,
+          maximizable = TRUE,
+          reactable::reactableOutput(
+            outputId = ns("missingness_stats_tbl")
           )
         )
 
@@ -95,22 +113,6 @@ mod_employment_ui <- function(id){
           echarts4r::echarts4rOutput(
             outputId = ns("employed_sankey_chart"),
             height = "350px"
-          )
-        )
-
-      )
-    ),
-
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-
-        bs4Dash::box(
-          title = "Data Quality Statistics",
-          width = NULL,
-          maximizable = TRUE,
-          reactable::reactableOutput(
-            outputId = ns("missingness_stats_tbl")
           )
         )
 
