@@ -140,7 +140,7 @@ mod_living_situation_ui <- function(id){
 #' living_situation Server Functions
 #'
 #' @noRd
-mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered, rctv){
+mod_living_situation_server <- function(id, project_data, enrollment_data, exit_data, clients_filtered, rctv){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -157,7 +157,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
 
       shiny::req(rctv$selected_projects)
 
-      project_ids <- dm$project |>
+      project_ids <- project_data |>
         dplyr::filter(project_name %in% rctv$selected_projects) |>
         dplyr::pull(project_id)
 

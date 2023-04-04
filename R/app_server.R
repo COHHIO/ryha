@@ -86,6 +86,7 @@ app_server <- function(input, output, session) {
 
   mod_living_situation_server(
     id = "living_situation_1",
+    project_data = dm$project,
     enrollment_data = dm$enrollment,
     exit_data = dm$exit,
     clients_filtered = clients_filtered,
