@@ -79,11 +79,11 @@ create_dm <- function() {
   gender <- client_tbl |>
     dplyr::select(
       personal_id,
-      female:questioning,
+      woman:questioning,
       organization_id
     ) |>
     tidyr::pivot_longer(
-      cols = female:questioning,
+      cols = woman:questioning,
       names_to = "gender",
       values_drop_na = TRUE
     ) |>
