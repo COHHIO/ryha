@@ -78,8 +78,6 @@ read_client <- function(file) {
         codes = DOBDataQualityCodes
       )
     ) |>
-    # rename the "Ethnicity" column to "HispanicLatinaox"
-    dplyr::rename(HispanicLatinaox = Ethnicity) |>
     # replace the "AmIndAKNative:VeteranStatus" codes with the plain-English
     # description
     dplyr::mutate(

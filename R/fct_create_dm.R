@@ -109,11 +109,11 @@ create_dm <- function() {
   ethnicity <- client_tbl |>
     dplyr::select(
       personal_id,
-      am_ind_ak_native:white, hispanic_latinaox,
+      am_ind_ak_native:white,
       organization_id,
     ) |>
     tidyr::pivot_longer(
-      cols = am_ind_ak_native:hispanic_latinaox,
+      cols = am_ind_ak_native:white,
       names_to = "ethnicity",
       values_drop_na = TRUE
     ) |>
