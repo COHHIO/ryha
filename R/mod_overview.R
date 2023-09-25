@@ -164,6 +164,25 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    # Total number of Youth in program(s), based on `client.csv` file
+    n_youth <- shiny::reactive({
+
+      clients_filtered() |>
+        nrow()
+
+    })
+
+    # Render number of clients box
+    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth(),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid")
+      )
+
+    })
+  
     # Gender ----
 
     # Apply the filters to the gender data
