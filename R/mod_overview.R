@@ -11,6 +11,12 @@ mod_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
 
+    # Number of youth (post global filters)
+    bs4Dash::bs4ValueBoxOutput(
+      outputId = ns("n_youth_box"),
+      width = "100%"
+    ),
+    
     shiny::fluidRow(
 
       shiny::column(
