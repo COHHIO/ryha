@@ -165,7 +165,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -176,7 +176,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_employment_data(),
         subtitle = "Total # of Youth with Employment Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
