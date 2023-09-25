@@ -95,6 +95,13 @@ mod_filters_ui <- function(id){
           value = TRUE
         ),
 
+        # Heads of household checkbox
+        shiny::checkboxInput(
+          inputId = ns("heads_of_household_global"),
+          label = "Limit to Heads of Household",
+          value = FALSE
+        ),
+
         # Action button to apply filters
         bs4Dash::actionButton(
           inputId = ns("apply_filters"),
