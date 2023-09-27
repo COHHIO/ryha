@@ -103,11 +103,18 @@ client_tbl <- read_data_from_table(
   gender <- client_tbl |>
     dplyr::select(
       personal_id,
-      female:questioning,
+      female,
+      male,
+      no_single_gender,
+      transgender,
+      questioning,
       organization_id
     ) |>
     tidyr::pivot_longer(
-      cols = female:questioning,
+      cols = c(female,
+               male,
+               no_single_gender,
+               questioning),
       names_to = "gender",
       values_drop_na = TRUE
     ) |>
@@ -133,11 +140,21 @@ client_tbl <- read_data_from_table(
   ethnicity <- client_tbl |>
     dplyr::select(
       personal_id,
-      am_ind_ak_native:white, hispanic_latinaox,
+      am_ind_ak_native,
+      asian,
+      black_af_american,
+      native_hi_pacific,
+      white,
+      hispanic_latinaox,
       organization_id,
     ) |>
     tidyr::pivot_longer(
-      cols = am_ind_ak_native:hispanic_latinaox,
+      cols = c(am_ind_ak_native,
+               asian,
+               black_af_american,
+               native_hi_pacific,
+               white,
+               hispanic_latinaox),
       names_to = "ethnicity",
       values_drop_na = TRUE
     ) |>
