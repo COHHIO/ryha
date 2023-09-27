@@ -223,7 +223,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_education_data(),
         subtitle = "Total # of Youth with Education Data Available",
-        icon = shiny::icon("user", class = "fa-solid")
+        icon = shiny::icon("book-open")
       )
 
     })

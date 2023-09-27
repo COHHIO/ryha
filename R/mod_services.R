@@ -207,7 +207,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
       bs4Dash::bs4ValueBox(
         value = n_youth_with_services_data(),
         subtitle = "Total # of Youth with Services Data Available",
-        icon = shiny::icon("user", class = "fa-solid")
+        icon = shiny::icon("hands-helping")
       )
 
     })
@@ -218,7 +218,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
       bs4Dash::bs4ValueBox(
         value = n_youth_with_referral_data(),
         subtitle = "Total # of Youth with Referral Data Available",
-        icon = shiny::icon("user", class = "fa-solid")
+        icon = shiny::icon("hands-helping")
       )
 
     })

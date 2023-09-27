@@ -276,7 +276,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_sex_data(),
         subtitle = "Total # of Youth with Sex Trafficking Data Available",
-        icon = shiny::icon("user", class = "fa-solid")
+        icon = shiny::icon("exclamation-circle")
       )
 
     )
@@ -287,7 +287,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_labor_data(),
         subtitle = "Total # of Youth with Labor Trafficking Data Available",
-        icon = shiny::icon("user", class = "fa-solid")
+        icon = shiny::icon("exclamation-circle")
       )
 
     )
