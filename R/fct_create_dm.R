@@ -45,16 +45,40 @@ create_dm <- function() {
   # Establish connection to PostgreSQL database
   con <- connect_to_db()
 
-  # Read "project" table into memory
-  project <- DBI::dbReadTable(
-    conn = con,
-    name = "project"
+  # Read "project" data into memory
+  project <- read_data_from_table(
+    connection = con,
+    table_name = "project",
+    column_names = c(
+      "project_name",
+      "project_id"
+    )
   )
 
   # Read "client" table into memory
-  client_tbl <- DBI::dbReadTable(
-    conn = con,
-    name = "client"
+client_tbl <- read_data_from_table(
+    connection = con,
+    table_name = "client",
+    column_names = c(
+      "personal_id",
+      "ssn",
+      "ssn_data_quality",
+      "dob",
+      "am_ind_ak_native",
+      "asian",
+      "black_af_american",
+      "native_hi_pacific",
+      "white",
+      "hispanic_latinaox",
+      "female",
+      "male",
+      "no_single_gender",
+      "transgender",
+      "questioning",
+      "veteran_status",
+      "organization_id",
+      "date_updated"
+    )
   )
 
   # Prep "client" table
@@ -135,60 +159,182 @@ create_dm <- function() {
       personal_id
     )
 
-  # Read "current_living_situation" table into memory
-  current_living_situation <- DBI::dbReadTable(
-    conn = con,
-    name = "living"
+  disabilities <- read_data_from_table(
+    connection = con,
+    table_name = "disabilities",
+    column_names = c(
+      "personal_id",
+      "disability_type",
+      "disability_response",
+      "data_collection_stage",
+      "date_updated",
+      "organization_id"
+    )
   )
 
-  disabilities <- DBI::dbReadTable(
-    conn = con,
-    name = "disabilities"
+  employment <- read_data_from_table(
+    connection = con,
+    table_name = "employment",
+    column_names = c(
+      "personal_id",
+      "employed",
+      "employment_type",
+      "not_employed_reason",
+      "data_collection_stage",
+      "date_updated",
+      "organization_id"
+    )
   )
 
-  employment <- DBI::dbReadTable(
-    conn = con,
-    name = "employment"
+  education <- read_data_from_table(
+    connection = con,
+    table_name = "education",
+    column_names = c(
+      "personal_id",
+      "last_grade_completed",
+      "school_status",
+      "data_collection_stage",
+      "date_updated",
+      "organization_id"
+    )
   )
 
-  education <- DBI::dbReadTable(
-    conn = con,
-    name = "education"
+  enrollment <- read_data_from_table(
+    connection = con,
+    table_name = "enrollment",
+    column_names = c(
+      "enrollment_id",
+      "personal_id",
+      "entry_date",
+      "household_id",
+      "relationship_to_ho_h",
+      "living_situation",
+      "referral_source",
+      "sexual_orientation",
+      "former_ward_child_welfare",
+      "former_ward_juvenile_justice",
+      "project_id",
+      "organization_id"
+    )
   )
 
-  enrollment <- DBI::dbReadTable(
-    conn = con,
-    name = "enrollment"
+  health <- read_data_from_table(
+    connection = con,
+    table_name = "health",
+    column_names = c(
+      "personal_id",
+      "general_health_status",
+      "dental_health_status",
+      "mental_health_status",
+      "pregnancy_status",
+      "data_collection_stage",
+      "date_updated",
+      "organization_id"
+    )
   )
 
-  health <- DBI::dbReadTable(
-    conn = con,
-    name = "health"
+  domestic_violence <- read_data_from_table(
+    connection = con,
+    table_name = "domestic_violence",
+    column_names = c(
+      "personal_id",
+      "domestic_violence_victim",
+      "when_occurred",
+      "currently_fleeing",
+      "data_collection_stage",
+      "date_updated",
+      "organization_id"
+    )
   )
 
-  domestic_violence <- DBI::dbReadTable(
-    conn = con,
-    name = "domestic_violence"
+  income <- read_data_from_table(
+    connection = con,
+    table_name = "income",
+    column_names = c(
+      "personal_id",
+      "income_from_any_source",
+      "total_monthly_income",
+      "earned",
+      "unemployment",
+      "ssi",
+      "ssdi",
+      "va_disability_service",
+      "va_disability_non_service",
+      "private_disability",
+      "workers_comp",
+      "tanf",
+      "ga",
+      "soc_sec_retirement",
+      "pension",
+      "child_support",
+      "alimony",
+      "other_income_source",
+      "data_collection_stage",
+      "date_updated",
+      "organization_id"
+    )
   )
 
-  income <- DBI::dbReadTable(
-    conn = con,
-    name = "income"
+  benefits <- read_data_from_table(
+    connection = con,
+    table_name = "benefits",
+    column_names = c(
+      "personal_id",
+      "benefits_from_any_source",
+      "snap",
+      "wic",
+      "tanf_child_care",
+      "tanf_transportation",
+      "other_tanf",
+      "other_benefits_source",
+      "insurance_from_any_source",
+      "medicaid",
+      "medicare",
+      "schip",
+      "va_medical_services",
+      "employer_provided",
+      "cobra",
+      "private_pay",
+      "state_health_ins",
+      "indian_health_services",
+      "other_insurance",
+      "data_collection_stage",
+      "date_updated",
+      "organization_id"
+    )
   )
 
-  benefits <- DBI::dbReadTable(
-    conn = con,
-    name = "benefits"
+  services <- read_data_from_table(
+    connection = con,
+    table_name = "services",
+    column_names = c(
+      "personal_id",
+      "date_provided",
+      "type_provided",
+      "organization_id"
+    )
   )
 
-  services <- DBI::dbReadTable(
-    conn = con,
-    name = "services"
-  )
-
-  exit <- DBI::dbReadTable(
-    conn = con,
-    name = "exit"
+  exit <- read_data_from_table(
+    connection = con,
+    table_name = "exit",
+    column_names = c(
+      "enrollment_id",
+      "personal_id",
+      "exit_date",
+      "destination",
+      "project_completion_status",
+      "exchange_for_sex",
+      "count_of_exchange_for_sex",
+      "asked_or_forced_to_exchange_for_sex",
+      "workplace_violence_threats",
+      "workplace_promise_difference",
+      "coerced_to_continue_work",
+      "counseling_received",
+      "destination_safe_client",
+      "destination_safe_worker",
+      "organization_id"
+    )
   )
 
   # Create {dm} object
