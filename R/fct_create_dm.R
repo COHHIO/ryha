@@ -213,3 +213,35 @@ create_dm <- function() {
   return(dm)
 
 }
+
+#' Read data from table
+#'
+#' \code{read_data_from_table()} reads specific data from a SQL table based on
+#' provided column names.
+#'
+#' @param connection A DBI database connection object.
+#' @param table_name The name of the SQL table from which to read the data.
+#' @param column_names A character vector specifying the column names to read
+#' from the table.
+#'
+#' @return A data frame containing the requested data from the specified columns
+#' in the table.
+#'
+#' @examples
+#' # Establish connection to PostgreSQL database
+#' con <- connect_to_db()
+#' read_data_from_table(
+#'   connection = con,
+#'   table_name = "project",
+#'   column_names = c("project_name", "project_id")
+#' )
+read_data_from_table <- function(connection, table_name, column_names) {
+  column_names_string <- paste0(column_names, collapse = ", ")
+
+  DBI::dbGetQuery(
+    conn = connection,
+    statement = glue::glue(
+      "SELECT {column_names_string} FROM {table_name}"
+    )
+  )
+}
