@@ -229,7 +229,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_disabilities_data(),
         subtitle = "Total # of Youth with Disabilities Data Available",
-        icon = shiny::icon("user", class = "fa-solid")
+        icon = shiny::icon("accessible-icon")
       )
 
     })
@@ -252,7 +252,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_no_disabilities(),
         subtitle = "Total # of Youth with No Disabilities or Substance Use",
-        icon = shiny::icon("user", class = "fa-solid")
+        icon = shiny::icon("accessible-icon")
       )
 
     })
