@@ -54,7 +54,23 @@ read_client <- function(file) {
       SSNDataQuality,
       DOB,
       DOBDataQuality,
-      AmIndAKNative:VeteranStatus,
+      AmIndAKNative,
+      Asian,
+      BlackAfAmerican,
+      HispanicLatinaeo,
+      MidEastNAfrican,
+      NativeHIPacific,
+      White,
+      RaceNone,
+      Woman,
+      Man,
+      NonBinary,
+      CulturallySpecific,
+      Transgender,
+      Questioning,
+      DifferentIdentity,
+      GenderNone,
+      VeteranStatus,
       DateUpdated
     ),
     # define schema types
@@ -78,12 +94,45 @@ read_client <- function(file) {
         codes = DOBDataQualityCodes
       )
     ) |>
-    # replace the "AmIndAKNative:VeteranStatus" codes with the plain-English
-    # description
+    # replace codes with the plain-English description
     dplyr::mutate(
       dplyr::across(
-        .cols = AmIndAKNative:VeteranStatus,
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .cols = c(
+          AmIndAKNative,
+          Asian,
+          BlackAfAmerican,
+          HispanicLatinaeo,
+          MidEastNAfrican,
+          NativeHIPacific,
+          White,
+          Woman,
+          Man,
+          NonBinary,
+          CulturallySpecific,
+          Transgender,
+          Questioning,
+          DifferentIdentity
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesCodes)
+      )
+    ) |>
+    # replace codes with the plain-English description
+    dplyr::mutate(
+      dplyr::across(
+        .cols = c(
+          RaceNone,
+          GenderNone
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = RaceGenderNoneCodes)
+      )
+    ) |>
+    # replace codes with the plain-English description
+    dplyr::mutate(
+      dplyr::across(
+        .cols = c(
+          VeteranStatus
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
       )
     ) |>
     janitor::clean_names(case = "snake")
