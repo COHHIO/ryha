@@ -17,7 +17,7 @@ SubstanceUseDisorderCodes <- tibble::tribble(
   1L, "Alcohol use disorder",
   2L, "Drug use disorder",
   3L, "Both alcohol and drug use disorders",
-  8L, "Client doesn’t know",
+  8L, "Client doesn't know",
   9L, "Client refused",
   99L, "Data not collected"
 )
