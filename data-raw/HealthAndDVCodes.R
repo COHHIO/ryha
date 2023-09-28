@@ -8,7 +8,7 @@ HealthStatusCodes <- tibble::tribble(
   3L, "Good",
   4L, "Fair",
   5L, "Poor",
-  8L, "Client doesn’t know",
+  8L, "Client doesn't know",
   9L, "Client refused",
   99L, "Data not collected"
 )
@@ -22,7 +22,7 @@ WhenDVOccurredCodes <- tibble::tribble(
   2L, "Three to six months ago (excluding six months exactly)",
   3L, "Six months to one year ago (excluding one year exactly)",
   4L, "One year ago, or more",
-  8L, "Client doesn’t know",
+  8L, "Client doesn't know",
   9L, "Client refused",
   99L, "Data not collected"
 )

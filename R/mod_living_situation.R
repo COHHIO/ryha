@@ -189,7 +189,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           !living_situation %in% c(
             "No exit interview completed",
             "Worker unable to determine",
-            "Client doesn’t know",
+            "Client doesn't know",
             "Client refused",
             "Data not collected"
           )
@@ -421,7 +421,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           living_situation %in% c(
             "No exit interview completed",
             "Worker unable to determine",
-            "Client doesn’t know",
+            "Client doesn't know",
             "Client refused",
             "Data not collected",
             "(Blank)"
@@ -451,7 +451,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           destination %in% c(
             "No exit interview completed",
             "Worker unable to determine",
-            "Client doesn’t know",
+            "Client doesn't know",
             "Client refused",
             "Data not collected",
             "(Blank)"

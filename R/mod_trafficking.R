@@ -393,7 +393,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
       out <- trafficking_data_filtered() |>
         dplyr::filter(
           !count_of_exchange_for_sex %in% c(
-            "Client doesn’t know",
+            "Client doesn't know",
             "Client refused",
             "Data not collected"
           ),

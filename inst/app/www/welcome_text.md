@@ -10,7 +10,7 @@ This app is the result of a partnership between the [Ohio Department of Health (
   </p>
 </div>
 
-As part of ODH’s youth homelessness grant program, COHHIO was contracted to assist the department in program development using data-driven approaches. COHHIO supported the department in establishing data collection requirements and providing technical assistance to sub-recipients to standardize data collection across the program. This was best accomplished using the Housing and Urban Development (HUD)-required Homeless Management Information System (HMIS).
+As part of ODH's youth homelessness grant program, COHHIO was contracted to assist the department in program development using data-driven approaches. COHHIO supported the department in establishing data collection requirements and providing technical assistance to sub-recipients to standardize data collection across the program. This was best accomplished using the Housing and Urban Development (HUD)-required Homeless Management Information System (HMIS).
 
 In 2022, COHHIO entered into a contract with [Ketchbrook Analytics](https://www.ketchbrookanalytics.com) to assist by analyzing large volumes of data from sub-grantees and quantifying trends across data sets.
 

@@ -16,10 +16,10 @@ LivingCodes <- tibble::tribble(
   2L, "Transitional housing for homeless persons (including homeless youth)", "Homeless", "Temporary",
   32L, "Host Home (non-crisis)", "Temporary", "Temporary",
   13L, "Staying or living with friends, temporary tenure (e.g. room apartment or house)", "Temporary", "Temporary",
-  36L, "Staying or living in a friend’s room, apartment or house", "Not enough data", "Not enough data",
+  36L, "Staying or living in a friend's room, apartment or house", "Not enough data", "Not enough data",
   12L, "Staying or living with family, temporary tenure (e.g. room, apartment or house)", "Temporary", "Temporary",
   22L, "Staying or living with family, permanent tenure", "Permanent", "Permanent",
-  35L, "Staying or living in a family member’s room, apartment or house", "Not enough data", "Not enough data",
+  35L, "Staying or living in a family member's room, apartment or house", "Not enough data", "Not enough data",
   23L, "Staying or living with friends, permanent tenure", "Permanent", "Permanent",
   26L, "Moved from one HOPWA funded project to HOPWA PH", "Permanent", "Permanent",
   27L, "Moved from one HOPWA funded project to HOPWA TH", "Homeless", "Temporary",
@@ -37,7 +37,7 @@ LivingCodes <- tibble::tribble(
   17L, "Other", "Not enough data", "Not enough data",
   24, "Deceased", "Not enough data", "Not enough data",
   37L, "Worker unable to determine", "Not enough data", "Not enough data",
-  8L, "Client doesn’t know", "Not enough data", "Not enough data",
+  8L, "Client doesn't know", "Not enough data", "Not enough data",
   9L, "Client refused", "Not enough data", "Not enough data",
   99L, "Data not collected", "Not enough data", "Not enough data"
 )

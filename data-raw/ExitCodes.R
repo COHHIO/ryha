@@ -13,7 +13,7 @@ CountExchangeForSexCodes <- tibble::tribble(
   2L, "4-7",
   3L, "8-11",
   4L, "12 or more",
-  8L, "Client doesn’t know",
+  8L, "Client doesn't know",
   9L, "Client refused",
   99L, "Data not collected"
 )
