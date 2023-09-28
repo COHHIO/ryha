@@ -3,11 +3,11 @@
 # Project Type information 2.02 in Data Dictionary
 ProjectTypeCodes <- tibble::tribble(
   ~Code, ~Description,
-  1L, "Emergency Shelter",
+  0L, "Emergency Shelter - Entry Exit",
+  1L, "Emergency Shelter – Night-by-Night",
   2L, "Transitional Housing",
-  3L, "PH - Permanent Supportive Housing (disability required for entry)",
+  3L, "PH - Permanent Supportive Housing",
   4L, "Street Outreach",
-  5L, "RETIRED",
   6L, "Services Only",
   7L, "Other",
   8L, "Safe Haven",
