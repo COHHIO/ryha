@@ -595,7 +595,43 @@ read_income <- function(file) {
     file = file,
     # only read in columns needed for "INCOME" database table
     col_select = c(
-      IncomeBenefitsID:OtherIncomeSourceIdentify,
+      IncomeBenefitsID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      IncomeFromAnySource,
+      TotalMonthlyIncome,
+      Earned,
+      EarnedAmount,
+      Unemployment,
+      UnemploymentAmount,
+      SSI,
+      SSIAmount,
+      SSDI,
+      SSDIAmount,
+      VADisabilityService,
+      VADisabilityServiceAmount,
+      VADisabilityNonService,
+      VADisabilityNonServiceAmount,
+      PrivateDisability,
+      PrivateDisabilityAmount,
+      WorkersComp,
+      WorkersCompAmount,
+      TANF,
+      TANFAmount,
+      GA,
+      GAAmount,
+      SocSecRetirement,
+      SocSecRetirementAmount,
+      Pension,
+      PensionAmount,
+      ChildSupport,
+      ChildSupportAmount,
+      Alimony,
+      AlimonyAmount,
+      OtherIncomeSource,
+      OtherIncomeAmount,
+      OtherIncomeSourceIdentify,
       DataCollectionStage,
       DateUpdated
     ),
@@ -628,6 +664,10 @@ read_income <- function(file) {
   ) |>
     # replace the integer codes with the plain-English description
     dplyr::mutate(
+      IncomeFromAnySource = lookup_codes(
+        var = IncomeFromAnySource,
+        codes = NoYesReasonsForMissingDataCodes
+      ),
       dplyr::across(
         .cols = !dplyr::ends_with(
           match = c(
@@ -637,11 +677,12 @@ read_income <- function(file) {
             "Identify",
             "DataCollectionStage",
             "DateUpdated",
+            "IncomeFromAnySource",
             "TotalMonthlyIncome"
           ),
           ignore.case = FALSE
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
