@@ -523,7 +523,13 @@ read_domestic_violence <- function(file) {
     file = file,
     # only read in columns needed for "DOMESTIC_VIOLENCE" database table
     col_select = c(
-      HealthAndDVID:CurrentlyFleeing,
+      HealthAndDVID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      DomesticViolenceSurvivor,
+      WhenOccurred,
+      CurrentlyFleeing,
       DataCollectionStage,
       DateUpdated
     ),
@@ -539,9 +545,9 @@ read_domestic_violence <- function(file) {
   ) |>
     # join the descriptions from the lookup codes
     dplyr::mutate(
-      DomesticViolenceVictim = lookup_codes(
-        var = DomesticViolenceVictim,
-        codes = GeneralCodes
+      DomesticViolenceSurvivor = lookup_codes(
+        var = DomesticViolenceSurvivor,
+        codes = NoYesReasonsForMissingDataCodes
       ),
       WhenOccurred = lookup_codes(
         var = WhenOccurred,
@@ -549,7 +555,7 @@ read_domestic_violence <- function(file) {
       ),
       CurrentlyFleeing = lookup_codes(
         var = CurrentlyFleeing,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,

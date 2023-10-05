@@ -22,8 +22,8 @@ WhenDVOccurredCodes <- tibble::tribble(
   2L, "Three to six months ago (excluding six months exactly)",
   3L, "Six months to one year ago (excluding one year exactly)",
   4L, "One year ago, or more",
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
