@@ -969,7 +969,10 @@ read_services <- function(file) {
     file = file,
     # only read in columns needed for "Services" database table
     col_select = c(
-      ServicesID:DateProvided,
+      ServicesID,
+      EnrollmentID,
+      PersonalID,
+      DateProvided,
       TypeProvided,
       ReferralOutcome,
       DateUpdated
@@ -990,7 +993,7 @@ read_services <- function(file) {
         codes = ServiceCodes
       ),
       ReferralOutcome = lookup_codes(
-        var = TypeProvided,
+        var = ReferralOutcome,
         codes = PATHReferralOutcomeCodes
       )
     ) |>
