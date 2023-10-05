@@ -8,8 +8,8 @@ HealthStatusCodes <- tibble::tribble(
   3L, "Good",
   4L, "Fair",
   5L, "Poor",
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 

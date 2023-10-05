@@ -449,8 +449,14 @@ read_health <- function(file) {
     file = file,
     # only read in columns needed for "HEALTH" database table
     col_select = c(
-      HealthAndDVID:InformationDate,
-      GeneralHealthStatus:PregnancyStatus,
+      HealthAndDVID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      GeneralHealthStatus,
+      DentalHealthStatus,
+      MentalHealthStatus,
+      PregnancyStatus,
       DataCollectionStage,
       DateUpdated
     ),
@@ -469,12 +475,16 @@ read_health <- function(file) {
     # their descriptions
     dplyr::mutate(
       dplyr::across(
-        .cols = GeneralHealthStatus:MentalHealthStatus,
+        .cols = c(
+          GeneralHealthStatus,
+          DentalHealthStatus,
+          MentalHealthStatus
+        ),
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
       ),
       PregnancyStatus = lookup_codes(
         var = PregnancyStatus,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
