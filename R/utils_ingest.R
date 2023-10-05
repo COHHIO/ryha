@@ -831,10 +831,37 @@ read_enrollment <- function(file) {
     file = file,
     # only read in columns needed for "ENROLLMENT" database table
     col_select = c(
-      EnrollmentID:DisablingCondition,
+      EnrollmentID,
+      PersonalID,
+      ProjectID,
+      EntryDate,
+      HouseholdID,
+      RelationshipToHoH,
+      LivingSituation,
+      LengthOfStay,
+      LOSUnderThreshold,
+      PreviousStreetESSH,
+      DateToStreetESSH,
+      TimesHomelessPastThreeYears,
+      MonthsHomelessPastThreeYears,
+      DisablingCondition,
       MoveInDate,
       ReferralSource,
-      RunawayYouth:IncarceratedParent,
+      RunawayYouth,
+      SexualOrientation,
+      SexualOrientationOther,
+      FormerWardChildWelfare,
+      ChildWelfareYears,
+      ChildWelfareMonths,
+      FormerWardJuvenileJustice,
+      JuvenileJusticeYears,
+      JuvenileJusticeMonths,
+      UnemploymentFam,
+      MentalHealthDisorderFam,
+      PhysicalDisabilityFam,
+      AlcoholDrugUseDisorderFam,
+      InsufficientIncome,
+      IncarceratedParent,
       DateUpdated
     ),
     # define schema types
@@ -881,19 +908,33 @@ read_enrollment <- function(file) {
         codes = SexualOrientationCodes
       ),
       dplyr::across(
-        .cols = c(ChildWelfareYears, JuvenileJusticeYears),
+        .cols = c(
+          ChildWelfareYears,
+          JuvenileJusticeYears
+        ),
         .fns = function(x) lookup_codes(var = x, codes = RHYNumberOfYearsCodes)
       ),
       dplyr::across(
         .cols = c(
-          LOSUnderThreshold:PreviousStreetESSH,
+          LOSUnderThreshold,
+          PreviousStreetESSH,
+          UnemploymentFam,
+          MentalHealthDisorderFam,
+          PhysicalDisabilityFam,
+          AlcoholDrugUseDisorderFam,
+          InsufficientIncome,
+          IncarceratedParent
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
+      ),
+      dplyr::across(
+        .cols = c(
           DisablingCondition,
           RunawayYouth,
           FormerWardChildWelfare,
-          FormerWardJuvenileJustice,
-          UnemploymentFam:IncarceratedParent
+          FormerWardJuvenileJustice
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
       )
     ) |>
     janitor::clean_names(case = "snake") |>
