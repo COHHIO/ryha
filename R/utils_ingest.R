@@ -1266,7 +1266,9 @@ read_export <- function(file) {
       SourceContactFirst,
       SourceContactLast,
       SourceContactEmail,
-      ExportStartDate:SoftwareName
+      ExportStartDate,
+      ExportEndDate,
+      SoftwareName
     ),
     # define schema types
     col_types = readr::cols(
