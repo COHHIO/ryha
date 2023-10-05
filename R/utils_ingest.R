@@ -183,7 +183,12 @@ read_disabilities <- function(file) {
     file = file,
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
-      DisabilitiesID:DisabilityResponse,
+      DisabilitiesID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      DisabilityType,
+      DisabilityResponse,
       DataCollectionStage,
       DateUpdated
     ),
@@ -211,7 +216,7 @@ read_disabilities <- function(file) {
       DisabilityResponse = dplyr::if_else(
         DisabilityType == "Substance Use Disorder",
         lookup_codes(var = DisabilityResponse, SubstanceUseDisorderCodes),
-        lookup_codes(var = DisabilityResponse, GeneralCodes),
+        lookup_codes(var = DisabilityResponse, NoYesReasonsForMissingDataCodes),
       )
     ) |>
     janitor::clean_names(case = "snake")
