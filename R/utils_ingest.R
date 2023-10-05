@@ -721,8 +721,39 @@ read_benefits <- function(file) {
     file = file,
     # only read in columns needed for "BENEFITS" database table
     col_select = c(
-      IncomeBenefitsID:InformationDate,
-      BenefitsFromAnySource:OtherInsuranceIdentify,
+      IncomeBenefitsID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      BenefitsFromAnySource,
+      SNAP,
+      WIC,
+      TANFChildCare,
+      TANFTransportation,
+      OtherTANF,
+      OtherBenefitsSource,
+      OtherBenefitsSourceIdentify,
+      InsuranceFromAnySource,
+      Medicaid,
+      NoMedicaidReason,
+      Medicare,
+      NoMedicareReason,
+      SCHIP,
+      NoSCHIPReason,
+      VHAServicesHA,
+      NoVHAReasonHA,
+      EmployerProvided,
+      NoEmployerProvidedReason,
+      COBRA,
+      NoCOBRAReason,
+      PrivatePay,
+      NoPrivatePayReason,
+      StateHealthIns,
+      NoStateHealthInsReason,
+      IndianHealthServices,
+      NoIndianHealthServicesReason,
+      OtherInsurance,
+      OtherInsuranceIdentify,
       DataCollectionStage,
       DateUpdated
     ),
@@ -741,6 +772,10 @@ read_benefits <- function(file) {
     # replace the integer codes with the plain-English description
     dplyr::mutate(
       dplyr::across(
+        .cols = dplyr::ends_with("AnySource"),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
+      ),
+      dplyr::across(
         .cols = dplyr::ends_with("Reason"),
         .fns = function(x) lookup_codes(var = x, codes = ReasonNotInsuredCodes)
       ),
@@ -749,6 +784,7 @@ read_benefits <- function(file) {
           match = c(
             "ID",
             "Date",
+            "AnySource",
             "Identify",
             "Reason",
             "DataCollectionStage",
@@ -756,7 +792,7 @@ read_benefits <- function(file) {
           ),
           ignore.case = FALSE
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
