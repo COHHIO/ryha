@@ -39,18 +39,16 @@ SchoolStatusCodes <- tibble::tribble(
 #general codes for basic questioner
 #than yes or no
 
-# R6 YES Employment Status (page 61) in Data Dictionary
+# R6 YES Employment Status (page 73) in Data Dictionary
 EmploymentTypeCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Full-time",
   2L, "Part-time",
   3L, "Seasonal / sporadic (including day labor)",
-  8L, "Client doesn't know",
-  9L, "Client refused",
   99L, "Data not collected"
 )
 
-# R6.B (page 53) in Data Dictionary
+# R6.B (page 73) in Data Dictionary
 NotEmployedReasonCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Looking for work",
@@ -72,8 +70,8 @@ DataCollectionStageCodes <- tibble::tribble(
 usethis::use_data(
   LastGradeCompletedCodes,
   SchoolStatusCodes,
-  Employment_Yes_Status,
-  Employment_No_Status,
+  EmploymentTypeCodes,
+  NotEmployedReasonCodes,
   DataCollectionStageCodes,
   overwrite = TRUE
 )

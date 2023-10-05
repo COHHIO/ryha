@@ -316,8 +316,14 @@ read_employment <- function(file) {
     file = file,
     # only read in columns needed for "EMPLOYMENT" database table
     col_select = c(
-      EmploymentEducationID:InformationDate,
-      Employed:DataCollectionStage,
+      EmploymentEducationID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      Employed,
+      EmploymentType,
+      NotEmployedReason,
+      DataCollectionStage,
       DateUpdated
     ),
     # define schema types
@@ -336,7 +342,7 @@ read_employment <- function(file) {
     dplyr::mutate(
       Employed = lookup_codes(
         var = Employed,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       ),
       EmploymentType = lookup_codes(
         var = EmploymentType,
