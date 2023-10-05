@@ -1119,9 +1119,31 @@ read_exit <- function(file) {
       ExitID,
       EnrollmentID,
       PersonalID,
-      ExitDate:OtherDestination,
+      ExitDate,
+      Destination,
+      OtherDestination,
       ProjectCompletionStatus,
-      ExchangeForSex:PosCommunityConnections,
+      ExchangeForSex,
+      ExchangeForSexPastThreeMonths,
+      CountOfExchangeForSex,
+      AskedOrForcedToExchangeForSex,
+      AskedOrForcedToExchangeForSexPastThreeMonths,
+      WorkplaceViolenceThreats,
+      WorkplacePromiseDifference,
+      CoercedToContinueWork,
+      LaborExploitPastThreeMonths,
+      CounselingReceived,
+      IndividualCounseling,
+      FamilyCounseling,
+      GroupCounseling,
+      SessionCountAtExit,
+      PostExitCounselingPlan,
+      SessionsInPlan,
+      DestinationSafeClient,
+      DestinationSafeWorker,
+      PosAdultConnections,
+      PosPeerConnections,
+      PosCommunityConnections,
       DateUpdated
     ),
     # define schema types
@@ -1149,18 +1171,37 @@ read_exit <- function(file) {
         .cols = c(
           ExchangeForSex,
           ExchangeForSexPastThreeMonths,
-          AskedOrForcedToExchangeForSex:GroupCounseling,
-          PostExitCounselingPlan,
+          AskedOrForcedToExchangeForSex,
+          AskedOrForcedToExchangeForSexPastThreeMonths,
+          WorkplaceViolenceThreats,
+          WorkplacePromiseDifference,
+          CoercedToContinueWork,
+          LaborExploitPastThreeMonths,
           DestinationSafeClient
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
+      ),
+      dplyr::across(
+        .cols = c(
+          CounselingReceived,
+          IndividualCounseling,
+          FamilyCounseling,
+          GroupCounseling,
+          PostExitCounselingPlan
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
       ),
       CountOfExchangeForSex = lookup_codes(
         var = CountOfExchangeForSex,
         codes = CountExchangeForSexCodes
       ),
       dplyr::across(
-        .cols = DestinationSafeWorker:PosCommunityConnections,
+        .cols = c(
+          DestinationSafeWorker,
+          PosAdultConnections,
+          PosPeerConnections,
+          PosCommunityConnections
+        ),
         .fns = function(x) lookup_codes(var = x, codes = WorkerResponseCodes)
       )
     ) |>
