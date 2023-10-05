@@ -388,7 +388,11 @@ read_living <- function(file) {
     file = file,
     # only read in columns needed for "LIVING" database table
     col_select = c(
-      CurrentLivingSitID:CurrentLivingSituation,
+      CurrentLivingSitID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      CurrentLivingSituation,
       LeaveSituation14Days,
       DateUpdated
     ),
@@ -409,7 +413,7 @@ read_living <- function(file) {
       ),
       LeaveSituation14Days = lookup_codes(
         var = LeaveSituation14Days,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       )
     ) |>
     janitor::clean_names(case = "snake")
