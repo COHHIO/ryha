@@ -7,7 +7,7 @@ LastGradeCompletedCodes <- tibble::tribble(
   2L, "Grades 5-6",
   3L, "Grades 7-8",
   4L, "Grades 9-11",
-  5L, "Grades 12 / High school diploma",
+  5L, "Grade 12 / High school diploma",
   6L, "School program does not have grade levels",
   7L, "GED",
   10L, "Some College",
@@ -16,7 +16,7 @@ LastGradeCompletedCodes <- tibble::tribble(
   13L, "Graduate Degree",
   14L, "Vocational Degree",
   8L, "Client doesn't know",
-  9L, "Client refused",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
@@ -32,7 +32,7 @@ SchoolStatusCodes <- tibble::tribble(
   6L, "Suspended",
   7L, "Expelled",
   8L, "Client doesn't know",
-  9L, "Client refused",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 

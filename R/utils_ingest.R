@@ -251,7 +251,11 @@ read_education <- function(file) {
     file = file,
     # only read in columns needed for "EDUCATION" database table
     col_select = c(
-      EmploymentEducationID:SchoolStatus,
+      EmploymentEducationID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      LastGradeCompleted,
       DataCollectionStage,
       DateUpdated
     ),
