@@ -288,7 +288,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         dplyr::filter(
           pregnancy_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )

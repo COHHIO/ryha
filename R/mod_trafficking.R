@@ -394,7 +394,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
         dplyr::filter(
           !count_of_exchange_for_sex %in% c(
             "Client doesn’t know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(count_of_exchange_for_sex)

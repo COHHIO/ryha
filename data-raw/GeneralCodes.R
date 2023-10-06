@@ -8,7 +8,7 @@ GeneralCodes <- tibble::tribble(
   0L, "No",
   1L, "Yes",
   8L, "Client doesn't know",
-  9L, "Client refused",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 

@@ -419,7 +419,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(when_occurred)
@@ -480,7 +480,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(when_occurred)
@@ -498,7 +498,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(when_occurred)
@@ -536,7 +536,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
           domestic_violence_survivor == "Yes",
           when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -567,7 +567,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(currently_fleeing)
@@ -628,7 +628,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(currently_fleeing)
@@ -646,7 +646,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(currently_fleeing)
@@ -684,7 +684,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
           domestic_violence_survivor == "Yes",
           currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
