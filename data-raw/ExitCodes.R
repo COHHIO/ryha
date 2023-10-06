@@ -3,8 +3,8 @@
 ProjectCompletionStatusCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Completed project",
-  2L, "Youth voluntarily left early",
-  3L, "Youth was expelled or otherwise involuntarily discharged from project"
+  2L, "Client voluntarily left early",
+  3L, "Client was expelled or otherwise involuntarily discharged from project"
 )
 
 CountExchangeForSexCodes <- tibble::tribble(
