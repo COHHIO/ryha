@@ -850,7 +850,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           medicaid,
           medicare,
           schip,
-          va_medical_services,
+          vha_services_ha,
           employer_provided,
           cobra,
           private_pay,
