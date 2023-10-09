@@ -129,6 +129,7 @@ create_dm <- function() {
       hispanic_latinaeo,
       mid_east_n_african,
       white,
+      race_none,
       organization_id,
     ) |>
     tidyr::pivot_longer(
