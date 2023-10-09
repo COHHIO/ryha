@@ -256,6 +256,7 @@ read_education <- function(file) {
       PersonalID,
       InformationDate,
       LastGradeCompleted,
+      SchoolStatus,
       DataCollectionStage,
       DateUpdated
     ),
