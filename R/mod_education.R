@@ -346,11 +346,12 @@ mod_education_server <- function(id, education_data, clients_filtered){
             Entry,
             levels = paste0(
               c(
-                LastGradeCompletedCodes$Description[6],
-                LastGradeCompletedCodes$Description[1:5],
-                LastGradeCompletedCodes$Description[7:9],
-                LastGradeCompletedCodes$Description[12],
-                LastGradeCompletedCodes$Description[10:11]
+                "Less than Grade 5",
+                "Grades 5-8",
+                "Grades 9-11",
+                "Some College",
+                "High school diploma/GED",
+                "College Degree/Vocational"
               ),
               " (Entry)"
             ),
@@ -360,11 +361,12 @@ mod_education_server <- function(id, education_data, clients_filtered){
             Exit,
             levels = paste0(
               c(
-                LastGradeCompletedCodes$Description[6],
-                LastGradeCompletedCodes$Description[1:5],
-                LastGradeCompletedCodes$Description[7:9],
-                LastGradeCompletedCodes$Description[12],
-                LastGradeCompletedCodes$Description[10:11]
+                "Less than Grade 5",
+                "Grades 5-8",
+                "Grades 9-11",
+                "Some College",
+                "High school diploma/GED",
+                "College Degree/Vocational"
               ),
               " (Exit)"
             ),
