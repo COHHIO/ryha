@@ -839,6 +839,7 @@ read_enrollment <- function(file) {
       EntryDate,
       HouseholdID,
       RelationshipToHoH,
+      EnrollmentCoC,
       LivingSituation,
       LengthOfStay,
       LOSUnderThreshold,
