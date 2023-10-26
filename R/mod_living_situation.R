@@ -320,7 +320,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           LivingCodes |>
             dplyr::select(
               description = Description,
-              category = Category
+              category = ExitCategory
             ),
           by = c("destination" = "description")
         ) |>
@@ -369,8 +369,8 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           .keep_all = TRUE
         ) |>
         dplyr::mutate(
-          living_situation = LivingCodes$GeneralCategory[match(x = living_situation, table = LivingCodes$Description)],
-          destination = LivingCodes$GeneralCategory[match(x = destination, table = LivingCodes$Description)],
+          living_situation = LivingCodes$ExitCategory[match(x = living_situation, table = LivingCodes$Description)],
+          destination = LivingCodes$ExitCategory[match(x = destination, table = LivingCodes$Description)],
         ) |>
         dplyr::filter(
           living_situation != "Not enough data",
