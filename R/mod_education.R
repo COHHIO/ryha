@@ -214,11 +214,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         dplyr::distinct(personal_id, organization_id) |>
@@ -264,11 +260,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       out <- education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         dplyr::arrange(
@@ -327,11 +319,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       ids_exited <- education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         get_ids_for_sankey()
@@ -345,11 +333,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client refused",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         dplyr::inner_join(
