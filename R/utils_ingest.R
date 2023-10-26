@@ -70,6 +70,7 @@ read_client <- function(file) {
       Questioning,
       DifferentIdentity,
       GenderNone,
+      DifferentIdentityText,
       VeteranStatus,
       DateUpdated
     ),
