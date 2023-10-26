@@ -184,6 +184,26 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::inner_join(
           clients_filtered(),
           by = c("personal_id", "organization_id")
+        ) |>
+        # Bucket Last Grade Completed categories
+        dplyr::mutate(
+          last_grade_completed = dplyr::case_when(
+            last_grade_completed == "Less than Grade 5" ~ "Less than Grade 5",
+            last_grade_completed == "Grades 5-6" ~ "Grades 5-8",
+            last_grade_completed == "Grades 7-8" ~ "Grades 5-8",
+            last_grade_completed == "Grades 9-11" ~ "Grades 9-11",
+            last_grade_completed == "Grades 12 / High school diploma" ~ "High school diploma/GED",
+            last_grade_completed == "School program does not have grade levels" ~ "Unknown",
+            last_grade_completed == "GED" ~ "High school diploma/GED",
+            last_grade_completed == "Some College" ~ "Some College",
+            last_grade_completed == "Associate's Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Bachelor's Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Graduate Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Vocational Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Client doesn't know" ~ "Unknown",
+            last_grade_completed == "Client refused" ~ "Unknown",
+            last_grade_completed == "Data not collected" ~ "Unknown"
+          )
         )
 
     })
