@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.domestic_violence
     enrollment_id text COLLATE pg_catalog."default",
     personal_id text COLLATE pg_catalog."default",
     information_date date,
-    domestic_violence_victim text COLLATE pg_catalog."default",
+    domestic_violence_survivor text COLLATE pg_catalog."default",
     when_occurred text COLLATE pg_catalog."default",
     currently_fleeing text COLLATE pg_catalog."default",
     data_collection_stage text COLLATE pg_catalog."default",

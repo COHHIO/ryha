@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS public.enrollment
     entry_date date,
     household_id text COLLATE pg_catalog."default",
     relationship_to_ho_h text COLLATE pg_catalog."default",
+    enrollment_co_c text COLLATE pg_catalog."default",
     living_situation text COLLATE pg_catalog."default",
     length_of_stay text COLLATE pg_catalog."default",
     los_under_threshold text COLLATE pg_catalog."default",
