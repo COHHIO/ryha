@@ -255,7 +255,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           LivingCodes |>
             dplyr::select(
               description = Description,
-              category = Category
+              category = ExitCategory
             ),
           by = c("living_situation" = "description")
         ) |>
