@@ -1118,41 +1118,64 @@ read_organization <- function(file) {
 #' }
 read_exit <- function(file) {
 
+  # Handle column names inconsistencies in the HMIS database systems
+  file_colnames <- readr::read_csv(file = file, n_max = 0) |> colnames()
+
+  WorkplaceViolenceThreats <- intersect(
+    file_colnames,
+    c("WorkplaceViolenceThreats", "WorkPlaceViolenceThreats")
+  )
+
+  if (length(WorkplaceViolenceThreats) == 0)
+    stop("Error: No matching column names found for Workplace Violence Threats.")
+
+  WorkplacePromiseDifference <- intersect(
+    file_colnames,
+    c("WorkplacePromiseDifference", "WorkPlacePromiseDifference")
+  )
+
+  if (length(WorkplacePromiseDifference) == 0)
+    stop("Error: No matching column names found for Workplace Promise Difference.")
+
+  # Ingest file
   exit <- readr::read_csv(
     file = file,
     # only read in columns needed for "PROGRAM" database table
-    col_select = c(
-      ExitID,
-      EnrollmentID,
-      PersonalID,
-      ExitDate,
-      Destination,
-      OtherDestination,
-      ProjectCompletionStatus,
-      ExchangeForSex,
-      ExchangeForSexPastThreeMonths,
-      CountOfExchangeForSex,
-      AskedOrForcedToExchangeForSex,
-      AskedOrForcedToExchangeForSexPastThreeMonths,
-      WorkplaceViolenceThreats,
-      WorkplacePromiseDifference,
-      CoercedToContinueWork,
-      LaborExploitPastThreeMonths,
-      CounselingReceived,
-      IndividualCounseling,
-      FamilyCounseling,
-      GroupCounseling,
-      SessionCountAtExit,
-      PostExitCounselingPlan,
-      SessionsInPlan,
-      DestinationSafeClient,
-      DestinationSafeWorker,
-      PosAdultConnections,
-      PosPeerConnections,
-      PosCommunityConnections,
-      DateUpdated
+    col_select = dplyr::all_of(
+      c(
+        "ExitID",
+        "EnrollmentID",
+        "PersonalID",
+        "ExitDate",
+        "Destination",
+        "OtherDestination",
+        "ProjectCompletionStatus",
+        "ExchangeForSex",
+        "ExchangeForSexPastThreeMonths",
+        "CountOfExchangeForSex",
+        "AskedOrForcedToExchangeForSex",
+        "AskedOrForcedToExchangeForSexPastThreeMonths",
+        WorkplaceViolenceThreats,
+        WorkplacePromiseDifference,
+        "CoercedToContinueWork",
+        "LaborExploitPastThreeMonths",
+        "CounselingReceived",
+        "IndividualCounseling",
+        "FamilyCounseling",
+        "GroupCounseling",
+        "SessionCountAtExit",
+        "PostExitCounselingPlan",
+        "SessionsInPlan",
+        "DestinationSafeClient",
+        "DestinationSafeWorker",
+        "PosAdultConnections",
+        "PosPeerConnections",
+        "PosCommunityConnections",
+        "DateUpdated"
+      )
     ),
     # define schema types
+    # use !!object := readr::col_*() if object stores a column name
     col_types = readr::cols(
       .default = readr::col_integer(),
       ExitID = readr::col_character(),
@@ -1174,16 +1197,18 @@ read_exit <- function(file) {
         codes = ProjectCompletionStatusCodes
       ),
       dplyr::across(
-        .cols = c(
-          ExchangeForSex,
-          ExchangeForSexPastThreeMonths,
-          AskedOrForcedToExchangeForSex,
-          AskedOrForcedToExchangeForSexPastThreeMonths,
-          WorkplaceViolenceThreats,
-          WorkplacePromiseDifference,
-          CoercedToContinueWork,
-          LaborExploitPastThreeMonths,
-          DestinationSafeClient
+        .cols = dplyr::all_of(
+          c(
+            "ExchangeForSex",
+            "ExchangeForSexPastThreeMonths",
+            "AskedOrForcedToExchangeForSex",
+            "AskedOrForcedToExchangeForSexPastThreeMonths",
+            WorkplaceViolenceThreats,
+            WorkplacePromiseDifference,
+            "CoercedToContinueWork",
+            "LaborExploitPastThreeMonths",
+            "DestinationSafeClient"
+          )
         ),
         .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
       ),
