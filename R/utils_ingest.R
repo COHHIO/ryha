@@ -1119,7 +1119,11 @@ read_organization <- function(file) {
 read_exit <- function(file) {
 
   # Handle column names inconsistencies in the HMIS database systems
-  file_colnames <- readr::read_csv(file = file, n_max = 0) |> colnames()
+  file_colnames <- readr::read_csv(
+    file = file,
+    n_max = 0,
+    show_col_types = FALSE
+  ) |> colnames()
 
   WorkplaceViolenceThreats <- intersect(
     file_colnames,
