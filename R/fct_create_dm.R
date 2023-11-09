@@ -248,7 +248,8 @@ client_tbl <- read_data_from_table(
       "former_ward_child_welfare",
       "former_ward_juvenile_justice",
       "project_id",
-      "organization_id"
+      "organization_id",
+      "date_updated"
     )
   )
 
@@ -367,7 +368,8 @@ client_tbl <- read_data_from_table(
       "counseling_received",
       "destination_safe_client",
       "destination_safe_worker",
-      "organization_id"
+      "organization_id",
+      "date_updated"
     )
   )
 
