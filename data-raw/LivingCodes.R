@@ -1,5 +1,5 @@
 # FY2024 HMIS CSV Format Specifications - Version 1.2
-# Appendix B – Lists
+# Appendix B - Lists
 # 3.12.1 Living Situation Option List
 
 LivingCodes <- tibble::tribble(

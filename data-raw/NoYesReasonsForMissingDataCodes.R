@@ -1,5 +1,5 @@
 # FY2024 HMIS CSV Format Specifications - Version 1.2
-# Appendix B – Lists
+# Appendix B - Lists
 # 1.8 No/Yes/Reasons for Missing Data
 NoYesReasonsForMissingDataCodes <- tibble::tribble(
   ~Code, ~Description,
