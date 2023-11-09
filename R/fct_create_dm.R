@@ -377,7 +377,6 @@ client_tbl <- read_data_from_table(
     client = client,
     gender = gender,
     ethnicity = ethnicity,
-    current_living_situation = current_living_situation,
     disabilities = disabilities,
     employment = employment,
     education = education,
