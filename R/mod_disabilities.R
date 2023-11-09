@@ -698,7 +698,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )) |>
         dplyr::filter(disability_response %in% c(
           "Client doesn't know",
-          "Client refused",
+          "Client prefers not to answer",
           "Data not collected",
           "(Blank)"
         )) |>

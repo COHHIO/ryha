@@ -288,7 +288,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         dplyr::filter(
           pregnancy_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -313,7 +313,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
     parenting_data <- shiny::reactive({
 
       hhs_with_children <- enrollment_data_filtered() |>
-        dplyr::filter(relationship_to_ho_h == "Head of household’s child") |>
+        dplyr::filter(relationship_to_ho_h == "Head of household's child") |>
         dplyr::distinct(household_id) |>
         dplyr::pull()
 
@@ -322,7 +322,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
           household_id %in% hhs_with_children,
           relationship_to_ho_h %in% c(
             "Self (head of household)",
-            "Head of household’s spouse or partner"
+            "Head of household's spouse or partner"
           )
         ) |>
         dplyr::count(relationship_to_ho_h, name = "Count", sort = TRUE) |>

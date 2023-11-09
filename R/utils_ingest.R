@@ -54,7 +54,24 @@ read_client <- function(file) {
       SSNDataQuality,
       DOB,
       DOBDataQuality,
-      AmIndAKNative:VeteranStatus,
+      AmIndAKNative,
+      Asian,
+      BlackAfAmerican,
+      HispanicLatinaeo,
+      MidEastNAfrican,
+      NativeHIPacific,
+      White,
+      RaceNone,
+      Woman,
+      Man,
+      NonBinary,
+      CulturallySpecific,
+      Transgender,
+      Questioning,
+      DifferentIdentity,
+      GenderNone,
+      DifferentIdentityText,
+      VeteranStatus,
       DateUpdated
     ),
     # define schema types
@@ -78,14 +95,45 @@ read_client <- function(file) {
         codes = DOBDataQualityCodes
       )
     ) |>
-    # rename the "Ethnicity" column to "HispanicLatinaox"
-    dplyr::rename(HispanicLatinaox = Ethnicity) |>
-    # replace the "AmIndAKNative:VeteranStatus" codes with the plain-English
-    # description
+    # replace codes with the plain-English description
     dplyr::mutate(
       dplyr::across(
-        .cols = AmIndAKNative:VeteranStatus,
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .cols = c(
+          AmIndAKNative,
+          Asian,
+          BlackAfAmerican,
+          HispanicLatinaeo,
+          MidEastNAfrican,
+          NativeHIPacific,
+          White,
+          Woman,
+          Man,
+          NonBinary,
+          CulturallySpecific,
+          Transgender,
+          Questioning,
+          DifferentIdentity
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesCodes)
+      )
+    ) |>
+    # replace codes with the plain-English description
+    dplyr::mutate(
+      dplyr::across(
+        .cols = c(
+          RaceNone,
+          GenderNone
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = RaceGenderNoneCodes)
+      )
+    ) |>
+    # replace codes with the plain-English description
+    dplyr::mutate(
+      dplyr::across(
+        .cols = c(
+          VeteranStatus
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
       )
     ) |>
     janitor::clean_names(case = "snake")
@@ -136,7 +184,12 @@ read_disabilities <- function(file) {
     file = file,
     # only read in columns needed for "DISABILITIES" database table
     col_select = c(
-      DisabilitiesID:DisabilityResponse,
+      DisabilitiesID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      DisabilityType,
+      DisabilityResponse,
       DataCollectionStage,
       DateUpdated
     ),
@@ -164,7 +217,7 @@ read_disabilities <- function(file) {
       DisabilityResponse = dplyr::if_else(
         DisabilityType == "Substance Use Disorder",
         lookup_codes(var = DisabilityResponse, SubstanceUseDisorderCodes),
-        lookup_codes(var = DisabilityResponse, GeneralCodes),
+        lookup_codes(var = DisabilityResponse, NoYesReasonsForMissingDataCodes),
       )
     ) |>
     janitor::clean_names(case = "snake")
@@ -199,7 +252,12 @@ read_education <- function(file) {
     file = file,
     # only read in columns needed for "EDUCATION" database table
     col_select = c(
-      EmploymentEducationID:SchoolStatus,
+      EmploymentEducationID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      LastGradeCompleted,
+      SchoolStatus,
       DataCollectionStage,
       DateUpdated
     ),
@@ -260,8 +318,14 @@ read_employment <- function(file) {
     file = file,
     # only read in columns needed for "EMPLOYMENT" database table
     col_select = c(
-      EmploymentEducationID:InformationDate,
-      Employed:DataCollectionStage,
+      EmploymentEducationID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      Employed,
+      EmploymentType,
+      NotEmployedReason,
+      DataCollectionStage,
       DateUpdated
     ),
     # define schema types
@@ -280,7 +344,7 @@ read_employment <- function(file) {
     dplyr::mutate(
       Employed = lookup_codes(
         var = Employed,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       ),
       EmploymentType = lookup_codes(
         var = EmploymentType,
@@ -326,7 +390,11 @@ read_living <- function(file) {
     file = file,
     # only read in columns needed for "LIVING" database table
     col_select = c(
-      CurrentLivingSitID:CurrentLivingSituation,
+      CurrentLivingSitID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      CurrentLivingSituation,
       LeaveSituation14Days,
       DateUpdated
     ),
@@ -347,7 +415,7 @@ read_living <- function(file) {
       ),
       LeaveSituation14Days = lookup_codes(
         var = LeaveSituation14Days,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       )
     ) |>
     janitor::clean_names(case = "snake")
@@ -383,8 +451,14 @@ read_health <- function(file) {
     file = file,
     # only read in columns needed for "HEALTH" database table
     col_select = c(
-      HealthAndDVID:InformationDate,
-      GeneralHealthStatus:PregnancyStatus,
+      HealthAndDVID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      GeneralHealthStatus,
+      DentalHealthStatus,
+      MentalHealthStatus,
+      PregnancyStatus,
       DataCollectionStage,
       DateUpdated
     ),
@@ -403,12 +477,16 @@ read_health <- function(file) {
     # their descriptions
     dplyr::mutate(
       dplyr::across(
-        .cols = GeneralHealthStatus:MentalHealthStatus,
+        .cols = c(
+          GeneralHealthStatus,
+          DentalHealthStatus,
+          MentalHealthStatus
+        ),
         .fns = function(x) lookup_codes(var = x, codes = HealthStatusCodes)
       ),
       PregnancyStatus = lookup_codes(
         var = PregnancyStatus,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
@@ -447,7 +525,13 @@ read_domestic_violence <- function(file) {
     file = file,
     # only read in columns needed for "DOMESTIC_VIOLENCE" database table
     col_select = c(
-      HealthAndDVID:CurrentlyFleeing,
+      HealthAndDVID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      DomesticViolenceSurvivor,
+      WhenOccurred,
+      CurrentlyFleeing,
       DataCollectionStage,
       DateUpdated
     ),
@@ -463,9 +547,9 @@ read_domestic_violence <- function(file) {
   ) |>
     # join the descriptions from the lookup codes
     dplyr::mutate(
-      DomesticViolenceVictim = lookup_codes(
-        var = DomesticViolenceVictim,
-        codes = GeneralCodes
+      DomesticViolenceSurvivor = lookup_codes(
+        var = DomesticViolenceSurvivor,
+        codes = NoYesReasonsForMissingDataCodes
       ),
       WhenOccurred = lookup_codes(
         var = WhenOccurred,
@@ -473,7 +557,7 @@ read_domestic_violence <- function(file) {
       ),
       CurrentlyFleeing = lookup_codes(
         var = CurrentlyFleeing,
-        codes = GeneralCodes
+        codes = NoYesReasonsForMissingDataCodes
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
@@ -513,7 +597,43 @@ read_income <- function(file) {
     file = file,
     # only read in columns needed for "INCOME" database table
     col_select = c(
-      IncomeBenefitsID:OtherIncomeSourceIdentify,
+      IncomeBenefitsID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      IncomeFromAnySource,
+      TotalMonthlyIncome,
+      Earned,
+      EarnedAmount,
+      Unemployment,
+      UnemploymentAmount,
+      SSI,
+      SSIAmount,
+      SSDI,
+      SSDIAmount,
+      VADisabilityService,
+      VADisabilityServiceAmount,
+      VADisabilityNonService,
+      VADisabilityNonServiceAmount,
+      PrivateDisability,
+      PrivateDisabilityAmount,
+      WorkersComp,
+      WorkersCompAmount,
+      TANF,
+      TANFAmount,
+      GA,
+      GAAmount,
+      SocSecRetirement,
+      SocSecRetirementAmount,
+      Pension,
+      PensionAmount,
+      ChildSupport,
+      ChildSupportAmount,
+      Alimony,
+      AlimonyAmount,
+      OtherIncomeSource,
+      OtherIncomeAmount,
+      OtherIncomeSourceIdentify,
       DataCollectionStage,
       DateUpdated
     ),
@@ -546,6 +666,10 @@ read_income <- function(file) {
   ) |>
     # replace the integer codes with the plain-English description
     dplyr::mutate(
+      IncomeFromAnySource = lookup_codes(
+        var = IncomeFromAnySource,
+        codes = NoYesReasonsForMissingDataCodes
+      ),
       dplyr::across(
         .cols = !dplyr::ends_with(
           match = c(
@@ -555,11 +679,12 @@ read_income <- function(file) {
             "Identify",
             "DataCollectionStage",
             "DateUpdated",
+            "IncomeFromAnySource",
             "TotalMonthlyIncome"
           ),
           ignore.case = FALSE
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
@@ -598,8 +723,39 @@ read_benefits <- function(file) {
     file = file,
     # only read in columns needed for "BENEFITS" database table
     col_select = c(
-      IncomeBenefitsID:InformationDate,
-      BenefitsFromAnySource:OtherInsuranceIdentify,
+      IncomeBenefitsID,
+      EnrollmentID,
+      PersonalID,
+      InformationDate,
+      BenefitsFromAnySource,
+      SNAP,
+      WIC,
+      TANFChildCare,
+      TANFTransportation,
+      OtherTANF,
+      OtherBenefitsSource,
+      OtherBenefitsSourceIdentify,
+      InsuranceFromAnySource,
+      Medicaid,
+      NoMedicaidReason,
+      Medicare,
+      NoMedicareReason,
+      SCHIP,
+      NoSCHIPReason,
+      VHAServices,
+      NoVHAReason,
+      EmployerProvided,
+      NoEmployerProvidedReason,
+      COBRA,
+      NoCOBRAReason,
+      PrivatePay,
+      NoPrivatePayReason,
+      StateHealthIns,
+      NoStateHealthInsReason,
+      IndianHealthServices,
+      NoIndianHealthServicesReason,
+      OtherInsurance,
+      OtherInsuranceIdentify,
       DataCollectionStage,
       DateUpdated
     ),
@@ -618,6 +774,10 @@ read_benefits <- function(file) {
     # replace the integer codes with the plain-English description
     dplyr::mutate(
       dplyr::across(
+        .cols = dplyr::ends_with("AnySource"),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
+      ),
+      dplyr::across(
         .cols = dplyr::ends_with("Reason"),
         .fns = function(x) lookup_codes(var = x, codes = ReasonNotInsuredCodes)
       ),
@@ -626,6 +786,7 @@ read_benefits <- function(file) {
           match = c(
             "ID",
             "Date",
+            "AnySource",
             "Identify",
             "Reason",
             "DataCollectionStage",
@@ -633,7 +794,7 @@ read_benefits <- function(file) {
           ),
           ignore.case = FALSE
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
       ),
       DataCollectionStage = lookup_codes(
         var = DataCollectionStage,
@@ -672,10 +833,38 @@ read_enrollment <- function(file) {
     file = file,
     # only read in columns needed for "ENROLLMENT" database table
     col_select = c(
-      EnrollmentID:DisablingCondition,
+      EnrollmentID,
+      PersonalID,
+      ProjectID,
+      EntryDate,
+      HouseholdID,
+      RelationshipToHoH,
+      EnrollmentCoC,
+      LivingSituation,
+      LengthOfStay,
+      LOSUnderThreshold,
+      PreviousStreetESSH,
+      DateToStreetESSH,
+      TimesHomelessPastThreeYears,
+      MonthsHomelessPastThreeYears,
+      DisablingCondition,
       MoveInDate,
       ReferralSource,
-      RunawayYouth:IncarceratedParent,
+      RunawayYouth,
+      SexualOrientation,
+      SexualOrientationOther,
+      FormerWardChildWelfare,
+      ChildWelfareYears,
+      ChildWelfareMonths,
+      FormerWardJuvenileJustice,
+      JuvenileJusticeYears,
+      JuvenileJusticeMonths,
+      UnemploymentFam,
+      MentalHealthDisorderFam,
+      PhysicalDisabilityFam,
+      AlcoholDrugUseDisorderFam,
+      InsufficientIncome,
+      IncarceratedParent,
       DateUpdated
     ),
     # define schema types
@@ -722,19 +911,33 @@ read_enrollment <- function(file) {
         codes = SexualOrientationCodes
       ),
       dplyr::across(
-        .cols = c(ChildWelfareYears, JuvenileJusticeYears),
+        .cols = c(
+          ChildWelfareYears,
+          JuvenileJusticeYears
+        ),
         .fns = function(x) lookup_codes(var = x, codes = RHYNumberOfYearsCodes)
       ),
       dplyr::across(
         .cols = c(
-          LOSUnderThreshold:PreviousStreetESSH,
+          LOSUnderThreshold,
+          PreviousStreetESSH,
+          UnemploymentFam,
+          MentalHealthDisorderFam,
+          PhysicalDisabilityFam,
+          AlcoholDrugUseDisorderFam,
+          InsufficientIncome,
+          IncarceratedParent
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
+      ),
+      dplyr::across(
+        .cols = c(
           DisablingCondition,
           RunawayYouth,
           FormerWardChildWelfare,
-          FormerWardJuvenileJustice,
-          UnemploymentFam:IncarceratedParent
+          FormerWardJuvenileJustice
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
       )
     ) |>
     janitor::clean_names(case = "snake") |>
@@ -769,7 +972,10 @@ read_services <- function(file) {
     file = file,
     # only read in columns needed for "Services" database table
     col_select = c(
-      ServicesID:DateProvided,
+      ServicesID,
+      EnrollmentID,
+      PersonalID,
+      DateProvided,
       TypeProvided,
       ReferralOutcome,
       DateUpdated
@@ -790,7 +996,7 @@ read_services <- function(file) {
         codes = ServiceCodes
       ),
       ReferralOutcome = lookup_codes(
-        var = TypeProvided,
+        var = ReferralOutcome,
         codes = PATHReferralOutcomeCodes
       )
     ) |>
@@ -912,19 +1118,68 @@ read_organization <- function(file) {
 #' }
 read_exit <- function(file) {
 
+  # Handle column names inconsistencies in the HMIS database systems
+  file_colnames <- readr::read_csv(
+    file = file,
+    n_max = 0,
+    show_col_types = FALSE
+  ) |> colnames()
+
+  WorkplaceViolenceThreats <- intersect(
+    file_colnames,
+    c("WorkplaceViolenceThreats", "WorkPlaceViolenceThreats")
+  )
+
+  if (length(WorkplaceViolenceThreats) == 0)
+    rlang::abort("Error: No matching column names found for Workplace Violence Threats.")
+
+  WorkplacePromiseDifference <- intersect(
+    file_colnames,
+    c("WorkplacePromiseDifference", "WorkPlacePromiseDifference")
+  )
+
+  if (length(WorkplacePromiseDifference) == 0)
+    rlang::abort("Error: No matching column names found for Workplace Promise Difference.")
+
+  # Ingest file
   exit <- readr::read_csv(
     file = file,
     # only read in columns needed for "PROGRAM" database table
-    col_select = c(
-      ExitID,
-      EnrollmentID,
-      PersonalID,
-      ExitDate:OtherDestination,
-      ProjectCompletionStatus,
-      ExchangeForSex:PosCommunityConnections,
-      DateUpdated
+    col_select = dplyr::all_of(
+      c(
+        "ExitID",
+        "EnrollmentID",
+        "PersonalID",
+        "ExitDate",
+        "Destination",
+        "OtherDestination",
+        "ProjectCompletionStatus",
+        "ExchangeForSex",
+        "ExchangeForSexPastThreeMonths",
+        "CountOfExchangeForSex",
+        "AskedOrForcedToExchangeForSex",
+        "AskedOrForcedToExchangeForSexPastThreeMonths",
+        WorkplaceViolenceThreats,
+        WorkplacePromiseDifference,
+        "CoercedToContinueWork",
+        "LaborExploitPastThreeMonths",
+        "CounselingReceived",
+        "IndividualCounseling",
+        "FamilyCounseling",
+        "GroupCounseling",
+        "SessionCountAtExit",
+        "PostExitCounselingPlan",
+        "SessionsInPlan",
+        "DestinationSafeClient",
+        "DestinationSafeWorker",
+        "PosAdultConnections",
+        "PosPeerConnections",
+        "PosCommunityConnections",
+        "DateUpdated"
+      )
     ),
     # define schema types
+    # use !!object := readr::col_*() if object stores a column name
     col_types = readr::cols(
       .default = readr::col_integer(),
       ExitID = readr::col_character(),
@@ -946,21 +1201,42 @@ read_exit <- function(file) {
         codes = ProjectCompletionStatusCodes
       ),
       dplyr::across(
-        .cols = c(
-          ExchangeForSex,
-          ExchangeForSexPastThreeMonths,
-          AskedOrForcedToExchangeForSex:GroupCounseling,
-          PostExitCounselingPlan,
-          DestinationSafeClient
+        .cols = dplyr::all_of(
+          c(
+            "ExchangeForSex",
+            "ExchangeForSexPastThreeMonths",
+            "AskedOrForcedToExchangeForSex",
+            "AskedOrForcedToExchangeForSexPastThreeMonths",
+            WorkplaceViolenceThreats,
+            WorkplacePromiseDifference,
+            "CoercedToContinueWork",
+            "LaborExploitPastThreeMonths",
+            "DestinationSafeClient"
+          )
         ),
-        .fns = function(x) lookup_codes(var = x, codes = GeneralCodes)
+        .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
+      ),
+      dplyr::across(
+        .cols = c(
+          CounselingReceived,
+          IndividualCounseling,
+          FamilyCounseling,
+          GroupCounseling,
+          PostExitCounselingPlan
+        ),
+        .fns = function(x) lookup_codes(var = x, codes = NoYesMissingCodes)
       ),
       CountOfExchangeForSex = lookup_codes(
         var = CountOfExchangeForSex,
         codes = CountExchangeForSexCodes
       ),
       dplyr::across(
-        .cols = DestinationSafeWorker:PosCommunityConnections,
+        .cols = c(
+          DestinationSafeWorker,
+          PosAdultConnections,
+          PosPeerConnections,
+          PosCommunityConnections
+        ),
         .fns = function(x) lookup_codes(var = x, codes = WorkerResponseCodes)
       )
     ) |>
@@ -1022,7 +1298,9 @@ read_export <- function(file) {
       SourceContactFirst,
       SourceContactLast,
       SourceContactEmail,
-      ExportStartDate:SoftwareName
+      ExportStartDate,
+      ExportEndDate,
+      SoftwareName
     ),
     # define schema types
     col_types = readr::cols(
