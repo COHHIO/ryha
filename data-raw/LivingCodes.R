@@ -31,7 +31,7 @@ LivingCodes <- tibble::tribble(
   411L, "Owned by client, no ongoing housing subsidy", "Permanent",
   30L, "No exit interview completed", "Other",
   17L, "Other", "Other",
-  24, "Deceased", "Other",
+  24L, "Deceased", "Other",
   37L, "Worker unable to determine", "Other",
   8L, "Client doesn't know", "Other",
   9L, "Client prefers not to answer", "Other",

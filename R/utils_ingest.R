@@ -1127,7 +1127,7 @@ read_exit <- function(file) {
   )
 
   if (length(WorkplaceViolenceThreats) == 0)
-    stop("Error: No matching column names found for Workplace Violence Threats.")
+    rlang::abort("Error: No matching column names found for Workplace Violence Threats.")
 
   WorkplacePromiseDifference <- intersect(
     file_colnames,
@@ -1135,7 +1135,7 @@ read_exit <- function(file) {
   )
 
   if (length(WorkplacePromiseDifference) == 0)
-    stop("Error: No matching column names found for Workplace Promise Difference.")
+    rlang::abort("Error: No matching column names found for Workplace Promise Difference.")
 
   # Ingest file
   exit <- readr::read_csv(
