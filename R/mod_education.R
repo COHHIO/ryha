@@ -196,7 +196,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -246,7 +246,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -309,7 +309,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -327,7 +327,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -401,7 +401,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(school_status)
@@ -464,7 +464,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(school_status)
@@ -482,7 +482,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(school_status)
@@ -551,7 +551,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -578,7 +578,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )

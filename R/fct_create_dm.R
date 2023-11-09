@@ -79,11 +79,25 @@ create_dm <- function() {
   gender <- client_tbl |>
     dplyr::select(
       personal_id,
-      female:questioning,
+      woman,
+      man,
+      non_binary,
+      culturally_specific,
+      transgender,
+      questioning,
+      different_identity,
       organization_id
     ) |>
     tidyr::pivot_longer(
-      cols = female:questioning,
+      cols = c(
+        woman,
+        man,
+        non_binary,
+        culturally_specific,
+        transgender,
+        questioning,
+        different_identity
+      ),
       names_to = "gender",
       values_drop_na = TRUE
     ) |>
@@ -109,11 +123,25 @@ create_dm <- function() {
   ethnicity <- client_tbl |>
     dplyr::select(
       personal_id,
-      am_ind_ak_native:white, hispanic_latinaox,
+      am_ind_ak_native,
+      asian,
+      black_af_american,
+      hispanic_latinaeo,
+      mid_east_n_african,
+      white,
+      race_none,
       organization_id,
     ) |>
     tidyr::pivot_longer(
-      cols = am_ind_ak_native:hispanic_latinaox,
+      cols = c(
+        am_ind_ak_native,
+        asian,
+        black_af_american,
+        hispanic_latinaeo,
+        mid_east_n_african,
+        white,
+        race_none
+      ),
       names_to = "ethnicity",
       values_drop_na = TRUE
     ) |>

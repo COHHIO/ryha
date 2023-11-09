@@ -3,8 +3,8 @@
 ProjectCompletionStatusCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Completed project",
-  2L, "Youth voluntarily left early",
-  3L, "Youth was expelled or otherwise involuntarily discharged from project"
+  2L, "Client voluntarily left early",
+  3L, "Client was expelled or otherwise involuntarily discharged from project"
 )
 
 CountExchangeForSexCodes <- tibble::tribble(
@@ -13,8 +13,8 @@ CountExchangeForSexCodes <- tibble::tribble(
   2L, "4-7",
   3L, "8-11",
   4L, "12 or more",
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 

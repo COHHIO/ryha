@@ -6,7 +6,7 @@ SSNDataQualityCodes <- tibble::tribble(
   1L, "Full SSN reported",
   2L, "Approximate or partial SSN reported",
   8L, "Client doesn't know",
-  9L, "Client refused",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
@@ -16,7 +16,7 @@ DOBDataQualityCodes <- tibble::tribble(
   1L, "Full DOB reported",
   2L, "Approximate or partial DOB reported",
   8L, "Client doesn't know",
-  9L, "Client refused",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
