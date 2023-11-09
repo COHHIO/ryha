@@ -4,9 +4,9 @@
 RelationshipToHoHCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Self (head of household)",
-  2L, "Head of household’s child",
-  3L, "Head of household’s spouse or partner",
-  4L, "Head of household’s other relation member",
+  2L, "Head of household's child",
+  3L, "Head of household's spouse or partner",
+  4L, "Head of household's other relation member",
   5L, "Other: non-relation member",
   99L, "Data not collected"
 )
@@ -17,8 +17,8 @@ LengthOfStayCodes <- tibble::tribble(
   3L, "One month or more, but less than 90 days",
   4L, "90 days or more but less than one year",
   5L, "One year or longer",
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   10L, "One night or less",
   11L, "Two to six nights",
   99L, "Data not collected"
@@ -30,15 +30,15 @@ TimesHomelessPastThreeYearsCodes <- tibble::tribble(
   2L, "Two times",
   3L, "Three times",
   4L, "Four or more times",
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
 MonthsHomelessPastThreeYearsCodes <- tibble::tribble(
   ~Code, ~Description,
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   99L, "Data not collected",
   101L, "1 month",
   102L, "2 months",
@@ -69,8 +69,8 @@ ReferralSourceCodes <- tibble::tribble(
   37L, "Mental Hospital",
   38L, "School",
   39L, "Other Organization",
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
@@ -82,8 +82,8 @@ SexualOrientationCodes <- tibble::tribble(
   4L, "Bisexual",
   5L, "Questioning / unsure",
   6L, "Other",
-  8L, "Client doesn’t know",
-  9L, "Client refused",
+  8L, "Client doesn't know",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 

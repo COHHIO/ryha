@@ -67,14 +67,18 @@ client_tbl <- read_data_from_table(
       "am_ind_ak_native",
       "asian",
       "black_af_american",
+      "hispanic_latinaeo",
+      "mid_east_n_african",
       "native_hi_pacific",
       "white",
-      "hispanic_latinaox",
-      "female",
-      "male",
-      "no_single_gender",
+      "race_none",
+      "woman",
+      "man",
+      "non_binary",
+      "culturally_specific",
       "transgender",
       "questioning",
+      "different_identity",
       "veteran_status",
       "organization_id",
       "date_updated"
@@ -103,18 +107,25 @@ client_tbl <- read_data_from_table(
   gender <- client_tbl |>
     dplyr::select(
       personal_id,
-      female,
-      male,
-      no_single_gender,
+      woman,
+      man,
+      non_binary,
+      culturally_specific,
       transgender,
       questioning,
+      different_identity,
       organization_id
     ) |>
     tidyr::pivot_longer(
-      cols = c(female,
-               male,
-               no_single_gender,
-               questioning),
+      cols = c(
+        woman,
+        man,
+        non_binary,
+        culturally_specific,
+        transgender,
+        questioning,
+        different_identity
+      ),
       names_to = "gender",
       values_drop_na = TRUE
     ) |>
@@ -143,18 +154,24 @@ client_tbl <- read_data_from_table(
       am_ind_ak_native,
       asian,
       black_af_american,
+      hispanic_latinaeo,
+      mid_east_n_african,
       native_hi_pacific,
       white,
-      hispanic_latinaox,
+      race_none,
       organization_id,
     ) |>
     tidyr::pivot_longer(
-      cols = c(am_ind_ak_native,
-               asian,
-               black_af_american,
-               native_hi_pacific,
-               white,
-               hispanic_latinaox),
+      cols = c(
+        am_ind_ak_native,
+        asian,
+        black_af_american,
+        hispanic_latinaeo,
+        mid_east_n_african,
+        native_hi_pacific,
+        white,
+        race_none
+      ),
       names_to = "ethnicity",
       values_drop_na = TRUE
     ) |>
@@ -255,7 +272,7 @@ client_tbl <- read_data_from_table(
     table_name = "domestic_violence",
     column_names = c(
       "personal_id",
-      "domestic_violence_victim",
+      "domestic_violence_survivor",
       "when_occurred",
       "currently_fleeing",
       "data_collection_stage",
@@ -308,7 +325,7 @@ client_tbl <- read_data_from_table(
       "medicaid",
       "medicare",
       "schip",
-      "va_medical_services",
+      "vha_services",
       "employer_provided",
       "cobra",
       "private_pay",
@@ -344,7 +361,7 @@ client_tbl <- read_data_from_table(
       "exchange_for_sex",
       "count_of_exchange_for_sex",
       "asked_or_forced_to_exchange_for_sex",
-      "workplace_violence_threats",
+      "work_place_violence_threats",
       "workplace_promise_difference",
       "coerced_to_continue_work",
       "counseling_received",
