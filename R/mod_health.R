@@ -383,7 +383,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(general_health_status)
@@ -444,7 +444,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(general_health_status)
@@ -462,7 +462,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(general_health_status)
@@ -512,7 +512,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -545,7 +545,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(dental_health_status)
@@ -606,7 +606,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(dental_health_status)
@@ -624,7 +624,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(dental_health_status)
@@ -674,7 +674,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -707,7 +707,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(mental_health_status)
@@ -768,7 +768,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(mental_health_status)
@@ -786,7 +786,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(mental_health_status)
@@ -836,7 +836,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )

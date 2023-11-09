@@ -375,7 +375,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
         dplyr::filter(
           destination_safe_client %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
