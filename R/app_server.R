@@ -112,21 +112,26 @@ app_server <- function(input, output, session) {
   } else {
 
     # Hide filtering and navigation elements when there is no data available
-    shinyjs::hide("tab-overview_page")
-    shinyjs::hide("tab-disabilities_page")
-    shinyjs::hide("tab-employment_page")
-    shinyjs::hide("tab-education_page")
-    shinyjs::hide("tab-services_page")
-    shinyjs::hide("tab-health_page")
-    shinyjs::hide("tab-domestic_violence_page")
-    shinyjs::hide("tab-income_benefits_page")
-    shinyjs::hide("tab-trafficking_page")
-    shinyjs::hide("tab-living_situation_page")
-    shinyjs::hide("tab-parenting_page")
-    shinyjs::hide("tab-exit_page")
-    shinyjs::hide("tab-help_page")
-    shinyjs::hide("controlbar-toggle")
 
+    # List ids of elements to hide
+    c(
+      "tab-overview_page",
+      "tab-disabilities_page",
+      "tab-employment_page",
+      "tab-education_page",
+      "tab-services_page",
+      "tab-health_page",
+      "tab-domestic_violence_page",
+      "tab-income_benefits_page",
+      "tab-trafficking_page",
+      "tab-living_situation_page",
+      "tab-parenting_page",
+      "tab-exit_page",
+      "tab-help_page",
+      "controlbar-toggle"
+    ) |>
+      # Hide elements
+      purrr::map(function(id) shinyjs::hide(id))
   }
 
   # Upload module should always be present, regardless of data availability
