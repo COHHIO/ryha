@@ -13,6 +13,3 @@ CREATE TABLE IF NOT EXISTS public.project
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.project
-    OWNER to cohhiodbadmin;

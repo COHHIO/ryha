@@ -43,6 +43,3 @@ CREATE TABLE IF NOT EXISTS public.benefits
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.benefits
-    OWNER to cohhiodbadmin;

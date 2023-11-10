@@ -17,6 +17,3 @@ CREATE TABLE IF NOT EXISTS public.domestic_violence
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.domestic_violence
-    OWNER to cohhiodbadmin;

@@ -15,6 +15,3 @@ CREATE TABLE IF NOT EXISTS public.living
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.living
-    OWNER to cohhiodbadmin;
