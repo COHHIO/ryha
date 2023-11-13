@@ -36,3 +36,11 @@ smaller screen widths */
 .progress-bar {
   color: transparent !important;
 }
+
+/* Apply vertical center to images */
+.vertical-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
