@@ -47,5 +47,6 @@ smaller screen widths */
 
 /* Add style to welcome page boxes */
 .welcome-box .card-body {
-  text-align: justify
+  text-align: justify;
+  padding: .75rem 1.25rem;
 }
