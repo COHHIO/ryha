@@ -66,14 +66,40 @@ mod_welcome_ui <- function(id){
         bs4Dash::box(
           title = "Program Development",
           width = 12,
-          status = "info"
+          status = "info",
+          style = "text-align: justify",
 
+          shiny::HTML(
+            "As part of ODH's youth homelessness grant program, <strong>COHHIO</strong>
+            was contracted to assist the department in program development using
+            data-driven approaches.
+
+            <br><br>
+
+            <strong>COHHIO</strong> supported the department in establishing
+            data collection requirements and providing technical assistance
+            to sub-recipients to standardize data collection across the program.
+
+            <br><br>
+
+            This was best accomplished using the <strong>Housing and Urban
+            Development</strong> (HUD)-required <strong>Homeless Management
+            Information System</strong> (HMIS).
+
+            <br><br>
+
+
+            In 2022, <strong>COHHIO</strong> entered into a contract with
+            <a href='https://www.ketchbrookanalytics.com'>Ketchbrook Analytics</a>
+            to assist by analyzing large volumes of data from sub-grantees
+            and quantifying trends across data sets.
+            "
+          )
         )
+
       )
 
     )
-
-
 
   )
 
