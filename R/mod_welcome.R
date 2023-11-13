@@ -12,10 +12,7 @@ mod_welcome_ui <- function(id){
   tagList(
 
     bs4Dash::box(
-      title = shiny::h1(
-        shiny::span("Welcome to the"),
-        shiny::span(shiny::em("Youth Homelessness Data Dashboard"))
-      ),
+      title = shiny::HTML("<h1>Welcome to the <em>Youth Homelessness Data Dashboard</em></h1>"),
       width = 12,
       status = "primary",
       collapsible = FALSE,
