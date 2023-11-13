@@ -43,7 +43,40 @@ mod_welcome_ui <- function(id){
 
       )
 
+    ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = "Partnership",
+          width = 12,
+          status = "info"
+        ),
+
+        bs4Dash::box(
+          title = "Contact & Help",
+          width = 12,
+          status = "info"
+        )
+      ),
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = "Program Development",
+          width = 12,
+          status = "info"
+
+        )
+      )
+
     )
+
+
 
   )
 
