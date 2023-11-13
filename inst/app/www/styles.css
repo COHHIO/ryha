@@ -49,4 +49,10 @@ smaller screen widths */
 .welcome-box .card-body {
   text-align: justify;
   padding: .75rem 1.25rem;
+  font-size: 1.25rem;
 }
+
+.welcome-box .card-title {
+  font-size: 1.5rem;
+}
+
