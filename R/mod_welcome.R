@@ -67,7 +67,21 @@ mod_welcome_ui <- function(id){
         bs4Dash::box(
           title = "Contact & Help",
           width = 12,
-          status = "info"
+          status = "info",
+          style = "text-align: justify",
+
+          shiny::HTML(
+            "This app utilizes the HMIS CSV to provide information on the ODH
+            program. If you have any questions about the app, please email
+            Amanda Wilson, Youth Housing Initiative Director at COHHIO, at
+            <a href='mailto:amandawilson@cohhio.org'>amandawilson@cohhio.org</a>
+
+            <br><br>
+
+            Please see the <a href='#tab-help_page'>Help</a> page on the left-hand
+            sidebar menu for more information on how to navigate the app.
+            "
+          )
         )
       ),
 
