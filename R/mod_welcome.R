@@ -51,6 +51,7 @@ mod_welcome_ui <- function(id){
           title = "Partnership",
           width = 12,
           status = "info",
+          collapsible = FALSE,
 
           shiny::HTML(
             "This app is the result of a partnership between:
@@ -68,6 +69,7 @@ mod_welcome_ui <- function(id){
           title = "Contact & Help",
           width = 12,
           status = "info",
+          collapsible = FALSE,
 
           shiny::HTML(
             "This app utilizes the HMIS CSV to provide information on the ODH
@@ -92,6 +94,7 @@ mod_welcome_ui <- function(id){
           title = "Program Development",
           width = 12,
           status = "info",
+          collapsible = FALSE,
 
           shiny::HTML(
             "As part of ODH's youth homelessness grant program, <strong>COHHIO</strong>
