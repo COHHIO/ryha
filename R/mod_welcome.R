@@ -11,8 +11,17 @@ mod_welcome_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    # Add vertical-centered logos
-    shiny::fluidRow(
+    bs4Dash::box(
+      title = shiny::h1(
+        shiny::span("Welcome to the"),
+        shiny::span(shiny::em("Youth Homelessness Data Dashboard"))
+      ),
+      width = 12,
+      status = "primary",
+      collapsible = FALSE,
+
+      # Add vertical-centered logos
+      shiny::fluidRow(
 
         shiny::column(
           width = 3,
@@ -21,8 +30,8 @@ mod_welcome_ui <- function(id){
           shiny::tagAppendAttributes(class = "vertical-center"),
 
         shiny::column(
-            width = 6,
-            shiny::img(src = "www/cohhio_logo.png", width = "100%")
+          width = 6,
+          shiny::img(src = "www/cohhio_logo.png", width = "100%")
         ) |>
           shiny::tagAppendAttributes(class = "vertical-center"),
 
@@ -35,6 +44,8 @@ mod_welcome_ui <- function(id){
       )
 
     )
+
+  )
 
 }
 
