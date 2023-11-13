@@ -51,7 +51,6 @@ mod_welcome_ui <- function(id){
           title = "Partnership",
           width = 12,
           status = "info",
-          style = "text-align: justify",
 
           shiny::HTML(
             "This app is the result of a partnership between:
@@ -62,13 +61,13 @@ mod_welcome_ui <- function(id){
             </ul>
             "
           )
-        ),
+        ) |>
+          shiny::tagAppendAttributes(class = "welcome-box"),
 
         bs4Dash::box(
           title = "Contact & Help",
           width = 12,
           status = "info",
-          style = "text-align: justify",
 
           shiny::HTML(
             "This app utilizes the HMIS CSV to provide information on the ODH
@@ -82,7 +81,8 @@ mod_welcome_ui <- function(id){
             sidebar menu for more information on how to navigate the app.
             "
           )
-        )
+        ) |>
+          shiny::tagAppendAttributes(class = "welcome-box")
       ),
 
       shiny::column(
@@ -92,7 +92,6 @@ mod_welcome_ui <- function(id){
           title = "Program Development",
           width = 12,
           status = "info",
-          style = "text-align: justify",
 
           shiny::HTML(
             "As part of ODH's youth homelessness grant program, <strong>COHHIO</strong>
@@ -120,7 +119,8 @@ mod_welcome_ui <- function(id){
             and quantifying trends across data sets.
             "
           )
-        )
+        ) |>
+          shiny::tagAppendAttributes(class = "welcome-box")
 
       )
 
