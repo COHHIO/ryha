@@ -50,7 +50,18 @@ mod_welcome_ui <- function(id){
         bs4Dash::box(
           title = "Partnership",
           width = 12,
-          status = "info"
+          status = "info",
+          style = "text-align: justify",
+
+          shiny::HTML(
+            "This app is the result of a partnership between:
+            <ul>
+              <li> the <a href='https://odh.ohio.gov/'>Ohio Department of Health (ODH)</a>,
+              <li> the <a href='https://cohhio.org/'>Coalition on Homelessness and Housing in Ohio (COHHIO)</a> and
+              <li> <a href='https://www.ketchbrookanalytics.com'>Ketchbrook Analytics</a>
+            </ul>
+            "
+          )
         ),
 
         bs4Dash::box(
