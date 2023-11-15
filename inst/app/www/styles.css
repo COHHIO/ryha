@@ -46,13 +46,13 @@ smaller screen widths */
 }
 
 /* Add style to welcome page boxes */
-.welcome-box .card-body {
+.custom-box .card-body {
   text-align: justify;
   padding: .75rem 1.25rem;
   font-size: 1.25rem;
 }
 
-.welcome-box .card-title {
+.custom-box .card-title {
   font-size: 1.5rem;
 }
 

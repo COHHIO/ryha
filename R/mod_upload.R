@@ -34,7 +34,7 @@ mod_upload_ui <- function(id){
             "
           )
         ) |>
-          shiny::tagAppendAttributes(class = "welcome-box"),
+          shiny::tagAppendAttributes(class = "custom-box"),
 
         shiny::hr(),
 
@@ -72,7 +72,7 @@ mod_upload_ui <- function(id){
           )
 
         ) |>
-          shiny::tagAppendAttributes(class = "welcome-box"),
+          shiny::tagAppendAttributes(class = "custom-box"),
 
         shiny::column(
           width = 12,

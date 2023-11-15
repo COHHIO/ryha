@@ -63,7 +63,7 @@ mod_welcome_ui <- function(id){
             "
           )
         ) |>
-          shiny::tagAppendAttributes(class = "welcome-box"),
+          shiny::tagAppendAttributes(class = "custom-box"),
 
         bs4Dash::box(
           title = "Contact & Help",
@@ -84,7 +84,7 @@ mod_welcome_ui <- function(id){
             "
           )
         ) |>
-          shiny::tagAppendAttributes(class = "welcome-box")
+          shiny::tagAppendAttributes(class = "custom-box")
       ),
 
       shiny::column(
@@ -123,7 +123,7 @@ mod_welcome_ui <- function(id){
             "
           )
         ) |>
-          shiny::tagAppendAttributes(class = "welcome-box")
+          shiny::tagAppendAttributes(class = "custom-box")
 
       )
 
