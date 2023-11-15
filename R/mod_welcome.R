@@ -50,7 +50,7 @@ mod_welcome_ui <- function(id){
         bs4Dash::box(
           title = "Partnership",
           width = 12,
-          status = "info",
+          status = "primary",
           collapsible = FALSE,
 
           shiny::HTML(
@@ -68,7 +68,7 @@ mod_welcome_ui <- function(id){
         bs4Dash::box(
           title = "Contact & Help",
           width = 12,
-          status = "info",
+          status = "primary",
           collapsible = FALSE,
 
           shiny::HTML(
@@ -93,7 +93,7 @@ mod_welcome_ui <- function(id){
         bs4Dash::box(
           title = "Program Development",
           width = 12,
-          status = "info",
+          status = "primary",
           collapsible = FALSE,
 
           shiny::HTML(
