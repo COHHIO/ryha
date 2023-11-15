@@ -79,7 +79,7 @@ mod_welcome_ui <- function(id){
 
             <br><br>
 
-            Please see the <a href='#tab-help_page'>Help</a> page on the left-hand
+            Please see the <a href='#' id='to-help-tab'>Help</a> page on the left-hand
             sidebar menu for more information on how to navigate the app.
             "
           )
