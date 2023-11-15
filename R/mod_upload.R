@@ -61,10 +61,12 @@ mod_upload_ui <- function(id){
                 width = "100%"
               ),
 
-              shiny::actionButton(
+              shinyWidgets::actionBttn(
                 inputId = ns("upload_btn"),
                 label = "Upload",
-                width = "100%"
+                color = "success",
+                block = TRUE,
+                style = "material-flat"
               )
 
             )
