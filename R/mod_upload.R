@@ -26,9 +26,9 @@ mod_upload_ui <- function(id){
           shiny::HTML(
             "
             <ol>
-              <li> Click the \"Browse...\" button and open the HMIS export .zip file on your local computer
+              <li> Click the <strong>Browse...</strong> button and open the HMIS export .zip file on your local computer
               <li> Enter the password needed to upload the .zip file to the app database
-              <li> If the correct password has been entered, the \"Upload\" button will be enabled. Click the button to upload the file
+              <li> If the correct password has been entered, the <strong>Upload</strong> button will be enabled. Click the button to upload the file
             </ol>
             If you encounter an error screen during the process, please copy and paste the error and email <a href='mailto:amandawilson@cohhio.org'>amandawilson@cohhio.org</a>
             "
