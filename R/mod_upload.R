@@ -38,51 +38,39 @@ mod_upload_ui <- function(id){
 
         shiny::hr(),
 
+        shiny::div(
+          align = "center",
 
-        bs4Dash::box(
-          width = 12,
-          collapsible = FALSE,
+          bs4Dash::box(
+            width = 6,
+            collapsible = FALSE,
 
-          shiny::fluidRow(
-
-            shiny::column(
-              width = 6,
+            shiny::fluidRow(
 
               shiny::fileInput(
                 inputId = ns("choose_zip"),
                 label = "Choose HMIS .Zip File",
                 accept = ".zip",
                 width = "100%"
-              )
-
-            ),
-
-            shiny::column(
-              width = 6,
+              ),
 
               shiny::passwordInput(
                 inputId = ns("upload_pwd"),
                 label = "Enter Upload Password",
                 placeholder = "Enter Password...",
                 width = "100%"
+              ),
+
+              shiny::actionButton(
+                inputId = ns("upload_btn"),
+                label = "Upload",
+                width = "100%"
               )
 
             )
 
-          )
-
-        ) |>
-          shiny::tagAppendAttributes(class = "custom-box"),
-
-        shiny::column(
-          width = 12,
-
-          shiny::actionButton(
-            inputId = ns("upload_btn"),
-            label = "Upload",
-            width = "100%"
-          )
-
+          ) |>
+            shiny::tagAppendAttributes(class = "custom-box")
         )
 
       )
