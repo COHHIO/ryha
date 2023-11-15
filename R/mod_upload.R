@@ -14,46 +14,75 @@ mod_upload_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 12,
+        width = 8,
+        offset = 2,
 
-        shiny::h2("Instructions for Uploading:"),
+        bs4Dash::box(
+          width = 12,
+          title = "Instructions for Uploading:",
+          collapsible = FALSE,
+          status = "primary",
 
-        shiny::br(),
-
-        shiny::tags$ol(
-          shiny::tags$li(
-            "Click the \"Browse...\" button and open the HMIS export .zip file on your local computer"
-          ),
-          shiny::tags$li(
-            "Enter the password needed to upload the .zip file to the app database"
-          ),
-          shiny::tags$li(
-            "If the correct password has been entered, the \"Upload\" button will be enabled. Click the button to upload the file"
-          ),
-          shiny::tags$li(
-            "If you encounter an error screen during the upload process, please copy and paste the error and email amandawilson@cohhio.org"
+          shiny::HTML(
+            "
+            <ol>
+              <li> Click the \"Browse...\" button and open the HMIS export .zip file on your local computer
+              <li> Enter the password needed to upload the .zip file to the app database
+              <li> If the correct password has been entered, the \"Upload\" button will be enabled. Click the button to upload the file
+            </ol>
+            If you encounter an error screen during the process, please copy and paste the error and email <a href='mailto:amandawilson@cohhio.org'>amandawilson@cohhio.org</a>
+            "
           )
-        ),
+        ) |>
+          shiny::tagAppendAttributes(class = "welcome-box"),
 
         shiny::hr(),
 
-        shiny::fileInput(
-          inputId = ns("choose_zip"),
-          label = "Choose HMIS .Zip File",
-          accept = ".zip",
-          width = "50%"
-        ),
 
-        shiny::passwordInput(
-          inputId = ns("upload_pwd"),
-          label = "Enter Upload Password",
-          placeholder = "password",
-          width = "40%"
-        ),
+        bs4Dash::box(
+          width = 12,
+          collapsible = FALSE,
 
-        shiny::actionButton(
-          inputId = ns("upload_btn"),
-          label = "Upload"
+          shiny::fluidRow(
+
+            shiny::column(
+              width = 6,
+
+              shiny::fileInput(
+                inputId = ns("choose_zip"),
+                label = "Choose HMIS .Zip File",
+                accept = ".zip",
+                width = "100%"
+              )
+
+            ),
+
+            shiny::column(
+              width = 6,
+
+              shiny::passwordInput(
+                inputId = ns("upload_pwd"),
+                label = "Enter Upload Password",
+                placeholder = "Enter Password...",
+                width = "100%"
+              )
+
+            )
+
+          )
+
+        ) |>
+          shiny::tagAppendAttributes(class = "welcome-box"),
+
+        shiny::column(
+          width = 12,
+
+          shiny::actionButton(
+            inputId = ns("upload_btn"),
+            label = "Upload",
+            width = "100%"
+          )
+
         )
 
       )
