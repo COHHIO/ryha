@@ -67,7 +67,8 @@ mod_upload_ui <- function(id){
                 color = "success",
                 block = TRUE,
                 style = "material-flat"
-              )
+              ) |>
+                shiny::tagAppendAttributes(style = "margin-top: 2rem")
 
             )
 
