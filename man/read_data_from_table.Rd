@@ -2,29 +2,32 @@
 % Please edit documentation in R/fct_create_dm.R
 \name{read_data_from_table}
 \alias{read_data_from_table}
-\title{Read data from table}
+\title{Read specific columns from database table}
 \usage{
 read_data_from_table(connection, table_name, column_names)
 }
 \arguments{
-\item{connection}{A DBI database connection object.}
+\item{connection}{A DBI database connection object}
 
-\item{table_name}{The name of the SQL table from which to read the data.}
+\item{table_name}{The name of the SQL table from which to read the data}
 
 \item{column_names}{A character vector specifying the column names to read
-from the table.}
+from the table}
 }
 \value{
 A data frame containing the requested data from the specified columns
-in the table.
+in the table
 }
 \description{
-\code{read_data_from_table()} reads specific data from a SQL table based on
-provided column names.
+\code{read_data_from_table()} provides an expedited way to query a select,
+user-specified set of columns from a SQL database table.
 }
 \examples{
 # Establish connection to PostgreSQL database
 con <- connect_to_db()
+
+# Query only the "project_name" and "project_id" columns from the 'project'
+# database table
 read_data_from_table(
   connection = con,
   table_name = "project",
