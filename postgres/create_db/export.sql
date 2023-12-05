@@ -15,6 +15,3 @@ CREATE TABLE IF NOT EXISTS public.export
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.export
-    OWNER to cohhiodbadmin;

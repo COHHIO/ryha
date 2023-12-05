@@ -16,6 +16,3 @@ CREATE TABLE IF NOT EXISTS public.education
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.education
-    OWNER to cohhiodbadmin;

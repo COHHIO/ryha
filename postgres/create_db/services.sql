@@ -15,6 +15,3 @@ CREATE TABLE IF NOT EXISTS public.services
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.services
-    OWNER to cohhiodbadmin;

@@ -47,6 +47,3 @@ CREATE TABLE IF NOT EXISTS public.income
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.income
-    OWNER to cohhiodbadmin;
