@@ -46,7 +46,7 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "welcome_page",
-            shiny::includeMarkdown( app_sys("app/www/welcome_text.md") )
+            mod_welcome_ui("welcome_1")
           ),
 
           bs4Dash::tabItem(

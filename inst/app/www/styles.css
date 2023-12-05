@@ -36,3 +36,22 @@ smaller screen widths */
 .progress-bar {
   color: transparent !important;
 }
+
+/* Apply vertical center to images */
+.vertical-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+/* Add style to welcome page boxes */
+.custom-box .card-body {
+  text-align: justify;
+  padding: .75rem 1.25rem;
+}
+
+.custom-box .card-title {
+  font-size: 1.5rem;
+}
+
