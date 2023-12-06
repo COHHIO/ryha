@@ -6,3 +6,10 @@ $(document).ready(function() {
     Shiny.setInputValue('to_help', Math.random());
   });
 });
+
+// Resize window on box maximize to properly display charts
+$(document).ready(function() {
+  $('.btn-tool[data-card-widget="maximize"]').click(function() {
+    window.dispatchEvent(new Event('resize'));
+  });
+});
