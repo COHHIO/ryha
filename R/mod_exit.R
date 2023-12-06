@@ -54,10 +54,11 @@ mod_exit_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Project Completion Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("completion_pie_chart"),
-                    height = "350px"
+                    height = "100%"
                   )
                 )
 
@@ -94,10 +95,11 @@ mod_exit_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Safe & Appropriate Exit Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("exit_heatmap"),
-                    height = "350px"
+                    height = "100%"
                   )
                 )
 

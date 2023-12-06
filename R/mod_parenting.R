@@ -54,9 +54,11 @@ mod_parenting_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Pregnancy Status",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("pregnancy_pie_chart")
+            outputId = ns("pregnancy_pie_chart"),
+            height = "100%"
           )
         )
 

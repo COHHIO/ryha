@@ -21,10 +21,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Gender",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("gender_pie_chart"),
-            height = "400px"
+            height = "100%"
           )
         )
 
@@ -38,10 +39,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Sexual Orientation",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("sexual_orientation_pie_chart"),
-            height = "400px"
+            height = "100%"
           )
         )
 
@@ -59,10 +61,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Veteran Status",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("veteran_pie_chart"),
-            height = "400px"
+            height = "100%"
           )
         )
 
@@ -76,10 +79,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Race & Ethnicity",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("ethnicity_bar_chart"),
-            height = "400px"
+            height = "100%"
           )
         )
 
@@ -97,10 +101,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Age",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("age_bar_chart"),
-            height = "400px"
+            height = "100%"
           )
         )
 
@@ -119,10 +124,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Former Ward Child Welfare Response",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("welfare_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -136,10 +142,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Former Ward Juvenile Justice Response",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("juvenile_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 

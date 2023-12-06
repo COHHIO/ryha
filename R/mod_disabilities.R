@@ -56,10 +56,11 @@ mod_disabilities_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth with Disabilities by Type",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("disabilities_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -71,10 +72,11 @@ mod_disabilities_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth with Substance Use by Type",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("substance_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 

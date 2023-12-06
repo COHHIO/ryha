@@ -65,10 +65,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by General Health Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("general_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -122,10 +123,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Dental Health Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("dental_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -178,10 +180,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Mental Health Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("mental_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -235,10 +238,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Counseling Received Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("counseling_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 

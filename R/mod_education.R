@@ -54,10 +54,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Last Grade Completed",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("last_grade_completed_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -109,10 +110,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by School Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("school_status_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
