@@ -95,6 +95,7 @@ mod_disabilities_ui <- function(id){
           title = "Changes in Disability Status (Entry --> Exit)",
           type = "tabs",
           side = "right",
+          height = DEFAULT_BOX_HEIGHT,
           width = NULL,
           maximizable = TRUE,
 
@@ -102,7 +103,7 @@ mod_disabilities_ui <- function(id){
             title = "Physical",
             echarts4r::echarts4rOutput(
               outputId = ns("physical_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -110,7 +111,7 @@ mod_disabilities_ui <- function(id){
             title = "Developmental",
             echarts4r::echarts4rOutput(
               outputId = ns("developmental_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -118,7 +119,7 @@ mod_disabilities_ui <- function(id){
             title = "Chronic",
             echarts4r::echarts4rOutput(
               outputId = ns("chronic_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -126,7 +127,7 @@ mod_disabilities_ui <- function(id){
             title = "HIV/AIDS",
             echarts4r::echarts4rOutput(
               outputId = ns("hiv_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -134,7 +135,7 @@ mod_disabilities_ui <- function(id){
             title = "Mental",
             echarts4r::echarts4rOutput(
               outputId = ns("mental_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -142,11 +143,12 @@ mod_disabilities_ui <- function(id){
             title = "Substance Use",
             echarts4r::echarts4rOutput(
               outputId = ns("substance_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           )
 
-        )
+        ) |>
+          shiny::tagAppendAttributes(id = "disability-tabset")
 
       )
 

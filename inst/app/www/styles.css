@@ -55,3 +55,16 @@ smaller screen widths */
   font-size: 1.5rem;
 }
 
+/* Set height for elements in disability-tabset (default view)*/
+#disability-tabset .card-body,
+#disability-tabset .tab-content,
+#disability-tabset .tab-pane.active {
+    height: 440px;
+}
+
+/* Set height for elements in disability-tabset (maximized view)*/
+#disability-tabset .maximized-card .card-body,
+#disability-tabset .maximized-card .tab-content,
+#disability-tabset .maximized-card .tab-pane.active {
+    height: 100%;
+}
