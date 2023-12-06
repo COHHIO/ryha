@@ -98,10 +98,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in General Health Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("general_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -155,10 +156,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Dental Health Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("dental_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -213,10 +215,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Mental Health Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("mental_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 

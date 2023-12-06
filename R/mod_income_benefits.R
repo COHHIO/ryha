@@ -188,10 +188,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("benefits_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -267,10 +268,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("insurance_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 

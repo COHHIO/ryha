@@ -78,10 +78,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "Changes in General Living Situation (Entry --> Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("sankey_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 

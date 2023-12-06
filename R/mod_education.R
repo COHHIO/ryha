@@ -87,10 +87,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Last Grade Completed (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("last_grade_completed_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -143,10 +144,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in School Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("school_status_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
