@@ -7,7 +7,17 @@
 check_file_names(dir)
 }
 \arguments{
-\item{dir}{}
+\item{dir}{The directory path containing the extracted files from the
+uploaded .zip file.}
+}
+\value{
+A list with two elements:
+\itemize{
+  \item \code{valid}: A logical value indicating whether all expected files
+  are present in the uploaded directory.
+  \item \code{missing_file_names}: A character vector containing the names of
+  files that are expected but missing in the uploaded directory.
+}
 }
 \description{
 Ensure All HMIS Data was Uploaded
