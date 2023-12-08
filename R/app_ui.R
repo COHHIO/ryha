@@ -116,7 +116,20 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "help_page",
-            shiny::includeMarkdown( app_sys("app/www/help_text.md") )
+
+            shiny::fluidRow(
+              shiny::column(width = 2),
+
+              shiny::column(
+                width = 8,
+                shiny::includeMarkdown( app_sys("app/www/help_text.md") )
+              ) |>
+                shiny::tagAppendAttributes(class = "help-page-content"),
+
+              shiny::column(width = 2)
+
+            )
+
           )
 
         )
