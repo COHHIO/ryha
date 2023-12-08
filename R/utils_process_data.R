@@ -54,9 +54,9 @@ process_data <- function(file) {
   if (!check$valid) {
 
     glue::glue(
-      "The following expected file(s) are missing from the .zip upload:",
-      paste(check$missing_file_names, collapse = ", "),
-      .sep = "\n"
+      "The selected <strong>.zip</strong> is missing the following expected <strong>.csv</strong> file(s):",
+      paste("-", check$missing_file_names, collapse = ",<br>"),
+      .sep = "<br>"
     ) |>
     rlang::abort()
 
