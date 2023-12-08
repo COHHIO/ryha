@@ -147,9 +147,10 @@ mod_upload_server <- function(id){
           shiny::modalDialog(
             title = "There was an issue with the upload",
             data$error$message,
-            shiny::br(),
-            "Failed during stage: `prep_tables()`"
+            shiny::br(), shiny::br(),
+            shiny::em("Failed during stage: `prep_tables()`")
           ) |>
+            shiny::tagAppendAttributes(class = "error-modal") |>
             shiny::showModal()
 
         } else {
@@ -162,9 +163,10 @@ mod_upload_server <- function(id){
             shiny::modalDialog(
               title = "There was an issue with the upload",
               out$error$message,
-              shiny::br(),
-              "Failed during stage: `delete_from_db()`"
+              shiny::br(), shiny::br(),
+              shiny::em("Failed during stage: `delete_from_db()`")
             ) |>
+              shiny::tagAppendAttributes(class = "error-modal") |>
               shiny::showModal()
 
           } else {
@@ -180,9 +182,10 @@ mod_upload_server <- function(id){
               shiny::modalDialog(
                 title = "There was an issue with the upload",
                 out$error$message,
-                shiny::br(),
-                "Failed during stage: `send_to_db()`"
+                shiny::br(), shiny::br(),
+                shiny::em("Failed during stage: `send_to_db()`")
               ) |>
+                shiny::tagAppendAttributes(class = "error-modal") |>
                 shiny::showModal()
 
             } else {
