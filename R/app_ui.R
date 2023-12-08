@@ -13,6 +13,8 @@ app_ui <- function(request) {
     # Your application UI logic
     bs4Dash::dashboardPage(
 
+      help = NULL,
+
       header = bs4Dash::dashboardHeader(
         title = bs4Dash::dashboardBrand(
           title = "Youth Data Dashboard",
