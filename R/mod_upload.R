@@ -130,10 +130,11 @@ mod_upload_server <- function(id){
 
         shiny::modalDialog(
           title = "There was an issue with the upload",
-          data$error$message,
-          shiny::br(),
-          "Failed during stage: `process_data()`"
+          shiny::HTML(data$error$message),
+          shiny::br(), shiny::br(),
+          shiny::em("Failed during stage: `process_data()`")
         ) |>
+          shiny::tagAppendAttributes(class = "error-modal") |>
           shiny::showModal()
 
       } else {
