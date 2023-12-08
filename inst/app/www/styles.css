@@ -55,3 +55,8 @@ smaller screen widths */
   font-size: 1.5rem;
 }
 
+/* Add custom style to error modal */
+.error-modal .modal-header {
+  background-color: red;
+  color: white;
+}
