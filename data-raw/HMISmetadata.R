@@ -14,8 +14,12 @@ HMISmetadata <- tibble::tribble(
   "Disabilities.csv", "Y",
   "EmploymentEducation.csv", "Y",
   "Enrollment.csv", "Y",
+<<<<<<< HEAD
   "EnrollmentCoC.csv", "N",
   "Event.csv", "N",
+=======
+  "Event.csv", "Y",
+>>>>>>> v1.0.0
   "Exit.csv", "Y",
   "Export.csv", "Y",
   "Funder.csv", "N",

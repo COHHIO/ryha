@@ -23,7 +23,7 @@ ServiceCodes <- tibble::tribble(
   18L, "Substance Use disorder Ed/Prevention"
 )
 
-#based on 'HMIS CSV FORMAT Specifications FY2022 – May 2021' guide pdf file, I had
+#based on 'HMIS CSV FORMAT Specifications FY2022 - May 2021' guide pdf file, I had
 #followed Services.csv informaiton in page 29 and followed 'record type" = 142
 
 # Type provided information R14.2 RHYServices (page 49) in Data Dictionary
