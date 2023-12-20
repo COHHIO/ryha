@@ -68,3 +68,15 @@ smaller screen widths */
 #disability-tabset .maximized-card .tab-pane.active {
     height: 100%;
 }
+
+/* Add custom style to error modal */
+.error-modal .modal-header {
+  background-color: red;
+  color: white;
+}
+
+/* Add style to help page */
+.help-page-content {
+  background-color: white;
+  text-align: justify;
+}

@@ -208,7 +208,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -219,7 +219,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       bs4Dash::bs4ValueBox(
         value = n_youth_with_living_data(),
         subtitle = "Total # of Youth with Living Situation Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("bed")
       )
 
     })

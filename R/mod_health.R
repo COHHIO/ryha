@@ -347,7 +347,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -358,7 +358,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       bs4Dash::bs4ValueBox(
         value = n_youth_with_health_data(),
         subtitle = "Total # of Youth with Health Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("stethoscope")
       )
 
     })
@@ -369,7 +369,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       bs4Dash::bs4ValueBox(
         value = n_youth_with_counseling_data(),
         subtitle = "Total # of Youth with Counseling Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("stethoscope")
       )
 
     })

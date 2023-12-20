@@ -91,16 +91,11 @@ mod_upload_server <- function(id){
     ns <- session$ns
 
     # Create the {waiter} loading screen
-    w <- waiter::Waiter$new(
-      html = shiny::tagList(
-        waiter::spin_fading_circles(),
-        "Please Wait..."
-      )
-    )
+    w <- waiter::Waiter$new()
 
     shiny::observe({
 
-      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD")) {
+      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD") || is.null(input$choose_zip$datapath)) {
 
         shinyjs::disable(id = "upload_btn")
 
@@ -117,26 +112,37 @@ mod_upload_server <- function(id){
 
       shiny::req(input$choose_zip$datapath)
 
+      # Initialize the waiter
       w$show()
+
+      # Update waiter message
+      w$update(spinner_message("Step 1/5: Connecting to database..."))
 
       # Establish connection to PostgreSQL database
       con <- connect_to_db()
 
       Sys.sleep(0.5)
 
+      # Update waiter message
+      w$update(spinner_message("Step 2/5: Processing data..."))
+
       data <- process_data_safely(file = input$choose_zip$datapath)
 
       if (!is.null(data$error)) {
 
         shiny::modalDialog(
-          title = "There was an issue with the upload",
-          data$error$message,
-          shiny::br(),
-          "Failed during stage: `process_data()`"
+          title = "Upload Failed",
+          shiny::HTML(data$error$message),
+          shiny::br(), shiny::br(),
+          shiny::em("Failed during stage: `process_data()`")
         ) |>
+          shiny::tagAppendAttributes(class = "error-modal") |>
           shiny::showModal()
 
       } else {
+
+        # Update waiter message
+        w$update(spinner_message("Step 3/5: Preparing tables..."))
 
         data <- data$result |>
           prep_tables_safely(conn = con)
@@ -144,14 +150,18 @@ mod_upload_server <- function(id){
         if (!is.null(data$error)) {
 
           shiny::modalDialog(
-            title = "There was an issue with the upload",
+            title = "Upload Failed",
             data$error$message,
-            shiny::br(),
-            "Failed during stage: `prep_tables()`"
+            shiny::br(), shiny::br(),
+            shiny::em("Failed during stage: `prep_tables()`")
           ) |>
+            shiny::tagAppendAttributes(class = "error-modal") |>
             shiny::showModal()
 
         } else {
+
+          # Update waiter message
+          w$update(spinner_message("Step 4/5: Deleting matching records..."))
 
           out <- data$result |>
             delete_from_db_safely(conn = con)
@@ -159,17 +169,18 @@ mod_upload_server <- function(id){
           if (!is.null(out$error)) {
 
             shiny::modalDialog(
-              title = "There was an issue with the upload",
+              title = "Upload Failed",
               out$error$message,
-              shiny::br(),
-              "Failed during stage: `delete_from_db()`"
+              shiny::br(), shiny::br(),
+              shiny::em("Failed during stage: `delete_from_db()`")
             ) |>
+              shiny::tagAppendAttributes(class = "error-modal") |>
               shiny::showModal()
 
           } else {
 
             out <- data$result |>
-              send_to_db_safely(conn = con)
+              send_to_db_safely(conn = con, waiter = w)
 
             if (!is.null(out$error)) {
 
@@ -177,11 +188,12 @@ mod_upload_server <- function(id){
                 delete_from_db(conn = con)
 
               shiny::modalDialog(
-                title = "There was an issue with the upload",
+                title = "Upload Failed",
                 out$error$message,
-                shiny::br(),
-                "Failed during stage: `send_to_db()`"
+                shiny::br(), shiny::br(),
+                shiny::em("Failed during stage: `send_to_db()`")
               ) |>
+                shiny::tagAppendAttributes(class = "error-modal") |>
                 shiny::showModal()
 
             } else {

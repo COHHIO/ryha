@@ -11,10 +11,9 @@
 #' @param file String, the full path to the .zip file containing the quarterly
 #'   HMIS data
 #'
-#' @return
-#' @export
+#' @return A list containing the ingested data for each HMIS table.
 #'
-#' @examples
+#' @export
 process_data <- function(file) {
 
   # Ensure that the uploaded file is indeed a .zip file
@@ -49,6 +48,18 @@ process_data <- function(file) {
 
   # Check that all required HMIS files are present in uploaded .zip file
   check <- check_file_names(dir = tmp_dir)
+
+  # Throw error if any needed files are missing
+  if (!check$valid) {
+
+    glue::glue(
+      "The selected <strong>.zip</strong> is missing the following expected <strong>.csv</strong> file(s):",
+      paste("-", check$missing_file_names, collapse = ",<br>"),
+      .sep = "<br>"
+    ) |>
+    rlang::abort()
+
+  }
 
   # List the files (full paths) in the temp directory
   files_in_tmp <- fs::dir_ls(tmp_dir)
@@ -433,11 +444,19 @@ delete_from_db <- function(data, conn) {
 
 
 
-send_to_db <- function(data, conn) {
+send_to_db <- function(data, conn, waiter = NULL) {
 
   for (i in 1:length(data)) {
 
     table_name <- names(data)[i]
+
+    if (!is.null(waiter)) {
+      waiter$update(
+        spinner_message(
+          glue::glue("Step 5/5: Sending data... ({ i } of { length(data) })")
+        )
+      )
+    }
 
     DBI::dbWriteTable(
       conn = conn,
@@ -457,5 +476,3 @@ process_data_safely <- purrr::safely(process_data)
 prep_tables_safely <- purrr::safely(prep_tables)
 delete_from_db_safely <- purrr::safely(delete_from_db)
 send_to_db_safely <- purrr::safely(send_to_db)
-
-

@@ -95,6 +95,13 @@ mod_filters_ui <- function(id){
           value = TRUE
         ),
 
+        # Heads of household checkbox
+        shiny::checkboxInput(
+          inputId = ns("heads_of_household_global"),
+          label = "Limit to Heads of Household",
+          value = FALSE
+        ),
+
         # Action button to apply filters
         bs4Dash::actionButton(
           inputId = ns("apply_filters"),
@@ -230,11 +237,23 @@ mod_filters_server <- function(id, dm, w, rctv){
 
       }
 
+      # Filter head of household using enrollment data
+      if (input$heads_of_household_global == TRUE) {
+
+        enrollment <- dm$enrollment |>
+          dplyr::filter(relationship_to_ho_h == "Self (head of household)")
+
+      } else {
+
+        enrollment <- dm$enrollment
+
+      }
+
       out <- dm$project |>
         dplyr::filter(project_name %in% input$project_filter_global) |>
         dplyr::select(project_id) |>
         dplyr::inner_join(
-          dm$enrollment |>
+          enrollment |>
             # Remove individuals who entered *after* the later active date
             dplyr::filter(
               entry_date <= input$active_date_filter_global[2]
