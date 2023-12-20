@@ -69,10 +69,11 @@ mod_services_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Service Type Provided",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("services_bar_chart"),
-            height = "450px"
+            height = "100%"
           )
         )
       )
@@ -86,10 +87,11 @@ mod_services_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Referral Source",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("referral_bar_chart"),
-            height = "450px"
+            height = "100%"
           )
         )
       )

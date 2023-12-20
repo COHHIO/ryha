@@ -67,10 +67,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Income Received (from Any Source)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("income_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -83,10 +84,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Income Received by Source (# of Youth)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("income_source_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -103,10 +105,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Total Monthly Income (# of Youth)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("income_bar_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -148,10 +151,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Benefits Received (from Any Source)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("benefits_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -164,10 +168,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Benefits Received by Source",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("benefits_source_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -183,10 +188,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("benefits_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -225,10 +231,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Health Insurance Received (from Any Source)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("insurance_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -241,10 +248,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Health Insurance Received by Source",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("insurance_source_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -260,10 +268,11 @@ mod_income_benefits_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("insurance_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 

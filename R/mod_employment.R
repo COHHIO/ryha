@@ -43,10 +43,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Employment Status",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("employed_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -58,10 +59,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Employment Type",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("employment_type_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -77,10 +79,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Reason Not Employed",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("not_employed_reason_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -109,10 +112,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "Changes in Employed Status (Entry --> Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("employed_sankey_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 

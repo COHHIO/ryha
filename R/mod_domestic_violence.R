@@ -54,10 +54,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Domestic Violence Victim Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("victim_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -86,10 +87,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("victim_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -109,10 +111,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by When Occurred Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("when_occurred_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -141,10 +144,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in When Occurred (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("when_occurred_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -164,10 +168,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Currently Fleeing Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("currently_fleeing_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -196,10 +201,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Currently Fleeing (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("currently_fleeing_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 

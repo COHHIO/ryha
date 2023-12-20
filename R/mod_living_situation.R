@@ -43,10 +43,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Living Situation (at Entry)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("living_situation_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -58,10 +59,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Destination (at Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("destination_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -76,10 +78,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "Changes in General Living Situation (Entry --> Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("sankey_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 

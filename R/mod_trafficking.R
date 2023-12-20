@@ -63,10 +63,11 @@ mod_trafficking_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Exchange for Sex Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("exchange_sex_pie_chart"),
-                    height = "300px"
+                    height = "100%"
                   )
                 )
 
@@ -78,10 +79,11 @@ mod_trafficking_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Count of Exchange for Sex Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("count_sex_pie_chart"),
-                    height = "300px"
+                    height = "100%"
                   )
                 )
 
@@ -97,10 +99,11 @@ mod_trafficking_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Asked or Forced to Exchange Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("asked_sex_pie_chart"),
-                    height = "300px"
+                    height = "100%"
                   )
                 )
 
@@ -135,10 +138,11 @@ mod_trafficking_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Workplace Violence/Threats Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("violence_labor_pie_chart"),
-                    height = "300px"
+                    height = "100%"
                   )
                 )
 
@@ -150,10 +154,11 @@ mod_trafficking_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Workplace Promise Difference Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("promise_labor_pie_chart"),
-                    height = "300px"
+                    height = "100%"
                   )
                 )
 
@@ -169,10 +174,11 @@ mod_trafficking_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Coerced to Continue Work Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("coerced_labor_pie_chart"),
-                    height = "300px"
+                    height = "100%"
                   )
                 )
 
