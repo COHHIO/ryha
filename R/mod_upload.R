@@ -95,7 +95,7 @@ mod_upload_server <- function(id){
 
     shiny::observe({
 
-      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD")) {
+      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD") || is.null(input$choose_zip$datapath)) {
 
         shinyjs::disable(id = "upload_btn")
 
