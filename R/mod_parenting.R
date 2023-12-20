@@ -189,7 +189,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("users")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     )
@@ -199,7 +199,8 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
       bs4Dash::bs4ValueBox(
         value = n_youth_with_pregnancy_data(),
-        subtitle = "Total # of Youth with Pregnancy Data Available"
+        subtitle = "Total # of Youth with Pregnancy Data Available",
+        icon = shiny::icon("baby-carriage")
       )
 
     )
@@ -209,7 +210,8 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
       bs4Dash::bs4ValueBox(
         value = n_youth_with_parenting_data(),
-        subtitle = "Total # of Youth with Parenting Data Available"
+        subtitle = "Total # of Youth with Parenting Data Available",
+        icon = shiny::icon("baby-carriage")
       )
 
     )

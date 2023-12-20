@@ -262,7 +262,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -273,7 +273,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
       bs4Dash::bs4ValueBox(
         value = n_youth_with_domestic_violence_data(),
         subtitle = "Total # of Youth with Domestic Violence Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("user-shield")
       )
 
     })

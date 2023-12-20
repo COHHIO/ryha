@@ -367,7 +367,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     )
@@ -378,7 +378,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       bs4Dash::bs4ValueBox(
         value = n_youth_with_income_data(),
         subtitle = "Total # of Youth with Income Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("dollar-sign")
       )
 
     )
@@ -389,7 +389,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       bs4Dash::bs4ValueBox(
         value = n_youth_with_benefits_data(),
         subtitle = "Total # of Youth with Benefits Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("dollar-sign")
       )
 
     )
