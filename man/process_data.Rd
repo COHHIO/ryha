@@ -10,6 +10,9 @@ process_data(file)
 \item{file}{String, the full path to the .zip file containing the quarterly
 HMIS data}
 }
+\value{
+A list containing the ingested data for each HMIS table.
+}
 \description{
 Process HMIS Data
 }
