@@ -257,7 +257,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
 
       out <- exit_data_filtered() |>
         dplyr::filter(
-          !is.na(destination_safe_client) & !is.na(destination_safe_client)
+          !is.na(destination_safe_client) & !is.na(destination_safe_worker)
         ) |>
         dplyr::arrange(
           organization_id,

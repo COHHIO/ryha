@@ -36,3 +36,33 @@ smaller screen widths */
 .progress-bar {
   color: transparent !important;
 }
+
+/* Apply vertical center to images */
+.vertical-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+/* Add style to welcome page boxes */
+.custom-box .card-body {
+  text-align: justify;
+  padding: .75rem 1.25rem;
+}
+
+.custom-box .card-title {
+  font-size: 1.5rem;
+}
+
+/* Add custom style to error modal */
+.error-modal .modal-header {
+  background-color: red;
+  color: white;
+}
+
+/* Add style to help page */
+.help-page-content {
+  background-color: white;
+  text-align: justify;
+}

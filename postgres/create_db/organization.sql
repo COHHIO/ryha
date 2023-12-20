@@ -10,6 +10,3 @@ CREATE TABLE IF NOT EXISTS public.organization
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.organization
-    OWNER to cohhiodbadmin;
