@@ -65,10 +65,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by General Health Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("general_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -97,10 +98,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in General Health Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("general_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -122,10 +124,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Dental Health Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("dental_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -153,10 +156,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Dental Health Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("dental_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -178,10 +182,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Mental Health Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("mental_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -210,10 +215,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Mental Health Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("mental_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -235,10 +241,11 @@ mod_health_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Counseling Received Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("counseling_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -340,7 +347,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -351,7 +358,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       bs4Dash::bs4ValueBox(
         value = n_youth_with_health_data(),
         subtitle = "Total # of Youth with Health Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("stethoscope")
       )
 
     })
@@ -362,7 +369,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       bs4Dash::bs4ValueBox(
         value = n_youth_with_counseling_data(),
         subtitle = "Total # of Youth with Counseling Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("stethoscope")
       )
 
     })
@@ -383,7 +390,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(general_health_status)
@@ -444,7 +451,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(general_health_status)
@@ -462,7 +469,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(general_health_status)
@@ -512,7 +519,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           general_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -545,7 +552,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(dental_health_status)
@@ -606,7 +613,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(dental_health_status)
@@ -624,7 +631,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(dental_health_status)
@@ -674,7 +681,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           dental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -707,7 +714,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(mental_health_status)
@@ -768,7 +775,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(mental_health_status)
@@ -786,7 +793,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           !mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(mental_health_status)
@@ -836,7 +843,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         dplyr::filter(
           mental_health_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )

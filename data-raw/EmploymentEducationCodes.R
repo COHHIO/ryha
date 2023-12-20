@@ -7,7 +7,7 @@ LastGradeCompletedCodes <- tibble::tribble(
   2L, "Grades 5-6",
   3L, "Grades 7-8",
   4L, "Grades 9-11",
-  5L, "Grades 12 / High school diploma",
+  5L, "Grade 12 / High school diploma",
   6L, "School program does not have grade levels",
   7L, "GED",
   10L, "Some College",
@@ -16,7 +16,7 @@ LastGradeCompletedCodes <- tibble::tribble(
   13L, "Graduate Degree",
   14L, "Vocational Degree",
   8L, "Client doesn't know",
-  9L, "Client refused",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
@@ -32,25 +32,23 @@ SchoolStatusCodes <- tibble::tribble(
   6L, "Suspended",
   7L, "Expelled",
   8L, "Client doesn't know",
-  9L, "Client refused",
+  9L, "Client prefers not to answer",
   99L, "Data not collected"
 )
 
 #general codes for basic questioner
 #than yes or no
 
-# R6 YES Employment Status (page 61) in Data Dictionary
+# R6 YES Employment Status (page 73) in Data Dictionary
 EmploymentTypeCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Full-time",
   2L, "Part-time",
   3L, "Seasonal / sporadic (including day labor)",
-  8L, "Client doesn't know",
-  9L, "Client refused",
   99L, "Data not collected"
 )
 
-# R6.B (page 53) in Data Dictionary
+# R6.B (page 73) in Data Dictionary
 NotEmployedReasonCodes <- tibble::tribble(
   ~Code, ~Description,
   1L, "Looking for work",
@@ -72,8 +70,8 @@ DataCollectionStageCodes <- tibble::tribble(
 usethis::use_data(
   LastGradeCompletedCodes,
   SchoolStatusCodes,
-  Employment_Yes_Status,
-  Employment_No_Status,
+  EmploymentTypeCodes,
+  NotEmployedReasonCodes,
   DataCollectionStageCodes,
   overwrite = TRUE
 )

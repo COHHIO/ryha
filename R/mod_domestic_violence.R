@@ -54,10 +54,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Domestic Violence Victim Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("victim_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -86,10 +87,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("victim_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -109,10 +111,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by When Occurred Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("when_occurred_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -141,10 +144,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in When Occurred (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("when_occurred_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -164,10 +168,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Currently Fleeing Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("currently_fleeing_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -196,10 +201,11 @@ mod_domestic_violence_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Currently Fleeing (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("currently_fleeing_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -249,7 +255,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
       domestic_violence_data_filtered() |>
         dplyr::filter(
-          domestic_violence_victim %in% c("Yes", "No")
+          domestic_violence_survivor %in% c("Yes", "No")
         ) |>
         dplyr::distinct(personal_id, organization_id) |>
         nrow()
@@ -262,7 +268,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -273,7 +279,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
       bs4Dash::bs4ValueBox(
         value = n_youth_with_domestic_violence_data(),
         subtitle = "Total # of Youth with Domestic Violence Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("user-shield")
       )
 
     })
@@ -290,23 +296,23 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
       out <- domestic_violence_data_filtered() |>
         dplyr::filter(
-          domestic_violence_victim %in% c("Yes", "No")
+          domestic_violence_survivor %in% c("Yes", "No")
         ) |>
         dplyr::arrange(
           organization_id,
           personal_id,
-          domestic_violence_victim,
+          domestic_violence_survivor,
           dplyr::desc(date_updated)
         ) |>
         dplyr::select(
           organization_id,
           personal_id,
-          domestic_violence_victim
+          domestic_violence_survivor
         ) |>
         dplyr::distinct(
           organization_id,
           personal_id,
-          domestic_violence_victim,
+          domestic_violence_survivor,
           .keep_all = TRUE
         )
 
@@ -318,8 +324,8 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
       )
 
       out |>
-        dplyr::count(domestic_violence_victim) |>
-        dplyr::arrange(domestic_violence_victim)
+        dplyr::count(domestic_violence_survivor) |>
+        dplyr::arrange(domestic_violence_survivor)
 
     })
 
@@ -328,7 +334,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
       victim_pie_chart_data() |>
         pie_chart(
-          category = "domestic_violence_victim",
+          category = "domestic_violence_survivor",
           count = "n"
         )
 
@@ -346,7 +352,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
       ids_exited <- domestic_violence_data_filtered() |>
         dplyr::filter(
-          domestic_violence_victim %in% c("Yes", "No")
+          domestic_violence_survivor %in% c("Yes", "No")
         ) |>
         get_ids_for_sankey()
 
@@ -359,13 +365,13 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
       domestic_violence_data_filtered() |>
         dplyr::filter(
-          domestic_violence_victim %in% c("Yes", "No")
+          domestic_violence_survivor %in% c("Yes", "No")
         ) |>
         dplyr::inner_join(
           ids_exited,
           by = c("organization_id", "personal_id")
         ) |>
-        prep_sankey_data(state_var = domestic_violence_victim)
+        prep_sankey_data(state_var = domestic_violence_survivor)
 
     })
 
@@ -381,20 +387,20 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     })
 
-    # Capture the data quality statistics for "domestic_violence_victim" field
+    # Capture the data quality statistics for "domestic_violence_survivor" field
     victim_missingness_stats <- shiny::reactive({
 
       domestic_violence_data_filtered() |>
-        dplyr::mutate(domestic_violence_victim = ifelse(
-          is.na(domestic_violence_victim),
+        dplyr::mutate(domestic_violence_survivor = ifelse(
+          is.na(domestic_violence_survivor),
           "(Blank)",
-          domestic_violence_victim
+          domestic_violence_survivor
         )) |>
         dplyr::filter(
-          !domestic_violence_victim %in% c("Yes", "No")
+          !domestic_violence_survivor %in% c("Yes", "No")
         ) |>
-        dplyr::count(domestic_violence_victim, name = "Count") |>
-        dplyr::rename(Response = domestic_violence_victim)
+        dplyr::count(domestic_violence_survivor, name = "Count") |>
+        dplyr::rename(Response = domestic_violence_survivor)
 
     })
 
@@ -419,7 +425,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(when_occurred)
@@ -480,7 +486,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(when_occurred)
@@ -498,7 +504,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(when_occurred)
@@ -533,10 +539,10 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
           when_occurred
         )) |>
         dplyr::filter(
-          domestic_violence_victim == "Yes",
+          domestic_violence_survivor == "Yes",
           when_occurred %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -567,7 +573,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(currently_fleeing)
@@ -628,7 +634,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(currently_fleeing)
@@ -646,7 +652,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         dplyr::filter(
           !currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(currently_fleeing)
@@ -681,10 +687,10 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
           currently_fleeing
         )) |>
         dplyr::filter(
-          domestic_violence_victim == "Yes",
+          domestic_violence_survivor == "Yes",
           currently_fleeing %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )

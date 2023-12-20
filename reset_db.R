@@ -78,3 +78,22 @@ for (t in DBI::dbListTables(conn = con)) {
   )
 
 }
+
+# Create all tables ----
+for (file in list.files(here::here("postgres", "create_db"))) {
+  DBI::dbExecute(
+    conn = con,
+    statement = readr::read_file(
+      here::here("postgres", "create_db", file)
+    )
+  )
+
+  DBI::dbExecute(
+    conn = con,
+    statement = glue::glue(
+      "ALTER TABLE IF EXISTS public.{ tools::file_path_sans_ext(file) }
+         OWNER to cohhiodbadmin;"
+    )
+  )
+
+}

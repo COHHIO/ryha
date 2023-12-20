@@ -43,10 +43,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Employment Status",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("employed_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -58,10 +59,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Employment Type",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("employment_type_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -77,10 +79,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Reason Not Employed",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("not_employed_reason_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -109,10 +112,11 @@ mod_employment_ui <- function(id){
         bs4Dash::box(
           title = "Changes in Employed Status (Entry --> Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("employed_sankey_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -165,7 +169,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -176,7 +180,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_employment_data(),
         subtitle = "Total # of Youth with Employment Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("briefcase")
       )
 
     })

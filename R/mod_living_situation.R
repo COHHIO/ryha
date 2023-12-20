@@ -43,10 +43,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Living Situation (at Entry)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("living_situation_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -58,10 +59,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Destination (at Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("destination_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -76,10 +78,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "Changes in General Living Situation (Entry --> Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("sankey_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -189,8 +192,8 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           !living_situation %in% c(
             "No exit interview completed",
             "Worker unable to determine",
-            "Client doesn’t know",
-            "Client refused",
+            "Client doesn't know",
+            "Client prefers not to answer",
             "Data not collected"
           )
         ) |>
@@ -205,7 +208,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -216,7 +219,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       bs4Dash::bs4ValueBox(
         value = n_youth_with_living_data(),
         subtitle = "Total # of Youth with Living Situation Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("bed")
       )
 
     })
@@ -255,7 +258,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           LivingCodes |>
             dplyr::select(
               description = Description,
-              category = Category
+              category = ExitCategory
             ),
           by = c("living_situation" = "description")
         ) |>
@@ -320,7 +323,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           LivingCodes |>
             dplyr::select(
               description = Description,
-              category = Category
+              category = ExitCategory
             ),
           by = c("destination" = "description")
         ) |>
@@ -369,8 +372,8 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           .keep_all = TRUE
         ) |>
         dplyr::mutate(
-          living_situation = LivingCodes$GeneralCategory[match(x = living_situation, table = LivingCodes$Description)],
-          destination = LivingCodes$GeneralCategory[match(x = destination, table = LivingCodes$Description)],
+          living_situation = LivingCodes$ExitCategory[match(x = living_situation, table = LivingCodes$Description)],
+          destination = LivingCodes$ExitCategory[match(x = destination, table = LivingCodes$Description)],
         ) |>
         dplyr::filter(
           living_situation != "Not enough data",
@@ -421,8 +424,8 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           living_situation %in% c(
             "No exit interview completed",
             "Worker unable to determine",
-            "Client doesn’t know",
-            "Client refused",
+            "Client doesn't know",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -451,8 +454,8 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           destination %in% c(
             "No exit interview completed",
             "Worker unable to determine",
-            "Client doesn’t know",
-            "Client refused",
+            "Client doesn't know",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )

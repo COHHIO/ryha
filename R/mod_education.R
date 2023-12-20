@@ -54,10 +54,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Last Grade Completed",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("last_grade_completed_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -86,10 +87,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in Last Grade Completed (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("last_grade_completed_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -109,10 +111,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by School Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("school_status_pie_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -141,10 +144,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = "Changes in School Status (Entry --> Exit)",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("school_status_sankey_chart"),
-                    height = "400px"
+                    height = "100%"
                   )
                 )
 
@@ -196,7 +200,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -212,7 +216,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -223,7 +227,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_education_data(),
         subtitle = "Total # of Youth with Education Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("book-open")
       )
 
     })
@@ -246,7 +250,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -309,7 +313,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -327,7 +331,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(last_grade_completed)
@@ -401,7 +405,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(school_status)
@@ -464,7 +468,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(school_status)
@@ -482,7 +486,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           !school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected"
           ),
           !is.na(school_status)
@@ -551,7 +555,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           last_grade_completed %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )
@@ -578,7 +582,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::filter(
           school_status %in% c(
             "Client doesn't know",
-            "Client refused",
+            "Client prefers not to answer",
             "Data not collected",
             "(Blank)"
           )

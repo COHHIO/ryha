@@ -56,10 +56,11 @@ mod_disabilities_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth with Disabilities by Type",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("disabilities_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -71,10 +72,11 @@ mod_disabilities_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth with Substance Use by Type",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("substance_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -93,6 +95,7 @@ mod_disabilities_ui <- function(id){
           title = "Changes in Disability Status (Entry --> Exit)",
           type = "tabs",
           side = "right",
+          height = DEFAULT_BOX_HEIGHT,
           width = NULL,
           maximizable = TRUE,
 
@@ -100,7 +103,7 @@ mod_disabilities_ui <- function(id){
             title = "Physical",
             echarts4r::echarts4rOutput(
               outputId = ns("physical_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -108,7 +111,7 @@ mod_disabilities_ui <- function(id){
             title = "Developmental",
             echarts4r::echarts4rOutput(
               outputId = ns("developmental_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -116,7 +119,7 @@ mod_disabilities_ui <- function(id){
             title = "Chronic",
             echarts4r::echarts4rOutput(
               outputId = ns("chronic_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -124,7 +127,7 @@ mod_disabilities_ui <- function(id){
             title = "HIV/AIDS",
             echarts4r::echarts4rOutput(
               outputId = ns("hiv_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -132,7 +135,7 @@ mod_disabilities_ui <- function(id){
             title = "Mental",
             echarts4r::echarts4rOutput(
               outputId = ns("mental_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           ),
 
@@ -140,11 +143,12 @@ mod_disabilities_ui <- function(id){
             title = "Substance Use",
             echarts4r::echarts4rOutput(
               outputId = ns("substance_sankey_chart"),
-              height = "350px"
+              height = "100%"
             )
           )
 
-        )
+        ) |>
+          shiny::tagAppendAttributes(id = "disability-tabset")
 
       )
 
@@ -218,7 +222,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -229,7 +233,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_disabilities_data(),
         subtitle = "Total # of Youth with Disabilities Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("accessible-icon")
       )
 
     })
@@ -252,7 +256,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_no_disabilities(),
         subtitle = "Total # of Youth with No Disabilities or Substance Use",
-        icon = shiny::icon("home")
+        icon = shiny::icon("accessible-icon")
       )
 
     })
@@ -698,7 +702,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )) |>
         dplyr::filter(disability_response %in% c(
           "Client doesn't know",
-          "Client refused",
+          "Client prefers not to answer",
           "Data not collected",
           "(Blank)"
         )) |>

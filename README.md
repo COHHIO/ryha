@@ -16,8 +16,7 @@ This Shiny application is built using the [{golem}
 framework](https://thinkr-open.github.io/golem/), which means that this
 app is actually an *R package*.
 
-You can install the development version of `{ryha}` from
-[GitHub](https://github.com/) with:
+You can install `{ryha}` with:
 
 ``` r
 # install.packages("devtools")
