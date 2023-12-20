@@ -11,10 +11,9 @@
 #' @param file String, the full path to the .zip file containing the quarterly
 #'   HMIS data
 #'
-#' @return
-#' @export
+#' @return A list containing the ingested data for each HMIS table.
 #'
-#' @examples
+#' @export
 process_data <- function(file) {
 
   # Ensure that the uploaded file is indeed a .zip file

@@ -60,3 +60,9 @@ smaller screen widths */
   background-color: red;
   color: white;
 }
+
+/* Add style to help page */
+.help-page-content {
+  background-color: white;
+  text-align: justify;
+}

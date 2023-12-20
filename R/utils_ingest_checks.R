@@ -10,12 +10,18 @@
 #' @details Compare the file names within the uploaded .zip file to the expected
 #' file names (stored in the 'HMISmetadata' data object within this R package)
 #'
-#' @param dir
+#' @param dir The directory path containing the extracted files from the
+#' uploaded .zip file.
 #'
-#' @return
+#' @return A list with two elements:
+#' \itemize{
+#'   \item \code{valid}: A logical value indicating whether all expected files
+#'   are present in the uploaded directory.
+#'   \item \code{missing_file_names}: A character vector containing the names of
+#'   files that are expected but missing in the uploaded directory.
+#' }
+#'
 #' @export
-#'
-#' @examples
 check_file_names <- function(dir) {
 
   # Retrieve the full paths to each individual file extracted from the .zip file
