@@ -45,7 +45,7 @@ check_file_names <- function(dir) {
   # Compare the character vector of file names from the .zip file to the
   # file names we expect based on the 'HMISmetadata' data in this R package
   missing_from_upload <- setdiff(
-    x = HMISmetadata$FileName,
+    x = HMISmetadata$FileName[HMISmetadata$Required == "Y"],
     y = file_names
   )
 

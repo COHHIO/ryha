@@ -129,11 +129,12 @@ mod_upload_server <- function(id){
       if (!is.null(data$error)) {
 
         shiny::modalDialog(
-          title = "There was an issue with the upload",
-          data$error$message,
-          shiny::br(),
-          "Failed during stage: `process_data()`"
+          title = "Upload Failed",
+          shiny::HTML(data$error$message),
+          shiny::br(), shiny::br(),
+          shiny::em("Failed during stage: `process_data()`")
         ) |>
+          shiny::tagAppendAttributes(class = "error-modal") |>
           shiny::showModal()
 
       } else {
@@ -144,11 +145,12 @@ mod_upload_server <- function(id){
         if (!is.null(data$error)) {
 
           shiny::modalDialog(
-            title = "There was an issue with the upload",
+            title = "Upload Failed",
             data$error$message,
-            shiny::br(),
-            "Failed during stage: `prep_tables()`"
+            shiny::br(), shiny::br(),
+            shiny::em("Failed during stage: `prep_tables()`")
           ) |>
+            shiny::tagAppendAttributes(class = "error-modal") |>
             shiny::showModal()
 
         } else {
@@ -159,11 +161,12 @@ mod_upload_server <- function(id){
           if (!is.null(out$error)) {
 
             shiny::modalDialog(
-              title = "There was an issue with the upload",
+              title = "Upload Failed",
               out$error$message,
-              shiny::br(),
-              "Failed during stage: `delete_from_db()`"
+              shiny::br(), shiny::br(),
+              shiny::em("Failed during stage: `delete_from_db()`")
             ) |>
+              shiny::tagAppendAttributes(class = "error-modal") |>
               shiny::showModal()
 
           } else {
@@ -177,11 +180,12 @@ mod_upload_server <- function(id){
                 delete_from_db(conn = con)
 
               shiny::modalDialog(
-                title = "There was an issue with the upload",
+                title = "Upload Failed",
                 out$error$message,
-                shiny::br(),
-                "Failed during stage: `send_to_db()`"
+                shiny::br(), shiny::br(),
+                shiny::em("Failed during stage: `send_to_db()`")
               ) |>
+                shiny::tagAppendAttributes(class = "error-modal") |>
                 shiny::showModal()
 
             } else {

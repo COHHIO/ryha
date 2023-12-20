@@ -49,6 +49,18 @@ process_data <- function(file) {
   # Check that all required HMIS files are present in uploaded .zip file
   check <- check_file_names(dir = tmp_dir)
 
+  # Throw error if any needed files are missing
+  if (!check$valid) {
+
+    glue::glue(
+      "The selected <strong>.zip</strong> is missing the following expected <strong>.csv</strong> file(s):",
+      paste("-", check$missing_file_names, collapse = ",<br>"),
+      .sep = "<br>"
+    ) |>
+    rlang::abort()
+
+  }
+
   # List the files (full paths) in the temp directory
   files_in_tmp <- fs::dir_ls(tmp_dir)
 
