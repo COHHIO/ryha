@@ -444,11 +444,19 @@ delete_from_db <- function(data, conn) {
 
 
 
-send_to_db <- function(data, conn) {
+send_to_db <- function(data, conn, waiter = NULL) {
 
   for (i in 1:length(data)) {
 
     table_name <- names(data)[i]
+
+    if (!is.null(waiter)) {
+      waiter$update(
+        spinner_message(
+          glue::glue("Step 5/5: Sending data... ({ i } of { length(data) })")
+        )
+      )
+    }
 
     DBI::dbWriteTable(
       conn = conn,
@@ -468,5 +476,3 @@ process_data_safely <- purrr::safely(process_data)
 prep_tables_safely <- purrr::safely(prep_tables)
 delete_from_db_safely <- purrr::safely(delete_from_db)
 send_to_db_safely <- purrr::safely(send_to_db)
-
-
