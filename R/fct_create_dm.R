@@ -134,18 +134,23 @@ client_tbl <- read_data_from_table(
     dplyr::right_join(
       client |> dplyr::select(-c(age, veteran_status)),
       by = c("personal_id", "organization_id")
-    ) |>
-    dplyr::mutate(
-      gender = dplyr::if_else(
-        is.na(gender),
-        "Missing Data",
-        stringr::str_replace_all(gender, "_", " ") |> tools::toTitleCase()
-      )
-    ) |>
-    dplyr::arrange(
-      organization_id,
-      personal_id
     )
+
+  # Avoid data wrangling errors when there is no data available
+  if (nrow(gender) > 0) {
+    gender <- gender |>
+      dplyr::mutate(
+        gender = dplyr::if_else(
+          is.na(gender),
+          "Missing Data",
+          stringr::str_replace_all(gender, "_", " ") |> tools::toTitleCase()
+        )
+      ) |>
+      dplyr::arrange(
+        organization_id,
+        personal_id
+      )
+  }
 
   # Prep "ethnicity" table
   ethnicity <- client_tbl |>
@@ -180,19 +185,24 @@ client_tbl <- read_data_from_table(
     dplyr::right_join(
       client |> dplyr::select(-c(age, veteran_status)),
       by = c("personal_id", "organization_id")
-    ) |>
-    dplyr::mutate(
-      ethnicity = dplyr::if_else(
-        ethnicity == "race_none" | is.na(ethnicity),
-        "Missing Data",
-        stringr::str_replace_all(ethnicity, "_", " ") |> tools::toTitleCase()
-      )
-    ) |>
-    dplyr::arrange(
-      organization_id,
-      personal_id
     )
 
+  # Avoid data wrangling errors when there is no data available
+  if (nrow(ethnicity) > 0) {
+    ethnicity <- ethnicity |>
+      dplyr::mutate(
+        ethnicity = dplyr::if_else(
+          ethnicity == "race_none" | is.na(ethnicity),
+          "Missing Data",
+          stringr::str_replace_all(ethnicity, "_", " ") |> tools::toTitleCase()
+        )
+      ) |>
+      dplyr::arrange(
+        organization_id,
+        personal_id
+      )
+  }
+  
   disabilities <- read_data_from_table(
     connection = con,
     table_name = "disabilities",
