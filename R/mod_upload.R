@@ -14,46 +14,66 @@ mod_upload_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 12,
+        width = 8,
+        offset = 2,
 
-        shiny::h2("Instructions for Uploading:"),
+        bs4Dash::box(
+          width = 12,
+          title = "Instructions for Uploading:",
+          collapsible = FALSE,
+          status = "primary",
 
-        shiny::br(),
-
-        shiny::tags$ol(
-          shiny::tags$li(
-            "Click the \"Browse...\" button and open the HMIS export .zip file on your local computer"
-          ),
-          shiny::tags$li(
-            "Enter the password needed to upload the .zip file to the app database"
-          ),
-          shiny::tags$li(
-            "If the correct password has been entered, the \"Upload\" button will be enabled. Click the button to upload the file"
-          ),
-          shiny::tags$li(
-            "If you encounter an error screen during the upload process, please copy and paste the error and email amandawilson@cohhio.org"
+          shiny::HTML(
+            "
+            <ol>
+              <li> Click the <strong>Browse...</strong> button and open the HMIS export .zip file on your local computer
+              <li> Enter the password needed to upload the .zip file to the app database
+              <li> If the correct password has been entered, the <strong>Upload</strong> button will be enabled. Click the button to upload the file
+            </ol>
+            If you encounter an error screen during the process, please copy and paste the error and email <a href='mailto:amandawilson@cohhio.org'>amandawilson@cohhio.org</a>
+            "
           )
-        ),
+        ) |>
+          shiny::tagAppendAttributes(class = "custom-box"),
 
         shiny::hr(),
 
-        shiny::fileInput(
-          inputId = ns("choose_zip"),
-          label = "Choose HMIS .Zip File",
-          accept = ".zip",
-          width = "50%"
-        ),
+        shiny::div(
+          align = "center",
 
-        shiny::passwordInput(
-          inputId = ns("upload_pwd"),
-          label = "Enter Upload Password",
-          placeholder = "password",
-          width = "40%"
-        ),
+          bs4Dash::box(
+            width = 6,
+            collapsible = FALSE,
 
-        shiny::actionButton(
-          inputId = ns("upload_btn"),
-          label = "Upload"
+            shiny::fluidRow(
+
+              shiny::fileInput(
+                inputId = ns("choose_zip"),
+                label = "Choose HMIS .Zip File",
+                accept = ".zip",
+                width = "100%"
+              ),
+
+              shiny::passwordInput(
+                inputId = ns("upload_pwd"),
+                label = "Enter Upload Password",
+                placeholder = "Enter Password...",
+                width = "100%"
+              ),
+
+              shinyWidgets::actionBttn(
+                inputId = ns("upload_btn"),
+                label = "Upload",
+                color = "success",
+                block = TRUE,
+                style = "material-flat"
+              ) |>
+                shiny::tagAppendAttributes(style = "margin-top: 2rem")
+
+            )
+
+          ) |>
+            shiny::tagAppendAttributes(class = "custom-box")
         )
 
       )
@@ -71,16 +91,11 @@ mod_upload_server <- function(id){
     ns <- session$ns
 
     # Create the {waiter} loading screen
-    w <- waiter::Waiter$new(
-      html = shiny::tagList(
-        waiter::spin_fading_circles(),
-        "Please Wait..."
-      )
-    )
+    w <- waiter::Waiter$new()
 
     shiny::observe({
 
-      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD")) {
+      if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD") || is.null(input$choose_zip$datapath)) {
 
         shinyjs::disable(id = "upload_btn")
 
@@ -97,26 +112,37 @@ mod_upload_server <- function(id){
 
       shiny::req(input$choose_zip$datapath)
 
+      # Initialize the waiter
       w$show()
+
+      # Update waiter message
+      w$update(spinner_message("Step 1/5: Connecting to database..."))
 
       # Establish connection to PostgreSQL database
       con <- connect_to_db()
 
       Sys.sleep(0.5)
 
+      # Update waiter message
+      w$update(spinner_message("Step 2/5: Processing data..."))
+
       data <- process_data_safely(file = input$choose_zip$datapath)
 
       if (!is.null(data$error)) {
 
         shiny::modalDialog(
-          title = "There was an issue with the upload",
-          data$error$message,
-          shiny::br(),
-          "Failed during stage: `process_data()`"
+          title = "Upload Failed",
+          shiny::HTML(data$error$message),
+          shiny::br(), shiny::br(),
+          shiny::em("Failed during stage: `process_data()`")
         ) |>
+          shiny::tagAppendAttributes(class = "error-modal") |>
           shiny::showModal()
 
       } else {
+
+        # Update waiter message
+        w$update(spinner_message("Step 3/5: Preparing tables..."))
 
         data <- data$result |>
           prep_tables_safely(conn = con)
@@ -124,14 +150,18 @@ mod_upload_server <- function(id){
         if (!is.null(data$error)) {
 
           shiny::modalDialog(
-            title = "There was an issue with the upload",
+            title = "Upload Failed",
             data$error$message,
-            shiny::br(),
-            "Failed during stage: `prep_tables()`"
+            shiny::br(), shiny::br(),
+            shiny::em("Failed during stage: `prep_tables()`")
           ) |>
+            shiny::tagAppendAttributes(class = "error-modal") |>
             shiny::showModal()
 
         } else {
+
+          # Update waiter message
+          w$update(spinner_message("Step 4/5: Deleting matching records..."))
 
           out <- data$result |>
             delete_from_db_safely(conn = con)
@@ -139,17 +169,18 @@ mod_upload_server <- function(id){
           if (!is.null(out$error)) {
 
             shiny::modalDialog(
-              title = "There was an issue with the upload",
+              title = "Upload Failed",
               out$error$message,
-              shiny::br(),
-              "Failed during stage: `delete_from_db()`"
+              shiny::br(), shiny::br(),
+              shiny::em("Failed during stage: `delete_from_db()`")
             ) |>
+              shiny::tagAppendAttributes(class = "error-modal") |>
               shiny::showModal()
 
           } else {
 
             out <- data$result |>
-              send_to_db_safely(conn = con)
+              send_to_db_safely(conn = con, waiter = w)
 
             if (!is.null(out$error)) {
 
@@ -157,11 +188,12 @@ mod_upload_server <- function(id){
                 delete_from_db(conn = con)
 
               shiny::modalDialog(
-                title = "There was an issue with the upload",
+                title = "Upload Failed",
                 out$error$message,
-                shiny::br(),
-                "Failed during stage: `send_to_db()`"
+                shiny::br(), shiny::br(),
+                shiny::em("Failed during stage: `send_to_db()`")
               ) |>
+                shiny::tagAppendAttributes(class = "error-modal") |>
                 shiny::showModal()
 
             } else {

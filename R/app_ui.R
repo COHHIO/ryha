@@ -13,6 +13,8 @@ app_ui <- function(request) {
     # Your application UI logic
     bs4Dash::dashboardPage(
 
+      help = NULL,
+
       header = bs4Dash::dashboardHeader(
         title = bs4Dash::dashboardBrand(
           title = "Youth Data Dashboard",
@@ -46,7 +48,7 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "welcome_page",
-            shiny::includeMarkdown( app_sys("app/www/welcome_text.md") )
+            mod_welcome_ui("welcome_1")
           ),
 
           bs4Dash::tabItem(
@@ -116,7 +118,20 @@ app_ui <- function(request) {
 
           bs4Dash::tabItem(
             tabName = "help_page",
-            shiny::includeMarkdown( app_sys("app/www/help_text.md") )
+
+            shiny::fluidRow(
+              shiny::column(width = 2),
+
+              shiny::column(
+                width = 8,
+                shiny::includeMarkdown( app_sys("app/www/help_text.md") )
+              ) |>
+                shiny::tagAppendAttributes(class = "help-page-content"),
+
+              shiny::column(width = 2)
+
+            )
+
           )
 
         )

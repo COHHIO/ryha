@@ -32,6 +32,3 @@ CREATE TABLE IF NOT EXISTS public.client
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.client
-    OWNER to cohhiodbadmin;

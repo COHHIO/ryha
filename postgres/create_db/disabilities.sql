@@ -16,6 +16,3 @@ CREATE TABLE IF NOT EXISTS public.disabilities
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.disabilities
-    OWNER to cohhiodbadmin;

@@ -43,10 +43,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Living Situation (at Entry)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("living_situation_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -58,10 +59,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Destination (at Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("destination_pie_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -76,10 +78,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "Changes in General Living Situation (Entry --> Exit)",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("sankey_chart"),
-            height = "350px"
+            height = "100%"
           )
         )
 
@@ -205,7 +208,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -216,7 +219,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       bs4Dash::bs4ValueBox(
         value = n_youth_with_living_data(),
         subtitle = "Total # of Youth with Living Situation Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("bed")
       )
 
     })

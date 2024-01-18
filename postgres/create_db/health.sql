@@ -18,6 +18,3 @@ CREATE TABLE IF NOT EXISTS public.health
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.health
-    OWNER to cohhiodbadmin;

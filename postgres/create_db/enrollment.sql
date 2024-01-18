@@ -42,6 +42,3 @@ CREATE TABLE IF NOT EXISTS public.enrollment
 )
 
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.enrollment
-    OWNER to cohhiodbadmin;

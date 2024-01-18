@@ -54,10 +54,11 @@ mod_exit_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Project Completion Status",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("completion_pie_chart"),
-                    height = "350px"
+                    height = "100%"
                   )
                 )
 
@@ -94,10 +95,11 @@ mod_exit_ui <- function(id){
                 bs4Dash::box(
                   title = "# of Youth by Safe & Appropriate Exit Response",
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
                     outputId = ns("exit_heatmap"),
-                    height = "350px"
+                    height = "100%"
                   )
                 )
 
@@ -175,7 +177,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth(),
         subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user")
+        icon = shiny::icon("user", class = "fa-solid")
       )
 
     })
@@ -186,7 +188,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
       bs4Dash::bs4ValueBox(
         value = n_youth_with_exit_data(),
         subtitle = "Total # of Youth with Exit Data Available",
-        icon = shiny::icon("home")
+        icon = shiny::icon("door-open")
       )
 
     })
@@ -257,7 +259,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
 
       out <- exit_data_filtered() |>
         dplyr::filter(
-          !is.na(destination_safe_client) & !is.na(destination_safe_client)
+          !is.na(destination_safe_client) & !is.na(destination_safe_worker)
         ) |>
         dplyr::arrange(
           organization_id,

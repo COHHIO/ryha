@@ -16,8 +16,7 @@ This Shiny application is built using the [{golem}
 framework](https://thinkr-open.github.io/golem/), which means that this
 app is actually an *R package*.
 
-You can install the development version of `{ryha}` from
-[GitHub](https://github.com/) with:
+You can install `{ryha}` with:
 
 ``` r
 # install.packages("devtools")
@@ -41,7 +40,7 @@ set, for the purposes of interacting with the external database:
   to/from the database (stored at the root of the directory, needed for
   *writing to* the database)
 
-After installing the package, you can launch the app using the package's
+After installing the package, you can launch the app using the package’s
 `run_app()` function.
 
 ``` r
@@ -57,7 +56,7 @@ format compliant with the *HMIS Data Standards*. This data originates
 from one of a few separate HMIS databases in the State. The HMIS
 databases have the capability to query the database and export a .zip
 file. This .zip file can be uploaded into the **COHHIO Youth Data
-Dashboard** app via the app's “*Upload*” page.
+Dashboard** app via the app’s “*Upload*” page.
 
 ### Requirements
 
