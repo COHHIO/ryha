@@ -188,6 +188,26 @@ mod_education_server <- function(id, education_data, clients_filtered){
         dplyr::inner_join(
           clients_filtered(),
           by = c("personal_id", "organization_id")
+        ) |>
+        # Bucket Last Grade Completed categories
+        dplyr::mutate(
+          last_grade_completed = dplyr::case_when(
+            last_grade_completed == "Less than Grade 5" ~ "Less than Grade 5",
+            last_grade_completed == "Grades 5-6" ~ "Grades 5-8",
+            last_grade_completed == "Grades 7-8" ~ "Grades 5-8",
+            last_grade_completed == "Grades 9-11" ~ "Grades 9-11",
+            last_grade_completed == "Grades 12 / High school diploma" ~ "High school diploma/GED",
+            last_grade_completed == "School program does not have grade levels" ~ "Unknown",
+            last_grade_completed == "GED" ~ "High school diploma/GED",
+            last_grade_completed == "Some College" ~ "Some College",
+            last_grade_completed == "Associate's Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Bachelor's Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Graduate Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Vocational Degree" ~ "College Degree/Vocational",
+            last_grade_completed == "Client doesn't know" ~ "Unknown",
+            last_grade_completed == "Client refused" ~ "Unknown",
+            last_grade_completed == "Data not collected" ~ "Unknown"
+          )
         )
 
     })
@@ -198,11 +218,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         dplyr::distinct(personal_id, organization_id) |>
@@ -248,11 +264,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       out <- education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         dplyr::arrange(
@@ -311,11 +323,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       ids_exited <- education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         get_ids_for_sankey()
@@ -329,11 +337,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       education_data_filtered() |>
         dplyr::filter(
-          !last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          last_grade_completed != "Unknown",
           !is.na(last_grade_completed)
         ) |>
         dplyr::inner_join(
@@ -346,11 +350,12 @@ mod_education_server <- function(id, education_data, clients_filtered){
             Entry,
             levels = paste0(
               c(
-                LastGradeCompletedCodes$Description[6],
-                LastGradeCompletedCodes$Description[1:5],
-                LastGradeCompletedCodes$Description[7:9],
-                LastGradeCompletedCodes$Description[12],
-                LastGradeCompletedCodes$Description[10:11]
+                "Less than Grade 5",
+                "Grades 5-8",
+                "Grades 9-11",
+                "Some College",
+                "High school diploma/GED",
+                "College Degree/Vocational"
               ),
               " (Entry)"
             ),
@@ -360,11 +365,12 @@ mod_education_server <- function(id, education_data, clients_filtered){
             Exit,
             levels = paste0(
               c(
-                LastGradeCompletedCodes$Description[6],
-                LastGradeCompletedCodes$Description[1:5],
-                LastGradeCompletedCodes$Description[7:9],
-                LastGradeCompletedCodes$Description[12],
-                LastGradeCompletedCodes$Description[10:11]
+                "Less than Grade 5",
+                "Grades 5-8",
+                "Grades 9-11",
+                "Some College",
+                "High school diploma/GED",
+                "College Degree/Vocational"
               ),
               " (Exit)"
             ),
