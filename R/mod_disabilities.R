@@ -169,13 +169,29 @@ mod_disabilities_ui <- function(id){
       shiny::column(
         width = 12,
 
-        bs4Dash::box(
+        bs4Dash::tabBox(
           title = "Data Quality Statistics",
+          type = "tabs",
+          side = "right",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
-          reactable::reactableOutput(
-            outputId = ns("missingness_stats_tbl")
+
+          shiny::tabPanel(
+            title = "Summary",
+            shiny::htmlOutput(ns("data_quality_string")),
+          ),
+
+          shiny::tabPanel(
+            title = "Youth by Number of Answers Missing",
+            reactable::reactableOutput(outputId = ns("missingness_stats_tbl1"))
+          ),
+
+          shiny::tabPanel(
+            title = "Missing by Disability",
+            reactable::reactableOutput(outputId = ns("missingness_stats_tbl2"))
           )
+
         )
 
       )
@@ -722,28 +738,67 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     })
 
     # Missingness Statistics ----
-    missingness_stats <- shiny::reactive({
+    output$data_quality_string <- shiny::renderUI({
+      glue::glue(
+        "<strong>{round(n_youth_in_disability_data()/n_youth(), 2) * 100}%</strong>
+        of youth in selected program(s) have entries in Disabilities Data."
+      ) |>
+        shiny::HTML()
+    })
 
-      disabilities_data_filtered() |>
-        dplyr::mutate(disability_response = ifelse(
-          is.na(disability_response),
-          "(Blank)",
-          disability_response
-        )) |>
-        dplyr::filter(disability_response %in% c(
+    output$missingness_stats_tbl1 <- reactable::renderReactable(
+
+      disabilities_data_recent() |>
+        dplyr::mutate(
+          `Answers Missing` = rowSums(
+            dplyr::across(
+              .cols = c(
+                `Physical Disability`,
+                `Developmental Disability`,
+                `Chronic Health Condition`,
+                `HIV/AIDS`,
+                `Mental Health Disorder`,
+                `Substance Use Disorder`
+              ),
+              .fns = function(value) !value %in% c("Yes", "No")
+            )
+          )
+        ) |>
+        dplyr::count(`Answers Missing`, name = "# Youth") |>
+        reactable::reactable()
+
+    )
+
+    missingness_stats2 <- shiny::reactive({
+
+      disabilities_data_recent() |>
+        tidyr::pivot_longer(
+          cols = c(
+            `Physical Disability`,
+            `Developmental Disability`,
+            `Chronic Health Condition`,
+            `HIV/AIDS`,
+            `Mental Health Disorder`,
+            `Substance Use Disorder`
+          ),
+          names_to = "Disability",
+          values_to = "Response"
+        ) |>
+        # We will consider NA values as "Data not collected"
+        tidyr::replace_na(list(Response = "Data not collected")) |>
+        dplyr::filter(Response %in%  c(
           "Client doesn't know",
           "Client prefers not to answer",
-          "Data not collected",
-          "(Blank)"
+          "Data not collected"
         )) |>
-        dplyr::count(disability_response, name = "Count") |>
-        dplyr::rename(Response = disability_response)
+        dplyr::count(Disability, Response) |>
+        tidyr::pivot_wider(names_from = Response, values_from = n)
 
     })
 
-    output$missingness_stats_tbl <- reactable::renderReactable(
+    output$missingness_stats_tbl2 <- reactable::renderReactable(
       reactable::reactable(
-        missingness_stats()
+        missingness_stats2()
       )
     )
 
