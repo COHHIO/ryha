@@ -64,76 +64,31 @@ process_data <- function(file) {
   # List the files (full paths) in the temp directory
   files_in_tmp <- fs::dir_ls(tmp_dir)
 
-  # List the path to each file
-  files_list <- list(
-    client = stringr::str_subset(string = files_in_tmp, pattern = "Client.csv$"),
-    disabilities = stringr::str_subset(string = files_in_tmp, pattern = "Disabilities.csv$"),
-    education = stringr::str_subset(string = files_in_tmp, pattern = "EmploymentEducation.csv$"),
-    employment = stringr::str_subset(string = files_in_tmp, pattern = "EmploymentEducation.csv$"),
-    living = stringr::str_subset(string = files_in_tmp, pattern = "CurrentLivingSituation.csv$"),
-    health = stringr::str_subset(string = files_in_tmp, pattern = "HealthAndDV.csv$"),
-    domestic_violence = stringr::str_subset(string = files_in_tmp, pattern = "HealthAndDV.csv$"),
-    income = stringr::str_subset(string = files_in_tmp, pattern = "IncomeBenefits.csv$"),
-    benefits = stringr::str_subset(string = files_in_tmp, pattern = "IncomeBenefits.csv$"),
-    enrollment = stringr::str_subset(string = files_in_tmp, pattern = "Enrollment.csv$"),
-    services = stringr::str_subset(string = files_in_tmp, pattern = "Services.csv$"),
-    project = stringr::str_subset(string = files_in_tmp, pattern = "Project.csv$"),
-    organization = stringr::str_subset(string = files_in_tmp, pattern = "Organization.csv$"),
-    exit = stringr::str_subset(string = files_in_tmp, pattern = "Exit.csv$"),
-    export = stringr::str_subset(string = files_in_tmp, pattern = "Export.csv$")
-  )
-
-  # Create a list of the corresponding `read_*()` functions for each file in
-  # `files_list`
-  funcs_list <- list(
-    client = read_client,
-    disabilities = read_disabilities,
-    education = read_education,
-    employment = read_employment,
-    living = read_living,
-    health = read_health,
-    domestic_violence = read_domestic_violence,
-    income = read_income,
-    benefits = read_benefits,
-    enrollment = read_enrollment,
-    services = read_services,
-    project = read_project,
-    organization = read_organization,
-    exit = read_exit,
-    export = read_export
-  )
-
-  # Create an empty list to store the ingested data for each table
   data <- list(
-    client = NULL,
-    disabilities = NULL,
-    education = NULL,
-    employment = NULL,
-    living = NULL,
-    health = NULL,
-    domestic_violence = NULL,
-    income = NULL,
-    benefits = NULL,
-    enrollment = NULL,
-    services = NULL,
-    project = NULL,
-    organization = NULL,
-    exit = NULL,
-    export = NULL
-  )
-
-  # Execute the list of functions against the list of files
-  data <- purrr::map2(
-    .x = funcs_list,
-    .y = files_list,
-    .f = rlang::exec
+    client = read_client(find_file(files_in_tmp, "Client")),
+    disabilities = read_disabilities(find_file(files_in_tmp, "Disabilities")),
+    education = read_education(find_file(files_in_tmp, "EmploymentEducation")),
+    employment = read_employment(find_file(files_in_tmp, "EmploymentEducation")),
+    living = read_living(find_file(files_in_tmp, "CurrentLivingSituation")),
+    health = read_health(find_file(files_in_tmp, "HealthAndDV")),
+    domestic_violence = read_domestic_violence(find_file(files_in_tmp, "HealthAndDV")),
+    income = read_income(find_file(files_in_tmp, "IncomeBenefits")),
+    benefits = read_benefits(find_file(files_in_tmp, "IncomeBenefits")),
+    enrollment = read_enrollment(find_file(files_in_tmp, "Enrollment")),
+    services = read_services(find_file(files_in_tmp, "Services")),
+    project = read_project(find_file(files_in_tmp, "Project")),
+    organization = read_organization(find_file(files_in_tmp, "Organization")),
+    exit = read_exit(find_file(files_in_tmp, "Exit")),
+    export = read_export(find_file(files_in_tmp, "Export"))
   )
 
   return(data)
 
 }
 
-
+find_file <- function(files, target) {
+  stringr::str_subset(string = files, pattern = paste0(target, ".csv$"))
+}
 
 prep_tables <- function(data, conn) {
 
