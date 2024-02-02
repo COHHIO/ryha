@@ -45,35 +45,39 @@ lookup_codes <- function(var, codes) {
 #' }
 read_client <- function(file) {
 
+  expected_colnames <- c(
+    "PersonalID",
+    "SSN",
+    "SSNDataQuality",
+    "DOB",
+    "DOBDataQuality",
+    "AmIndAKNative",
+    "Asian",
+    "BlackAfAmerican",
+    "HispanicLatinaeo",
+    "MidEastNAfrican",
+    "NativeHIPacific",
+    "White",
+    "RaceNone",
+    "Woman",
+    "Man",
+    "NonBinary",
+    "CulturallySpecific",
+    "Transgender",
+    "Questioning",
+    "DifferentIdentity",
+    "GenderNone",
+    "DifferentIdentityText",
+    "VeteranStatus",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   client <- readr::read_csv(
     file = file,
     # only read in columns needed for "CLIENT" database table
-    col_select = c(
-      PersonalID,
-      SSN,
-      SSNDataQuality,
-      DOB,
-      DOBDataQuality,
-      AmIndAKNative,
-      Asian,
-      BlackAfAmerican,
-      HispanicLatinaeo,
-      MidEastNAfrican,
-      NativeHIPacific,
-      White,
-      RaceNone,
-      Woman,
-      Man,
-      NonBinary,
-      CulturallySpecific,
-      Transgender,
-      Questioning,
-      DifferentIdentity,
-      GenderNone,
-      DifferentIdentityText,
-      VeteranStatus,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
@@ -180,19 +184,23 @@ read_client <- function(file) {
 #' }
 read_disabilities <- function(file) {
 
+  expected_colnames <- c(
+    "DisabilitiesID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "DisabilityType",
+    "DisabilityResponse",
+    "DataCollectionStage",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "DISABILITIES" database table
-    col_select = c(
-      DisabilitiesID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      DisabilityType,
-      DisabilityResponse,
-      DataCollectionStage,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
@@ -248,19 +256,23 @@ read_disabilities <- function(file) {
 #' }
 read_education <- function(file) {
 
+  expected_colnames <- c(
+    "EmploymentEducationID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "LastGradeCompleted",
+    "SchoolStatus",
+    "DataCollectionStage",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "EDUCATION" database table
-    col_select = c(
-      EmploymentEducationID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      LastGradeCompleted,
-      SchoolStatus,
-      DataCollectionStage,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
@@ -314,20 +326,24 @@ read_education <- function(file) {
 #' }
 read_employment <- function(file) {
 
+  expected_colnames <- c(
+    "EmploymentEducationID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "Employed",
+    "EmploymentType",
+    "NotEmployedReason",
+    "DataCollectionStage",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "EMPLOYMENT" database table
-    col_select = c(
-      EmploymentEducationID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      Employed,
-      EmploymentType,
-      NotEmployedReason,
-      DataCollectionStage,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
@@ -386,18 +402,22 @@ read_employment <- function(file) {
 #' }
 read_living <- function(file) {
 
+  expected_colnames <- c(
+    "CurrentLivingSitID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "CurrentLivingSituation",
+    "LeaveSituation14Days",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "LIVING" database table
-    col_select = c(
-      CurrentLivingSitID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      CurrentLivingSituation,
-      LeaveSituation14Days,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
@@ -447,21 +467,25 @@ read_living <- function(file) {
 #' }
 read_health <- function(file) {
 
+  expected_colnames <- c(
+    "HealthAndDVID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "GeneralHealthStatus",
+    "DentalHealthStatus",
+    "MentalHealthStatus",
+    "PregnancyStatus",
+    "DataCollectionStage",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "HEALTH" database table
-    col_select = c(
-      HealthAndDVID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      GeneralHealthStatus,
-      DentalHealthStatus,
-      MentalHealthStatus,
-      PregnancyStatus,
-      DataCollectionStage,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
@@ -521,20 +545,24 @@ read_health <- function(file) {
 #' }
 read_domestic_violence <- function(file) {
 
+  expected_colnames <- c(
+    "HealthAndDVID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "DomesticViolenceSurvivor",
+    "WhenOccurred",
+    "CurrentlyFleeing",
+    "DataCollectionStage",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "DOMESTIC_VIOLENCE" database table
-    col_select = c(
-      HealthAndDVID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      DomesticViolenceSurvivor,
-      WhenOccurred,
-      CurrentlyFleeing,
-      DataCollectionStage,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
@@ -593,50 +621,54 @@ read_domestic_violence <- function(file) {
 #' }
 read_income <- function(file) {
 
+  expected_colnames <- c(
+    "IncomeBenefitsID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "IncomeFromAnySource",
+    "TotalMonthlyIncome",
+    "Earned",
+    "EarnedAmount",
+    "Unemployment",
+    "UnemploymentAmount",
+    "SSI",
+    "SSIAmount",
+    "SSDI",
+    "SSDIAmount",
+    "VADisabilityService",
+    "VADisabilityServiceAmount",
+    "VADisabilityNonService",
+    "VADisabilityNonServiceAmount",
+    "PrivateDisability",
+    "PrivateDisabilityAmount",
+    "WorkersComp",
+    "WorkersCompAmount",
+    "TANF",
+    "TANFAmount",
+    "GA",
+    "GAAmount",
+    "SocSecRetirement",
+    "SocSecRetirementAmount",
+    "Pension",
+    "PensionAmount",
+    "ChildSupport",
+    "ChildSupportAmount",
+    "Alimony",
+    "AlimonyAmount",
+    "OtherIncomeSource",
+    "OtherIncomeAmount",
+    "OtherIncomeSourceIdentify",
+    "DataCollectionStage",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "INCOME" database table
-    col_select = c(
-      IncomeBenefitsID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      IncomeFromAnySource,
-      TotalMonthlyIncome,
-      Earned,
-      EarnedAmount,
-      Unemployment,
-      UnemploymentAmount,
-      SSI,
-      SSIAmount,
-      SSDI,
-      SSDIAmount,
-      VADisabilityService,
-      VADisabilityServiceAmount,
-      VADisabilityNonService,
-      VADisabilityNonServiceAmount,
-      PrivateDisability,
-      PrivateDisabilityAmount,
-      WorkersComp,
-      WorkersCompAmount,
-      TANF,
-      TANFAmount,
-      GA,
-      GAAmount,
-      SocSecRetirement,
-      SocSecRetirementAmount,
-      Pension,
-      PensionAmount,
-      ChildSupport,
-      ChildSupportAmount,
-      Alimony,
-      AlimonyAmount,
-      OtherIncomeSource,
-      OtherIncomeAmount,
-      OtherIncomeSourceIdentify,
-      DataCollectionStage,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
@@ -719,46 +751,50 @@ read_income <- function(file) {
 #' }
 read_benefits <- function(file) {
 
+  expected_colnames <- c(
+    "IncomeBenefitsID",
+    "EnrollmentID",
+    "PersonalID",
+    "InformationDate",
+    "BenefitsFromAnySource",
+    "SNAP",
+    "WIC",
+    "TANFChildCare",
+    "TANFTransportation",
+    "OtherTANF",
+    "OtherBenefitsSource",
+    "OtherBenefitsSourceIdentify",
+    "InsuranceFromAnySource",
+    "Medicaid",
+    "NoMedicaidReason",
+    "Medicare",
+    "NoMedicareReason",
+    "SCHIP",
+    "NoSCHIPReason",
+    "VHAServices",
+    "NoVHAReason",
+    "EmployerProvided",
+    "NoEmployerProvidedReason",
+    "COBRA",
+    "NoCOBRAReason",
+    "PrivatePay",
+    "NoPrivatePayReason",
+    "StateHealthIns",
+    "NoStateHealthInsReason",
+    "IndianHealthServices",
+    "NoIndianHealthServicesReason",
+    "OtherInsurance",
+    "OtherInsuranceIdentify",
+    "DataCollectionStage",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "BENEFITS" database table
-    col_select = c(
-      IncomeBenefitsID,
-      EnrollmentID,
-      PersonalID,
-      InformationDate,
-      BenefitsFromAnySource,
-      SNAP,
-      WIC,
-      TANFChildCare,
-      TANFTransportation,
-      OtherTANF,
-      OtherBenefitsSource,
-      OtherBenefitsSourceIdentify,
-      InsuranceFromAnySource,
-      Medicaid,
-      NoMedicaidReason,
-      Medicare,
-      NoMedicareReason,
-      SCHIP,
-      NoSCHIPReason,
-      VHAServices,
-      NoVHAReason,
-      EmployerProvided,
-      NoEmployerProvidedReason,
-      COBRA,
-      NoCOBRAReason,
-      PrivatePay,
-      NoPrivatePayReason,
-      StateHealthIns,
-      NoStateHealthInsReason,
-      IndianHealthServices,
-      NoIndianHealthServicesReason,
-      OtherInsurance,
-      OtherInsuranceIdentify,
-      DataCollectionStage,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
@@ -829,44 +865,48 @@ read_benefits <- function(file) {
 #' }
 read_enrollment <- function(file) {
 
+  expected_colnames <- c(
+    "EnrollmentID",
+    "PersonalID",
+    "ProjectID",
+    "EntryDate",
+    "HouseholdID",
+    "RelationshipToHoH",
+    "EnrollmentCoC",
+    "LivingSituation",
+    "LengthOfStay",
+    "LOSUnderThreshold",
+    "PreviousStreetESSH",
+    "DateToStreetESSH",
+    "TimesHomelessPastThreeYears",
+    "MonthsHomelessPastThreeYears",
+    "DisablingCondition",
+    "MoveInDate",
+    "ReferralSource",
+    "RunawayYouth",
+    "SexualOrientation",
+    "SexualOrientationOther",
+    "FormerWardChildWelfare",
+    "ChildWelfareYears",
+    "ChildWelfareMonths",
+    "FormerWardJuvenileJustice",
+    "JuvenileJusticeYears",
+    "JuvenileJusticeMonths",
+    "UnemploymentFam",
+    "MentalHealthDisorderFam",
+    "PhysicalDisabilityFam",
+    "AlcoholDrugUseDisorderFam",
+    "InsufficientIncome",
+    "IncarceratedParent",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "ENROLLMENT" database table
-    col_select = c(
-      EnrollmentID,
-      PersonalID,
-      ProjectID,
-      EntryDate,
-      HouseholdID,
-      RelationshipToHoH,
-      EnrollmentCoC,
-      LivingSituation,
-      LengthOfStay,
-      LOSUnderThreshold,
-      PreviousStreetESSH,
-      DateToStreetESSH,
-      TimesHomelessPastThreeYears,
-      MonthsHomelessPastThreeYears,
-      DisablingCondition,
-      MoveInDate,
-      ReferralSource,
-      RunawayYouth,
-      SexualOrientation,
-      SexualOrientationOther,
-      FormerWardChildWelfare,
-      ChildWelfareYears,
-      ChildWelfareMonths,
-      FormerWardJuvenileJustice,
-      JuvenileJusticeYears,
-      JuvenileJusticeMonths,
-      UnemploymentFam,
-      MentalHealthDisorderFam,
-      PhysicalDisabilityFam,
-      AlcoholDrugUseDisorderFam,
-      InsufficientIncome,
-      IncarceratedParent,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_integer(),
@@ -968,18 +1008,22 @@ read_enrollment <- function(file) {
 #' }
 read_services <- function(file) {
 
+  expected_colnames <- c(
+    "ServicesID",
+    "EnrollmentID",
+    "PersonalID",
+    "DateProvided",
+    "TypeProvided",
+    "ReferralOutcome",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "Services" database table
-    col_select = c(
-      ServicesID,
-      EnrollmentID,
-      PersonalID,
-      DateProvided,
-      TypeProvided,
-      ReferralOutcome,
-      DateUpdated
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
@@ -1027,16 +1071,20 @@ read_services <- function(file) {
 #' }
 read_project <- function(file) {
 
+  expected_colnames <- c(
+    "ProjectID",
+    "OrganizationID",
+    "ProjectName",
+    "ProjectType",
+    "OperatingStartDate"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "PROJECT" database table
-    col_select = c(
-      ProjectID,
-      OrganizationID,
-      ProjectName,
-      ProjectType,
-      OperatingStartDate
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
@@ -1078,13 +1126,17 @@ read_project <- function(file) {
 #' }
 read_organization <- function(file) {
 
+  expected_colnames <- c(
+    "OrganizationID",
+    "OrganizationName"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "PROJECT" database table
-    col_select = c(
-      OrganizationID,
-      OrganizationName
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character()
@@ -1141,43 +1193,45 @@ read_exit <- function(file) {
   if (length(WorkplacePromiseDifference) == 0)
     rlang::abort("Error: No matching column names found for Workplace Promise Difference.")
 
+  expected_colnames <- c(
+    "ExitID",
+    "EnrollmentID",
+    "PersonalID",
+    "ExitDate",
+    "Destination",
+    "OtherDestination",
+    "ProjectCompletionStatus",
+    "ExchangeForSex",
+    "ExchangeForSexPastThreeMonths",
+    "CountOfExchangeForSex",
+    "AskedOrForcedToExchangeForSex",
+    "AskedOrForcedToExchangeForSexPastThreeMonths",
+    WorkplaceViolenceThreats,
+    WorkplacePromiseDifference,
+    "CoercedToContinueWork",
+    "LaborExploitPastThreeMonths",
+    "CounselingReceived",
+    "IndividualCounseling",
+    "FamilyCounseling",
+    "GroupCounseling",
+    "SessionCountAtExit",
+    "PostExitCounselingPlan",
+    "SessionsInPlan",
+    "DestinationSafeClient",
+    "DestinationSafeWorker",
+    "PosAdultConnections",
+    "PosPeerConnections",
+    "PosCommunityConnections",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
   # Ingest file
   exit <- readr::read_csv(
     file = file,
     # only read in columns needed for "PROGRAM" database table
-    col_select = dplyr::all_of(
-      c(
-        "ExitID",
-        "EnrollmentID",
-        "PersonalID",
-        "ExitDate",
-        "Destination",
-        "OtherDestination",
-        "ProjectCompletionStatus",
-        "ExchangeForSex",
-        "ExchangeForSexPastThreeMonths",
-        "CountOfExchangeForSex",
-        "AskedOrForcedToExchangeForSex",
-        "AskedOrForcedToExchangeForSexPastThreeMonths",
-        WorkplaceViolenceThreats,
-        WorkplacePromiseDifference,
-        "CoercedToContinueWork",
-        "LaborExploitPastThreeMonths",
-        "CounselingReceived",
-        "IndividualCounseling",
-        "FamilyCounseling",
-        "GroupCounseling",
-        "SessionCountAtExit",
-        "PostExitCounselingPlan",
-        "SessionsInPlan",
-        "DestinationSafeClient",
-        "DestinationSafeWorker",
-        "PosAdultConnections",
-        "PosPeerConnections",
-        "PosCommunityConnections",
-        "DateUpdated"
-      )
-    ),
+    col_select = expected_colnames,
     # define schema types
     # use !!object := readr::col_*() if object stores a column name
     col_types = readr::cols(
@@ -1290,18 +1344,22 @@ read_exit <- function(file) {
 #' }
 read_export <- function(file) {
 
+  expected_colnames <- c(
+    "ExportID",
+    "SourceContactFirst",
+    "SourceContactLast",
+    "SourceContactEmail",
+    "ExportStartDate",
+    "ExportEndDate",
+    "SoftwareName"
+  )
+
+  check_colnames(file, expected_colnames)
+
   readr::read_csv(
     file = file,
     # only read in columns needed for "PROGRAM" database table
-    col_select = c(
-      ExportID,
-      SourceContactFirst,
-      SourceContactLast,
-      SourceContactEmail,
-      ExportStartDate,
-      ExportEndDate,
-      SoftwareName
-    ),
+    col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
       .default = readr::col_character(),
@@ -1348,6 +1406,27 @@ hash <- function(x, key) {
   } else {
 
     NA
+
+  }
+
+}
+
+check_colnames <- function(file, expected_colnames) {
+
+  file_colnames <- readLines(file, n = 1) |>
+    strsplit(",") |>
+    unlist()
+
+  missing_columns <- setdiff(expected_colnames, file_colnames)
+
+  if (length(missing_columns) > 0) {
+
+    rlang::abort(
+      glue::glue(
+        "The following column(s) are missing in { basename(file) }:<br>
+        { paste0(missing_columns, collapse = ', ') }"
+      )
+    )
 
   }
 
