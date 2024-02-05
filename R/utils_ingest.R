@@ -1411,16 +1411,30 @@ hash <- function(x, key) {
 
 }
 
+#' Check colnames
+#'
+#' `check_colnames()` compares a set of expected column names with the actual
+#' column names in a .csv file an errors if any of the expected column names
+#' is not found in the file.
+#'
+#' @param file String. Full path to a .csv file.
+#' @param expected_colnames Character. Set of expected column names.
+#'
+#' @return `check_colnames()` does not return any value. It either produces an
+#' error or not, so what matters is its side effect.
 check_colnames <- function(file, expected_colnames) {
 
+  # List columns in the file
   file_colnames <- readLines(file, n = 1) |>
     strsplit(",") |>
     unlist()
 
+  # Determine which expected columns are not present in the file
   missing_columns <- setdiff(expected_colnames, file_colnames)
 
   if (length(missing_columns) > 0) {
 
+    # Inform the user which columns are missing from the file
     rlang::abort(
       glue::glue(
         "The following column(s) are missing in { basename(file) }:<br>
