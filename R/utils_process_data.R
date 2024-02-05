@@ -64,6 +64,7 @@ process_data <- function(file) {
   # List the files (full paths) in the temp directory
   files_in_tmp <- fs::dir_ls(tmp_dir)
 
+  # Read data from each file
   data <- list(
     client = read_client(find_file(files_in_tmp, "Client")),
     disabilities = read_disabilities(find_file(files_in_tmp, "Disabilities")),
@@ -87,7 +88,12 @@ process_data <- function(file) {
 }
 
 find_file <- function(files, target) {
-  stringr::str_subset(string = files, pattern = paste0(target, ".csv$"))
+
+  stringr::str_subset(
+    string = files,
+    pattern = paste0(target, ".csv$")
+  )
+
 }
 
 prep_tables <- function(data, conn) {
