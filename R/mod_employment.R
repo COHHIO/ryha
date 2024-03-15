@@ -13,22 +13,19 @@ mod_employment_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 6,
-        # Number of clients (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 6
       ),
 
-      shiny::column(
-        width = 6,
-        # Number of projects (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_employment_data_box"),
-          width = "100%"
-        )
+      # Number of projects (post filters)
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_employment")),
+        subtitle = "Total # of Youth with Employment Data Available",
+        icon = shiny::icon("briefcase"),
+        width = 6
       )
 
     ),
@@ -163,26 +160,14 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
-    # Render number of projects box
-    output$n_youth_with_employment_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_employment_data(),
-        subtitle = "Total # of Youth with Employment Data Available",
-        icon = shiny::icon("briefcase")
-      )
-
+    # Render number of projects box value
+    output$n_youth_with_employment <- shiny::renderText({
+      n_youth_with_employment_data()
     })
 
     # Create reactive data frame to data to be displayed in pie chart
