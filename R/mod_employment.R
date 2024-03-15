@@ -38,7 +38,10 @@ mod_employment_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Employment Status",
+          title = with_popover(
+            text = "# of Youth by Employment Status",
+            content = link_section("R6 Employment Status")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
