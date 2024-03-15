@@ -57,7 +57,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by General Health Status",
+                  title = with_popover(
+                    text = "# of Youth by General Health Status",
+                    content = link_section("R7 General Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -116,7 +119,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Dental Health Status",
+                  title = with_popover(
+                    text = "# of Youth by Dental Health Status",
+                    content = link_section("R8 Dental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -174,7 +180,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Mental Health Status",
+                  title = with_popover(
+                    text = "# of Youth by Mental Health Status",
+                    content = link_section("R9 Mental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -233,7 +242,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Counseling Received Response",
+                  title = with_popover(
+                    text = "# of Youth by Counseling Received Response",
+                    content = link_section("R18 Counseling")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
