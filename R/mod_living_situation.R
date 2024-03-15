@@ -13,22 +13,18 @@ mod_living_situation_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 6,
-        # Number of youth (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 6
       ),
 
-      shiny::column(
-        width = 6,
-        # Number of youth with living situation data available (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_living_situation_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_living_situation_data")),
+        subtitle = "Total # of Youth with Living Situation Data Available",
+        icon = shiny::icon("bed"),
+        width = 6
       )
 
     ),
@@ -41,7 +37,10 @@ mod_living_situation_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Living Situation (at Entry)",
+          title = with_popover(
+            text = "# of Youth by Living Situation (at Entry)",
+            content = link_section("3.917 Prior Living Situation")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -57,7 +56,10 @@ mod_living_situation_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Destination (at Exit)",
+          title = with_popover(
+            text = "# of Youth by Destination (at Exit)",
+            content = link_section("3.12 Destination")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -202,26 +204,14 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
-    # Render number of youth with living situation data box
-    output$n_youth_with_living_situation_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_living_data(),
-        subtitle = "Total # of Youth with Living Situation Data Available",
-        icon = shiny::icon("bed")
-      )
-
+    # Render number of youth with living situation data box value
+    output$n_youth_with_living_situation_data <- shiny::renderText({
+      n_youth_with_living_data()
     })
 
     # Living Situation Pie Chart ----
