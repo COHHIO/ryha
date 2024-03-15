@@ -48,7 +48,10 @@ mod_education_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Last Grade Completed",
+                  title = with_popover(
+                    text = "# of Youth by Last Grade Completed",
+                    content = link_section("R4 Last Grade Completed")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -105,7 +108,10 @@ mod_education_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by School Status",
+                  title = with_popover(
+                    text = "# of Youth by School Status",
+                    content = link_section("R5 School Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
