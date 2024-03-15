@@ -13,32 +13,26 @@ mod_services_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 4,
-        # Number of clients (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of projects (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_services_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_services")),
+        subtitle = "Total # of Youth with Services Data Available",
+        icon = shiny::icon("hands-helping"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of projects (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_referral_data_box"),
-          width = "100%"
-        )
-      )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_referral")),
+        subtitle = "Total # of Youth with Referral Data Available",
+        icon = shiny::icon("hands-helping"),
+        width = 4
+      ),
 
     ),
 
@@ -192,37 +186,19 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
-    # Render number of youth w/ services box
-    output$n_youth_with_services_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_services_data(),
-        subtitle = "Total # of Youth with Services Data Available",
-        icon = shiny::icon("hands-helping")
-      )
-
+    # Render number of youth w/ services box value
+    output$n_youth_with_services <- shiny::renderText({
+      n_youth_with_services_data()
     })
 
-    # Render number of youth w/ referral data box
-    output$n_youth_with_referral_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_referral_data(),
-        subtitle = "Total # of Youth with Referral Data Available",
-        icon = shiny::icon("hands-helping")
-      )
-
+    # Render number of youth w/ referral box value
+    output$n_youth_with_referral <- shiny::renderText({
+      n_youth_with_referral_data()
     })
 
     # Create reactive data frame to data to be displayed in bar chart
