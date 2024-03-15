@@ -9,3 +9,27 @@ spinner_message <- function(message) {
     message
   )
 }
+
+with_popover <- function(text, title = "More Info", content, placement = "right") {
+
+  bs4Dash::popover(
+    tag = shiny::span(text, shiny::icon("question-circle")),
+    content = content,
+    title = title,
+    placement = placement)
+
+}
+
+link_section <- function(section) {
+  URL <- "https://files.hudexchange.info/resources/documents/HMIS-Data-Standards-Manual-2024.pdf"
+
+  parsed_section <- section |>
+    # %20 is how spaces are placed in URLs
+    stringr::str_replace_all(" ", "%20")
+
+  shiny::tags$a(
+    href = glue::glue("{ URL }#{ parsed_section }"),
+    target = "_blank",
+    "HMIS Data Standards Manual"
+  )
+}
