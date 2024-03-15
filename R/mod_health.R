@@ -93,7 +93,10 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in General Health Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in General Health Status (Entry --> Exit)",
+                    content = link_section("R7 General Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -154,7 +157,10 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Dental Health Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Dental Health Status (Entry --> Exit)",
+                    content = link_section("R8 Dental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -216,7 +222,10 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Mental Health Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Mental Health Status (Entry --> Exit)",
+                    content = link_section("R9 Mental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,

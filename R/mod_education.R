@@ -84,7 +84,10 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Last Grade Completed (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Last Grade Completed (Entry --> Exit)",
+                    content = link_section("R4 Last Grade Completed")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -144,7 +147,10 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in School Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in School Status (Entry --> Exit)",
+                    content = link_section("R5 School Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,

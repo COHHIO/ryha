@@ -57,7 +57,10 @@ mod_employment_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Employment Type",
+          title = with_popover(
+            text = "# of Youth by Employment Type",
+            content = link_section("R6 Employment Status")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -77,7 +80,10 @@ mod_employment_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Reason Not Employed",
+          title = with_popover(
+            text = "# of Youth by Reason Not Employed",
+            content = link_section("R6 Employment Status")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -110,7 +116,10 @@ mod_employment_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
-          title = "Changes in Employed Status (Entry --> Exit)",
+          title = with_popover(
+            text = "Changes in Employed Status (Entry --> Exit)",
+            content = link_section("R6 Employment Status")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,

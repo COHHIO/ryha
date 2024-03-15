@@ -84,7 +84,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -108,7 +111,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by When Occurred Response",
+                  title = with_popover(
+                    text = "# of Youth by When Occurred Response",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -141,7 +147,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in When Occurred (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in When Occurred (Entry --> Exit)",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -165,7 +174,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Currently Fleeing Response",
+                  title = with_popover(
+                    text = "# of Youth by Currently Fleeing Response",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -198,7 +210,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Currently Fleeing (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Currently Fleeing (Entry --> Exit)",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,

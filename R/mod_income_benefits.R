@@ -103,7 +103,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Bar Chart ----
                 bs4Dash::box(
-                  title = "Total Monthly Income (# of Youth)",
+                  title = with_popover(
+                    text = "Total Monthly Income (# of Youth)",
+                    content = link_section("4.02 Income and Sources")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -192,7 +195,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Sankey Chart ----
                 bs4Dash::box(
-                  title = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                    content = link_section("4.03 Non-Cash Benefits")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -278,7 +284,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Sankey Chart ----
                 bs4Dash::box(
-                  title = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
+                    content = link_section("4.04 Health Insurance")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
