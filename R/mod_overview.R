@@ -19,7 +19,10 @@ mod_overview_ui <- function(id){
         # Gender ----
 
         bs4Dash::box(
-          title = "# of Youth by Gender",
+          title = with_popover(
+            text = "# of Youth by Gender",
+            content = link_section("3.06 Gender")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -37,7 +40,10 @@ mod_overview_ui <- function(id){
         # Sexual Orientation ----
 
         bs4Dash::box(
-          title = "# of Youth by Sexual Orientation",
+          title = with_popover(
+            text = "# of Youth by Sexual Orientation",
+            content = link_section("R3 Sexual Orientation")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -59,7 +65,10 @@ mod_overview_ui <- function(id){
         # Veteran Status ----
 
         bs4Dash::box(
-          title = "# of Youth by Veteran Status",
+          title = with_popover(
+            text = "# of Youth by Veteran Status",
+            content = link_section("3.07 Veteran Status")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -77,7 +86,10 @@ mod_overview_ui <- function(id){
         # Ethnicity ----
 
         bs4Dash::box(
-          title = "# of Youth by Race & Ethnicity",
+          title = with_popover(
+            text = "# of Youth by Race & Ethnicity",
+            content = link_section("3.04 Race and Ethnicity")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -99,7 +111,10 @@ mod_overview_ui <- function(id){
         # Age ----
 
         bs4Dash::box(
-          title = "# of Youth by Age",
+          title = with_popover(
+            text = "# of Youth by Age",
+            content = link_section("3.03 Date of Birth")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -122,7 +137,10 @@ mod_overview_ui <- function(id){
         # Welfare ----
 
         bs4Dash::box(
-          title = "# of Youth by Former Ward Child Welfare Response",
+          title = with_popover(
+            text = "# of Youth by Former Ward Child Welfare Response",
+            content = link_section("R11 Formerly a Ward of Child Welfare/Foster Care Agency")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -140,7 +158,10 @@ mod_overview_ui <- function(id){
         # Juvenile ----
 
         bs4Dash::box(
-          title = "# of Youth by Former Ward Juvenile Justice Response",
+          title = with_popover(
+            text = "# of Youth by Former Ward Juvenile Justice Response",
+            content = link_section("R12 Formerly a Ward of Juvenile Justice System")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
