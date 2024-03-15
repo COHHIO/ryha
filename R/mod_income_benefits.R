@@ -59,7 +59,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Pie Chart ----
                 bs4Dash::box(
-                  title = "Income Received (from Any Source)",
+                  title = with_popover(
+                    text = "Income Received (from Any Source)",
+                    content = link_section("4.02 Income and Sources")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -76,7 +79,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Income Received by Source (# of Youth)",
+                  title = with_popover(
+                    text = "Income Received by Source (# of Youth)",
+                    content = link_section("4.02 Income and Sources")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -143,7 +149,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Pie Chart ----
                 bs4Dash::box(
-                  title = "Benefits Received (from Any Source)",
+                  title = with_popover(
+                    text = "Benefits Received (from Any Source)",
+                    content = link_section("4.03 Non-Cash Benefits")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -160,7 +169,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Benefits Received by Source",
+                  title = with_popover(
+                    text = "Benefits Received by Source",
+                    content = link_section("4.03 Non-Cash Benefits")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -223,7 +235,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Pie Chart ----
                 bs4Dash::box(
-                  title = "Health Insurance Received (from Any Source)",
+                  title = with_popover(
+                    text = "Health Insurance Received (from Any Source)",
+                    content = link_section("4.04 Health Insurance")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -240,7 +255,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Health Insurance Received by Source",
+                  title = with_popover(
+                    text = "Health Insurance Received by Source",
+                    content = link_section("4.04 Health Insurance")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
