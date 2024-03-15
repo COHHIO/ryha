@@ -48,7 +48,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Domestic Violence Victim Response",
+                  title = with_popover(
+                    text = "# of Youth by Domestic Violence Victim Response",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
