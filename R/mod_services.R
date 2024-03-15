@@ -61,7 +61,10 @@ mod_services_ui <- function(id){
       shiny::column(
         width = 12,
         bs4Dash::box(
-          title = "# of Youth by Service Type Provided",
+          title = with_popover(
+            text = "# of Youth by Service Type Provided",
+            content = link_section("R14 RHY Service Connections")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -79,7 +82,10 @@ mod_services_ui <- function(id){
       shiny::column(
         width = 12,
         bs4Dash::box(
-          title = "# of Youth by Referral Source",
+          title = with_popover(
+            text = "# of Youth by Referral Source",
+            content = link_section("R1 Referral Source")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
