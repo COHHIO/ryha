@@ -13,22 +13,18 @@ mod_exit_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 6,
-        # Number of youth (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 6
       ),
 
-      shiny::column(
-        width = 6,
-        # Number of youth with exit data (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_exit_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_exit_data")),
+        subtitle = "Total # of Youth with Exit Data Available",
+        icon = shiny::icon("door-open"),
+        width = 6
       )
 
     ),
@@ -52,7 +48,10 @@ mod_exit_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "# of Youth by Project Completion Status",
+                  title = with_popover(
+                    text = "# of Youth by Project Completion Status",
+                    content = link_section("R17 Project Completion Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -93,7 +92,10 @@ mod_exit_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "# of Youth by Safe & Appropriate Exit Response",
+                  title = with_popover(
+                    text = "# of Youth by Safe & Appropriate Exit Response",
+                    content = link_section("R19 Safe and Appropriate Exit")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -171,26 +173,14 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
 
     )
 
-    # Render number of youth box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
-    # Render number of youth w/ services box
-    output$n_youth_with_exit_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_exit_data(),
-        subtitle = "Total # of Youth with Exit Data Available",
-        icon = shiny::icon("door-open")
-      )
-
+    # Render number of youth w/ services box value
+    output$n_youth_with_exit_data <- shiny::renderText({
+      n_youth_with_exit_data()
     })
 
     # Create reactive data frame to data to be displayed in pie chart
