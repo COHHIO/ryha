@@ -17,6 +17,6 @@ error or not, so what matters is its side effect.
 }
 \description{
 `check_colnames()` compares a set of expected column names with the actual
-column names in a .csv file an errors if any of the expected column names
+column names in a .csv file and errors if any of the expected column names
 is not found in the file.
 }
