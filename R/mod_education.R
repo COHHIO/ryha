@@ -207,6 +207,19 @@ mod_education_server <- function(id, education_data, clients_filtered){
             last_grade_completed == "Client doesn't know" ~ "Unknown",
             last_grade_completed == "Client refused" ~ "Unknown",
             last_grade_completed == "Data not collected" ~ "Unknown"
+          ),
+          last_grade_completed = factor(
+            last_grade_completed,
+            levels = c(
+              "Less than Grade 5",
+              "Grades 5-8",
+              "Grades 9-11",
+              "High school diploma/GED",
+              "Some College",
+              "College Degree/Vocational",
+              "Unknown"
+            ),
+            ordered = TRUE
           )
         )
 
@@ -294,7 +307,8 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       out |>
         dplyr::count(last_grade_completed) |>
-        dplyr::arrange(last_grade_completed)
+        dplyr::arrange(last_grade_completed) |>
+        dplyr::mutate(last_grade_completed = as.character(last_grade_completed))
 
     })
 
@@ -378,7 +392,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
           )
         ) |>
         dplyr::arrange(Entry, Exit)
-
     })
 
     # Create disabilities trend line chart
