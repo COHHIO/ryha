@@ -22,7 +22,8 @@ mod_disabilities_ui <- function(id){
         # regardless of data quality (youth with data not collected in all
         # disability columns is still counted here)
         bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_in_disability_data_box"),
+          outputId = ns("n_youth_box"),
+          # outputId = ns("n_youth_in_disability_data_box"),
           width = "100%"
         )
       ),
@@ -177,14 +178,16 @@ mod_disabilities_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
 
-          shiny::tabPanel(
-            title = "Summary",
-            shiny::htmlOutput(ns("data_quality_string")),
-          ),
+          # shiny::tabPanel(
+          #   title = "Summary",
+          #   shiny::htmlOutput(ns("data_quality_string")),
+          # ),
 
           shiny::tabPanel(
             title = "Youth by Number of Answers Missing",
-            reactable::reactableOutput(outputId = ns("missingness_stats_tbl1"))
+            reactable::reactableOutput(outputId = ns("missingness_stats_tbl1")),
+            shiny::br(),
+            shiny::em("Note: \"Missing\" is defined as \"Client doesn't know\", \"Client prefers not to answer\", \"Data not collected\", or blank.")
           ),
 
           shiny::tabPanel(
@@ -212,6 +215,17 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
       clients_filtered() |>
         nrow()
+
+    })
+
+    # Render number of clients box
+    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth(),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid")
+      )
 
     })
 
@@ -250,6 +264,9 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
+    # TODO // Implement these "improved" counts across the first infoBox for
+    # all pages
+
     n_youth_in_disability_data <- reactive({
 
       disabilities_data_filtered() |>
@@ -258,16 +275,16 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Render number of youth in disabilities data
-    output$n_youth_in_disability_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_in_disability_data(),
-        subtitle = "Total # of Youth in Disabilities Data",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
-    })
+    # # Render number of youth in disabilities data
+    # output$n_youth_in_disability_data_box <- bs4Dash::renderbs4ValueBox({
+    #
+    #   bs4Dash::bs4ValueBox(
+    #     value = n_youth_in_disability_data(),
+    #     subtitle = "Total # of Youth in Disabilities Data",
+    #     icon = shiny::icon("user", class = "fa-solid")
+    #   )
+    #
+    # })
 
     # Total number of youth with disabilities or substance use
     n_youth_with_disabilities_or_substance_use <- shiny::reactive({
@@ -738,13 +755,13 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     })
 
     # Missingness Statistics ----
-    output$data_quality_string <- shiny::renderUI({
-      glue::glue(
-        "<strong>{round(n_youth_in_disability_data()/n_youth(), 2) * 100}%</strong>
-        of youth in selected program(s) have entries in Disabilities Data."
-      ) |>
-        shiny::HTML()
-    })
+    # output$data_quality_string <- shiny::renderUI({
+    #   glue::glue(
+    #     "<strong>{round(n_youth_in_disability_data()/n_youth(), 2) * 100}%</strong>
+    #     of youth in selected program(s) have entries in Disabilities Data."
+    #   ) |>
+    #     shiny::HTML()
+    # })
 
     output$missingness_stats_tbl1 <- reactable::renderReactable(
 
