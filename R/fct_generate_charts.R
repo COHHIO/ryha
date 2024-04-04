@@ -92,7 +92,8 @@ sankey_chart <- function(data, entry_status, exit_status, count,
     echarts4r::e_sankey_(
       source = entry_status,
       target = exit_status,
-      value = count
+      value = count,
+      layoutIterations = 0
     ) |>
     echarts4r::e_tooltip(trigger = "item") |>
     echarts4r::e_color(color = color) |>
