@@ -17,27 +17,37 @@ mod_disabilities_ui <- function(id){
 
       shiny::column(
         width = 4,
-        # Number of clients (post filters)
+        # Number of youth in disabilities data (post filters)
+        # This number corresponds to the number of youth in disability table,
+        # regardless of data quality (youth with data not collected in all
+        # disability columns is still counted here)
         bs4Dash::bs4ValueBoxOutput(
           outputId = ns("n_youth_box"),
+          # outputId = ns("n_youth_in_disability_data_box"),
           width = "100%"
         )
       ),
 
       shiny::column(
         width = 4,
-        # Number of projects (post filters)
+        # Number of youth with disabilities or substance use (post filters)
+        # This number corresponds to youth that have a value of "Yes" in one
+        # of the columns that refer to disabilities or substance use. In case
+        # the youth has multiple entries, the most recent value will be used.
         bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_disabilities_data_box"),
+          outputId = ns("n_youth_with_disabilities_or_substance_use_box"),
           width = "100%"
         )
       ),
 
       shiny::column(
         width = 4,
-        # Number of youth with no disabilities
+        # Number of youth that did not inform any disabilities or substance use (post filters)
+        # The wording here is made on purpose to include both "No" and missing answers.
+        # In other words, we are counting all youth without a "Yes" value, regardless
+        # of missing data
         bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_no_disabilities_box"),
+          outputId = ns("n_youth_without_disabilities_or_substance_use_box"),
           width = "100%"
         )
       )
@@ -46,7 +56,7 @@ mod_disabilities_ui <- function(id){
 
     shiny::hr(),
 
-    # Pie Charts ----
+    # Charts ----
 
     shiny::fluidRow(
 
@@ -54,12 +64,12 @@ mod_disabilities_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth with Disabilities by Type",
+          title = "Disability Prevalence in Youth",
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("disabilities_pie_chart"),
+            outputId = ns("disabilities_chart"),
             height = "100%"
           )
         )
@@ -160,13 +170,31 @@ mod_disabilities_ui <- function(id){
       shiny::column(
         width = 12,
 
-        bs4Dash::box(
+        bs4Dash::tabBox(
           title = "Data Quality Statistics",
+          type = "tabs",
+          side = "right",
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
-          reactable::reactableOutput(
-            outputId = ns("missingness_stats_tbl")
+
+          # shiny::tabPanel(
+          #   title = "Summary",
+          #   shiny::htmlOutput(ns("data_quality_string")),
+          # ),
+
+          shiny::tabPanel(
+            title = "Youth by Number of Answers Missing",
+            reactable::reactableOutput(outputId = ns("missingness_stats_tbl1")),
+            shiny::br(),
+            shiny::em("Note: \"Missing\" is defined as \"Client doesn't know\", \"Client prefers not to answer\", \"Data not collected\", or blank.")
+          ),
+
+          shiny::tabPanel(
+            title = "Missing by Disability",
+            reactable::reactableOutput(outputId = ns("missingness_stats_tbl2"))
           )
+
         )
 
       )
@@ -182,11 +210,22 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of Youth in program(s), based on `client.csv` file
+    # Total number of youth in program(s), based on `client.csv` file
     n_youth <- shiny::reactive({
 
       clients_filtered() |>
         nrow()
+
+    })
+
+    # Render number of clients box
+    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
+
+      bs4Dash::bs4ValueBox(
+        value = n_youth(),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid")
+      )
 
     })
 
@@ -201,121 +240,170 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Total number of Youth in program(s) that exist in the `disabilities.csv`
-    # file
-    n_youth_with_disabilities_data <- shiny::reactive(
+    # Subset most recent data for each youth
+    disabilities_data_recent <- shiny::reactive({
 
       disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_response %in% c(
-            "Yes", "No", SubstanceUseDisorderCodes$Description[2:4]
-          )
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
+        # Unique key to identify a youth
+        dplyr::group_by(personal_id, organization_id) |>
+        # Keep the values that correspond to the last date_updated
+        dplyr::filter(date_updated == max(date_updated)) |>
+        # Required ungroup step
+        dplyr::ungroup() |>
+        # Convert data to have one row per youth
+        tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
+        # Sometimes, "Project start" and "Project exit" have the same date_updated value
+        # For that reason, we can still find duplicated youth
+        # In this scenario, we will keep "Project exit" row. The trick is to arrange the rows
+        # and keep the first row per client (as "exit" will show before "start" in the sorting)
+        dplyr::arrange(organization_id, personal_id, data_collection_stage) |>
+        dplyr::group_by(personal_id, organization_id) |>
+        # Keep first row per client
+        dplyr::filter(dplyr::row_number() == 1) |>
+        dplyr::ungroup()
 
     })
 
-    # Render number of projects box
-    output$n_youth_with_disabilities_data_box <- bs4Dash::renderbs4ValueBox({
+    # TODO // Implement these "improved" counts across the first infoBox for
+    # all pages
+
+    n_youth_in_disability_data <- reactive({
+
+      disabilities_data_filtered() |>
+        dplyr::select(organization_id, personal_id) |>
+        dplyr::n_distinct()
+
+    })
+
+    # # Render number of youth in disabilities data
+    # output$n_youth_in_disability_data_box <- bs4Dash::renderbs4ValueBox({
+    #
+    #   bs4Dash::bs4ValueBox(
+    #     value = n_youth_in_disability_data(),
+    #     subtitle = "Total # of Youth in Disabilities Data",
+    #     icon = shiny::icon("user", class = "fa-solid")
+    #   )
+    #
+    # })
+
+    # Total number of youth with disabilities or substance use
+    n_youth_with_disabilities_or_substance_use <- shiny::reactive({
+
+      disabilities_data_recent() |>
+        dplyr::filter(
+          rowSums(
+            dplyr::across(
+              .cols = c(
+                `Physical Disability`,
+                `Developmental Disability`,
+                `Chronic Health Condition`,
+                `HIV/AIDS`,
+                `Mental Health Disorder`,
+                `Substance Use Disorder`
+              ),
+              .fns = function(value) value == "Yes"
+            )
+          ) > 0
+        ) |>
+        nrow()
+
+    })
+
+    # Render number of youth with disabilities or substance use box
+    output$n_youth_with_disabilities_or_substance_use_box <- bs4Dash::renderbs4ValueBox({
 
       bs4Dash::bs4ValueBox(
-        value = n_youth_with_disabilities_data(),
-        subtitle = "Total # of Youth with Disabilities Data Available",
+        value = n_youth_with_disabilities_or_substance_use(),
+        subtitle = "Total # of Youth with Disabilities or Substance Use",
         icon = shiny::icon("accessible-icon")
       )
 
     })
 
-    # Create reactive count of the number of youth with no disabilities
-    n_youth_with_no_disabilities <- shiny::reactive(
+    # Create reactive count of the number of youth without disabilities or substance use
+    # We are counting number of youth without a "Yes" in any column, so any missing data
+    # is counted as a "No"
+    n_youth_without_disabilities_or_substance_use <- shiny::reactive(
 
-      disabilities_data_filtered() |>
-        dplyr::distinct(organization_id, personal_id, disability_response) |>
-        dplyr::group_by(organization_id, personal_id) |>
-        dplyr::filter(dplyr::n() == 1L & disability_response == "No") |>
-        dplyr::ungroup() |>
-        nrow()
+      n_youth_in_disability_data() - n_youth_with_disabilities_or_substance_use()
 
     )
 
     # Render number of youth with no disabilities box
-    output$n_youth_with_no_disabilities_box <- bs4Dash::renderbs4ValueBox({
+    output$n_youth_without_disabilities_or_substance_use_box <- bs4Dash::renderbs4ValueBox({
 
       bs4Dash::bs4ValueBox(
-        value = n_youth_with_no_disabilities(),
-        subtitle = "Total # of Youth with No Disabilities or Substance Use",
+        value = n_youth_without_disabilities_or_substance_use(),
+        subtitle = "Total # of Youth without Informed Disabilities or Substance Use",
         icon = shiny::icon("accessible-icon")
       )
 
     })
 
-    # Pie Charts ----
+    # Charts ----
 
-    ## Disabilities Pie Chart ----
+    ## Disabilities Chart ----
 
-    # Create reactive data frame to data to be displayed in pie chart
-    disabilities_pie_chart_data <- shiny::reactive({
+    # Create reactive data frame to data to be displayed in chart
+    disabilities_chart_data <- shiny::reactive({
 
       shiny::validate(
         shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
+          expr = nrow(disabilities_data_recent()) >= 1L,
           message = "No data to display"
         )
       )
 
-      out <- disabilities_data_filtered() |>
-        dplyr::filter(disability_response == "Yes") |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          disability_type,
-          dplyr::desc(date_updated)
+      disabilities_data_recent() |>
+        # Remove Substance Use Disorder column
+        dplyr::select(-`Substance Use Disorder`) |>
+        # Each disability had its own column, we need data to be in long format
+        tidyr::pivot_longer(
+          cols = c(
+            `Physical Disability`,
+            `Developmental Disability`,
+            `Chronic Health Condition`,
+            `HIV/AIDS`,
+            `Mental Health Disorder`
+          ),
+          names_to = "Disability",
+          values_to = "Response"
         ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          disability_type,
-          disability_response
+        # We will consider NA values as "Data not collected"
+        tidyr::replace_na(list(Response = "Data not collected")) |>
+        dplyr::count(Disability, Response) |>
+        dplyr::group_by(Disability) |>
+        dplyr::mutate(pct = round(n / sum(n), 4)) |>
+        dplyr::ungroup() |>
+        # Order response categories
+        dplyr::mutate(
+          Response = factor(Response, levels = c("Yes",
+                                                 "No",
+                                                 "Data not collected",
+                                                 "Client doesn't know",
+                                                 "Client prefers not to answer"))
         ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          disability_type,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(disability_type) |>
-        dplyr::arrange(disability_type)
+        dplyr::group_by(Response)
 
     })
 
-    # Create disabilities pie chart
-    output$disabilities_pie_chart <- echarts4r::renderEcharts4r({
+    # Create disabilities chart
+    output$disabilities_chart <- echarts4r::renderEcharts4r({
 
-      disabilities_pie_chart_data() |>
-        pie_chart(
-          category = "disability_type",
-          count = "n"
+      disabilities_chart_data() |>
+        echarts4r::e_chart(x = Disability) |>
+        echarts4r::e_bar(serie = n, stack = "my_stack") |>
+        echarts4r::e_add_nested('extra', pct) |>
+        echarts4r::e_flip_coords() |>
+        echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_tooltip(formatter = htmlwidgets::JS("
+          function(params) {
+            return(
+              params.value[1] +
+              '<br/>' + params.marker + params.seriesName +
+              '<br/>' + '<strong>' + params.data.value[0] + ' (' + Math.round(params.data.extra.pct * 100) + '%)' + '</strong>'
+            )
+          }")
         )
 
     })
@@ -332,36 +420,11 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         )
       )
 
-      out <- disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_response %in% SubstanceUseDisorderCodes$Description[2:4]
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          disability_response
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(disability_response) |>
-        dplyr::arrange(disability_response)
+      disabilities_data_recent() |>
+        dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4]) |>
+        dplyr::count(`Substance Use Disorder`) |>
+        # Match expected column name in chart
+        dplyr::rename(disability_response = "Substance Use Disorder")
 
     })
 
@@ -692,28 +755,67 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     })
 
     # Missingness Statistics ----
-    missingness_stats <- shiny::reactive({
+    # output$data_quality_string <- shiny::renderUI({
+    #   glue::glue(
+    #     "<strong>{round(n_youth_in_disability_data()/n_youth(), 2) * 100}%</strong>
+    #     of youth in selected program(s) have entries in Disabilities Data."
+    #   ) |>
+    #     shiny::HTML()
+    # })
 
-      disabilities_data_filtered() |>
-        dplyr::mutate(disability_response = ifelse(
-          is.na(disability_response),
-          "(Blank)",
-          disability_response
-        )) |>
-        dplyr::filter(disability_response %in% c(
+    output$missingness_stats_tbl1 <- reactable::renderReactable(
+
+      disabilities_data_recent() |>
+        dplyr::mutate(
+          `Answers Missing` = rowSums(
+            dplyr::across(
+              .cols = c(
+                `Physical Disability`,
+                `Developmental Disability`,
+                `Chronic Health Condition`,
+                `HIV/AIDS`,
+                `Mental Health Disorder`,
+                `Substance Use Disorder`
+              ),
+              .fns = function(value) !value %in% c("Yes", "No")
+            )
+          )
+        ) |>
+        dplyr::count(`Answers Missing`, name = "# Youth") |>
+        reactable::reactable()
+
+    )
+
+    missingness_stats2 <- shiny::reactive({
+
+      disabilities_data_recent() |>
+        tidyr::pivot_longer(
+          cols = c(
+            `Physical Disability`,
+            `Developmental Disability`,
+            `Chronic Health Condition`,
+            `HIV/AIDS`,
+            `Mental Health Disorder`,
+            `Substance Use Disorder`
+          ),
+          names_to = "Disability",
+          values_to = "Response"
+        ) |>
+        # We will consider NA values as "Data not collected"
+        tidyr::replace_na(list(Response = "Data not collected")) |>
+        dplyr::filter(Response %in%  c(
           "Client doesn't know",
           "Client prefers not to answer",
-          "Data not collected",
-          "(Blank)"
+          "Data not collected"
         )) |>
-        dplyr::count(disability_response, name = "Count") |>
-        dplyr::rename(Response = disability_response)
+        dplyr::count(Disability, Response) |>
+        tidyr::pivot_wider(names_from = Response, values_from = n)
 
     })
 
-    output$missingness_stats_tbl <- reactable::renderReactable(
+    output$missingness_stats_tbl2 <- reactable::renderReactable(
       reactable::reactable(
-        missingness_stats()
+        missingness_stats2()
       )
     )
 
