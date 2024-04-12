@@ -244,6 +244,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     disabilities_data_recent <- shiny::reactive({
 
       disabilities_data_filtered() |>
+        # Remove duplicates from table
+        dplyr::distinct() |>
         # Unique key to identify a youth
         dplyr::group_by(personal_id, organization_id) |>
         # Keep the values that correspond to the last date_updated
