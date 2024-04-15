@@ -52,7 +52,7 @@ mod_education_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Last Grade Completed",
+                  title = "# of Youth by Last Grade Completed Group",
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
