@@ -375,7 +375,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       )
 
       out |>
-        dplyr::count(category) |>
+        dplyr::count(category, wt = n) |>
         dplyr::arrange(category)
 
     })
