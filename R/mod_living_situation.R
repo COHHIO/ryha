@@ -340,7 +340,9 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
         dplyr::arrange(n) |>
         dplyr::filter(
           !is.na(destination),
-          !destination %in% c("Client doesn't know",
+          !destination %in% c("No exit interview completed",
+                              "Worker unable to determine",
+                              "Client doesn't know",
                               "Data not collected",
                               "Client prefers not to answer")
         )
