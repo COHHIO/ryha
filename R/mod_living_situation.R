@@ -355,6 +355,12 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
         bar_chart(
           x = "destination",
           y = "n"
+        ) |>
+        echarts4r::e_y_axis(
+          axisLabel = list(
+            width = 350,
+            overflow = "truncate"
+          )
         )
 
     })
