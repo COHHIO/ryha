@@ -41,7 +41,7 @@ mod_living_situation_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Living Situation (at Entry)",
+          title = "# of Youth by Living Situation Group (at Entry)",
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -57,7 +57,7 @@ mod_living_situation_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Destination (at Exit)",
+          title = "# of Youth by Destination Group (at Exit)",
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -76,12 +76,30 @@ mod_living_situation_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
-          title = "Changes in General Living Situation (Entry --> Exit)",
+          title = "Changes in General Living Situation Group (Entry --> Exit)",
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("sankey_chart"),
+            height = "100%"
+          )
+        )
+
+      )
+    ),
+
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+
+        bs4Dash::box(
+          title = "# of Youth by Destination (at Exit)",
+          width = NULL,
+          height = "680px",
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("destination_bar_chart"),
             height = "100%"
           )
         )
@@ -289,10 +307,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
 
     })
 
-    # Destination Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    destination_pie_chart_data <- shiny::reactive({
+    destination_chart_data <- shiny::reactive({
 
       shiny::validate(
         shiny::need(
@@ -318,7 +333,44 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
           personal_id,
           destination,
           .keep_all = TRUE
+        )
+
+      out |>
+        dplyr::count(destination) |>
+        dplyr::arrange(n) |>
+        dplyr::filter(
+          !is.na(destination),
+          !destination %in% c("No exit interview completed",
+                              "Worker unable to determine",
+                              "Client doesn't know",
+                              "Data not collected",
+                              "Client prefers not to answer")
+        )
+
+    })
+
+    output$destination_bar_chart <- echarts4r::renderEcharts4r({
+
+      destination_chart_data() |>
+        bar_chart(
+          x = "destination",
+          y = "n"
         ) |>
+        echarts4r::e_y_axis(
+          axisLabel = list(
+            width = 350,
+            overflow = "truncate"
+          )
+        )
+
+    })
+
+    # Destination Pie Chart ----
+
+    # Create reactive data frame to data to be displayed in pie chart
+    destination_pie_chart_data <- shiny::reactive({
+
+      out <- destination_chart_data() |>
         dplyr::inner_join(
           LivingCodes |>
             dplyr::select(
@@ -337,7 +389,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       )
 
       out |>
-        dplyr::count(category) |>
+        dplyr::count(category, wt = n) |>
         dplyr::arrange(category)
 
     })
