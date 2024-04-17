@@ -244,6 +244,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     disabilities_data_recent <- shiny::reactive({
 
       disabilities_data_filtered() |>
+        # Remove duplicates from table
+        dplyr::distinct() |>
         # Unique key to identify a youth
         dplyr::group_by(personal_id, organization_id) |>
         # Keep the values that correspond to the last date_updated
@@ -415,13 +417,22 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
       shiny::validate(
         shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
+          expr = nrow(disabilities_data_recent()) >= 1L,
           message = "No data to display"
         )
       )
 
-      disabilities_data_recent() |>
-        dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4]) |>
+      use_disorders_data <- disabilities_data_recent() |>
+        dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4])
+
+      shiny::validate(
+        shiny::need(
+          expr = nrow(use_disorders_data) >= 1L,
+          message = "No data to display"
+        )
+      )
+
+      use_disorders_data |>
         dplyr::count(`Substance Use Disorder`) |>
         # Match expected column name in chart
         dplyr::rename(disability_response = "Substance Use Disorder")

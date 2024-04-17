@@ -52,7 +52,7 @@ mod_education_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Last Grade Completed",
+                  title = "# of Youth by Last Grade Completed Group",
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -85,7 +85,7 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Last Grade Completed (Entry --> Exit)",
+                  title = "Changes in Last Grade Completed Group (Entry --> Exit)",
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
