@@ -114,7 +114,20 @@ mod_disabilities_ui <- function(id){
         width = 12,
 
         bs4Dash::tabBox(
-          title = "Changes in Disability Status (Entry --> Exit)",
+          title = with_popover(
+            text = "Changes in Disability Status (Entry --> Exit)",
+            content = shiny::tagList(
+              shiny::span("Refer to HMIS Data Standars Manual:"),
+              shiny::tags$ul(
+                shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
+                shiny::tags$li(link_section("4.06 Developmental Disability", label = "Developmental Disability")),
+                shiny::tags$li(link_section("4.07 Chronic Health Condition", label = "Chronic Health Condition")),
+                shiny::tags$li(link_section("4.08 HIV/AIDS", label = "HIV/AIDS")),
+                shiny::tags$li(link_section("4.09 Mental Health Disorder", label = "Mental Health Disorder")),
+                shiny::tags$li(link_section("4.10 Substance Use Disorder", label = "Substance Use Disorder"))
+              )
+            )
+          ),
           type = "tabs",
           side = "right",
           height = DEFAULT_BOX_HEIGHT,
@@ -122,10 +135,7 @@ mod_disabilities_ui <- function(id){
           maximizable = TRUE,
 
           shiny::tabPanel(
-            title = with_popover(
-              text = "Physical",
-              content = link_section("4.05 Physical Disability")
-            ),
+            title = "Physical",
             echarts4r::echarts4rOutput(
               outputId = ns("physical_sankey_chart"),
               height = "100%"
@@ -133,10 +143,7 @@ mod_disabilities_ui <- function(id){
           ),
 
           shiny::tabPanel(
-            title = with_popover(
-              text = "Developmental",
-              content = link_section("4.06 Developmental Disability")
-            ),
+            title = "Developmental",
             echarts4r::echarts4rOutput(
               outputId = ns("developmental_sankey_chart"),
               height = "100%"
@@ -144,10 +151,7 @@ mod_disabilities_ui <- function(id){
           ),
 
           shiny::tabPanel(
-            title = with_popover(
-              text = "Chronic",
-              content = link_section("4.07 Chronic Health Condition")
-            ),
+            title = "Chronic",
             echarts4r::echarts4rOutput(
               outputId = ns("chronic_sankey_chart"),
               height = "100%"
@@ -155,10 +159,7 @@ mod_disabilities_ui <- function(id){
           ),
 
           shiny::tabPanel(
-            title = with_popover(
-              text = "HIV/AIDS",
-              content = link_section("4.08 HIV/AIDS")
-            ),
+            title = "HIV/AIDS",
             echarts4r::echarts4rOutput(
               outputId = ns("hiv_sankey_chart"),
               height = "100%"
@@ -166,10 +167,7 @@ mod_disabilities_ui <- function(id){
           ),
 
           shiny::tabPanel(
-            title = with_popover(
-              text = "Mental",
-              content = link_section("4.09 Mental Health Disorder")
-            ),
+            title = "Mental",
             echarts4r::echarts4rOutput(
               outputId = ns("mental_sankey_chart"),
               height = "100%"
@@ -177,10 +175,7 @@ mod_disabilities_ui <- function(id){
           ),
 
           shiny::tabPanel(
-            title = with_popover(
-              text = "Substance Use",
-              content = link_section("4.10 Substance Use Disorder")
-            ),
+            title = "Substance Use",
             echarts4r::echarts4rOutput(
               outputId = ns("substance_sankey_chart"),
               height = "100%"
