@@ -20,7 +20,7 @@ with_popover <- function(text, title = "More Info", content, placement = "right"
 
 }
 
-link_section <- function(section) {
+link_section <- function(section, label = "HMIS Data Standars Manual") {
   URL <- "https://files.hudexchange.info/resources/documents/HMIS-Data-Standards-Manual-2024.pdf"
 
   parsed_section <- section |>
@@ -30,6 +30,6 @@ link_section <- function(section) {
   shiny::tags$a(
     href = glue::glue("{ URL }#{ parsed_section }"),
     target = "_blank",
-    "HMIS Data Standards Manual"
+    label
   )
 }
