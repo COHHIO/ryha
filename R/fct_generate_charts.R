@@ -1,9 +1,28 @@
-
-
-
+#' Generate a pie chart using echarts4r
+#'
+#' This function generates a pie chart using the echarts4r package.
+#'
+#' @param data A data frame containing the data to be plotted.
+#' @param category A character string specifying the column name in the data
+#' frame representing the categories for the pie chart slices.
+#' @param count A character string specifying the column name in the data frame
+#' representing the counts or values associated with each category.
+#'
+#' @return A pie chart visualized using echarts4r.
+#'
+#' @examples
+#' \dontrun{
+#' mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
+#' pie_chart(
+#'   data = mock_data,
+#'   category = "x",
+#'   count = "y"
+#' )
+#' }
 pie_chart <- function(data, category, count) {
 
   data |>
+    # echarts4r::e_charts_() allows `x` to be a character string
     echarts4r::e_charts_(x = category) |>
     echarts4r::e_pie_(
       serie = count,
@@ -36,24 +55,29 @@ pie_chart <- function(data, category, count) {
 
 }
 
-
-
-prep_heatmap <- function(data) {
-
-  data |>
-    dplyr::select(-DOB) |>
-    tidyr::pivot_longer(-PersonalID) |>
-    dplyr::filter(value != 0) %>%
-    dplyr::left_join(x = ., y = ., by = "PersonalID") |>
-    dplyr::group_by(name.x, name.y) |>
-    dplyr::count() |>
-    dplyr::ungroup() |>
-    dplyr::mutate(n = ifelse(name.x == name.y, NA, n))
-
-}
-
-
-
+#' Generate a bar chart using echarts4r
+#'
+#' This function generates a bar chart using the echarts4r package.
+#'
+#' @param data A data frame containing the data to be plotted.
+#' @param x A character string specifying the column name in the data frame
+#' representing the x-axis values.
+#' @param y A character string specifying the column name in the data frame
+#' representing the y-axis values.
+#' @param axis_flip A logical value indicating whether to flip the x and y axes.
+#' Default is TRUE.
+#'
+#' @return A bar chart visualized using echarts4r.
+#'
+#' @examples
+#' \dontrun{
+#' mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
+#' bar_chart(
+#'   data = mock_data,
+#'   x = "x",
+#'   y = "y"
+#' )
+#' }
 bar_chart <- function(data, x, y, axis_flip = TRUE) {
 
   out <- data |>
@@ -62,11 +86,6 @@ bar_chart <- function(data, x, y, axis_flip = TRUE) {
       serie = y,
       name = "# of Youth",
       legend = FALSE
-      # label = list(
-      #   formatter = '{@[0]}',
-      #   show = TRUE,
-      #   position = "right"
-      # )
     ) |>
     echarts4r::e_tooltip(trigger = "item") |>
     echarts4r::e_grid(containLabel = TRUE)
@@ -83,8 +102,41 @@ bar_chart <- function(data, x, y, axis_flip = TRUE) {
 }
 
 
-
-sankey_chart <- function(data, entry_status, exit_status, count,
+#' Generate a Sankey chart using echarts4r
+#'
+#' This function generates a Sankey chart using the echarts4r package.
+#'
+#' @param data A data frame containing the data to be plotted.
+#' @param entry_status A character string specifying the column name in the data
+#' frame representing the entry status of the flow.
+#' @param exit_status A character string specifying the column name in the data
+#' frame representing the exit status of the flow.
+#' @param count A character string specifying the column name in the data frame
+#' representing the count or value associated with each flow.
+#' @param color A character string specifying the color of the Sankey chart.
+#' Default is "blue".
+#'
+#' @return A Sankey chart visualized using echarts4r.
+#'
+#' @examples
+#' \dontrun{
+#' mock_data <- data.frame(
+#'   status_at_entry = c("A", "A", "B", "B"),
+#'   status_at_exit = c("X", "Y", "Y", "Z"),
+#'   n = c(10, 20, 30, 20)
+#' )
+#' sankey_chart(
+#'   data = mock_data,
+#'   entry_status = "status_at_entry",
+#'   exit_status = "status_at_exit",
+#'   count = "n",
+#'   color = "green"
+#' )
+#' }
+sankey_chart <- function(data,
+                         entry_status,
+                         exit_status,
+                         count,
                          color = "blue") {
 
   data |>
@@ -101,9 +153,39 @@ sankey_chart <- function(data, entry_status, exit_status, count,
 
 }
 
-
+#' Get eligible IDs for generating a Sankey chart
+#'
+#' `get_ids_for_sankey()` identifies IDs with both a Project start and a
+#' Project exit data collection stage.
+#'
+#' @details
+#' For entries with multiple Project start the most recently updated data is kept.
+#'
+#' @param data A data frame containing the data from which to extract unique IDs.
+#'
+#' @return A data frame with unique combinations of organization and personal IDs
+#' that have at least a Project start and Project exit data collection stage.
+#'
+#' @examples
+#' \dontrun{
+#' mock_data <- tibble::tribble(
+#'   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated,
+#'   1, 101, "Project start", "2023-01-01",
+#'   1, 101, "Project exit", "2023-12-31",
+#'   2, 102, "Project start", "2023-01-01",
+#'   2, 102, "Project exit", "2023-12-31",
+#'   2, 103, "Project start", "2023-02-01",
+#'   3, 104, "Project start", "2023-02-01",
+#'   3, 104, "Project update", "2023-12-15",
+#'   3, 105, "Project start", "2023-01-01",
+#'   3, 105, "Project update", "2023-06-30",
+#'   3, 105, "Project exit", "2023-12-31"
+#' )
+#' get_ids_for_sankey(mock_data)
+#' }
 get_ids_for_sankey <- function(data) {
 
+  # TODO: Check scenario where a person has start-end-start.
   data |>
     dplyr::filter(
       data_collection_stage %in% c("Project start", "Project exit")
@@ -128,7 +210,35 @@ get_ids_for_sankey <- function(data) {
 
 }
 
-
+#' Prepare data for generating a Sankey chart
+#'
+#' `prep_sankey_data()` prepares data by filtering, arranging, selecting, and
+#' transforming it to generate data suitable for creating a Sankey chart
+#' representing flow between stages.
+#'
+#' @param data A data frame containing the data to be prepared.
+#' @param state_var A character string specifying the column name representing
+#' the state variable to be used in the Sankey chart.
+#'
+#' @return A data frame with prepared data suitable for generating a Sankey chart.
+#'
+#' @examples
+#' \dontrun{
+#' mock_data <- tibble::tribble(
+#'   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated, ~condition,
+#'   1, 101, "Project start", "2023-01-01", "A",
+#'   1, 101, "Project exit", "2023-12-31", "A",
+#'   2, 102, "Project start", "2023-01-01", "A",
+#'   2, 102, "Project exit", "2023-12-31", "B",
+#'   2, 103, "Project start", "2023-02-01", "A",
+#'   3, 104, "Project start", "2023-02-01", "B",
+#'   3, 104, "Project update", "2023-12-15", "B",
+#'   3, 105, "Project start", "2023-01-01", "B",
+#'   3, 105, "Project update", "2023-06-30", "B",
+#'   3, 105, "Project exit", "2023-12-31", "A"
+#' )
+#' prep_sankey_data(data = mock_data, state_var = "condition")
+#' }
 prep_sankey_data <- function(data, state_var) {
 
   data |>
@@ -176,5 +286,3 @@ prep_sankey_data <- function(data, state_var) {
     dplyr::count(Entry, Exit)
 
 }
-
-
