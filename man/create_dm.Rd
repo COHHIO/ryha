@@ -12,7 +12,13 @@ List of data frames, based upon the tables in the PostgreSQL database,
   on-the-fly in the server-side of the app
 }
 \description{
-Create a
+`create_dm()` creates a list of data frames based on the tables
+in the database.
+}
+\details{
+`create_dm()` connects to the database and, for each table, reads the
+columns used in the app. `gender` and `ethnicity` data frames are derived from
+`client` table.
 }
 \examples{
 \dontrun{
