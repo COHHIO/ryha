@@ -64,6 +64,10 @@ mod_disabilities_ui <- function(id){
           title = with_popover(
             text = "Disability Prevalence in Youth",
             content = shiny::tagList(
+              shiny::span("Each bar summarizes the responses for the corresponding disability."),
+              shiny::br(),
+              shiny::span("Youth with multiple disabilities are counted once per disability."),
+              shiny::br(),
               shiny::span("Refer to HMIS Data Standars Manual:"),
               shiny::tags$ul(
                 shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
