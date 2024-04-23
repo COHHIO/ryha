@@ -1,6 +1,3 @@
-
-
-
 #' Process HMIS Data
 #'
 #' @details This is the *"master"* function that governs the entire ETL process
@@ -362,7 +359,6 @@ prep_tables <- function(data, conn) {
 
 }
 
-
 delete_from_db <- function(data, conn) {
 
   # Loop through each table in the database (except 'organization' and 'project')
@@ -403,8 +399,6 @@ delete_from_db <- function(data, conn) {
 
 }
 
-
-
 send_to_db <- function(data, conn, waiter = NULL) {
 
   for (i in 1:length(data)) {
@@ -429,8 +423,6 @@ send_to_db <- function(data, conn, waiter = NULL) {
   }
 
 }
-
-
 
 # Create "safe" equivalents for each function
 process_data_safely <- purrr::safely(process_data)

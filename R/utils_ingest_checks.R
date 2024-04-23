@@ -1,9 +1,5 @@
-
-
 # The following family of functions define the checks that will be run during
 # the ETL process
-
-
 
 #' Ensure All HMIS Data was Uploaded
 #'
@@ -66,9 +62,6 @@ check_file_names <- function(dir) {
   return(out)
 
 }
-
-
-
 
 # Helper function that converts a character vector to an HTML bullet-point list
 vec_to_ul <- function(vec) {
