@@ -16,7 +16,8 @@ with_popover <- function(text, title = "More Info", content, placement = "right"
     tag = shiny::span(text, shiny::icon("question-circle")),
     content = content,
     title = title,
-    placement = placement)
+    placement = placement
+  )
 
 }
 
