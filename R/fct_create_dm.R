@@ -1,6 +1,3 @@
-
-
-
 #' Connect to PostgreSQL Database
 #'
 #' @description Establish a `{DBI}` database connection to the PostgreSQL
