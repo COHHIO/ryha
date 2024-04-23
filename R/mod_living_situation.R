@@ -39,7 +39,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = with_popover(
             text = "# of Youth by Living Situation Group (at Entry)",
-            content = link_section("3.917 Prior Living Situation")
+            content = shiny::tagList(
+              shiny::span("Response categories have been grouped to improve chart readability."),
+              shiny::br(),
+              link_section("3.917 Prior Living Situation")
+            )
           ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
@@ -58,7 +62,11 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = with_popover(
             text = "# of Youth by Destination Group (at Exit)",
-            content = link_section("3.12 Destination")
+            content = shiny::tagList(
+              shiny::span("Response categories have been grouped to improve chart readability."),
+              shiny::br(),
+              link_section("3.12 Destination")
+            )
           ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
@@ -78,7 +86,12 @@ mod_living_situation_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
-          title = "Changes in General Living Situation Group (Entry --> Exit)",
+          title = with_popover(
+            text = "Changes in General Living Situation Group (Entry --> Exit)",
+            content = shiny::tagList(
+              shiny::span("Response categories have been grouped to improve chart readability.")
+            )
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,

@@ -50,7 +50,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = with_popover(
                     text = "# of Youth by Last Grade Completed Group",
-                    content = link_section("R4 Last Grade Completed")
+                    content = shiny::tagList(
+                      shiny::span("Response categories have been grouped to improve chart readability."),
+                      shiny::br(),
+                      link_section("R4 Last Grade Completed")
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
@@ -86,7 +90,11 @@ mod_education_ui <- function(id){
                 bs4Dash::box(
                   title = with_popover(
                     text = "Changes in Last Grade Completed Group (Entry --> Exit)",
-                    content = link_section("R4 Last Grade Completed")
+                    content = shiny::tagList(
+                      shiny::span("Response categories have been grouped to improve chart readability."),
+                      shiny::br(),
+                      link_section("R4 Last Grade Completed")
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
