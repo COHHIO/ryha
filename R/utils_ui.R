@@ -10,6 +10,29 @@ spinner_message <- function(message) {
   )
 }
 
+#' Add custom Bootstrap popover
+#'
+#' This function creates a Bootstrap popover containing additional information
+#' to display alongside a given text.
+#'
+#' @param text The text to display.
+#' @param title The title of the popover. Defaults to "More Info".
+#' @param content The content to display inside the popover.
+#' @param placement The placement of the popover relative to the text. Defaults to "right".
+#'
+#' @return HTML Bootstrap popover containing the specified content.
+#'
+#' @examples
+#' \dontrun{
+#' with_popover(
+#'   text = "Some Example Text",
+#'   content = shiny::tagList(
+#'     shiny::span("First description line."),
+#'     shiny::br(),
+#'     shiny::span("Second description line.")
+#'   )
+#' )
+#' }
 with_popover <- function(text, title = "More Info", content, placement = "right") {
 
   bs4Dash::popover(
@@ -21,6 +44,20 @@ with_popover <- function(text, title = "More Info", content, placement = "right"
 
 }
 
+#' Create hyperlink to specific section in the HMIS Data Standards Manual
+#'
+#' This function generates a hyperlink to a specific section within the HMIS Data
+#' Standards Manual. The link opens the manual in a new browser tab.
+#'
+#' @param section The name or number of the section to link to.
+#' @param label The text to display as the link. Defaults to "HMIS Data Standards Manual".
+#'
+#' @return HTML hyperlink to the specified section in the HMIS Data Standards Manual.
+#'
+#' @examples
+#' \dontrun{
+#' link_section("R4 Last Grade Completed")
+#' }
 link_section <- function(section, label = "HMIS Data Standars Manual") {
   URL <- "https://files.hudexchange.info/resources/documents/HMIS-Data-Standards-Manual-2024.pdf"
 
