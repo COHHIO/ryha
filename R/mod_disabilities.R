@@ -68,7 +68,7 @@ mod_disabilities_ui <- function(id){
               shiny::br(),
               shiny::span("Youth with multiple disabilities are counted once per disability."),
               shiny::br(),
-              shiny::span("Refer to HMIS Data Standars Manual:"),
+              shiny::span("Refer to HMIS Data Standards Manual:"),
               shiny::tags$ul(
                 shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
                 shiny::tags$li(link_section("4.06 Developmental Disability", label = "Developmental Disability")),
@@ -121,7 +121,7 @@ mod_disabilities_ui <- function(id){
           title = with_popover(
             text = "Changes in Disability Status (Entry --> Exit)",
             content = shiny::tagList(
-              shiny::span("Refer to HMIS Data Standars Manual:"),
+              shiny::span("Refer to HMIS Data Standards Manual:"),
               shiny::tags$ul(
                 shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
                 shiny::tags$li(link_section("4.06 Developmental Disability", label = "Developmental Disability")),

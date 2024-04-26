@@ -4,7 +4,7 @@
 \alias{link_section}
 \title{Create hyperlink to specific section in the HMIS Data Standards Manual}
 \usage{
-link_section(section, label = "HMIS Data Standars Manual")
+link_section(section, label = "HMIS Data Standards Manual")
 }
 \arguments{
 \item{section}{The name or number of the section to link to.}

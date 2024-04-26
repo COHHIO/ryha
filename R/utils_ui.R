@@ -58,7 +58,7 @@ with_popover <- function(text, title = "More Info", content, placement = "right"
 #' \dontrun{
 #' link_section("R4 Last Grade Completed")
 #' }
-link_section <- function(section, label = "HMIS Data Standars Manual") {
+link_section <- function(section, label = "HMIS Data Standards Manual") {
   URL <- "https://files.hudexchange.info/resources/documents/HMIS-Data-Standards-Manual-2024.pdf"
 
   parsed_section <- section |>
