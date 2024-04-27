@@ -44,7 +44,7 @@ process_data <- function(file) {
   )
 
   # Check that all required HMIS files are present in uploaded .zip file
-  check <- check_file_names(dir = tmp_dir)
+  check <- check_file_names(dir = tmp_dir, metadata = HMISmetadata)
 
   # Throw error if any needed files are missing
   if (!check$valid) {
