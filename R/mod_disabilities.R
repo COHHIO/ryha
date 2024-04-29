@@ -15,41 +15,38 @@ mod_disabilities_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 4,
-        # Number of youth in disabilities data (post filters)
-        # This number corresponds to the number of youth in disability table,
-        # regardless of data quality (youth with data not collected in all
-        # disability columns is still counted here)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          # outputId = ns("n_youth_in_disability_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+
+        ## TODO: Implement these "improved" counts
+        ## Number of youth in disabilities data (post filters)
+        ## This number corresponds to the number of youth in disability table,
+        ##   regardless of data quality (youth with data not collected in all
+        ##   disability columns is still counted here)
+        # value = shiny::textOutput(outputId = ns("n_youth_in_disability_data")),
+        # subtitle = "Total # of Youth in Disabilities Data"
+
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth with disabilities or substance use (post filters)
-        # This number corresponds to youth that have a value of "Yes" in one
-        # of the columns that refer to disabilities or substance use. In case
-        # the youth has multiple entries, the most recent value will be used.
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_disabilities_or_substance_use_box"),
-          width = "100%"
-        )
+      # Number of youth with disabilities or substance use (post filters)
+      # This number corresponds to youth that have a value of "Yes" in one
+      # of the columns that refer to disabilities or substance use. In case
+      # the youth has multiple entries, the most recent value will be used.
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_disabilities_or_substance_use")),
+        subtitle = "Total # of Youth with Disabilities or Substance Use",
+        icon = shiny::icon("accessible-icon"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth that did not inform any disabilities or substance use (post filters)
-        # The wording here is made on purpose to include both "No" and missing answers.
-        # In other words, we are counting all youth without a "Yes" value, regardless
-        # of missing data
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_without_disabilities_or_substance_use_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_without_disabilities_or_substance_use")),
+        subtitle = "Total # of Youth without Informed Disabilities or Substance Use",
+        icon = shiny::icon("accessible-icon"),
+        width = 4
       )
 
     ),
@@ -64,7 +61,23 @@ mod_disabilities_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "Disability Prevalence in Youth",
+          title = with_popover(
+            text = "Disability Prevalence in Youth",
+            content = shiny::tagList(
+              shiny::span("Each bar summarizes the responses for the corresponding disability."),
+              shiny::br(),
+              shiny::span("Youth with multiple disabilities are counted once per disability."),
+              shiny::br(),
+              shiny::span("Refer to HMIS Data Standards Manual:"),
+              shiny::tags$ul(
+                shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
+                shiny::tags$li(link_section("4.06 Developmental Disability", label = "Developmental Disability")),
+                shiny::tags$li(link_section("4.07 Chronic Health Condition", label = "Chronic Health Condition")),
+                shiny::tags$li(link_section("4.08 HIV/AIDS", label = "HIV/AIDS")),
+                shiny::tags$li(link_section("4.09 Mental Health Disorder", label = "Mental Health Disorder"))
+              )
+            )
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -80,7 +93,10 @@ mod_disabilities_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth with Substance Use by Type",
+          title = with_popover(
+            text = "# of Youth with Substance Use by Type",
+            content = link_section("4.10 Substance Use Disorder")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -102,7 +118,20 @@ mod_disabilities_ui <- function(id){
         width = 12,
 
         bs4Dash::tabBox(
-          title = "Changes in Disability Status (Entry --> Exit)",
+          title = with_popover(
+            text = "Changes in Disability Status (Entry --> Exit)",
+            content = shiny::tagList(
+              shiny::span("Refer to HMIS Data Standards Manual:"),
+              shiny::tags$ul(
+                shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
+                shiny::tags$li(link_section("4.06 Developmental Disability", label = "Developmental Disability")),
+                shiny::tags$li(link_section("4.07 Chronic Health Condition", label = "Chronic Health Condition")),
+                shiny::tags$li(link_section("4.08 HIV/AIDS", label = "HIV/AIDS")),
+                shiny::tags$li(link_section("4.09 Mental Health Disorder", label = "Mental Health Disorder")),
+                shiny::tags$li(link_section("4.10 Substance Use Disorder", label = "Substance Use Disorder"))
+              )
+            )
+          ),
           type = "tabs",
           side = "right",
           height = DEFAULT_BOX_HEIGHT,
@@ -218,15 +247,9 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
     # Apply the filters to the disabilities data
@@ -278,14 +301,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     })
 
     # # Render number of youth in disabilities data
-    # output$n_youth_in_disability_data_box <- bs4Dash::renderbs4ValueBox({
-    #
-    #   bs4Dash::bs4ValueBox(
-    #     value = n_youth_in_disability_data(),
-    #     subtitle = "Total # of Youth in Disabilities Data",
-    #     icon = shiny::icon("user", class = "fa-solid")
-    #   )
-    #
+    # output$n_youth_in_disability_data <- shiny::renderText({
+    #   n_youth_in_disability_data(),
     # })
 
     # Total number of youth with disabilities or substance use
@@ -311,15 +328,9 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Render number of youth with disabilities or substance use box
-    output$n_youth_with_disabilities_or_substance_use_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_disabilities_or_substance_use(),
-        subtitle = "Total # of Youth with Disabilities or Substance Use",
-        icon = shiny::icon("accessible-icon")
-      )
-
+    # Render number of youth with disabilities or substance use box value
+    output$n_youth_with_disabilities_or_substance_use <- shiny::renderText({
+      n_youth_with_disabilities_or_substance_use()
     })
 
     # Create reactive count of the number of youth without disabilities or substance use
@@ -331,15 +342,9 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     )
 
-    # Render number of youth with no disabilities box
-    output$n_youth_without_disabilities_or_substance_use_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_without_disabilities_or_substance_use(),
-        subtitle = "Total # of Youth without Informed Disabilities or Substance Use",
-        icon = shiny::icon("accessible-icon")
-      )
-
+    # Render number of youth with no disabilities box value
+    output$n_youth_without_disabilities_or_substance_use <- shiny::renderText({
+      n_youth_without_disabilities_or_substance_use()
     })
 
     # Charts ----

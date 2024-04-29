@@ -13,31 +13,25 @@ mod_trafficking_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 4,
-        # Number of clients (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth with sex trafficking data
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_sex_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_sex_data")),
+        subtitle = "Total # of Youth with Sex Trafficking Data Available",
+        icon = shiny::icon("exclamation-circle"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth with labor trafficking data
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_labor_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_labor_data")),
+        subtitle = "Total # of Youth with Labor Trafficking Data Available",
+        icon = shiny::icon("exclamation-circle"),
+        width = 4
       )
 
     ),
@@ -61,7 +55,10 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Exchange for Sex Response",
+                  title = with_popover(
+                    text = "# of Youth by Exchange for Sex Response",
+                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -77,7 +74,10 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Count of Exchange for Sex Response",
+                  title = with_popover(
+                    text = "# of Youth by Count of Exchange for Sex Response",
+                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -97,7 +97,10 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Asked or Forced to Exchange Response",
+                  title = with_popover(
+                    text = "# of Youth by Asked or Forced to Exchange Response",
+                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -136,7 +139,10 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Workplace Violence/Threats Response",
+                  title = with_popover(
+                    text = "# of Youth by Workplace Violence/Threats Response",
+                    content = link_section("R16 Labor Exploitation/Trafficking")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -152,7 +158,10 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Workplace Promise Difference Response",
+                  title = with_popover(
+                    text = "# of Youth by Workplace Promise Difference Response",
+                    content = link_section("R16 Labor Exploitation/Trafficking")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -172,7 +181,10 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Coerced to Continue Work Response",
+                  title = with_popover(
+                    text = "# of Youth by Coerced to Continue Work Response",
+                    content = link_section("R16 Labor Exploitation/Trafficking")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -265,38 +277,20 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox(
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
+    })
 
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
+    # Render number of projects box value
+    output$n_youth_with_sex_data <- shiny::renderText({
+      n_youth_with_sex_data()
+    })
 
-    )
-
-    # Render number of projects box
-    output$n_youth_with_sex_data_box <- bs4Dash::renderbs4ValueBox(
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_sex_data(),
-        subtitle = "Total # of Youth with Sex Trafficking Data Available",
-        icon = shiny::icon("exclamation-circle")
-      )
-
-    )
-
-    # Render number of projects box
-    output$n_youth_with_labor_data_box <- bs4Dash::renderbs4ValueBox(
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_labor_data(),
-        subtitle = "Total # of Youth with Labor Trafficking Data Available",
-        icon = shiny::icon("exclamation-circle")
-      )
-
-    )
+    # Render number of projects box value
+    output$n_youth_with_labor_data <- shiny::renderText({
+      n_youth_with_labor_data()
+    })
 
     # Sex Trafficking ----
 

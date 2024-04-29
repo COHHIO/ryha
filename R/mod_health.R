@@ -13,31 +13,25 @@ mod_health_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 4,
-        # Number of youth (post global filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth with health data available
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_health_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_health")),
+        subtitle = "Total # of Youth with Health Data Available",
+        icon = shiny::icon("stethoscope"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth with counseling data available
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_counseling_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_counseling")),
+        subtitle = "Total # of Youth with Counseling Data Available",
+        icon = shiny::icon("stethoscope"),
+        width = 4
       )
 
     ),
@@ -63,7 +57,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by General Health Status",
+                  title = with_popover(
+                    text = "# of Youth by General Health Status",
+                    content = link_section("R7 General Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -96,7 +93,10 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in General Health Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in General Health Status (Entry --> Exit)",
+                    content = link_section("R7 General Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -122,7 +122,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Dental Health Status",
+                  title = with_popover(
+                    text = "# of Youth by Dental Health Status",
+                    content = link_section("R8 Dental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -154,7 +157,10 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Dental Health Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Dental Health Status (Entry --> Exit)",
+                    content = link_section("R8 Dental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -180,7 +186,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Mental Health Status",
+                  title = with_popover(
+                    text = "# of Youth by Mental Health Status",
+                    content = link_section("R9 Mental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -213,7 +222,10 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Mental Health Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Mental Health Status (Entry --> Exit)",
+                    content = link_section("R9 Mental Health Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -239,7 +251,10 @@ mod_health_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Counseling Received Response",
+                  title = with_popover(
+                    text = "# of Youth by Counseling Received Response",
+                    content = link_section("R18 Counseling")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -341,37 +356,19 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
     # Render number of projects box
-    output$n_youth_with_health_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_health_data(),
-        subtitle = "Total # of Youth with Health Data Available",
-        icon = shiny::icon("stethoscope")
-      )
-
+    output$n_youth_with_health <- shiny::renderText({
+      n_youth_with_health_data()
     })
 
     # Render number of projects box
-    output$n_youth_with_counseling_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_counseling_data(),
-        subtitle = "Total # of Youth with Counseling Data Available",
-        icon = shiny::icon("stethoscope")
-      )
-
+    output$n_youth_with_counseling <- shiny::renderText({
+      n_youth_with_counseling_data()
     })
 
     # General Health ----

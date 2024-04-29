@@ -13,22 +13,18 @@ mod_domestic_violence_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 6,
-        # Number of youth (post global filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 6
       ),
 
-      shiny::column(
-        width = 6,
-        # Number of youth with domestic violence data available
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_domestic_violence_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_domestic_violence")),
+        subtitle = "Total # of Youth with Domestic Violence Data Available",
+        icon = shiny::icon("user-shield"),
+        width = 6
       )
 
     ),
@@ -52,7 +48,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Domestic Violence Victim Response",
+                  title = with_popover(
+                    text = "# of Youth by Domestic Violence Victim Response",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -85,7 +84,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -109,7 +111,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by When Occurred Response",
+                  title = with_popover(
+                    text = "# of Youth by When Occurred Response",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -142,7 +147,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in When Occurred (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in When Occurred (Entry --> Exit)",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -166,7 +174,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Currently Fleeing Response",
+                  title = with_popover(
+                    text = "# of Youth by Currently Fleeing Response",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -199,7 +210,10 @@ mod_domestic_violence_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Currently Fleeing (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Currently Fleeing (Entry --> Exit)",
+                    content = link_section("4.11 Domestic Violence")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -262,26 +276,14 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
-    # Render number of projects box
-    output$n_youth_with_domestic_violence_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_domestic_violence_data(),
-        subtitle = "Total # of Youth with Domestic Violence Data Available",
-        icon = shiny::icon("user-shield")
-      )
-
+    # Render number of youth w/ services box value
+    output$n_youth_with_domestic_violence <- shiny::renderText({
+      n_youth_with_domestic_violence_data()
     })
 
     # Create reactive data frame to data to be displayed in pie chart

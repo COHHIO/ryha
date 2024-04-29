@@ -14,31 +14,25 @@ mod_income_benefits_ui <- function(id){
     # Info Boxes ----
     shiny::fluidRow(
 
-      shiny::column(
-        width = 4,
-        ## Number of youth (post filters) ----
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        ## Number of youth with income data (post filters) ----
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_income_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_income_data")),
+        subtitle = "Total # of Youth with Income Data Available",
+        icon = shiny::icon("dollar-sign"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        ## Number of youth with benefits data (post filters) ----
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_benefits_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_benefits_data")),
+        subtitle = "Total # of Youth with Benefits Data Available",
+        icon = shiny::icon("dollar-sign"),
+        width = 4
       )
 
     ),
@@ -65,7 +59,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Pie Chart ----
                 bs4Dash::box(
-                  title = "Income Received (from Any Source)",
+                  title = with_popover(
+                    text = "Income Received (from Any Source)",
+                    content = link_section("4.02 Income and Sources")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -82,7 +79,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Income Received by Source (# of Youth)",
+                  title = with_popover(
+                    text = "Income Received by Source (# of Youth)",
+                    content = link_section("4.02 Income and Sources")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -103,7 +103,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Bar Chart ----
                 bs4Dash::box(
-                  title = "Total Monthly Income (# of Youth)",
+                  title = with_popover(
+                    text = "Total Monthly Income (# of Youth)",
+                    content = link_section("4.02 Income and Sources")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -149,7 +152,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Pie Chart ----
                 bs4Dash::box(
-                  title = "Benefits Received (from Any Source)",
+                  title = with_popover(
+                    text = "Benefits Received (from Any Source)",
+                    content = link_section("4.03 Non-Cash Benefits")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -166,7 +172,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Benefits Received by Source",
+                  title = with_popover(
+                    text = "Benefits Received by Source",
+                    content = link_section("4.03 Non-Cash Benefits")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -186,7 +195,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Sankey Chart ----
                 bs4Dash::box(
-                  title = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                    content = link_section("4.03 Non-Cash Benefits")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -229,7 +241,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Pie Chart ----
                 bs4Dash::box(
-                  title = "Health Insurance Received (from Any Source)",
+                  title = with_popover(
+                    text = "Health Insurance Received (from Any Source)",
+                    content = link_section("4.04 Health Insurance")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -246,7 +261,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Source Pie Chart ----
                 bs4Dash::box(
-                  title = "Health Insurance Received by Source",
+                  title = with_popover(
+                    text = "Health Insurance Received by Source",
+                    content = link_section("4.04 Health Insurance")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -266,7 +284,10 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Sankey Chart ----
                 bs4Dash::box(
-                  title = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
+                    content = link_section("4.04 Health Insurance")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -370,38 +391,20 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
     )
 
-    ## Render "number of clients" info box ----
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox(
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
-    )
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
+    })
 
     ## Render "number of youth with income data" info box ----
-    output$n_youth_with_income_data_box <- bs4Dash::renderbs4ValueBox(
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_income_data(),
-        subtitle = "Total # of Youth with Income Data Available",
-        icon = shiny::icon("dollar-sign")
-      )
-
-    )
+    output$n_youth_with_income_data <- shiny::renderText({
+      n_youth_with_income_data()
+    })
 
     ## Render "number of youth with benefits data" info box ----
-    output$n_youth_with_benefits_data_box <- bs4Dash::renderbs4ValueBox(
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_benefits_data(),
-        subtitle = "Total # of Youth with Benefits Data Available",
-        icon = shiny::icon("dollar-sign")
-      )
-
-    )
+    output$n_youth_with_benefits_data <- shiny::renderText({
+      n_youth_with_benefits_data()
+    })
 
     ## Income Pie Chart ----
 

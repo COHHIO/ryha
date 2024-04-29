@@ -14,31 +14,25 @@ mod_parenting_ui <- function(id){
     # Info Boxes ----
     shiny::fluidRow(
 
-      shiny::column(
-        width = 4,
-        # Number of clients (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth with pregnancy data
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_pregnancy_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_pregnancy_data")),
+        subtitle = "Total # of Youth with Pregnancy Data Available",
+        icon = shiny::icon("baby-carriage"),
+        width = 4
       ),
 
-      shiny::column(
-        width = 4,
-        # Number of youth with parenting data
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_parenting_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_parenting_data")),
+        subtitle = "Total # of Youth with Parenting Data Available",
+        icon = shiny::icon("baby-carriage"),
+        width = 4
       )
 
     ),
@@ -52,7 +46,10 @@ mod_parenting_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "# of Youth by Pregnancy Status",
+          title = with_popover(
+            text = "# of Youth by Pregnancy Status",
+            content = link_section("R10 Pregnancy Status")
+          ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
@@ -69,7 +66,10 @@ mod_parenting_ui <- function(id){
 
         # Parenting Table ----
         bs4Dash::box(
-          title = "# of Youth Parenting",
+          title = with_popover(
+            text = "# of Youth Parenting",
+            content = shiny::HTML("A youth is defined as <strong>Parenting</strong> if there is at least one youth enrolled as the head of household's child")
+          ),
           width = NULL,
           maximizable = TRUE,
           reactable::reactableOutput(
@@ -185,38 +185,21 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox(
 
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
+    })
 
-    )
+    # Render "number youth with pregnancy data available" box value
+    output$n_youth_with_pregnancy_data <- shiny::renderText({
+      n_youth_with_pregnancy_data()
+    })
 
-    # Render "number youth with pregnancy data available" box
-    output$n_youth_with_pregnancy_data_box <- bs4Dash::renderbs4ValueBox(
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_pregnancy_data(),
-        subtitle = "Total # of Youth with Pregnancy Data Available",
-        icon = shiny::icon("baby-carriage")
-      )
-
-    )
-
-    # Render "number youth with parenting data available" box
-    output$n_youth_with_parenting_data_box <- bs4Dash::renderbs4ValueBox(
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_parenting_data(),
-        subtitle = "Total # of Youth with Parenting Data Available",
-        icon = shiny::icon("baby-carriage")
-      )
-
-    )
+    # Render "number youth with parenting data available" box value
+    output$n_youth_with_parenting_data <- shiny::renderText({
+      n_youth_with_parenting_data()
+    })
 
     # Pregnancy Status ----
 

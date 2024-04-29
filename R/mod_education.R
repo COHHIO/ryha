@@ -13,22 +13,18 @@ mod_education_ui <- function(id){
 
     shiny::fluidRow(
 
-      shiny::column(
-        width = 6,
-        # Number of clients (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth")),
+        subtitle = "Total # of Youth in Program(s)",
+        icon = shiny::icon("user", class = "fa-solid"),
+        width = 6
       ),
 
-      shiny::column(
-        width = 6,
-        # Number of projects (post filters)
-        bs4Dash::bs4ValueBoxOutput(
-          outputId = ns("n_youth_with_education_data_box"),
-          width = "100%"
-        )
+      bs4Dash::bs4ValueBox(
+        value = shiny::textOutput(outputId = ns("n_youth_with_education")),
+        subtitle = "Total # of Youth with Education Data Available",
+        icon = shiny::icon("book-open"),
+        width = 6
       )
 
     ),
@@ -52,7 +48,14 @@ mod_education_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by Last Grade Completed Group",
+                  title = with_popover(
+                    text = "# of Youth by Last Grade Completed Group",
+                    content = shiny::tagList(
+                      shiny::span("Response categories have been grouped to improve chart readability."),
+                      shiny::br(),
+                      link_section("R4 Last Grade Completed")
+                    )
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -85,7 +88,14 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in Last Grade Completed Group (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in Last Grade Completed Group (Entry --> Exit)",
+                    content = shiny::tagList(
+                      shiny::span("Response categories have been grouped to improve chart readability."),
+                      shiny::br(),
+                      link_section("R4 Last Grade Completed")
+                    )
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -109,7 +119,10 @@ mod_education_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "# of Youth by School Status",
+                  title = with_popover(
+                    text = "# of Youth by School Status",
+                    content = link_section("R5 School Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -142,7 +155,10 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = "Changes in School Status (Entry --> Exit)",
+                  title = with_popover(
+                    text = "Changes in School Status (Entry --> Exit)",
+                    content = link_section("R5 School Status")
+                  ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
@@ -239,26 +255,14 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     )
 
-    # Render number of clients box
-    output$n_youth_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth(),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid")
-      )
-
+    # Render number of clients box value
+    output$n_youth <- shiny::renderText({
+      n_youth()
     })
 
-    # Render number of projects box
-    output$n_youth_with_education_data_box <- bs4Dash::renderbs4ValueBox({
-
-      bs4Dash::bs4ValueBox(
-        value = n_youth_with_education_data(),
-        subtitle = "Total # of Youth with Education Data Available",
-        icon = shiny::icon("book-open")
-      )
-
+    # Render number of projects box value
+    output$n_youth_with_education <- shiny::renderText({
+      n_youth_with_education_data()
     })
 
     # Last Grade Completed ----
