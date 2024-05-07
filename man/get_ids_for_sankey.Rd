@@ -21,7 +21,6 @@ Project exit data collection stage.
 For entries with multiple Project start the most recently updated data is kept.
 }
 \examples{
-\dontrun{
 mock_data <- tibble::tribble(
   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated,
   1, 101, "Project start", "2023-01-01",
@@ -36,5 +35,4 @@ mock_data <- tibble::tribble(
   3, 105, "Project exit", "2023-12-31"
 )
 get_ids_for_sankey(mock_data)
-}
 }

@@ -11,14 +11,12 @@
 #' @return A pie chart visualized using echarts4r.
 #'
 #' @examples
-#' \dontrun{
 #' mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
 #' pie_chart(
 #'   data = mock_data,
 #'   category = "x",
 #'   count = "y"
 #' )
-#' }
 pie_chart <- function(data, category, count) {
 
   data |>
@@ -70,14 +68,12 @@ pie_chart <- function(data, category, count) {
 #' @return A bar chart visualized using echarts4r.
 #'
 #' @examples
-#' \dontrun{
 #' mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
 #' bar_chart(
 #'   data = mock_data,
 #'   x = "x",
 #'   y = "y"
 #' )
-#' }
 bar_chart <- function(data, x, y, axis_flip = TRUE) {
 
   out <- data |>
@@ -119,7 +115,6 @@ bar_chart <- function(data, x, y, axis_flip = TRUE) {
 #' @return A Sankey chart visualized using echarts4r.
 #'
 #' @examples
-#' \dontrun{
 #' mock_data <- data.frame(
 #'   status_at_entry = c("A", "A", "B", "B"),
 #'   status_at_exit = c("X", "Y", "Y", "Z"),
@@ -132,7 +127,6 @@ bar_chart <- function(data, x, y, axis_flip = TRUE) {
 #'   count = "n",
 #'   color = "green"
 #' )
-#' }
 sankey_chart <- function(data,
                          entry_status,
                          exit_status,
@@ -167,7 +161,6 @@ sankey_chart <- function(data,
 #' that have at least a Project start and Project exit data collection stage.
 #'
 #' @examples
-#' \dontrun{
 #' mock_data <- tibble::tribble(
 #'   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated,
 #'   1, 101, "Project start", "2023-01-01",
@@ -182,7 +175,6 @@ sankey_chart <- function(data,
 #'   3, 105, "Project exit", "2023-12-31"
 #' )
 #' get_ids_for_sankey(mock_data)
-#' }
 get_ids_for_sankey <- function(data) {
 
   # TODO: Check scenario where a person has start-end-start.
@@ -223,7 +215,6 @@ get_ids_for_sankey <- function(data) {
 #' @return A data frame with prepared data suitable for generating a Sankey chart.
 #'
 #' @examples
-#' \dontrun{
 #' mock_data <- tibble::tribble(
 #'   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated, ~condition,
 #'   1, 101, "Project start", "2023-01-01", "A",
@@ -238,7 +229,6 @@ get_ids_for_sankey <- function(data) {
 #'   3, 105, "Project exit", "2023-12-31", "A"
 #' )
 #' prep_sankey_data(data = mock_data, state_var = "condition")
-#' }
 prep_sankey_data <- function(data, state_var) {
 
   data |>

@@ -95,10 +95,8 @@ process_data <- function(file) {
 #' @return A character vector containing the filepath for the corresponding .csv file.
 #'
 #' @examples
-#' \dontrun{
 #' files <- c("some/path/to/file/data1.csv", "some/path/to/file/data2.csv")
 #' find_file(files, "data1")
-#' }
 find_file <- function(files, target) {
 
   stringr::str_subset(

@@ -28,7 +28,6 @@ A Sankey chart visualized using echarts4r.
 This function generates a Sankey chart using the echarts4r package.
 }
 \examples{
-\dontrun{
 mock_data <- data.frame(
   status_at_entry = c("A", "A", "B", "B"),
   status_at_exit = c("X", "Y", "Y", "Z"),
@@ -41,5 +40,4 @@ sankey_chart(
   count = "n",
   color = "green"
 )
-}
 }

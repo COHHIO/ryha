@@ -25,12 +25,10 @@ A bar chart visualized using echarts4r.
 This function generates a bar chart using the echarts4r package.
 }
 \examples{
-\dontrun{
 mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
 bar_chart(
   data = mock_data,
   x = "x",
   y = "y"
 )
-}
 }

@@ -22,12 +22,10 @@ A pie chart visualized using echarts4r.
 This function generates a pie chart using the echarts4r package.
 }
 \examples{
-\dontrun{
 mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
 pie_chart(
   data = mock_data,
   category = "x",
   count = "y"
 )
-}
 }
