@@ -15,7 +15,10 @@ test_that("check_file_names correctly identifies missing files", {
     file.path(temp_dir, "file3.csv")
   )
 
-  expect_equal(check_file_names(temp_dir, mock_metadata)$valid, TRUE)
+  expect_equal(
+    check_file_names(temp_dir, mock_metadata)$valid,
+    TRUE
+  )
 
 })
 
@@ -29,10 +32,15 @@ test_that("check_file_names correctly identifies a single missing file", {
     file.path(temp_dir, "file3.csv")
   )
 
-  expect_equal(check_file_names(temp_dir, mock_metadata)$valid, FALSE)
+  expect_equal(
+    check_file_names(temp_dir, mock_metadata)$valid,
+    FALSE
+  )
 
-  expect_equal(check_file_names(temp_dir, mock_metadata)$missing_file_names,
-               "file2.csv")
+  expect_equal(
+    check_file_names(temp_dir, mock_metadata)$missing_file_names,
+    "file2.csv"
+  )
 
 })
 
@@ -45,9 +53,14 @@ test_that("check_file_names correctly identifies a multiple missing files", {
     file.path(temp_dir, "file3.csv")
   )
 
-  expect_equal(check_file_names(temp_dir, mock_metadata)$valid, FALSE)
+  expect_equal(
+    check_file_names(temp_dir, mock_metadata)$valid,
+    FALSE
+  )
 
-  expect_equal(check_file_names(temp_dir, mock_metadata)$missing_file_names,
-               c("file1.csv", "file2.csv"))
+  expect_equal(
+    check_file_names(temp_dir, mock_metadata)$missing_file_names,
+    c("file1.csv", "file2.csv")
+  )
 
 })
