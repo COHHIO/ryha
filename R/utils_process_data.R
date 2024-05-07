@@ -411,16 +411,15 @@ delete_from_db <- function(data, conn) {
 
     # Ensure that a valid 'organization_id' value exists in the input `data`
     # to use in the DELETE statement's WHERE clause, and a valid database table
-    if (nrow(data[[i]]) >= 1L & names(data)[i] %in% DBI::dbListTables(conn = conn)) {
+    if (nrow(data[[i]]) >= 1L &
+        names(data)[i] %in% DBI::dbListTables(conn = conn) &
+        # Ensure that database table is not organization nor project
+        !names(data)[i] %in% c("organization", "project")) {
 
       table_name <- glue::glue_sql(
         names(data)[i],
         .con = conn
       )
-
-      # TODO: Should we add an additional check to ensure that table_name is not
-      # "organization" nor "project"? Right now we are assuming that prep_tables()
-      # is never going to return these data frames
 
       organization_id <- data[[i]] |>
         dplyr::slice(1) |>
