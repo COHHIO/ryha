@@ -364,6 +364,10 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
             width = 350,
             overflow = "truncate"
           )
+        ) |>
+        echarts4r::e_tooltip(
+          confine = TRUE,
+          extraCssText = "width:auto; white-space:pre-wrap;"
         )
 
     })
