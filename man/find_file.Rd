@@ -19,6 +19,8 @@ A character vector containing the filepath for the corresponding .csv file.
 basename (i.e. the file name) in a given vector of filepaths.
 }
 \examples{
+\dontrun{
 files <- c("some/path/to/file/data1.csv", "some/path/to/file/data2.csv")
 find_file(files, "data1")
+}
 }

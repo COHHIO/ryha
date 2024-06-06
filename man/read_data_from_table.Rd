@@ -23,6 +23,7 @@ in the table
 user-specified set of columns from a SQL database table.
 }
 \examples{
+\dontrun{
 # Establish connection to PostgreSQL database
 con <- connect_to_db()
 
@@ -33,4 +34,5 @@ read_data_from_table(
   table_name = "project",
   column_names = c("project_name", "project_id")
 )
+}
 }

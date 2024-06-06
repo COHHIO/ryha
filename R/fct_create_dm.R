@@ -421,6 +421,7 @@ create_dm <- function() {
 #' in the table
 #'
 #' @examples
+#' \dontrun{
 #' # Establish connection to PostgreSQL database
 #' con <- connect_to_db()
 #'
@@ -431,6 +432,7 @@ create_dm <- function() {
 #'   table_name = "project",
 #'   column_names = c("project_name", "project_id")
 #' )
+#' }
 read_data_from_table <- function(connection, table_name, column_names) {
 
   DBI::dbGetQuery(

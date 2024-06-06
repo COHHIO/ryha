@@ -21,6 +21,7 @@ transforming it to generate data suitable for creating a Sankey chart
 representing flow between stages.
 }
 \examples{
+\dontrun{
 mock_data <- tibble::tribble(
   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated, ~condition,
   1, 101, "Project start", "2023-01-01", "A",
@@ -35,4 +36,5 @@ mock_data <- tibble::tribble(
   3, 105, "Project exit", "2023-12-31", "A"
 )
 prep_sankey_data(data = mock_data, state_var = "condition")
+}
 }
