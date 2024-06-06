@@ -15,7 +15,7 @@ test_that("find_file returns correct filepath", {
   )
 
   expect_equal(
-    find_file(fs::dir_ls(temp_dir), "data1"),
+    find_file(normalizePath(fs::dir_ls(temp_dir), winslash = "/"), "data1"),
     file.path(normalizePath(temp_dir, winslash = "/"), "data1.csv")
   )
 
