@@ -8,7 +8,7 @@
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 9 rows and 2 columns.
 }
 \source{
-<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R3.1%20SexualOrientation>
+<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R3.1 SexualOrientation>
 }
 \usage{
 SexualOrientationCodes

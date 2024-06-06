@@ -8,7 +8,7 @@
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 32 rows and 3 columns.
 }
 \source{
-<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.12.1%20Living%20Situation%20Option%20List>
+<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.12.1 Living Situation Option List>
 }
 \usage{
 LivingCodes

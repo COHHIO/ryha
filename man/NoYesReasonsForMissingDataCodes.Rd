@@ -8,7 +8,7 @@
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 5 rows and 2 columns.
 }
 \source{
-<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#1.8%20No/Yes/Reasons%20for%20Missing%20Data>
+<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#1.8 No/Yes/Reasons for Missing Data>
 }
 \usage{
 NoYesReasonsForMissingDataCodes

@@ -8,7 +8,7 @@
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 15 rows and 2 columns.
 }
 \source{
-<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R4.1%20LastGradeCompleted>
+<https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R4.1 LastGradeCompleted>
 }
 \usage{
 LastGradeCompletedCodes
