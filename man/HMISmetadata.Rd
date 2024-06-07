@@ -11,6 +11,6 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 HMISmetadata
 }
 \description{
-HMISmetadata
+Lists HMIS .csv files and whether or not they are required to develop the app
 }
 \keyword{datasets}
