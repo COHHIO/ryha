@@ -1,6 +1,3 @@
-
-
-
 #' Process HMIS Data
 #'
 #' @details This is the *"master"* function that governs the entire ETL process
@@ -47,7 +44,7 @@ process_data <- function(file) {
   )
 
   # Check that all required HMIS files are present in uploaded .zip file
-  check <- check_file_names(dir = tmp_dir)
+  check <- check_file_names(dir = tmp_dir, metadata = HMISmetadata)
 
   # Throw error if any needed files are missing
   if (!check$valid) {
@@ -87,6 +84,21 @@ process_data <- function(file) {
 
 }
 
+#' Find the complete filepath of a certain .csv file
+#'
+#' `find_file()` finds the complete filepath of a .csv file based on the .csv
+#' basename (i.e. the file name) in a given vector of filepaths.
+#'
+#' @param files Character vector containing the filepaths to search through.
+#' @param target String specifying the name of the .csv file (without the extension)
+#'
+#' @return A character vector containing the filepath for the corresponding .csv file.
+#'
+#' @examples
+#' \dontrun{
+#' files <- c("some/path/to/file/data1.csv", "some/path/to/file/data2.csv")
+#' find_file(files, "data1")
+#' }
 find_file <- function(files, target) {
 
   stringr::str_subset(
@@ -96,6 +108,23 @@ find_file <- function(files, target) {
 
 }
 
+#' Prepare data for database tasks
+#'
+#' `prep_tables()` processes the list returned by `process_data()` and returns
+#' a new list which is used by `delete_from_db()` and `send_to_db()`.
+#'
+#' @details
+#' `prep_tables()` handles the addition of new organization and project entries to
+#' the database, adds `project_id` and `organization_id` columns to `enrollment`
+#' file data, adds `organization_id` to the remaining files (e.g. client,
+#' disabilities, education, ...) and returns them as a list of dataframes.
+#'
+#' `organization` and `project` dataframes are excluded from the returned list.
+#'
+#' @param data List of dataframes returned by `process_data()`.
+#' @param conn A database connection object.
+#'
+#' @return A list of processed data frames.
 prep_tables <- function(data, conn) {
 
   # Retrieve the information from the file for the "organization" table
@@ -362,17 +391,30 @@ prep_tables <- function(data, conn) {
 
 }
 
-
+#' Delete records from a database
+#'
+#' `delete_from_db()` deletes records from a database based on uploaded data.
+#'
+#' @details
+#' `delete_from_db()` iterates through each table in the database (except for
+#' 'organization' and 'project') and deletes records that match on the table's
+#' `*_id` value and `organization_id` value, when compared to the respective
+#' uploaded file data.
+#'
+#' @param data List of dataframes returned by `prep_tables()`.
+#' @param conn A database connection object.
+#'
+#' @return Nothing. `delete_from_db()` is called for its side effects.
 delete_from_db <- function(data, conn) {
 
-  # Loop through each table in the database (except 'organization' and 'project')
-  # and delete any records that match on the table's `*_id` value and
-  # `organization_id` value, when compared to the respective uploaded file data
   for (i in 1:length(data)) {
 
-    # Ensure that there exists a valid 'organization_id' value in the input `data`
+    # Ensure that a valid 'organization_id' value exists in the input `data`
     # to use in the DELETE statement's WHERE clause, and a valid database table
-    if (nrow(data[[i]]) >= 1L & names(data)[i] %in% DBI::dbListTables(conn = conn)) {
+    if (nrow(data[[i]]) >= 1L &
+        names(data)[i] %in% DBI::dbListTables(conn = conn) &
+        # Ensure that database table is not organization nor project
+        !names(data)[i] %in% c("organization", "project")) {
 
       table_name <- glue::glue_sql(
         names(data)[i],
@@ -403,8 +445,16 @@ delete_from_db <- function(data, conn) {
 
 }
 
-
-
+#' Send data to a database
+#'
+#' `send_to_db()` appends each data frame in a list to the corresponding table
+#' in a database.
+#'
+#' @param data List of dataframes returned by `prep_tables()`.
+#' @param conn A database connection object.
+#' @param waiter An optional waiter object to display progress. Default is NULL.
+#'
+#' @return Nothing. `send_to_db()` is called for its side effects.
 send_to_db <- function(data, conn, waiter = NULL) {
 
   for (i in 1:length(data)) {
@@ -429,8 +479,6 @@ send_to_db <- function(data, conn, waiter = NULL) {
   }
 
 }
-
-
 
 # Create "safe" equivalents for each function
 process_data_safely <- purrr::safely(process_data)

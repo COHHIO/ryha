@@ -1,6 +1,3 @@
-
-
-
 #' Connect to PostgreSQL Database
 #'
 #' @description Establish a `{DBI}` database connection to the PostgreSQL
@@ -28,7 +25,12 @@ connect_to_db <- function() {
 
 #' Create the data model
 #'
-#' @description Create a
+#' @description `create_dm()` creates a list of data frames based on the tables
+#' in the database.
+#'
+#' @details `create_dm()` connects to the database and, for each table, reads the
+#' columns used in the app. `gender` and `ethnicity` data frames are derived from
+#' `client` table.
 #'
 #' @return List of data frames, based upon the tables in the PostgreSQL database,
 #'   with some minor manipulations to reduce the number of data transformations
@@ -56,7 +58,7 @@ create_dm <- function() {
   )
 
   # Read "client" table into memory
-client_tbl <- read_data_from_table(
+  client_tbl <- read_data_from_table(
     connection = con,
     table_name = "client",
     column_names = c(
@@ -202,7 +204,7 @@ client_tbl <- read_data_from_table(
         personal_id
       )
   }
-  
+
   disabilities <- read_data_from_table(
     connection = con,
     table_name = "disabilities",
@@ -419,6 +421,7 @@ client_tbl <- read_data_from_table(
 #' in the table
 #'
 #' @examples
+#' \dontrun{
 #' # Establish connection to PostgreSQL database
 #' con <- connect_to_db()
 #'
@@ -429,6 +432,7 @@ client_tbl <- read_data_from_table(
 #'   table_name = "project",
 #'   column_names = c("project_name", "project_id")
 #' )
+#' }
 read_data_from_table <- function(connection, table_name, column_names) {
 
   DBI::dbGetQuery(

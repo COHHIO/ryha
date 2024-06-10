@@ -1,8 +1,5 @@
-
-
 # The following family of functions define the ETL process for converting each
 # raw .csv file into an arrow table that is ready to be written to the database
-
 
 #' Look up Plain-English Definitions from Integer Codes
 #'
@@ -22,7 +19,6 @@ lookup_codes <- function(var, codes) {
   codes$Description[match(x = {{ var }}, table = codes$Code)]
 
 }
-
 
 #' Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table
 #'
@@ -160,8 +156,6 @@ read_client <- function(file) {
 
 }
 
-
-
 #' Ingest "Disabilities.csv" file and perform ETL prep for "DISABILITIES" database table
 #'
 #' @inheritParams read_client
@@ -232,8 +226,6 @@ read_disabilities <- function(file) {
 
 }
 
-
-
 #' Ingest "EmploymentEducation.csv" file and perform ETL prep for "EDUCATION" database table
 #'
 #' @inheritParams read_client
@@ -302,7 +294,6 @@ read_education <- function(file) {
     janitor::clean_names(case = "snake")
 
 }
-
 
 #' Ingest "EmploymentEducation.csv" file and perform ETL prep for "EMPLOYMENT" database table
 #'
@@ -441,8 +432,6 @@ read_living <- function(file) {
     janitor::clean_names(case = "snake")
 
 }
-
-
 
 #' Ingest "HealthAndDV.csv" file and perform ETL prep for "HEALTH" database
 #' table
@@ -597,7 +586,6 @@ read_domestic_violence <- function(file) {
 
 }
 
-
 #' Ingest "IncomeBenefits.csv" file and perform ETL prep for "INCOME"
 #' database table
 #'
@@ -727,7 +715,6 @@ read_income <- function(file) {
 
 }
 
-
 #' Ingest "IncomeBenefits.csv" file and perform ETL prep for "BENEFITS"
 #' database table
 #'
@@ -840,7 +827,6 @@ read_benefits <- function(file) {
     janitor::clean_names(case = "snake")
 
 }
-
 
 #' Ingest "Enrollment.csv" file and perform ETL prep for "ENROLLMENT" database
 #' table
@@ -985,7 +971,6 @@ read_enrollment <- function(file) {
 
 }
 
-
 #' Ingest "Services.csv" file and perform ETL prep for "SERVICES" database table
 #'
 #' @inheritParams read_client
@@ -1048,7 +1033,6 @@ read_services <- function(file) {
 
 }
 
-
 #' Ingest "Project.csv" file and perform ETL prep for "PROJECT" database table
 #'
 #' @inheritParams read_client
@@ -1103,7 +1087,6 @@ read_project <- function(file) {
 
 }
 
-
 #' Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table
 #'
 #' @inheritParams read_client
@@ -1146,7 +1129,6 @@ read_organization <- function(file) {
     dplyr::rename(orig_organization_id = organization_id)
 
 }
-
 
 #' Ingest "Exit.csv" file and perform ETL prep for "EXIT" database table
 #'
@@ -1319,7 +1301,6 @@ read_exit <- function(file) {
   return(exit)
 
 }
-
 
 #' Ingest "Export.csv" file and perform ETL prep for "PROJECT" and "SUBMISSION"
 #' database tables

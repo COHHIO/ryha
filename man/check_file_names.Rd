@@ -4,11 +4,15 @@
 \alias{check_file_names}
 \title{Ensure All HMIS Data was Uploaded}
 \usage{
-check_file_names(dir)
+check_file_names(dir, metadata)
 }
 \arguments{
 \item{dir}{The directory path containing the extracted files from the
 uploaded .zip file.}
+
+\item{metadata}{Data frame used to identify required files. It expects the
+following columns: `FileName` (including file extension) and `Required`
+(either `Y` or `N`).}
 }
 \value{
 A list with two elements:
