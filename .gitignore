@@ -1,8 +1,9 @@
 .Rproj.user
-.Renviron
-hkey.RDS
-.DS_Store
 .Rhistory
-rsconnect/
+.Renviron
+.DS_Store
 .Rprofile
+.vscode
+rsconnect/
 db_data
+hkey.RDS
