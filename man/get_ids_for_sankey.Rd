@@ -14,7 +14,7 @@ A data frame with unique combinations of organization and personal IDs
 that have at least a Project start and Project exit data collection stage.
 }
 \description{
-`get_ids_for_sankey()` identifies IDs with both a Project start and a
+\code{get_ids_for_sankey()} identifies IDs with both a Project start and a
 Project exit data collection stage.
 }
 \details{

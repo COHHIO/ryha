@@ -11,7 +11,7 @@ read_client(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "CLIENT" database table
+the "CLIENT" database table
 }
 \description{
 Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table

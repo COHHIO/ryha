@@ -10,8 +10,8 @@ connect_to_db()
 A {DBI} database connection
 }
 \description{
-Establish a `{DBI}` database connection to the PostgreSQL
-  database, using environment variables for the connection information
+Establish a \code{{DBI}} database connection to the PostgreSQL
+database, using environment variables for the connection information
 }
 \examples{
 \dontrun{

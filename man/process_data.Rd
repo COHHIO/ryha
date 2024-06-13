@@ -17,8 +17,8 @@ A list containing the ingested data for each HMIS table.
 Process HMIS Data
 }
 \details{
-This is the *"master"* function that governs the entire ETL process
-  for processing the uploaded data and, depending on the user (i.e., whether
-  or not the user is an approved grantee), writing the data out to the
-  PostgreSQL database.
+This is the \emph{"master"} function that governs the entire ETL process
+for processing the uploaded data and, depending on the user (i.e., whether
+or not the user is an approved grantee), writing the data out to the
+PostgreSQL database.
 }

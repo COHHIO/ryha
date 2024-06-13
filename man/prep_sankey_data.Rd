@@ -16,7 +16,7 @@ the state variable to be used in the Sankey chart.}
 A data frame with prepared data suitable for generating a Sankey chart.
 }
 \description{
-`prep_sankey_data()` prepares data by filtering, arranging, selecting, and
+\code{prep_sankey_data()} prepares data by filtering, arranging, selecting, and
 transforming it to generate data suitable for creating a Sankey chart
 representing flow between stages.
 }
