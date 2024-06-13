@@ -1,0 +1,23 @@
+{
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	// Enable pgadmin
+	"forwardPorts": [5432, 5050],
+    // Configure tool-specific properties.
+	"customizations": {
+		// Settings for VS Code.
+		"vscode": {
+			"extensions": [
+				"reditorsupport.r",
+				"RDebugger.r-debugger"
+			],
+			"settings": {
+				"r.bracketedPaste": true,
+				"r.plot.useHttpgd": true,
+				"r.lsp.diagnostics": false,
+				"r.lsp.promptToInstall": false
+			}
+		}
+	}
+}

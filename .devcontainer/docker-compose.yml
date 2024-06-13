@@ -1,0 +1,37 @@
+services:
+  app:
+    build: 
+      context: ..
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    network_mode: service:db
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ryha-dev
+      POSTGRES_USER: ryha-dev
+      POSTGRES_PASSWORD: ryha
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@secret.io
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pga-data:/tmp/dev/pga/data
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres-data:
+  pga-data:
