@@ -2,9 +2,11 @@ services:
   app:
     build: 
       context: ..
-      dockerfile: Dockerfile
+      dockerfile: .devcontainer/DockerfileDev
     volumes:
       - ../..:/workspaces:cached
+      - ${RENV_PATHS_CACHE_HOST}:/renv/cache
+    env_file: .env
     command: sleep infinity
     network_mode: service:db
 

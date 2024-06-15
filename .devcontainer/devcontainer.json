@@ -2,11 +2,12 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	// Enable pgadmin
+	// Enable db and pgadmin in local machine
 	"forwardPorts": [5432, 5050],
-    // Configure tool-specific properties.
+	"postCreateCommand": "Rscript .devcontainer/install_dev_packages.R",
+    // Configure tool-specific properties
 	"customizations": {
-		// Settings for VS Code.
+		// Settings for VS Code
 		"vscode": {
 			"extensions": [
 				"reditorsupport.r",
