@@ -27,7 +27,14 @@ connect_to_db <- function(env = c("prod", "dev")) {
       password = Sys.getenv("DB_PWD")
     )
   } else if (env == "dev") {
-    #TODO
+    DBI::dbConnect(
+      drv = RPostgres::Postgres(),
+      dbname = "ryha-dev",
+      host = "localhost",
+      port = 5432,
+      user = "ryha-dev",
+      password = "ryha"
+    )
   }
 
 }
@@ -47,12 +54,12 @@ connect_to_db <- function(env = c("prod", "dev")) {
 #' Defaults to the last element in `db_data` directory.
 #'
 #' @details
-#' When `env` is `"prod"` or `"dev"`, `create_dm()` connects to the database and, 
-#' for each table, reads the columns used in the app. `gender` and `ethnicity` 
+#' When `env` is `"prod"` or `"dev"`, `create_dm()` connects to the database and,
+#' for each table, reads the columns used in the app. `gender` and `ethnicity`
 #' data frames are derived from `client` table.
 #'
 #' To create the `.rds` object required when `env` is `"file"`, a person with access
-#' to the database in production should save and share the `dm` object that is  
+#' to the database in production should save and share the `dm` object that is
 #' generated in `app_server.R`.
 #'
 #' @return List of data frames, based upon the tables in the PostgreSQL database,
