@@ -8,7 +8,6 @@ services:
       - ${RENV_PATHS_CACHE_HOST}:/renv/cache
     env_file: .env
     command: sleep infinity
-    network_mode: service:db
 
   db:
     image: postgres:latest
@@ -19,6 +18,7 @@ services:
       POSTGRES_DB: ryha-dev
       POSTGRES_USER: ryha-dev
       POSTGRES_PASSWORD: ryha
+    # Alternatively you can set "network_mode: service:db" property in app service
     ports:
       - "5432:5432"
 
