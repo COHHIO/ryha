@@ -118,8 +118,8 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
     storage](https://medium.com/codex/how-to-persist-and-backup-data-of-a-postgresql-docker-container-9fe269ff4334)
     and [exposed ports for
     access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port).
-    Check [db](#db) section for instructions on how to populate the
-    database.
+    Check [db](#db) section for instructions on how to connect to,
+    populate and launch the application connected to the database.
   - `pgadmin`: A [pgAdmin](https://www.pgadmin.org/) container for
     database management. Check [pgadmin](#pgadmin) section for
     instructions on how to configure the server.
@@ -150,8 +150,8 @@ initialize the following **services**:
 
 #### app
 
-**app** creates a container based on `.devcontainer/Dockerfile.Dev`. This
-file:
+**app** creates a container based on `.devcontainer/Dockerfile.Dev`.
+This file:
 
 - installs the R version used in this project
 - installs R packages’ system requirements
@@ -171,13 +171,29 @@ needs to be set in `.devcontainer/.env`. Resources:
   shows examples on how to state the path when working with a Windows
   machine.
 
+By setting the `network_mode` property to `service:db`, we can use
+`host = "localhost"` when connecting to the development database from
+inside the Dev Container. This configuration ensures that the connection
+string remains the same regardless of whether we are connecting from
+inside or outside the Dev Container (when the `ports` property is set
+for `db` service). Without `network_mode` setting, we would need to use
+`host = "db"`, resulting in different connection strings depending on
+the context, which is something we want to avoid.
+
 #### db
 
 **db** creates a postgreSQL database. You can find the credentials under
 `db`’s `environment` property in `.devcontainer/docker-compose.yml`.
 
 The `ports` property allows the database to be accessible in the host
-machine (i.e., outside of VS Code Dev Container).
+machine (i.e., outside of the Dev Container). With this property set,
+the connection string will use `host = "localhost"` for external access.
+
+This configuration ensures that the connection string remains the same
+regardless of whether we are connecting from outside or inside the Dev
+Container (when the `network_mode` property is set for `app` service).
+
+##### Connect
 
 You can connect to the development database using the following code:
 
@@ -193,15 +209,24 @@ con <- DBI::dbConnect(
 )
 ```
 
+##### Populate
+
 Once the container is created, you can run
 `postgres/populate_dev_database/populate_dev_database.R` to create and
 populate the corresponding tables. To run this script you need to store
 `dm.rds` in the directory `postgres/populate_dev_database/data`.
+
 `dm.rds` is a snapshot of the database in production. It needs to be
 created by someone with access to the production database. The process
 to generate this object is to read each table in the database into a
 list of dataframes where each element is named after the table name the
 data was read from.
+
+##### Use in App
+
+Once the container is running, you can set the environmental variable
+`CREATE_DM_ENV` to `dev` in `.Renviron` to run the application connected
+to the development database.
 
 #### pgadmin
 
