@@ -2,7 +2,7 @@ services:
   app:
     build: 
       context: ..
-      dockerfile: .devcontainer/DockerfileDev
+      dockerfile: .devcontainer/Dockerfile.Dev
     volumes:
       - ../..:/workspaces:cached
       - ${RENV_PATHS_CACHE_HOST}:/renv/cache

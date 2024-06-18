@@ -98,7 +98,7 @@ The following architecture diagram shows how the app can be used for both upload
   - `app`: A custom-built application container that mounts local directories and [runs indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
   - `db`: A PostgreSQL database container with [persistent storage](https://medium.com/codex/how-to-persist-and-backup-data-of-a-postgresql-docker-container-9fe269ff4334) and [exposed ports for access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port). Check [db](#db) section for instructions on how to populate the database.
   - `pgadmin`: A [pgAdmin](https://www.pgadmin.org/) container for database management. Check [pgadmin](#pgadmin) section for instructions on how to configure the server.
-- `DockerfileDev` contains a set of instructions on how to build the Docker image to run the application in development. **Any new system requirement needed for additional R packages installed must be added to this file**.
+- `Dockerfile.Dev` contains a set of instructions on how to build the Docker image to run the application in development. **Any new system requirement needed for additional R packages installed must be added to this file**.
 - `install_dev_packages.R` runs `renv::restore()` to restore the project's dependencies from the `renv.lock` file. In addition, we use this script to install development packages (i.e. packages that are not needed to run the application but help during development, such as `devtools`). **Add or remove development packages from this script based on your preferences**. This script is run as a `postCreateCommand` in `devcontainer.json` to leverage `{renv}`'s cache.
 
 ### Requirements
@@ -113,7 +113,7 @@ The container uses [Docker Compose](https://docs.docker.com/compose/) to initial
 
 #### app
 
-**app** creates a container based on `.devcontainer/DockerfileDev`. This file:
+**app** creates a container based on `.devcontainer/Dockerfile.Dev`. This file:
 
 - installs the R version used in this project
 - installs R packages' system requirements

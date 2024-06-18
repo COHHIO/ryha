@@ -123,7 +123,7 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
   - `pgadmin`: A [pgAdmin](https://www.pgadmin.org/) container for
     database management. Check [pgadmin](#pgadmin) section for
     instructions on how to configure the server.
-- `DockerfileDev` contains a set of instructions on how to build the
+- `Dockerfile.Dev` contains a set of instructions on how to build the
   Docker image to run the application in development. **Any new system
   requirement needed for additional R packages installed must be added
   to this file**.
@@ -150,7 +150,7 @@ initialize the following **services**:
 
 #### app
 
-**app** creates a container based on `.devcontainer/DockerfileDev`. This
+**app** creates a container based on `.devcontainer/Dockerfile.Dev`. This
 file:
 
 - installs the R version used in this project
