@@ -8,6 +8,10 @@ services:
       - ${RENV_PATHS_CACHE_HOST}:/renv/cache
     env_file: .env
     command: sleep infinity
+    # Allows to use host = "localhost" while connecting to the dev database
+    # from inside the Dev Container.
+    # If we omit network_mode property we need to set host = "db".
+    network_mode: service:db
 
   db:
     image: postgres:latest
@@ -18,7 +22,8 @@ services:
       POSTGRES_DB: ryha-dev
       POSTGRES_USER: ryha-dev
       POSTGRES_PASSWORD: ryha
-    # Alternatively you can set "network_mode: service:db" property in app service
+    # Allows to use host = "localhost" while connecting to the dev database
+    # from outside the Dev Container.
     ports:
       - "5432:5432"
 
