@@ -4,7 +4,7 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile.Dev
     volumes:
-      - ../..:/workspaces:cached
+      - ..:/workspaces/ryha:cached
       - ${RENV_PATHS_CACHE_HOST}:/renv/cache
     env_file: .env
     command: sleep infinity
