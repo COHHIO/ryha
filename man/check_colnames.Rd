@@ -12,11 +12,11 @@ check_colnames(file, expected_colnames)
 \item{expected_colnames}{Character. Set of expected column names.}
 }
 \value{
-`check_colnames()` does not return any value. It either produces an
+\code{check_colnames()} does not return any value. It either produces an
 error or not, so what matters is its side effect.
 }
 \description{
-`check_colnames()` compares a set of expected column names with the actual
+\code{check_colnames()} compares a set of expected column names with the actual
 column names in a .csv file and errors if any of the expected column names
 is not found in the file.
 }

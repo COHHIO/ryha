@@ -11,7 +11,7 @@ read_organization(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "PROJECT" database table
+the "PROJECT" database table
 }
 \description{
 Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table

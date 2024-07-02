@@ -12,7 +12,7 @@ read_benefits(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "BENEFITS" database table
+the "BENEFITS" database table
 }
 \description{
 Ingest "IncomeBenefits.csv" file and perform ETL prep for "BENEFITS"

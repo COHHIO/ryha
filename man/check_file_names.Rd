@@ -11,16 +11,16 @@ check_file_names(dir, metadata)
 uploaded .zip file.}
 
 \item{metadata}{Data frame used to identify required files. It expects the
-following columns: `FileName` (including file extension) and `Required`
-(either `Y` or `N`).}
+following columns: \code{FileName} (including file extension) and \code{Required}
+(either \code{Y} or \code{N}).}
 }
 \value{
 A list with two elements:
 \itemize{
-  \item \code{valid}: A logical value indicating whether all expected files
-  are present in the uploaded directory.
-  \item \code{missing_file_names}: A character vector containing the names of
-  files that are expected but missing in the uploaded directory.
+\item \code{valid}: A logical value indicating whether all expected files
+are present in the uploaded directory.
+\item \code{missing_file_names}: A character vector containing the names of
+files that are expected but missing in the uploaded directory.
 }
 }
 \description{

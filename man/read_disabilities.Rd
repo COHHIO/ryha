@@ -11,7 +11,7 @@ read_disabilities(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "DISABILITIES" database table
+the "DISABILITIES" database table
 }
 \description{
 Ingest "Disabilities.csv" file and perform ETL prep for "DISABILITIES" database table

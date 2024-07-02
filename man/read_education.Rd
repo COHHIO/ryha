@@ -11,7 +11,7 @@ read_education(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "EDUCATION" database table
+the "EDUCATION" database table
 }
 \description{
 Ingest "EmploymentEducation.csv" file and perform ETL prep for "EDUCATION" database table

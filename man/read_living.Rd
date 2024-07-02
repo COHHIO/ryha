@@ -12,7 +12,7 @@ read_living(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "LIVING" database table
+the "LIVING" database table
 }
 \description{
 Ingest "CurrentLivingSituation.csv" file and perform ETL prep for "LIVING"

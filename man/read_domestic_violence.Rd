@@ -12,7 +12,7 @@ read_domestic_violence(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "DOMESTIC_VIOLENCE" database table
+the "DOMESTIC_VIOLENCE" database table
 }
 \description{
 Ingest "HealthAndDV.csv" file and perform ETL prep for "DOMESTIC_VIOLENCE"

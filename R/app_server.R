@@ -7,11 +7,8 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
-  # Use this for testing
-  # dm <- readRDS("db_data/dm.rds")
-
   # Create dm object. This is run once per session
-  dm <- create_dm()
+  dm <- create_dm(env = Sys.getenv("CREATE_DM_ENV"))
 
   # Run data filtering and server modules only when data is available
   if (nrow(dm$client) > 0) {

@@ -12,7 +12,7 @@ read_export(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "PROJECT" and "SUBMISSION" database tables
+the "PROJECT" and "SUBMISSION" database tables
 }
 \description{
 Ingest "Export.csv" file and perform ETL prep for "PROJECT" and "SUBMISSION"

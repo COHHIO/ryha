@@ -11,7 +11,7 @@ read_services(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "SERVICES" database table
+the "SERVICES" database table
 }
 \description{
 Ingest "Services.csv" file and perform ETL prep for "SERVICES" database table

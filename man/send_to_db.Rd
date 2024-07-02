@@ -7,16 +7,16 @@
 send_to_db(data, conn, waiter = NULL)
 }
 \arguments{
-\item{data}{List of dataframes returned by `prep_tables()`.}
+\item{data}{List of dataframes returned by \code{prep_tables()}.}
 
 \item{conn}{A database connection object.}
 
 \item{waiter}{An optional waiter object to display progress. Default is NULL.}
 }
 \value{
-Nothing. `send_to_db()` is called for its side effects.
+Nothing. \code{send_to_db()} is called for its side effects.
 }
 \description{
-`send_to_db()` appends each data frame in a list to the corresponding table
+\code{send_to_db()} appends each data frame in a list to the corresponding table
 in a database.
 }
