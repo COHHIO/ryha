@@ -74,6 +74,9 @@ connect_to_db <- function(env = c("prod", "dev")) {
 #' }
 create_dm <- function(env = c("prod", "dev", "file"),
                       file = list.files("db_data", full.names = TRUE) |> tail(n = 1)) {
+
+  # TODO // Enforce that either "prod"/"dev"/"file" *must* be specified,
+  # instead of taking "prod" as the default value if nothing is supplied
   env <- match.arg(env)
 
   if (env == "file") {
