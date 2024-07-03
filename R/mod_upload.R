@@ -119,7 +119,8 @@ mod_upload_server <- function(id){
       w$update(spinner_message("Step 1/5: Connecting to database..."))
 
       # Establish connection to PostgreSQL database
-      con <- connect_to_db()
+      # TODO // Add an error if you're connecting via "file"
+      con <- connect_to_db(env = Sys.getenv("CREATE_DM_ENV"))
 
       Sys.sleep(0.5)
 
