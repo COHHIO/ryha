@@ -1,6 +1,10 @@
 {
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
+	"containerEnv": {
+		"RENV_PATHS_CACHE": "/renv/cache",
+		"RENV_PATHS_CACHE_CONTAINER": "/renv/cache"
+	},
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Enable db and pgadmin in local machine
 	"forwardPorts": [5432, 5050],
