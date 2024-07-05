@@ -12,13 +12,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' con <- connect_to_db()
+#' con <- connect_to_db(env = "prod")
 #' }
-connect_to_db <- function(env = c("prod", "dev")) {
+connect_to_db <- function(env) {
 
-  # TODO // Enforce that either "prod"/"dev"/"file" *must* be specified,
-  # instead of taking "prod" as the default value if nothing is supplied
-  env <- match.arg(env)
+  if (!env %in% c("prod", "dev")) {
+    rlang::abort("`env` should be one of \"prod\" or \"dev\" to connect to a database")
+  }
 
   if (env == "prod") {
     DBI::dbConnect(
