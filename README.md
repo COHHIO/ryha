@@ -134,8 +134,8 @@ uploaded HMIS data.
 
 ## Development Environment
 
-`.devcontainer` directory contains the necessary files to set up a
-[development
+[`.devcontainer`](/.devcontainer) directory contains the necessary files
+to set up a [development
 container](https://code.visualstudio.com/docs/devcontainers/containers):
 
 - `.env.example` is an *example* file that shows how to set the
