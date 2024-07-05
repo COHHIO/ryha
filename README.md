@@ -36,7 +36,7 @@ set, for the purposes of interacting with the external database:
   - `DB_USER`
   - `DB_PWD`
   - `UPLOAD_PWD`
-  - `CREATE_DM_ENV`
+  - `APP_BACKEND`
 - The hash keys developed for encrypting the data during write/read
   to/from the database (stored at the root of the directory, needed for
   *writing to* the database)
@@ -225,7 +225,7 @@ data was read from.
 ##### Use in App
 
 Once the container is running, you can set the environmental variable
-`CREATE_DM_ENV` to `dev` in `.Renviron` to run the application connected
+`APP_BACKEND` to `dev` in `.Renviron` to run the application connected
 to the development database.
 
 #### pgadmin

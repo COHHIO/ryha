@@ -120,7 +120,7 @@ mod_upload_server <- function(id){
 
       # Establish connection to PostgreSQL database
       # TODO // Add an error if you're connecting via "file"
-      con <- connect_to_db(env = Sys.getenv("CREATE_DM_ENV"))
+      con <- connect_to_db(env = Sys.getenv("APP_BACKEND"))
 
       Sys.sleep(0.5)
 

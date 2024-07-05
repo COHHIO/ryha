@@ -42,7 +42,7 @@ Before launching the app, you must have the following configurations set, for th
   * `DB_USER`
   * `DB_PWD`
   * `UPLOAD_PWD`
-  * `CREATE_DM_ENV`
+  * `APP_BACKEND`
 * The hash keys developed for encrypting the data during write/read to/from the database (stored at the root of the directory, needed for *writing to* the database)
 
 After installing the package, you can launch the app using the package's `run_app()` function.
@@ -158,7 +158,7 @@ Once the container is created, you can run `postgres/populate_dev_database/popul
 
 ##### Use in App
 
-Once the container is running, you can set the environmental variable `CREATE_DM_ENV` to `dev` in `.Renviron` to run the application connected to the development database.
+Once the container is running, you can set the environmental variable `APP_BACKEND` to `dev` in `.Renviron` to run the application connected to the development database.
 
 #### pgadmin
 

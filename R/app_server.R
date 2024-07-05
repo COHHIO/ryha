@@ -8,7 +8,7 @@ app_server <- function(input, output, session) {
   # Your application server logic
 
   # Create dm object. This is run once per session
-  dm <- create_dm(env = Sys.getenv("CREATE_DM_ENV"))
+  dm <- create_dm(env = Sys.getenv("APP_BACKEND"))
 
   # Run data filtering and server modules only when data is available
   if (nrow(dm$client) > 0) {
