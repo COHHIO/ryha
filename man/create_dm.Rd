@@ -4,10 +4,7 @@
 \alias{create_dm}
 \title{Create the data model}
 \usage{
-create_dm(
-  env = c("prod", "dev", "file"),
-  file = tail(list.files("db_data", full.names = TRUE), n = 1)
-)
+create_dm(env, file = tail(list.files("db_data", full.names = TRUE), n = 1))
 }
 \arguments{
 \item{env}{Character. Indicates the environment used to create the data model.
@@ -41,6 +38,6 @@ generated in \code{app_server.R}.
 }
 \examples{
 \dontrun{
-dm <- create_dm()
+dm <- create_dm(env = "prod")
 }
 }

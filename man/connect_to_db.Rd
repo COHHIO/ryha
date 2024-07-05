@@ -4,7 +4,7 @@
 \alias{connect_to_db}
 \title{Connect to PostgreSQL Database}
 \usage{
-connect_to_db(env = c("prod", "dev"))
+connect_to_db(env)
 }
 \arguments{
 \item{env}{Character. Indicates the database to connect to.
@@ -23,6 +23,6 @@ database, using environment variables for the connection information
 }
 \examples{
 \dontrun{
-con <- connect_to_db()
+con <- connect_to_db(env = "prod")
 }
 }
