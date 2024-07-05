@@ -73,14 +73,14 @@ connect_to_db <- function(env) {
 #'
 #' @examples
 #' \dontrun{
-#' dm <- create_dm()
+#' dm <- create_dm(env = "prod")
 #' }
-create_dm <- function(env = c("prod", "dev", "file"),
+create_dm <- function(env,
                       file = list.files("db_data", full.names = TRUE) |> tail(n = 1)) {
 
-  # TODO // Enforce that either "prod"/"dev"/"file" *must* be specified,
-  # instead of taking "prod" as the default value if nothing is supplied
-  env <- match.arg(env)
+  if (!env %in% c("prod", "dev", "file")) {
+    rlang::abort("`env` should be one of \"prod\", \"dev\", \"file\"")
+  }
 
   if (env == "file") {
 
