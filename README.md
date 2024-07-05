@@ -181,6 +181,17 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
 - VS Code’s [Dev Container
   Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
+### QuickStart
+
+Once you have the requirements installed, have cloned the repo locally
+and created the `.devcontainer/.env` file, open the repository in VSCode
+and click **Reopen in Container…**:
+
+![](man/figures/README-reopen-in-container.png)
+
+*NOTE*: Alternatively, you can select **Dev Containers: Reopen in
+Container** from the Command Palette (`F1`) to perform this action.
+
 ### Container Details
 
 The container uses [Docker Compose](https://docs.docker.com/compose/) to
