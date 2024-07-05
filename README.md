@@ -134,21 +134,21 @@ uploaded HMIS data.
 
 ## Development Environment
 
-[`.devcontainer`](/.devcontainer) directory contains the necessary files
+[.devcontainer](/.devcontainer) directory contains the necessary files
 to set up a [development
 container](https://code.visualstudio.com/docs/devcontainers/containers):
 
-- `.env.example` is an *example* file that shows how to set the
-  `RENV_PATHS_CACHE_HOST` environment variable (required to configure
-  `{renv}`’s cache) based upon Windows OS. **You need to create a file
-  named** `.env` **in the same directory as** `.env.example` **and set**
-  `RENV_PATHS_CACHE_HOST` **value to a path in your local machine based
-  upon** [{renv}’s Cache
+- [.env.example](/.devcontainer/.env.example) is an *example* file that
+  shows how to set the `RENV_PATHS_CACHE_HOST` environment variable
+  (required to configure `{renv}`’s cache) based upon Windows OS. **You
+  need to create a file named** `.env` **in the same directory as**
+  `.env.example` **and set** `RENV_PATHS_CACHE_HOST` **value to a path
+  in your local machine based upon** [{renv}’s Cache
   location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
-- `devcontainer.json` describes how VS Code should start the container
-  and what to do after it connects.
-- `docker-compose.yml` sets up a development environment with three
-  services:
+- [devcontainer.json](/.devcontainer/devcontainer.json) describes how VS
+  Code should start the container and what to do after it connects.
+- [docker-compose.yml](/.devcontainer/docker-compose.yml) sets up a
+  development environment with three services:
   - `app`: A custom-built application container that mounts local
     directories and [runs
     indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
@@ -161,18 +161,18 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
   - `pgadmin`: A [pgAdmin](https://www.pgadmin.org/) container for
     database management. Check [pgadmin](#pgadmin) section for
     instructions on how to configure the server.
-- `Dockerfile.Dev` contains a set of instructions on how to build the
-  Docker image to run the application in development. **Any new system
-  requirement needed for additional R packages installed must be added
-  to this file**.
-- `install_dev_packages.R` runs `renv::restore()` to restore the
-  project’s dependencies from the `renv.lock` file. In addition, we use
-  this script to install development packages (i.e. packages that are
-  not needed to run the application but help during development, such as
-  `devtools`). **Add or remove development packages from this script
-  based on your preferences**. This script is run as a
-  `postCreateCommand` in `devcontainer.json` to leverage `{renv}`’s
-  cache.
+- [Dockerfile.Dev](/.devcontainer/Dockerfile.Dev) contains a set of
+  instructions on how to build the Docker image to run the application
+  in development. **Any new system requirement needed for additional R
+  packages installed must be added to this file**.
+- [install_dev_packages.R](/.devcontainer/install_dev_packages.R) runs
+  `renv::restore()` to restore the project’s dependencies from the
+  [renv.lock](/renv.lock) file. In addition, we use this script to
+  install development packages (i.e. packages that are not needed to run
+  the application but help during development, such as `devtools`).
+  **Add or remove development packages from this script based on your
+  preferences**. This script is run as a `postCreateCommand` in
+  `devcontainer.json` to leverage `{renv}`’s cache.
 
 ### Requirements
 
@@ -188,8 +188,9 @@ initialize the following **services**:
 
 #### app
 
-**app** creates a container based on `.devcontainer/Dockerfile.Dev`.
-This file:
+**app** creates a container based on
+[.devcontainer/Dockerfile.Dev](/.devcontainer/Dockerfile.Dev). This
+file:
 
 - installs the R version used in this project
 - installs R packages’ system requirements
@@ -200,9 +201,9 @@ In addition, **app** service defines a
 of `{renv}` cache. The `RENV_PATHS_CACHE_HOST` environmental variable
 needs to be set in `.devcontainer/.env`. Resources:
 
-- [Path for storing global
-  state](https://rstudio.github.io/renv/reference/paths.html). This
-  article can help to find where `{renv}`’s cache is located in your
+- [{renv}’s Cache
+  location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
+  This article helps to find where `{renv}`’s cache is located in your
   machine.
 - [This GitHub Issue
   comment](https://github.com/docker/for-win/issues/2151#issuecomment-662343075)
@@ -221,7 +222,8 @@ the context, which is something we want to avoid.
 #### db
 
 **db** creates a postgreSQL database. You can find the credentials under
-`db`’s `environment` property in `.devcontainer/docker-compose.yml`.
+`db`’s `environment` property in
+[.devcontainer/docker-compose.yml](/.devcontainer/docker-compose.yml).
 
 The `ports` property allows the database to be accessible in the host
 machine (i.e., outside of the Dev Container). With this property set,
@@ -250,9 +252,10 @@ con <- DBI::dbConnect(
 ##### Populate
 
 Once the container is created, you can run
-`postgres/populate_dev_database/populate_dev_database.R` to create and
-populate the corresponding tables. To run this script you need to store
-`dm.rds` in the directory `postgres/populate_dev_database/data`.
+[postgres/populate_dev_database/populate_dev_database.R](/postgres/populate_dev_database/populate_dev_database.R)
+to create and populate the corresponding tables. To run this script you
+need to store `dm.rds` in the directory
+`postgres/populate_dev_database/data`.
 
 `dm.rds` is a snapshot of the database in production. It needs to be
 created by someone with access to the production database. The process
