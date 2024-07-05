@@ -138,9 +138,13 @@ uploaded HMIS data.
 [development
 container](https://code.visualstudio.com/docs/devcontainers/containers):
 
-- `.env` defines environmental variables used to configure `{renv}`’s
-  cache. **Remember to change `RENV_PATHS_CACHE_HOST` as appropriate for
-  your system**.
+- `.env.example` is an *example* file that shows how to set the
+  `RENV_PATHS_CACHE_HOST` environment variable (required to configure
+  `{renv}`’s cache) based upon Windows OS. **You need to create a file
+  named** `.env` **in the same directory as** `.env.example` **and set**
+  `RENV_PATHS_CACHE_HOST` **value to a path in your local machine based
+  upon** [{renv}’s Cache
+  location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
 - `devcontainer.json` describes how VS Code should start the container
   and what to do after it connects.
 - `docker-compose.yml` sets up a development environment with three
