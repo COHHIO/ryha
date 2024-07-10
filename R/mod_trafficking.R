@@ -244,7 +244,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
       trafficking_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     )

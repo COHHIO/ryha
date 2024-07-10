@@ -200,7 +200,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       enrollment_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         ) |>
         dplyr::filter(project_id %in% project_ids) |>
         dplyr::left_join(

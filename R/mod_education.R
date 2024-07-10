@@ -203,7 +203,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
       education_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         ) |>
         # Bucket Last Grade Completed categories
         dplyr::mutate(
