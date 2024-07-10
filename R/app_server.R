@@ -20,7 +20,6 @@ app_server <- function(input, output, session) {
     clients_filtered <- mod_filters_server(
       id = "filters_1",
       dm = dm,
-      w = w,
       rctv = rctv
     )
 

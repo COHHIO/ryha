@@ -122,7 +122,7 @@ mod_filters_ui <- function(id){
 #' filters Server Functions
 #'
 #' @noRd
-mod_filters_server <- function(id, dm, w, rctv){
+mod_filters_server <- function(id, dm, rctv){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
