@@ -126,67 +126,71 @@ mod_filters_server <- function(id, dm, rctv){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Grab the min & max ages found in the `client` table
-    valid_ages <- shiny::reactive({
-
-      dm$client |>
-        dplyr::filter(!is.na(age)) |>
-        dplyr::pull(age) |>
-        unique()
-
-    })
-
     # Update the values in the filters given the {dm} data
-    shiny::observe({
 
-      shiny::req(dm)
+    ## Update project filter
 
-      shinyWidgets::updatePickerInput(
-        session = session,
-        inputId = "project_filter_global",
-        choices = unique( dm$project$project_name ) |> sort(),
-        selected = unique( dm$project$project_name ) |> sort(),
-        choicesOpt = list(
-          style = rep_len(
-            "font-size: 75%;",
-            unique( dm$project$project_name ) |> length()
-          )
+    ### Order projects by name rather than id
+    project_sorted <- dm$project |>
+      dplyr::arrange(project_name)
+
+    ### Update filter
+    shinyWidgets::updatePickerInput(
+      session = session,
+      inputId = "project_filter_global",
+      choices = setNames(project_sorted$project_id, project_sorted$project_name),
+      selected = project_sorted$project_id,
+      choicesOpt = list(
+        style = rep_len(
+          "font-size: 75%;",
+          project_sorted$project_name |> length()
         )
       )
+    )
 
-      shiny::updateDateRangeInput(
-        session = session,
-        inputId = "active_date_filter_global",
-        start = min( dm$enrollment$entry_date ),
-        min = min( dm$enrollment$entry_date )
+    ## Update active date filter
+    shiny::updateDateRangeInput(
+      session = session,
+      inputId = "active_date_filter_global",
+      start = min( dm$enrollment$entry_date ),
+      min = min( dm$enrollment$entry_date )
+    )
+
+    ## Update gender filter
+    shinyWidgets::updatePickerInput(
+      session = session,
+      inputId = "gender_filter_global",
+      choices = unique( dm$gender$gender ) |> sort(),
+      selected = unique( dm$gender$gender ) |> sort()
+    )
+
+    ## Update ethnicity filter
+    shinyWidgets::updatePickerInput(
+      session = session,
+      inputId = "ethnicity_filter_global",
+      choices = unique( dm$ethnicity$ethnicity ) |> sort(),
+      selected = unique( dm$ethnicity$ethnicity ) |> sort()
+    )
+
+    ## Update age filter
+
+    ### Grab the ages found in the `client` table
+    valid_ages <- dm$client |>
+      dplyr::filter(!is.na(age)) |>
+      dplyr::pull(age) |>
+      unique()
+
+    ### Update filter
+    shiny::updateSliderInput(
+      session = session,
+      inputId = "age_filter_global",
+      min = min(valid_ages),
+      max = max(valid_ages),
+      value = c(
+        min(valid_ages),
+        max(valid_ages)
       )
-
-      shinyWidgets::updatePickerInput(
-        session = session,
-        inputId = "gender_filter_global",
-        choices = unique( dm$gender$gender ) |> sort(),
-        selected = unique( dm$gender$gender ) |> sort()
-      )
-
-      shinyWidgets::updatePickerInput(
-        session = session,
-        inputId = "ethnicity_filter_global",
-        choices = unique( dm$ethnicity$ethnicity ) |> sort(),
-        selected = unique( dm$ethnicity$ethnicity ) |> sort()
-      )
-
-      shiny::updateSliderInput(
-        session = session,
-        inputId = "age_filter_global",
-        min = min( valid_ages() ),
-        max = max( valid_ages() ),
-        value = c(
-          min( valid_ages() ),
-          max( valid_ages() )
-        )
-      )
-
-    })
+    )
 
     # Disable the "dedup_status_global" check-box if only 1 program is selected
     shiny::observe({
