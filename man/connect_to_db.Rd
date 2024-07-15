@@ -4,17 +4,25 @@
 \alias{connect_to_db}
 \title{Connect to PostgreSQL Database}
 \usage{
-connect_to_db()
+connect_to_db(env)
+}
+\arguments{
+\item{env}{Character. Indicates the database to connect to.
+Valid options include \code{"prod"} and \code{"dev"}:
+\itemize{
+\item \code{"prod"} connects to the database in production
+\item \code{"dev"} connects to an internal database that is set up using dev containers
+}}
 }
 \value{
 A {DBI} database connection
 }
 \description{
-Establish a `{DBI}` database connection to the PostgreSQL
-  database, using environment variables for the connection information
+Establish a \code{{DBI}} database connection to the PostgreSQL
+database, using environment variables for the connection information
 }
 \examples{
 \dontrun{
-con <- connect_to_db()
+con <- connect_to_db(env = "prod")
 }
 }

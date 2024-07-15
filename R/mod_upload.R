@@ -119,7 +119,7 @@ mod_upload_server <- function(id){
       w$update(spinner_message("Step 1/5: Connecting to database..."))
 
       # Establish connection to PostgreSQL database
-      con <- connect_to_db()
+      con <- connect_to_db(env = Sys.getenv("APP_BACKEND"))
 
       Sys.sleep(0.5)
 

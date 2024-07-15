@@ -12,6 +12,7 @@ Depends:
     R (>= 2.10)
 Imports: 
     bs4Dash,
+    cli,
     config (>= 0.3.1),
     DBI,
     dplyr,
@@ -24,6 +25,7 @@ Imports:
     janitor,
     lubridate,
     magrittr,
+    markdown,
     purrr,
     reactable,
     readr,
@@ -44,4 +46,5 @@ Suggests:
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)

@@ -25,7 +25,7 @@ user-specified set of columns from a SQL database table.
 \examples{
 \dontrun{
 # Establish connection to PostgreSQL database
-con <- connect_to_db()
+con <- connect_to_db(env = "prod")
 
 # Query only the "project_name" and "project_id" columns from the 'project'
 # database table

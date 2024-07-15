@@ -15,7 +15,7 @@ find_file(files, target)
 A character vector containing the filepath for the corresponding .csv file.
 }
 \description{
-`find_file()` finds the complete filepath of a .csv file based on the .csv
+\code{find_file()} finds the complete filepath of a .csv file based on the .csv
 basename (i.e. the file name) in a given vector of filepaths.
 }
 \examples{

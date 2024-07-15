@@ -7,7 +7,7 @@
 prep_tables(data, conn)
 }
 \arguments{
-\item{data}{List of dataframes returned by `process_data()`.}
+\item{data}{List of dataframes returned by \code{process_data()}.}
 
 \item{conn}{A database connection object.}
 }
@@ -15,14 +15,14 @@ prep_tables(data, conn)
 A list of processed data frames.
 }
 \description{
-`prep_tables()` processes the list returned by `process_data()` and returns
-a new list which is used by `delete_from_db()` and `send_to_db()`.
+\code{prep_tables()} processes the list returned by \code{process_data()} and returns
+a new list which is used by \code{delete_from_db()} and \code{send_to_db()}.
 }
 \details{
-`prep_tables()` handles the addition of new organization and project entries to
-the database, adds `project_id` and `organization_id` columns to `enrollment`
-file data, adds `organization_id` to the remaining files (e.g. client,
+\code{prep_tables()} handles the addition of new organization and project entries to
+the database, adds \code{project_id} and \code{organization_id} columns to \code{enrollment}
+file data, adds \code{organization_id} to the remaining files (e.g. client,
 disabilities, education, ...) and returns them as a list of dataframes.
 
-`organization` and `project` dataframes are excluded from the returned list.
+\code{organization} and \code{project} dataframes are excluded from the returned list.
 }

@@ -11,7 +11,7 @@ read_exit(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "EXIT" database table
+the "EXIT" database table
 }
 \description{
 Ingest "Exit.csv" file and perform ETL prep for "EXIT" database table
