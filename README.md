@@ -234,7 +234,7 @@ service). Without `network_mode` setting, we would need to use `host =
 context, which is something we want to avoid.
 
 To run the app in development mode (without installing the {ryha} R
-package), run the [dev/run\_dev.R](dev/run_dev.R) script.
+package), run `golem::run_dev()`.
 
 #### db
 

@@ -150,7 +150,7 @@ In addition, **app** service defines a [Volume](https://docs.docker.com/storage/
 
 By setting the `network_mode` property to `service:db`, we can use `host = "localhost"` when connecting to the development database from inside the Dev Container. This configuration ensures that the connection string remains the same regardless of whether we are connecting from inside or outside the Dev Container (when the `ports` property is set for `db` service). Without `network_mode` setting, we would need to use `host = "db"`, resulting in different connection strings depending on the context, which is something we want to avoid.
 
-To run the app in development mode (without installing the {ryha} R package), run the [dev/run_dev.R](dev/run_dev.R) script.
+To run the app in development mode (without installing the {ryha} R package), run `golem::run_dev()`.
 
 #### db
 
