@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libfontconfig1-dev \
     # Open Shiny app in VS Code Viewer
     xdg-utils \
+    # Knit README.Rmd to README.md
+    pandoc \
 && rm -rf /var/lib/apt/lists/*
 
 # Pin renv version

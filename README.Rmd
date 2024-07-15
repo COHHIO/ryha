@@ -109,7 +109,7 @@ The following architecture diagram shows how the app can be used for both upload
 [.devcontainer](/.devcontainer) directory contains the necessary files to set up a [development container](https://code.visualstudio.com/docs/devcontainers/containers):
 
 - [.env.example](/.devcontainer/.env.example) is an *example* file that shows how to set the `RENV_PATHS_CACHE_HOST` environment variable (required to configure `{renv}`'s cache) based upon Windows OS. **You need to create a file named** `.env` **in the same directory as** `.env.example` **and set** `RENV_PATHS_CACHE_HOST` **value to a path in your local machine based upon** [{renv}'s Cache location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
-- [devcontainer.json](/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects. 
+- [devcontainer.json](/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects.
 - [docker-compose.yml](/.devcontainer/docker-compose.yml) sets up a development environment with three services:
   - `app`: A custom-built application container that mounts local directories and [runs indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
   - `db`: A PostgreSQL database container with [persistent storage](https://medium.com/codex/how-to-persist-and-backup-data-of-a-postgresql-docker-container-9fe269ff4334) and [exposed ports for access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port). Check [db](#db) section for instructions on how to connect to, populate and launch the application connected to the database.
@@ -149,6 +149,8 @@ In addition, **app** service defines a [Volume](https://docs.docker.com/storage/
 - [This GitHub Issue comment](https://github.com/docker/for-win/issues/2151#issuecomment-662343075) shows examples on how to state the path when working with a Windows machine.
 
 By setting the `network_mode` property to `service:db`, we can use `host = "localhost"` when connecting to the development database from inside the Dev Container. This configuration ensures that the connection string remains the same regardless of whether we are connecting from inside or outside the Dev Container (when the `ports` property is set for `db` service). Without `network_mode` setting, we would need to use `host = "db"`, resulting in different connection strings depending on the context, which is something we want to avoid.
+
+To run the app in development mode (without installing the {ryha} R package), run the [dev/run_dev.R](dev/run_dev.R) script.
 
 #### db
 
