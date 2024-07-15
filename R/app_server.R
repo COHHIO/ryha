@@ -7,6 +7,9 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
+  # Print environment (for debugging purposes)
+  cli::cli_alert_info("Running in '{Sys.getenv('APP_BACKEND')}' mode")
+
   # Create dm object. This is run once per session
   dm <- create_dm(env = Sys.getenv("APP_BACKEND"))
 
