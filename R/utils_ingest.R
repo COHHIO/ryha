@@ -901,6 +901,7 @@ read_enrollment <- function(file) {
       ProjectID = readr::col_character(),
       EntryDate = readr::col_date(),
       HouseholdID = readr::col_character(),
+      EnrollmentCoC = readr::col_character(),
       DateToStreetESSH = readr::col_date(),
       MoveInDate = readr::col_date(),
       SexualOrientationOther = readr::col_character(),
