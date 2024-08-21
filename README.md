@@ -319,14 +319,18 @@ con <- DBI::dbConnect(
 Once the container is created, you can run
 [postgres/populate\_dev\_database/populate\_dev\_database.R](/postgres/populate_dev_database/populate_dev_database.R)
 to create and populate the corresponding tables. To run this script you
-need to store `dm.rds` in the directory
-`postgres/populate_dev_database/data`.
+need to:
 
-`dm.rds` is a snapshot of the database in production. It needs to be
-created by someone with access to the production database. The process
-to generate this object is to read each table in the database into a
-list of dataframes where each element is named after the table name the
-data was read from.
+  - Store `dm.rds` in the directory
+    `postgres/populate_dev_database/data`. `dm.rds` is a snapshot of the
+    database in production. It needs to be created by someone with
+    access to the production database. The process to generate this
+    object is to read each table in the database into a list of
+    dataframes where each element is named after the table name the data
+    was read from.
+  - Run `devtools::load_all(".")` to have access to the different
+    functions in `ryha` that are used in the script
+    (e.g. `send_to_db()`).
 
 ##### Use in App
 
