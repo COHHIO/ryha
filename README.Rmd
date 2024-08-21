@@ -119,7 +119,7 @@ The following architecture diagram shows how the app can be used for both upload
 
 ### Requirements
 
-- [Docker](https://docs.docker.com/engine/install/)
+- [Docker](https://docs.docker.com/engine/install/). While not mandatory, we recommend installing it via [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/).
 - [VS Code](https://code.visualstudio.com/)
 - VS Code's [Dev Container Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
@@ -130,6 +130,37 @@ Once you have the requirements installed, have cloned the repo locally and creat
 ![](man/figures/README-reopen-in-container.png)
 
 *NOTE*: Alternatively, you can select **Dev Containers: Reopen in Container** from the Command Palette (`F1`) to perform this action.
+
+### Exit Dev Container
+
+To exit the Dev Container, click **Dev Container** (bottom left corner) and select one of the following commands:
+
+- **Reopen Folder Locally**: This option will close the current Dev Container session and reopen the project folder in your local environment, outside of the containerized setup. It's useful when you want to switch back to your local development environment while keeping the same project open.
+- **Close Remote Connection**: This will close the connection to the Dev Container and stop the container. The current workspace will be closed, and you'll be returned to the main VS Code window without any active workspace or connection.
+
+![](man/figures/README-exit-container.png)
+
+### Remove Container and Image
+
+Once you've **exited the Dev Container**, you may want to remove the container and its associated image to free up system resources.
+
+While the following steps demonstrate how to do so using Docker Desktop, you are free to accomplish the same tasks using Docker's command-line interface.
+
+#### Remove Container
+
+1. Go to Containers tab
+1. Locate the container associated with your Dev Container and click the corresponding trash icon to stop and delete it
+
+![](man/figures/README-delete-container.png)
+
+#### Remove Image
+
+1. Go to Images tab
+1. Locate the images associated with you Dev Container and click the corresponding trash icons to remove them from your local Docker repository
+
+![](man/figures/README-delete-images.png)
+
+Following these steps ensures that all resources associated with the Dev Container are completely cleaned up from your system.
 
 ### Container Details
 
