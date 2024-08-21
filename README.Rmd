@@ -218,12 +218,14 @@ Once the container is created, you can run [postgres/populate_dev_database/popul
 
 Once the container is running, you can set the environmental variable `APP_BACKEND` to `dev` in `.Renviron` to run the application connected to the development database.
 
-#### pgadmin
+#### pgAdmin
 
-**pgadmin** provides a graphical administration tool to make it easier to manipulate schema and data in PostgreSQL. Once the container is created, you can access pgAdmin in http://localhost:5050/ with the following credentials (which are defined under `pgadmin`'s `environment` property in `.devcontainer/docker-compose.yml`):
+**pgAdmin** provides a graphical administration tool to make it easier to manipulate schema and data in PostgreSQL. Once the container is created, you can access pgAdmin in http://localhost:5050/ with the following credentials (which are defined under `pgadmin`'s `environment` property in `.devcontainer/docker-compose.yml`):
 
 - User: `admin@secret.io`
 - Password: `admin`
+
+*NOTE*: pgAdmin may not function correctly in all web browsers. We recommend using Google Chrome.
 
 Once logged in, follow these steps to Register the Server:
 
