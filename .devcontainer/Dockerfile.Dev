@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libxml2-dev \
     # {httpgd} package requirement (VS Code development package)
     libfontconfig1-dev \
+    # {gert} package requirement
+    libgit2-dev \
     # Open Shiny app in VS Code Viewer
     xdg-utils \
     # Knit README.Rmd to README.md
