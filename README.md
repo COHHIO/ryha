@@ -132,7 +132,7 @@ The following architecture diagram shows how the app can be used for
 both uploading (.zip file) HMIS data, and visualizing previously
 uploaded HMIS data.
 
-![](man/figures/README-architecture-diagram.png)
+![](man/figures/README/architecture-diagram.png)
 
 ## Development Environment
 
@@ -192,7 +192,7 @@ Once you have the requirements installed, have cloned the repo locally
 and created the `.devcontainer/.env` file, open the repository in VSCode
 and click **Reopen in Container…**:
 
-![](man/figures/README-reopen-in-container.png)
+![](man/figures/README/reopen-in-container.png)
 
 *NOTE*: Alternatively, you can select **Dev Containers: Reopen in
 Container** from the Command Palette (`F1`) to perform this action.
@@ -212,7 +212,7 @@ and select one of the following commands:
     closed, and you’ll be returned to the main VS Code window without
     any active workspace or connection.
 
-![](man/figures/README-exit-container.png)
+![](man/figures/README/exit-container.png)
 
 ### Remove Container and Image
 
@@ -229,7 +229,7 @@ interface.
 2.  Locate the container associated with your Dev Container and click
     the corresponding trash icon to stop and delete it
 
-![](man/figures/README-delete-container.png)
+![](man/figures/README/delete-container.png)
 
 #### Remove Image
 
@@ -238,7 +238,7 @@ interface.
     corresponding trash icons to remove them from your local Docker
     repository
 
-![](man/figures/README-delete-images.png)
+![](man/figures/README/delete-images.png)
 
 Following these steps ensures that all resources associated with the Dev
 Container are completely cleaned up from your system.
