@@ -38,7 +38,7 @@ Before launching the app:
 - You must determine the environment that will be used to create the data model. This is accomplished by setting `APP_BACKEND` environmental variable. Valid options are:
 
   - `prod`, which connects to the database in production
-  - `dev`, which connects to an internal database that is set up using dev containers. Check `.devcontainer/README.md` to learn how to set up this development environment.
+  - `dev`, which connects to an internal database that is set up using dev containers. Check [Development Environment](#development-environment) section to learn how to set up this development environment.
   - `file`, which reads a provided `.rds` data model object and does not require any database connection.
 
 - If you are connecting to a database (i.e. `APP_BACKEND=prod` or `APP_BACKEND=dev`) you must have the following additional configuration to be able to upload data to the app and write to the database:

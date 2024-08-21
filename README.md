@@ -34,8 +34,9 @@ Before launching the app:
     
       - `prod`, which connects to the database in production
       - `dev`, which connects to an internal database that is set up
-        using dev containers. Check `.devcontainer/README.md` to learn
-        how to set up this development environment.
+        using dev containers. Check [Development
+        Environment](#development-environment) section to learn how to
+        set up this development environment.
       - `file`, which reads a provided `.rds` data model object and does
         not require any database connection.
 
