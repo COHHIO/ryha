@@ -188,14 +188,35 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
 
 ### QuickStart
 
-Once you have the requirements installed, have cloned the repo locally
-and created the `.devcontainer/.env` file, open the repository in VSCode
-and click **Reopen in Container…**:
+Once you have installed the necessary requirements, cloned the
+repository locally and created the `.devcontainer/.env` file, open the
+repository in VSCode and click **Reopen in Container…**:
 
 ![](man/figures/README/reopen-in-container.png)
 
 *NOTE*: Alternatively, you can select **Dev Containers: Reopen in
 Container** from the Command Palette (`F1`) to perform this action.
+
+The Dev Container initialization may take a few minutes, as it needs to
+create different Docker images and install the corresponding R packages
+via `renv::restore()`. The following message indicates that the process
+has completed successfully:
+
+![](man/figures/README/quickstart-finish.png)
+
+As the message indicates, “Press any key to close the terminal”.
+
+*NOTE*: If you encounter any errors, you can review the logs to
+troubleshoot or contact a team member for assistance.
+
+To launch an R Terminal click **Launch Profile…** (icon next to the `+`
+symbol) and select **R Terminal**:
+
+![](man/figures/README/quickstart-open-r-1.png)
+
+You can click on the R Terminal in the right sidebar to open it:
+
+![](man/figures/README/quickstart-open-r-2.png)
 
 ### Exit Dev Container
 
