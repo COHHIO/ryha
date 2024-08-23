@@ -200,24 +200,23 @@ Container** from the Command Palette (`F1`) to perform this action.
 
 The Dev Container initialization may take a few minutes, as it needs to
 create different Docker images and install the corresponding R packages
-via `renv::restore()`. The following message indicates that the process
-has completed successfully:
+via `renv::restore()`.
+
+The message `Done. Press any key to close the terminal.` in `TERMINAL`
+tab indicates that the process completed successfully:
 
 ![](man/figures/README/quickstart-finish.png)
-
-As the message indicates, “Press any key to close the terminal”.
 
 *NOTE*: If you encounter any errors, you can review the logs to
 troubleshoot or contact a team member for assistance.
 
-To launch an R Terminal click **Launch Profile…** (icon next to the `+`
-symbol) and select **R Terminal**:
+To launch an R Terminal, select **R: Create R terminal** from the
+Command Palette (`F1`). Alternatively, you can click the `⌄` icon in VS
+Code Panel and select **R Terminal**:
 
-![](man/figures/README/quickstart-open-r-1.png)
+![](man/figures/README/quickstart-open-r.png)
 
-You can click on the R Terminal in the right sidebar to open it:
-
-![](man/figures/README/quickstart-open-r-2.png)
+Remember to select the R Terminal in the right sidebar to open it.
 
 ### Exit Dev Container
 
@@ -236,10 +235,10 @@ and select one of the following commands:
 
 ![](man/figures/README/exit-container.png)
 
-### Remove Container and Image
+### Remove Dev Container
 
 Once you’ve **exited the Dev Container**, you may want to remove the
-container and its associated image to free up system resources.
+container and its associated images to free up system resources.
 
 While the following steps demonstrate how to do so using Docker Desktop,
 you are free to accomplish the same tasks using Docker’s command-line
@@ -253,17 +252,14 @@ interface.
 
 ![](man/figures/README/delete-container.png)
 
-#### Remove Image
+#### Remove Images
 
 1.  Go to Images tab
-2.  Locate the images associated with you Dev Container and click the
+2.  Locate the images associated with your Dev Container and click the
     corresponding trash icons to remove them from your local Docker
     repository
 
 ![](man/figures/README/delete-images.png)
-
-Following these steps ensures that all resources associated with the Dev
-Container are completely cleaned up from your system.
 
 ### Container Details
 
