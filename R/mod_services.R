@@ -119,10 +119,10 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
       shiny::updateDateRangeInput(
         session = session,
         inputId = "date_provided_filter",
-        start = min(services_data$date_provided),
-        end = max(services_data$date_provided),
-        min = min(services_data$date_provided),
-        max = max(services_data$date_provided)
+        start = min(services_data$date_provided, na.rm = TRUE),
+        end = max(services_data$date_provided, na.rm = TRUE),
+        min = min(services_data$date_provided, na.rm = TRUE),
+        max = max(services_data$date_provided, na.rm = TRUE)
       )
 
     })
