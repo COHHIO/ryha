@@ -258,7 +258,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
       domestic_violence_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })

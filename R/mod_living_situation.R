@@ -194,13 +194,13 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       shiny::req(rctv$selected_projects)
 
       project_ids <- project_data |>
-        dplyr::filter(project_name %in% rctv$selected_projects) |>
+        dplyr::filter(project_id %in% rctv$selected_projects) |>
         dplyr::pull(project_id)
 
       enrollment_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         ) |>
         dplyr::filter(project_id %in% project_ids) |>
         dplyr::left_join(

@@ -314,7 +314,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       health_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })
@@ -325,7 +325,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
       counseling_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })

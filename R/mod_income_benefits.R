@@ -351,7 +351,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       income_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })
@@ -362,7 +362,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       benefits_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })

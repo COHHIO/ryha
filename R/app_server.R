@@ -17,13 +17,14 @@ app_server <- function(input, output, session) {
   if (nrow(dm$client) > 0) {
 
     # Create a reactiveValues list to hold some global variables
-    rctv <- shiny::reactiveValues()
+    rctv <- shiny::reactiveValues(
+      selected_projects = NULL
+    )
 
     # Get filtered dm
     clients_filtered <- mod_filters_server(
       id = "filters_1",
       dm = dm,
-      w = w,
       rctv = rctv
     )
 

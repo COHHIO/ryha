@@ -148,7 +148,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
         ) |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     )
@@ -177,7 +177,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
         ) |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })

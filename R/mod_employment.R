@@ -156,7 +156,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
       employment_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })
