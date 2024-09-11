@@ -156,7 +156,7 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
         directories and [runs
         indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
       - `db`: A PostgreSQL database container with [persistent
-        storage](https://medium.com/codex/how-to-persist-and-backup-data-of-a-postgresql-docker-container-9fe269ff4334)
+        storage](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/)
         and [exposed ports for
         access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port).
         Check [db](#db) section for instructions on how to connect to,
