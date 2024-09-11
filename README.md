@@ -237,12 +237,25 @@ and select one of the following commands:
 
 ### Remove Dev Container
 
-Once you’ve **exited the Dev Container**, you may want to remove the
-container and its associated images to free up system resources.
+*NOTE*: If you work on the project on a regular basis, it’s not
+*necessary* to remove the Dev Container after you exit it.
 
-While the following steps demonstrate how to do so using Docker Desktop,
-you are free to accomplish the same tasks using Docker’s command-line
-interface.
+To remove the Dev Container:
+
+1.  [Exit the Dev Container](#exit-dev-container)
+2.  Remove the container
+3.  Remove associated images
+4.  Remove associated volumes
+
+**Warning**: Removing the volumes will delete the development database
+and any data you’ve uploaded, requiring you to repopulate the database
+after rebuilding. If you choose to delete **only** the container and its
+associated images (i.e. you don’t delete the volumes), the development
+database will be available when you rebuild the Dev Container.
+
+The following steps demonstrate how to remove the container, images and
+volumes using Docker Desktop. You can also use Docker’s command-line
+interface to perform the same tasks.
 
 #### Remove Container
 
@@ -260,6 +273,15 @@ interface.
     repository
 
 ![](man/figures/README/delete-images.png)
+
+#### Remove Volumes
+
+1.  Go to Volumes tab
+2.  Search for `ryha`
+3.  Select the associated volumes
+4.  Click **Delete**
+
+![](man/figures/README/delete-volumes.png)
 
 ### Container Details
 
