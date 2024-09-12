@@ -122,7 +122,7 @@ to be successfully processed and its data written to the database:
 ### Data Dictionary
 
 The data dictionary for each element across each file can be found
-[here](https://files.hudexchange.info/resources/documents/FY-2022-HMIS-Data-Dictionary.pdf).
+[here](https://files.hudexchange.info/resources/documents/HMIS-Data-Dictionary-2024.pdf).
 This data dictionary was used to develop the package datasets, which are
 created in [data-raw](data-raw) and stored in [data](data).
 
