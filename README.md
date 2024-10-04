@@ -180,9 +180,8 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
 
 ### Requirements
 
-  - [Docker](https://docs.docker.com/engine/install/). While not
-    mandatory, we recommend installing it via [Docker
-    Desktop](https://docs.docker.com/desktop/install/windows-install/).
+  - [Docker](https://docs.docker.com/engine/install/). We recommend 
+    installing it via [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/).
   - [VS Code](https://code.visualstudio.com/)
   - VS Code’s [Dev Container
     Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
