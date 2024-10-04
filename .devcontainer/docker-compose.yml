@@ -33,7 +33,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@secret.io
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
-      - pga-data:/tmp/dev/pga/data
+      - pga-data:/var/lib/pgadmin
     ports:
       - "5050:80"
     depends_on:

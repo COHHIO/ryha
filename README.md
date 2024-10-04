@@ -34,8 +34,9 @@ Before launching the app:
     
       - `prod`, which connects to the database in production
       - `dev`, which connects to an internal database that is set up
-        using dev containers. Check `.devcontainer/README.md` to learn
-        how to set up this development environment.
+        using dev containers. Check [Development
+        Environment](#development-environment) section to learn how to
+        set up this development environment.
       - `file`, which reads a provided `.rds` data model object and does
         not require any database connection.
 
@@ -132,7 +133,7 @@ The following architecture diagram shows how the app can be used for
 both uploading (.zip file) HMIS data, and visualizing previously
 uploaded HMIS data.
 
-![](man/figures/README-architecture-diagram.png)
+![](man/figures/README/architecture-diagram.png)
 
 ## Development Environment
 
@@ -155,7 +156,7 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
         directories and [runs
         indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
       - `db`: A PostgreSQL database container with [persistent
-        storage](https://medium.com/codex/how-to-persist-and-backup-data-of-a-postgresql-docker-container-9fe269ff4334)
+        storage](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/)
         and [exposed ports for
         access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port).
         Check [db](#db) section for instructions on how to connect to,
@@ -179,21 +180,107 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
 
 ### Requirements
 
-  - [Docker](https://docs.docker.com/engine/install/)
+  - [Docker](https://docs.docker.com/engine/install/). We recommend 
+    installing it via [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/).
   - [VS Code](https://code.visualstudio.com/)
   - VS Code’s [Dev Container
     Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### QuickStart
 
-Once you have the requirements installed, have cloned the repo locally
-and created the `.devcontainer/.env` file, open the repository in VSCode
-and click **Reopen in Container…**:
+Once you have installed the necessary requirements, cloned the
+repository locally and created the `.devcontainer/.env` file, open the
+repository in VSCode and click **Reopen in Container…**:
 
-![](man/figures/README-reopen-in-container.png)
+![](man/figures/README/reopen-in-container.png)
 
 *NOTE*: Alternatively, you can select **Dev Containers: Reopen in
 Container** from the Command Palette (`F1`) to perform this action.
+
+The Dev Container initialization may take a few minutes, as it needs to
+create different Docker images and install the corresponding R packages
+via `renv::restore()`.
+
+The message `Done. Press any key to close the terminal.` in `TERMINAL`
+tab indicates that the process completed successfully:
+
+![](man/figures/README/quickstart-finish.png)
+
+*NOTE*: If you encounter any errors, you can review the logs to
+troubleshoot or contact a team member for assistance.
+
+To launch an R Terminal, select **R: Create R terminal** from the
+Command Palette (`F1`). Alternatively, you can click the `⌄` icon in VS
+Code Panel and select **R Terminal**:
+
+![](man/figures/README/quickstart-open-r.png)
+
+Remember to select the R Terminal in the right sidebar to open it.
+
+### Exit Dev Container
+
+To exit the Dev Container, click **Dev Container** (bottom left corner)
+and select one of the following commands:
+
+  - **Reopen Folder Locally**: This option will close the current Dev
+    Container session and reopen the project folder in your local
+    environment, outside of the containerized setup. It’s useful when
+    you want to switch back to your local development environment while
+    keeping the same project open.
+  - **Close Remote Connection**: This will close the connection to the
+    Dev Container and stop the container. The current workspace will be
+    closed, and you’ll be returned to the main VS Code window without
+    any active workspace or connection.
+
+![](man/figures/README/exit-container.png)
+
+### Remove Dev Container
+
+*NOTE*: If you work on the project on a regular basis, it’s not
+*necessary* to remove the Dev Container after you exit it.
+
+To remove the Dev Container:
+
+1.  [Exit the Dev Container](#exit-dev-container)
+2.  Remove the container
+3.  Remove associated images
+4.  Remove associated volumes
+
+**Warning**: Removing the volumes will delete the development database
+and any data you’ve uploaded, requiring you to repopulate the database
+after rebuilding. If you choose to delete **only** the container and its
+associated images (i.e. you don’t delete the volumes), the development
+database will be available when you rebuild the Dev Container.
+
+The following steps demonstrate how to remove the container, images and
+volumes using Docker Desktop. You can also use Docker’s command-line
+interface to perform the same tasks.
+
+#### Remove Container
+
+1.  Go to Containers tab
+2.  Locate the container associated with your Dev Container and click
+    the corresponding trash icon to stop and delete it
+
+![](man/figures/README/delete-container.png)
+
+#### Remove Images
+
+1.  Go to Images tab
+2.  Locate the images associated with your Dev Container and click the
+    corresponding trash icons to remove them from your local Docker
+    repository
+
+![](man/figures/README/delete-images.png)
+
+#### Remove Volumes
+
+1.  Go to Volumes tab
+2.  Search for `ryha`
+3.  Select the associated volumes
+4.  Click **Delete**
+
+![](man/figures/README/delete-volumes.png)
 
 ### Container Details
 
@@ -271,14 +358,18 @@ con <- DBI::dbConnect(
 Once the container is created, you can run
 [postgres/populate\_dev\_database/populate\_dev\_database.R](/postgres/populate_dev_database/populate_dev_database.R)
 to create and populate the corresponding tables. To run this script you
-need to store `dm.rds` in the directory
-`postgres/populate_dev_database/data`.
+need to:
 
-`dm.rds` is a snapshot of the database in production. It needs to be
-created by someone with access to the production database. The process
-to generate this object is to read each table in the database into a
-list of dataframes where each element is named after the table name the
-data was read from.
+  - Store `dm.rds` in the directory
+    `postgres/populate_dev_database/data`. `dm.rds` is a snapshot of the
+    database in production. It needs to be created by someone with
+    access to the production database. The process to generate this
+    object is to read each table in the database into a list of
+    dataframes where each element is named after the table name the data
+    was read from.
+  - Run `devtools::load_all(".")` to have access to the different
+    functions in `ryha` that are used in the script
+    (e.g. `send_to_db()`).
 
 ##### Use in App
 
@@ -286,9 +377,9 @@ Once the container is running, you can set the environmental variable
 `APP_BACKEND` to `dev` in `.Renviron` to run the application connected
 to the development database.
 
-#### pgadmin
+#### pgAdmin
 
-**pgadmin** provides a graphical administration tool to make it easier
+**pgAdmin** provides a graphical administration tool to make it easier
 to manipulate schema and data in PostgreSQL. Once the container is
 created, you can access pgAdmin in <http://localhost:5050/> with the
 following credentials (which are defined under `pgadmin`’s `environment`
@@ -296,6 +387,9 @@ property in `.devcontainer/docker-compose.yml`):
 
   - User: `admin@secret.io`
   - Password: `admin`
+
+*NOTE*: pgAdmin may not function correctly in all web browsers. We
+recommend using Google Chrome.
 
 Once logged in, follow these steps to Register the Server:
 
