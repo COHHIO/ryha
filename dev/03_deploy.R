@@ -27,16 +27,28 @@ devtools::build()
 
 ## RStudio ----
 ## If you want to deploy on RStudio related platforms
-golem::add_rstudioconnect_file()
 golem::add_shinyappsio_file()
-golem::add_shinyserver_file()
 
-## Docker ----
-## If you want to deploy via a generic Dockerfile
-golem::add_dockerfile()
+## Deploy to Posit Connect or ShinyApps.io ----
 
-## If you want to deploy to ShinyProxy
-golem::add_dockerfile_shinyproxy()
-
-## If you want to deploy to Heroku
-golem::add_dockerfile_heroku()
+## In command line:
+rsconnect::deployApp(
+  appName = "cohhio-youth-data-dashboard",
+  appTitle = "COHHIO Youth Data Dashboard",
+  appFiles = c(
+    # Add any additional files unique to your app here.
+    "R/",
+    "inst/",
+    "data/",
+    "NAMESPACE",
+    "DESCRIPTION",
+    "app.R",
+    ".Renviron",
+    ".Rbuildignore",
+    "hkey.RDS"
+  ),
+  account = "ohiobalanceofstatecoc",
+  appId =  "7831250",
+  lint = FALSE,
+  forceUpdate = TRUE
+)
