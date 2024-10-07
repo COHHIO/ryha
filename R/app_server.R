@@ -7,23 +7,24 @@
 app_server <- function(input, output, session) {
   # Your application server logic
 
-  # Use this for testing
-  # dm <- readRDS("db_data/dm.rds")
+  # Print environment (for debugging purposes)
+  cli::cli_alert_info("Running in '{Sys.getenv('APP_BACKEND')}' mode")
 
   # Create dm object. This is run once per session
-  dm <- create_dm()
+  dm <- create_dm(env = Sys.getenv("APP_BACKEND"))
 
   # Run data filtering and server modules only when data is available
   if (nrow(dm$client) > 0) {
 
     # Create a reactiveValues list to hold some global variables
-    rctv <- shiny::reactiveValues()
+    rctv <- shiny::reactiveValues(
+      selected_projects = NULL
+    )
 
     # Get filtered dm
     clients_filtered <- mod_filters_server(
       id = "filters_1",
       dm = dm,
-      w = w,
       rctv = rctv
     )
 

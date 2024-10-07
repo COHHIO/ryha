@@ -143,7 +143,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
       health_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     )
@@ -154,7 +154,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
       enrollment_data |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     )

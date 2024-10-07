@@ -1,6 +1,6 @@
 Package: ryha
 Title: R Youth Homelessness Analyzer
-Version: 1.3.0
+Version: 1.4.0
 Authors@R: c(
     person("Michael", "Thomas", , "mthomas@ketchbrookanalytics.com", role = "aut"),
     person("Trevin", "Flickinger", , "trevinflickinger@cohhio.org", role = "cre")
@@ -12,8 +12,8 @@ Depends:
     R (>= 2.10)
 Imports: 
     bs4Dash,
+    cli,
     config (>= 0.3.1),
-    corrplot,
     DBI,
     dplyr,
     echarts4r,
@@ -21,6 +21,7 @@ Imports:
     glue,
     golem (>= 0.3.2),
     here,
+    htmlwidgets,
     janitor,
     lubridate,
     magrittr,
@@ -45,4 +46,5 @@ Suggests:
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)

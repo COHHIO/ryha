@@ -1,6 +1,3 @@
-
-
-
 #' Define List of Menu Items
 #'
 #' @return A tibble, containing the menu title, id, and icon
@@ -30,8 +27,6 @@ define_menu <- function() {
   )
 
 }
-
-
 
 #' Create {bs4Dash} `menuItems` based on a data frame
 #'

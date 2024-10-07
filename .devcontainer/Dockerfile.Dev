@@ -1,0 +1,27 @@
+FROM rocker/r-ver:4.3.1
+
+# System library dependency for the app
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    # {RPostgres} package requirements
+    libpq-dev \
+    libssl-dev \
+    # {httpuv} package requirement
+    libz-dev \
+    # {curl} package requirement
+    libcurl4-openssl-dev \
+    # {xlm2} package requirement
+    libxml2-dev \
+    # {httpgd} package requirement (VS Code development package)
+    libfontconfig1-dev \
+    # {gert} package requirement
+    libgit2-dev \
+    # Open Shiny app in VS Code Viewer
+    xdg-utils \
+    # Knit README.Rmd to README.md
+    pandoc \
+&& rm -rf /var/lib/apt/lists/*
+
+# Pin renv version
+ENV RENV_VERSION 1.0.3
+RUN R -q -e "options(warn=2); install.packages('remotes')"
+RUN R -q -e "options(warn=2); remotes::install_version('renv', '${RENV_VERSION}')"

@@ -1,9 +1,5 @@
-
-
 # The following family of functions define the checks that will be run during
 # the ETL process
-
-
 
 #' Ensure All HMIS Data was Uploaded
 #'
@@ -12,6 +8,9 @@
 #'
 #' @param dir The directory path containing the extracted files from the
 #' uploaded .zip file.
+#' @param metadata Data frame used to identify required files. It expects the
+#' following columns: `FileName` (including file extension) and `Required`
+#' (either `Y` or `N`).
 #'
 #' @return A list with two elements:
 #' \itemize{
@@ -22,7 +21,7 @@
 #' }
 #'
 #' @export
-check_file_names <- function(dir) {
+check_file_names <- function(dir, metadata) {
 
   # Retrieve the full paths to each individual file extracted from the .zip file
   paths <- fs::dir_info(dir) |>
@@ -45,7 +44,7 @@ check_file_names <- function(dir) {
   # Compare the character vector of file names from the .zip file to the
   # file names we expect based on the 'HMISmetadata' data in this R package
   missing_from_upload <- setdiff(
-    x = HMISmetadata$FileName[HMISmetadata$Required == "Y"],
+    x = metadata$FileName[metadata$Required == "Y"],
     y = file_names
   )
 
@@ -66,9 +65,6 @@ check_file_names <- function(dir) {
   return(out)
 
 }
-
-
-
 
 # Helper function that converts a character vector to an HTML bullet-point list
 vec_to_ul <- function(vec) {

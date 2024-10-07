@@ -12,7 +12,7 @@ read_enrollment(file)
 }
 \value{
 A data frame, containing the transformed data to be written out to
-  the "ENROLLMENT" database table
+the "ENROLLMENT" database table
 }
 \description{
 Ingest "Enrollment.csv" file and perform ETL prep for "ENROLLMENT" database

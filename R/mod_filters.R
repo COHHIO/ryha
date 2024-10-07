@@ -122,74 +122,78 @@ mod_filters_ui <- function(id){
 #' filters Server Functions
 #'
 #' @noRd
-mod_filters_server <- function(id, dm, w, rctv){
+mod_filters_server <- function(id, dm, rctv){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Grab the min & max ages found in the `client` table
-    valid_ages <- shiny::reactive({
-
-      dm$client |>
-        dplyr::filter(!is.na(age)) |>
-        dplyr::pull(age) |>
-        unique()
-
-    })
-
     # Update the values in the filters given the {dm} data
-    shiny::observe({
 
-      shiny::req(dm)
+    ## Update project filter
 
-      shinyWidgets::updatePickerInput(
-        session = session,
-        inputId = "project_filter_global",
-        choices = unique( dm$project$project_name ) |> sort(),
-        selected = unique( dm$project$project_name ) |> sort(),
-        choicesOpt = list(
-          style = rep_len(
-            "font-size: 75%;",
-            unique( dm$project$project_name ) |> length()
-          )
+    ### Order projects by name rather than id
+    project_sorted <- dm$project |>
+      dplyr::arrange(project_name)
+
+    ### Update filter
+    shinyWidgets::updatePickerInput(
+      session = session,
+      inputId = "project_filter_global",
+      choices = setNames(project_sorted$project_id, project_sorted$project_name),
+      selected = project_sorted$project_id,
+      choicesOpt = list(
+        style = rep_len(
+          "font-size: 75%;",
+          project_sorted$project_name |> length()
         )
       )
+    )
 
-      shiny::updateDateRangeInput(
-        session = session,
-        inputId = "active_date_filter_global",
-        start = min( dm$enrollment$entry_date ),
-        min = min( dm$enrollment$entry_date )
+    ## Update active date filter
+    shiny::updateDateRangeInput(
+      session = session,
+      inputId = "active_date_filter_global",
+      start = min( dm$enrollment$entry_date ),
+      min = min( dm$enrollment$entry_date )
+    )
+
+    ## Update gender filter
+    shinyWidgets::updatePickerInput(
+      session = session,
+      inputId = "gender_filter_global",
+      choices = unique( dm$gender$gender ) |> sort(),
+      selected = unique( dm$gender$gender ) |> sort()
+    )
+
+    ## Update ethnicity filter
+    shinyWidgets::updatePickerInput(
+      session = session,
+      inputId = "ethnicity_filter_global",
+      choices = unique( dm$ethnicity$ethnicity ) |> sort(),
+      selected = unique( dm$ethnicity$ethnicity ) |> sort()
+    )
+
+    ## Update age filter
+
+    ### Grab the ages found in the `client` table
+    valid_ages <- dm$client |>
+      dplyr::filter(!is.na(age)) |>
+      dplyr::pull(age) |>
+      unique()
+
+    ### Update filter
+    shiny::updateSliderInput(
+      session = session,
+      inputId = "age_filter_global",
+      min = min(valid_ages),
+      max = max(valid_ages),
+      value = c(
+        min(valid_ages),
+        max(valid_ages)
       )
-
-      shinyWidgets::updatePickerInput(
-        session = session,
-        inputId = "gender_filter_global",
-        choices = unique( dm$gender$gender ) |> sort(),
-        selected = unique( dm$gender$gender ) |> sort()
-      )
-
-      shinyWidgets::updatePickerInput(
-        session = session,
-        inputId = "ethnicity_filter_global",
-        choices = unique( dm$ethnicity$ethnicity ) |> sort(),
-        selected = unique( dm$ethnicity$ethnicity ) |> sort()
-      )
-
-      shiny::updateSliderInput(
-        session = session,
-        inputId = "age_filter_global",
-        min = min( valid_ages() ),
-        max = max( valid_ages() ),
-        value = c(
-          min( valid_ages() ),
-          max( valid_ages() )
-        )
-      )
-
-    })
+    )
 
     # Disable the "dedup_status_global" check-box if only 1 program is selected
-    shiny::observe({
+    shiny::observeEvent(input$project_filter_global, {
 
       if (length(input$project_filter_global) < 2L) {
 
@@ -212,92 +216,102 @@ mod_filters_server <- function(id, dm, w, rctv){
     # Create filtered {dm} data
     clients_filtered <- shiny::eventReactive(input$apply_filters, {
 
-      # Filter client data to allow/disallow missing ages
-      if (input$age_missing_global == TRUE) {
+      # Filter dm$client by age
+      client <- dm$client |>
+        dplyr::filter(
+          dplyr::between(
+            x = age,
+            left = input$age_filter_global[1],
+            right = input$age_filter_global[2]
+          ) | is.na(age)
+        )
 
-        client <- dm$client |>
-          dplyr::filter(
-            dplyr::between(
-              x = age,
-              left = input$age_filter_global[1],
-              right = input$age_filter_global[2]
-            ) | is.na(age)
-          )
-
-      } else {
-
-        client <- dm$client |>
-          dplyr::filter(
-            dplyr::between(
-              x = age,
-              left = input$age_filter_global[1],
-              right = input$age_filter_global[2]
-            )
-          )
-
+      ## Remove youth with missing ages accordingly
+      if (input$age_missing_global == FALSE) {
+        client <- client |>
+          dplyr::filter(!is.na(age))
       }
 
-      # Filter head of household using enrollment data
-      if (input$heads_of_household_global == TRUE) {
+      # Filter dm$gender by gender
+      gender <- dm$gender |>
+        dplyr::filter(gender %in% input$gender_filter_global)
 
-        enrollment <- dm$enrollment |>
-          dplyr::filter(relationship_to_ho_h == "Self (head of household)")
+      # Filter dm$ethnicity by ethnicity
+      ethnicity <- dm$ethnicity |>
+        dplyr::filter(ethnicity %in% input$ethnicity_filter_global)
 
-      } else {
-
-        enrollment <- dm$enrollment
-
-      }
-
-      out <- dm$project |>
-        dplyr::filter(project_name %in% input$project_filter_global) |>
-        dplyr::select(project_id) |>
-        dplyr::inner_join(
-          enrollment |>
-            # Remove individuals who entered *after* the later active date
-            dplyr::filter(
-              entry_date <= input$active_date_filter_global[2]
-            ),
-          by = "project_id"
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        dplyr::inner_join(
-          client,
-          by = c("personal_id", "organization_id")
-        ) |>
-        dplyr::inner_join(
-          dm$gender |>
-            dplyr::filter(
-              gender %in% input$gender_filter_global
-            ) |>
-            dplyr::select(personal_id, organization_id),
-          by = c("personal_id", "organization_id")
-        ) |>
-        dplyr::inner_join(
-          dm$ethnicity |>
-            dplyr::filter(
-              ethnicity %in% input$ethnicity_filter_global
-            ) |>
-            dplyr::select(personal_id, organization_id),
-          by = c("personal_id", "organization_id")
-        ) |>
+      # Filter dm$enrollment
+      enrollment <- dm$enrollment |>
+        # Add exit date
         dplyr::left_join(
-          dm$exit |>
-            dplyr::select(personal_id, organization_id, exit_date),
-          by = c("personal_id", "organization_id")
+          dplyr::select(dm$exit, enrollment_id, personal_id, organization_id, exit_date),
+          by = c("organization_id", "personal_id", "enrollment_id")
         ) |>
+        # Filter by project
+        dplyr::filter(project_id %in% input$project_filter_global) |>
+        # Remove individuals who entered *after* the later active date
+        dplyr::filter(entry_date <= input$active_date_filter_global[2]) |>
         # Remove individuals who exited *before* the first active date
-        dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1])
+        dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1]) |>
+        # Group data to select one enrollment per person-organization
+        dplyr::group_by(organization_id, personal_id) |>
+        # Apply filters one at the time until we are left with one enrollment per person-organization
+        ## Keep enrollment(s) without exit date (or with the most recent exit date if all enrollments have an exit date)
+        dplyr::mutate(aux_exit = dplyr::case_when(
+          is.na(exit_date) ~ as.Date("9999-01-01"),
+          TRUE ~ exit_date
+        )) |>
+        dplyr::filter(aux_exit == max(aux_exit)) |>
+        dplyr::select(-aux_exit) |>
+        ## Keep enrollment(s) that have the latest entry date
+        dplyr::filter(entry_date == max(entry_date)) |>
+        ## Keep enrollment(s) that have the latest date updated
+        dplyr::filter(date_updated == max(date_updated)) |>
+        ## Keep enrollment with the highest enrollment_id
+        dplyr::filter(enrollment_id == max(enrollment_id)) |>
+        # Ungroup data
+        dplyr::ungroup()
+        # At this point we should have one enrollment per person-organization
 
-      # If the "De-duplicate by SSN" checkbox is clicked, limit the data to the
-      # most recent `personal_id` value for each unique SSN
+      # Filter head of household accordingly
+      if (input$heads_of_household_global == TRUE) {
+        enrollment <- enrollment |>
+          dplyr::filter(relationship_to_ho_h == "Self (head of household)")
+      }
+
+      out <- enrollment |>
+        dplyr::semi_join(client, by = c("organization_id", "personal_id")) |>
+        dplyr::semi_join(gender, by = c("organization_id", "personal_id")) |>
+        dplyr::semi_join(ethnicity, by = c("organization_id", "personal_id"))
+
+      # De-duplicate youth across projects by ssn accordingly
       if (input$dedup_status_global == TRUE) {
-
         out <- out |>
+          dplyr::left_join(
+            dplyr::select(client, organization_id, personal_id, ssn, ssn_data_quality),
+            by = c("organization_id", "personal_id")
+          ) |>
+          # Keep youth with "Full SSN reported"
           dplyr::filter(ssn_data_quality == "Full SSN reported") |>
-          dplyr::arrange(ssn, dplyr::desc(date_updated)) |>
-          dplyr::distinct(ssn, .keep_all = TRUE)
-
+          # Remove youth with "Full SSN reported" that have missing SSN
+          dplyr::filter(!is.na(ssn)) |>
+          # Group data to select one enrollment per ssn
+          dplyr::group_by(ssn) |>
+          # Apply filters one at the time until we are left with one enrollment per ssn
+          ## Keep enrollment(s) without exit date (or with the most recent exit date if all enrollments have an exit date)
+          dplyr::mutate(aux_exit = dplyr::case_when(
+            is.na(exit_date) ~ as.Date("9999-01-01"),
+            TRUE ~ exit_date
+          )) |>
+          dplyr::filter(aux_exit == max(aux_exit)) |>
+          dplyr::select(-aux_exit) |>
+          ## Keep enrollment(s) that have the latest entry date
+          dplyr::filter(entry_date == max(entry_date)) |>
+          ## Keep enrollment(s) that have the latest date updated
+          dplyr::filter(date_updated == max(date_updated)) |>
+          ## Keep enrollment with the highest enrollment_id
+          dplyr::filter(enrollment_id == max(enrollment_id)) |>
+          dplyr::ungroup()
       }
 
       # Update the reactiveValues list of selected projects
@@ -305,7 +319,11 @@ mod_filters_server <- function(id, dm, w, rctv){
 
       # Return the filtered data
       out |>
-        dplyr::distinct(personal_id, organization_id)
+        dplyr::select(
+          enrollment_id,
+          personal_id,
+          organization_id
+        )
 
     }, ignoreNULL = FALSE)
 

@@ -232,13 +232,14 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
         dplyr::select(
           personal_id,
           organization_id,
+          enrollment_id,
           sexual_orientation,
           former_ward_child_welfare,
           former_ward_juvenile_justice
         ) |>
         dplyr::inner_join(
           clients_filtered(),
-          by = c("personal_id", "organization_id")
+          by = c("personal_id", "organization_id", "enrollment_id")
         )
 
     })

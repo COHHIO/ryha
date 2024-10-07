@@ -4,19 +4,23 @@
 \alias{check_file_names}
 \title{Ensure All HMIS Data was Uploaded}
 \usage{
-check_file_names(dir)
+check_file_names(dir, metadata)
 }
 \arguments{
 \item{dir}{The directory path containing the extracted files from the
 uploaded .zip file.}
+
+\item{metadata}{Data frame used to identify required files. It expects the
+following columns: \code{FileName} (including file extension) and \code{Required}
+(either \code{Y} or \code{N}).}
 }
 \value{
 A list with two elements:
 \itemize{
-  \item \code{valid}: A logical value indicating whether all expected files
-  are present in the uploaded directory.
-  \item \code{missing_file_names}: A character vector containing the names of
-  files that are expected but missing in the uploaded directory.
+\item \code{valid}: A logical value indicating whether all expected files
+are present in the uploaded directory.
+\item \code{missing_file_names}: A character vector containing the names of
+files that are expected but missing in the uploaded directory.
 }
 }
 \description{
