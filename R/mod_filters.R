@@ -26,7 +26,8 @@ mod_filters_ui <- function(id){
           # collapse the list of selected items in the UI
           options = list(
             `actions-box` = TRUE,
-            `selected-text-format` = 'count > 1'
+            `selected-text-format` = 'count > 1',
+            container = "body"
           )
         ),
 
