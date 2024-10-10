@@ -1088,6 +1088,59 @@ read_project <- function(file) {
 
 }
 
+#' Ingest "ProjectCoC.csv" file and perform ETL prep for "PROJECT COC" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PROJECT COC" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/ProjectCoC.csv"
+#'
+#' read_project_coc(
+#'   file = path
+#' )
+#' }
+read_project_coc <- function(file) {
+  expected_colnames <- c(
+    "ProjectCoCID",
+    "ProjectID",
+    "CoCCode",
+    "Geocode",
+    "Address1",
+    "Address2",
+    "City",
+    "State",
+    "ZIP",
+    "GeographyType",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "PROJECT" database table
+    col_select = expected_colnames,
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      DateUpdated = readr::col_date()
+    )
+  ) |>
+    janitor::clean_names(case = "snake") |>
+    # improve default column names
+    dplyr::rename(
+      "project_coc_id" = "project_co_cid",
+      "coc_code" = "co_c_code"
+    )
+}
+
 #' Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table
 #'
 #' @inheritParams read_client

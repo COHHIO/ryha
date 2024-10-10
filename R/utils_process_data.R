@@ -75,6 +75,7 @@ process_data <- function(file) {
     enrollment = read_enrollment(find_file(files_in_tmp, "Enrollment")),
     services = read_services(find_file(files_in_tmp, "Services")),
     project = read_project(find_file(files_in_tmp, "Project")),
+    project_coc = read_project_coc(find_file(files_in_tmp, "ProjectCoC")),
     organization = read_organization(find_file(files_in_tmp, "Organization")),
     exit = read_exit(find_file(files_in_tmp, "Exit")),
     export = read_export(find_file(files_in_tmp, "Export"))
@@ -371,6 +372,11 @@ prep_tables <- function(data, conn) {
       organization_id = data$organization$organization_id[1]
     )
 
+  data$project_coc <- data$project_coc |>
+    dplyr::mutate(
+      organization_id = data$organization$organization_id[1]
+    )
+
   out <- c(
     "client",
     "enrollment",
@@ -384,7 +390,8 @@ prep_tables <- function(data, conn) {
     "benefits",
     "services",
     "exit",
-    "export"
+    "export",
+    "project_coc"
   )
 
   return(data[out])

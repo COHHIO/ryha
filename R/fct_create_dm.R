@@ -102,6 +102,17 @@ create_dm <- function(env,
       )
     )
 
+    # Read "project coc" data into memory
+    project_coc <- read_data_from_table(
+      connection = con,
+      table_name = "project_coc",
+      column_names = c(
+        "project_id",
+        "coc_code",
+        "organization_id"
+      )
+    )
+
     # Read "client" table into memory
     client_tbl <- read_data_from_table(
       connection = con,
@@ -441,6 +452,7 @@ create_dm <- function(env,
     # Create {dm} object
     dm <- list(
       project = project,
+      project_coc = project_coc,
       client = client,
       gender = gender,
       ethnicity = ethnicity,
