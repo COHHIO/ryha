@@ -22,8 +22,7 @@ Ingest "Disabilities.csv" file and perform ETL prep for "DISABILITIES" database 
 path <- "path/to/Disabilities.csv"
 
 read_disabilities(
-  file = path,
-  submission_id = 1L
+  file = path
 )
 
 }

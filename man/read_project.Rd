@@ -22,8 +22,7 @@ Ingest "Project.csv" file and perform ETL prep for "PROJECT" database table
 path <- "path/to/Project.csv"
 
 read_project(
-  file = path,
-  submission_id = 1L
+  file = path
 )
 
 }

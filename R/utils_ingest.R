@@ -171,8 +171,7 @@ read_client <- function(file) {
 #' path <- "path/to/Disabilities.csv"
 #'
 #' read_disabilities(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -241,8 +240,7 @@ read_disabilities <- function(file) {
 #' path <- "path/to/EmploymentEducation.csv"
 #'
 #' read_education(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -310,8 +308,7 @@ read_education <- function(file) {
 #' path <- "path/to/EmploymentEducation.csv"
 #'
 #' read_employment(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -386,8 +383,7 @@ read_employment <- function(file) {
 #' path <- "path/to/CurrentLivingSituation.csv"
 #'
 #' read_living(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -449,8 +445,7 @@ read_living <- function(file) {
 #' path <- "path/to/HealthAndDV.csv"
 #'
 #' read_health(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -527,8 +522,7 @@ read_health <- function(file) {
 #' path <- "path/to/HealthAndDV.csv"
 #'
 #' read_domestic_violence(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -602,8 +596,7 @@ read_domestic_violence <- function(file) {
 #' path <- "path/to/IncomeBenefits.csv"
 #'
 #' read_income(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -731,8 +724,7 @@ read_income <- function(file) {
 #' path <- "path/to/IncomeBenefits.csv"
 #'
 #' read_benefits(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -844,8 +836,7 @@ read_benefits <- function(file) {
 #' path <- "path/to/Enrollment.csv"
 #'
 #' read_enrollment(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -987,8 +978,7 @@ read_enrollment <- function(file) {
 #' path <- "path/to/Services.csv"
 #'
 #' read_services(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1049,8 +1039,7 @@ read_services <- function(file) {
 #' path <- "path/to/Project.csv"
 #'
 #' read_project(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1156,8 +1145,7 @@ read_project_coc <- function(file) {
 #' path <- "path/to/Organization.csv"
 #'
 #' read_organization(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1199,8 +1187,7 @@ read_organization <- function(file) {
 #' path <- "path/to/Exit.csv"
 #'
 #' read_exit(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1372,8 +1359,7 @@ read_exit <- function(file) {
 #' path <- "path/to/Export.csv"
 #'
 #' read_export(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
