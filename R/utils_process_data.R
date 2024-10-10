@@ -311,6 +311,12 @@ prep_tables <- function(data, conn) {
       by = c("orig_project_id")
     )
 
+  data$project_coc <- data$project_coc |>
+    dplyr::left_join(
+      file_data |> dplyr::select(project_id, orig_project_id, organization_id),
+      by = c("orig_project_id")
+    )
+
   # Add `software_name` to remaining files
   data$client <- data$client |>
     dplyr::mutate(
@@ -368,11 +374,6 @@ prep_tables <- function(data, conn) {
     )
 
   data$export <- data$export |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$project_coc <- data$project_coc |>
     dplyr::mutate(
       organization_id = data$organization$organization_id[1]
     )

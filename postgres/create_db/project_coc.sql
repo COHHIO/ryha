@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS public.project_coc
     zip text COLLATE pg_catalog."default",
     geography_type text COLLATE pg_catalog."default",
     date_updated date,
+    project_id integer,
     organization_id integer
 )
 
