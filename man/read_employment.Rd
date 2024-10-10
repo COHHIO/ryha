@@ -22,8 +22,7 @@ Ingest "EmploymentEducation.csv" file and perform ETL prep for "EMPLOYMENT" data
 path <- "path/to/EmploymentEducation.csv"
 
 read_employment(
-  file = path,
-  submission_id = 1L
+  file = path
 )
 
 }

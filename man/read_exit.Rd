@@ -22,8 +22,7 @@ Ingest "Exit.csv" file and perform ETL prep for "EXIT" database table
 path <- "path/to/Exit.csv"
 
 read_exit(
-  file = path,
-  submission_id = 1L
+  file = path
 )
 
 }

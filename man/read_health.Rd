@@ -24,8 +24,7 @@ table
 path <- "path/to/HealthAndDV.csv"
 
 read_health(
-  file = path,
-  submission_id = 1L
+  file = path
 )
 
 }

@@ -1,6 +1,4 @@
 
-
-
 # devtools::load_all()
 con <- connect_to_db()
 
@@ -12,55 +10,22 @@ send_to_db(data = data, conn = con)
 
 # Truncate all tables ----
 for (t in DBI::dbListTables(conn = con)) {
-
-  table_name <- glue::glue_sql(
-    t,
-    .con = con
-  )
-
-  sql_stmt <- glue::glue_sql(
-    "
-      TRUNCATE {table_name}
-    ",
-    .con = con
-  )
-
-  DBI::dbExecute(
-    conn = con,
-    statement = sql_stmt
-  )
-
+  table_name <- glue::glue_sql(t, .con = con)
+  sql_stmt <- glue::glue_sql("TRUNCATE {table_name}", .con = con)
+  DBI::dbExecute(conn = con, statement = sql_stmt)
 }
 
 # Drop all tables ----
 for (t in DBI::dbListTables(conn = con)) {
-
-  table_name <- glue::glue_sql(
-    t,
-    .con = con
-  )
-
-  sql_stmt <- glue::glue_sql(
-    "
-      DROP TABLE {table_name}
-    ",
-    .con = con
-  )
-
-  DBI::dbExecute(
-    conn = con,
-    statement = sql_stmt
-  )
-
+  table_name <- glue::glue_sql(t, .con = con)
+  sql_stmt <- glue::glue_sql("DROP TABLE {table_name}", .con = con)
+  DBI::dbExecute(conn = con, statement = sql_stmt)
 }
 
 # Delete a specific organization ----
 for (t in DBI::dbListTables(conn = con)) {
 
-  table_name <- glue::glue_sql(
-    t,
-    .con = con
-  )
+  table_name <- glue::glue_sql(t, .con = con)
 
   # Change "3" in the statement below to the appropriate `organization_id` of
   # the organization you want to remove
@@ -72,11 +37,7 @@ for (t in DBI::dbListTables(conn = con)) {
     .con = con
   )
 
-  DBI::dbExecute(
-    conn = con,
-    statement = sql_stmt
-  )
-
+  DBI::dbExecute(conn = con, statement = sql_stmt)
 }
 
 # Create all tables ----
