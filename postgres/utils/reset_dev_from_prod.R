@@ -26,32 +26,14 @@ prod_data <- vector("list", length = length(prod_tbl_names))
 names(prod_data) <- prod_tbl_names
 
 for (t in names(prod_data)) {
-
-  prod_data[[t]] <- DBI::dbReadTable(
-    conn = prod_con,
-    name = t
-  )
-
+  prod_data[[t]] <- DBI::dbReadTable(conn = prod_con, name = t)
 }
 
 # Truncate tables in "dev" database
 for (t in DBI::dbListTables(conn = dev_con)) {
-
-  table_name <- glue::glue_sql(
-    t,
-    .con = dev_con
-  )
-
-  sql_stmt <- glue::glue_sql(
-    "TRUNCATE {table_name}",
-    .con = dev_con
-  )
-
-  DBI::dbExecute(
-    conn = dev_con,
-    statement = sql_stmt
-  )
-
+  table_name <- glue::glue_sql(t, .con = dev_con)
+  sql_stmt <- glue::glue_sql("TRUNCATE {table_name}", .con = dev_con)
+  DBI::dbExecute(conn = dev_con, statement = sql_stmt)
 }
 
 send_to_db(data = prod_data, conn = dev_con)
