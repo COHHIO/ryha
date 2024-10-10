@@ -132,7 +132,13 @@ mod_filters_server <- function(id, dm, rctv){
 
     ### Order projects by name rather than id
     project_sorted <- dm$project |>
-      dplyr::arrange(project_name)
+      dplyr::arrange(project_name) |>
+      dplyr::left_join(
+        y = dm$project_coc,
+        by = c("organization_id", "orig_project_id")
+      ) |>
+      # append coc code
+      dplyr::mutate(project_name = paste0(project_name, " (", coc_code, ")"))
 
     ### Update filter
     shinyWidgets::updatePickerInput(
