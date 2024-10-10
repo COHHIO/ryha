@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS public.project_coc
 (
     project_coc_id text COLLATE pg_catalog."default",
-    project_id integer,
+    orig_project_id text COLLATE pg_catalog."default",
     coc_code text COLLATE pg_catalog."default",
     geocode text COLLATE pg_catalog."default",
     address1 text COLLATE pg_catalog."default",

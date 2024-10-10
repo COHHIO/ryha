@@ -1123,10 +1123,13 @@ read_project_coc <- function(file) {
     )
   ) |>
     janitor::clean_names(case = "snake") |>
-    # improve default column names
+    
     dplyr::rename(
+      # improve default column names
       "project_coc_id" = "project_co_cid",
-      "coc_code" = "co_c_code"
+      "coc_code" = "co_c_code",
+      # change project_id to orig_project_id (as project_id has a different meaning in the app)
+      "orig_project_id" = "project_id"
     )
 }
 

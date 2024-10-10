@@ -97,8 +97,10 @@ create_dm <- function(env,
       connection = con,
       table_name = "project",
       column_names = c(
+        "orig_project_id",
         "project_name",
-        "project_id"
+        "project_id",
+        "organization_id"
       )
     )
 
@@ -107,7 +109,7 @@ create_dm <- function(env,
       connection = con,
       table_name = "project_coc",
       column_names = c(
-        "project_id",
+        "orig_project_id",
         "coc_code",
         "organization_id"
       )
