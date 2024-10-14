@@ -34,7 +34,7 @@ mod_filters_ui <- function(id){
         # Project filter
         shinyWidgets::pickerInput(
           inputId = ns("project_filter_global"),
-          label = "Project",
+          label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s)"),
           width = "460px",
           choices = NULL,
           selected = NULL,
