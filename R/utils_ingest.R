@@ -1114,7 +1114,7 @@ read_project_coc <- function(file) {
 
   readr::read_csv(
     file = file,
-    # only read in columns needed for "PROJECT" database table
+    # only read in columns needed for "PROJECT COC" database table
     col_select = expected_colnames,
     # define schema types
     col_types = readr::cols(
@@ -1123,7 +1123,6 @@ read_project_coc <- function(file) {
     )
   ) |>
     janitor::clean_names(case = "snake") |>
-    
     dplyr::rename(
       # improve default column names
       "project_coc_id" = "project_co_cid",
