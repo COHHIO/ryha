@@ -25,7 +25,7 @@ HMISmetadata <- tibble::tribble(
   "Inventory.csv", "N",
   "Organization.csv", "Y",
   "Project.csv", "Y",
-  "ProjectCoC.csv", "N",
+  "ProjectCoC.csv", "Y",
   "Services.csv", "Y",
   "User.csv", "N",
   "YouthEducationStatus.csv", "N"
