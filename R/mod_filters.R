@@ -15,10 +15,26 @@ mod_filters_ui <- function(id){
       shiny::column(
         width = 12,
 
+        # Funder filter
+        shinyWidgets::pickerInput(
+          inputId = ns("funder"),
+          label = "Funder",
+          width = "460px",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE,
+          # collapse the list of selected items in the UI
+          options = list(
+            `actions-box` = TRUE,
+            `selected-text-format` = 'count > 1',
+            container = "body"
+          )
+        ),
+
         # Project filter
         shinyWidgets::pickerInput(
           inputId = ns("project_filter_global"),
-          label = "Project",
+          label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s)"),
           width = "460px",
           choices = NULL,
           selected = NULL,
@@ -129,28 +145,52 @@ mod_filters_server <- function(id, dm, rctv){
 
     # Update the values in the filters given the {dm} data
 
-    ## Update project filter
+    ## Update funder filter
 
-    ### Order projects by name rather than id
-    project_sorted <- dm$project |>
-      dplyr::arrange(project_name) |>
-      dplyr::left_join(y = dm$project_coc, by = "project_id") |>
-      # append coc code to project name
-      dplyr::mutate(project_name = paste0(project_name, " (", coc_code, ")"))
+    ### Get sorted list of unique funders
+    funder_choices <- dm$funder$funder |> unique() |> sort()
 
     ### Update filter
     shinyWidgets::updatePickerInput(
       session = session,
-      inputId = "project_filter_global",
-      choices = setNames(project_sorted$project_id, project_sorted$project_name),
-      selected = project_sorted$project_id,
-      choicesOpt = list(
-        style = rep_len(
-          "font-size: 75%;",
-          project_sorted$project_name |> length()
+      inputId = "funder",
+      choices = funder_choices,
+      selected = funder_choices
+    )
+
+    ## Update project filter (based on funder filter)
+    shiny::observeEvent(input$funder, {
+
+      # Projects funded by selected funder(s)
+      projects_funded_by_funders <- dm$funder |>
+        dplyr::filter(funder %in% input$funder) |>
+        dplyr::pull(project_id) |>
+        unique()
+      
+      ### Order projects by name rather than id
+      project_sorted <- dm$project |>
+        dplyr::arrange(project_name) |>
+        dplyr::left_join(y = dm$project_coc, by = "project_id") |>
+        # append coc code to project name
+        dplyr::mutate(project_name = paste0(project_name, " (", coc_code, ")")) |>
+        # Filter by Funder
+        dplyr::filter(project_id %in% projects_funded_by_funders)
+
+      ### Update filter
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "project_filter_global",
+        choices = setNames(project_sorted$project_id, project_sorted$project_name),
+        selected = project_sorted$project_id,
+        choicesOpt = list(
+          style = rep_len(
+            "font-size: 75%;",
+            project_sorted$project_name |> length()
+          )
         )
       )
-    )
+
+    })
 
     ## Update active date filter
     shiny::updateDateRangeInput(

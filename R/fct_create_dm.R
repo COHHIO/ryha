@@ -112,6 +112,16 @@ create_dm <- function(env,
       )
     )
 
+    # Read "funder" data into memory
+    funder <- read_data_from_table(
+      connection = con,
+      table_name = "funder",
+      column_names = c(
+        "project_id",
+        "funder"
+      )
+    )
+
     # Read "client" table into memory
     client_tbl <- read_data_from_table(
       connection = con,
@@ -452,6 +462,7 @@ create_dm <- function(env,
     dm <- list(
       project = project,
       project_coc = project_coc,
+      funder = funder,
       client = client,
       gender = gender,
       ethnicity = ethnicity,

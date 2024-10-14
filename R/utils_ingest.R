@@ -1394,6 +1394,52 @@ read_export <- function(file) {
 
 }
 
+#' Ingest "Funder.csv" file and perform ETL prep for "FUNDER" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "FUNDER" database tables
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Funder.csv"
+#'
+#' read_funder(
+#'   file = path
+#' )
+#' }
+read_funder <- function(file) {
+  expected_colnames <- c(
+    "ProjectID",
+    "Funder",
+    "OtherFunder"
+  )
+
+  check_colnames(file, expected_colnames)
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "FUNDER" database table
+    col_select = expected_colnames,
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character()
+    )
+  ) |>
+    # replace the integer codes with the plain-English description
+    dplyr::mutate(
+      Funder = lookup_codes(
+        var = Funder,
+        codes = FunderCodes
+      )
+    ) |>
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(orig_project_id = project_id)
+}
 
 #' Hash a value with a key
 #'
