@@ -78,7 +78,8 @@ process_data <- function(file) {
     project_coc = read_project_coc(find_file(files_in_tmp, "ProjectCoC")),
     organization = read_organization(find_file(files_in_tmp, "Organization")),
     exit = read_exit(find_file(files_in_tmp, "Exit")),
-    export = read_export(find_file(files_in_tmp, "Export"))
+    export = read_export(find_file(files_in_tmp, "Export")),
+    funder = read_funder(find_file(files_in_tmp, "Funder"))
   )
 
   return(data)
@@ -311,7 +312,15 @@ prep_tables <- function(data, conn) {
       by = c("orig_project_id")
     )
 
+  # Add `project_id` and 'organization_id' columns to "project_coc" file data
   data$project_coc <- data$project_coc |>
+    dplyr::left_join(
+      file_data |> dplyr::select(project_id, orig_project_id, organization_id),
+      by = c("orig_project_id")
+    )
+
+  # Add `project_id` and 'organization_id' columns to "funder" file data
+  data$funder <- data$funder |>
     dplyr::left_join(
       file_data |> dplyr::select(project_id, orig_project_id, organization_id),
       by = c("orig_project_id")
@@ -392,7 +401,8 @@ prep_tables <- function(data, conn) {
     "services",
     "exit",
     "export",
-    "project_coc"
+    "project_coc",
+    "funder"
   )
 
   return(data[out])
