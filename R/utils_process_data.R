@@ -312,12 +312,14 @@ prep_tables <- function(data, conn) {
       by = c("orig_project_id")
     )
 
+  # Add `project_id` and 'organization_id' columns to "project_coc" file data
   data$project_coc <- data$project_coc |>
     dplyr::left_join(
       file_data |> dplyr::select(project_id, orig_project_id, organization_id),
       by = c("orig_project_id")
     )
 
+  # Add `project_id` and 'organization_id' columns to "funder" file data
   data$funder <- data$funder |>
     dplyr::left_join(
       file_data |> dplyr::select(project_id, orig_project_id, organization_id),
