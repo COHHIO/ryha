@@ -190,10 +190,23 @@ mod_filters_server <- function(id, dm, rctv){
         dplyr::pull(geocode) |>
         unique()
 
+      geo_data_filtered <- geocodes |>
+        dplyr::filter(geocode %in% geo_choices) |>
+        dplyr::arrange(name)
+
+      choices_city <- geo_data_filtered |>
+        dplyr::filter(type == "City")
+      
+      choices_county <- geo_data_filtered |>
+        dplyr::filter(type == "County")
+
       shinyWidgets::updatePickerInput(
         session = session,
         inputId = "geographic_region",
-        choices = geo_choices,
+        choices = list(
+          "City" = setNames(choices_city$geocode, choices_city$name),
+          "County" = setNames(choices_county$geocode, choices_county$name)
+        ),
         selected = geo_choices
       )
     })
