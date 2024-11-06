@@ -32,18 +32,22 @@ mod_filters_ui <- function(id){
         ),
 
         # Geographic region filter
-        shinyWidgets::pickerInput(
-          inputId = ns("geographic_region"),
-          label = with_popover(text = "Geographic Region", title = NULL, content = "Showing cities and/or counties where a project funded by selected funder(s) is present"),
-          width = "460px",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE,
-          # collapse the list of selected items in the UI
-          options = list(
-            `actions-box` = TRUE,
-            `selected-text-format` = 'count > 1',
-            container = "body"
+        ## Adding a div with id as a workaround to show popover when disabled
+        shiny::div(
+          id = ns("geographic_region_div"),
+          shinyWidgets::pickerInput(
+            inputId = ns("geographic_region"),
+            label = with_popover(text = "Geographic Region", title = NULL, content = "Showing cities and/or counties where a project funded by selected funder(s) is present"),
+            width = "460px",
+            choices = NULL,
+            selected = NULL,
+            multiple = TRUE,
+            # collapse the list of selected items in the UI
+            options = list(
+              `actions-box` = TRUE,
+              `selected-text-format` = 'count > 1',
+              container = "body"
+            )
           )
         ),
 
@@ -181,6 +185,30 @@ mod_filters_server <- function(id, dm, rctv){
         dplyr::pull(project_id) |>
         unique()
     }, ignoreNULL = FALSE)
+
+    # Improve UX based on selected funders
+    shiny::observeEvent(rctv_projects_funded_by_funders(), {
+      # When no funders are selected...
+      if (length(rctv_projects_funded_by_funders()) == 0) {
+        # Disable geographic region input
+        shinyjs::disable(id = "geographic_region")
+        # Add popover to inform the user that funder(s) should be selected
+        bs4Dash::addPopover(
+          id = "geographic_region_div",
+          options = list(
+            content = "Please select funder(s)",
+            placement = "bottom",
+            trigger = "hover"
+          )
+        )
+      } else {
+        # When at least a funder is selected...
+        # Enable geographic input
+        shinyjs::enable(id = "geographic_region")
+        # Remove popover
+        bs4Dash::removePopover(id = "geographic_region_div")
+      }
+    })
 
     ## Update geographic region filter (based on geographic regions of projects funded by funders reactive)
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
