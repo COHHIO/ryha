@@ -108,7 +108,8 @@ create_dm <- function(env,
       table_name = "project_coc",
       column_names = c(
         "project_id",
-        "coc_code"
+        "coc_code",
+        "geocode"
       )
     )
 

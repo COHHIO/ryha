@@ -174,14 +174,44 @@ mod_filters_server <- function(id, dm, rctv){
       selected = funder_choices
     )
 
-    ## Update project filter (based on funder filter)
-    shiny::observeEvent(input$funder, {
-
-      # Projects funded by selected funder(s)
-      projects_funded_by_funders <- dm$funder |>
+    ## Create reactive that stores projects funded by selected funders
+    rctv_projects_funded_by_funders <- shiny::eventReactive(input$funder, {
+      dm$funder |>
         dplyr::filter(funder %in% input$funder) |>
         dplyr::pull(project_id) |>
         unique()
+    })
+
+    ## Update geographic region filter (based on geographic regions of projects funded by funders reactive)
+    shiny::observeEvent(rctv_projects_funded_by_funders(), {
+
+      geo_choices <- dm$project_coc |>
+        dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
+        dplyr::pull(geocode) |>
+        unique()
+
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "geographic_region",
+        choices = geo_choices,
+        selected = geo_choices
+      )
+    })
+
+    ## Update project filter (based on funder filter and geographic region)
+    ### As geographic region choices depend on funder filter, any changes in funder selection
+    ### will trigger an update of geographic region choices. For that reason, we don't need
+    ### to observe both funder and geographic region inputs.
+    shiny::observeEvent(input$geographic_region, {
+
+      # Projects found in selected geographic regions(s)
+      projects_found_in_geo <- dm$project_coc |>
+        dplyr::filter(geocode %in% input$geographic_region) |>
+        dplyr::pull(project_id) |>
+        unique()
+
+      # Projects funded by selected funder(s) and found in selected geographic region(s)
+      project_choices <- intersect(rctv_projects_funded_by_funders(), projects_found_in_geo)
       
       ### Order projects by name rather than id
       project_sorted <- dm$project |>
@@ -190,7 +220,7 @@ mod_filters_server <- function(id, dm, rctv){
         # append coc code to project name
         dplyr::mutate(project_name = paste0(project_name, " (", coc_code, ")")) |>
         # Filter by Funder
-        dplyr::filter(project_id %in% projects_funded_by_funders)
+        dplyr::filter(project_id %in% project_choices)
 
       ### Update filter
       shinyWidgets::updatePickerInput(
