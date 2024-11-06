@@ -180,7 +180,7 @@ mod_filters_server <- function(id, dm, rctv){
         dplyr::filter(funder %in% input$funder) |>
         dplyr::pull(project_id) |>
         unique()
-    })
+    }, ignoreNULL = FALSE)
 
     ## Update geographic region filter (based on geographic regions of projects funded by funders reactive)
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
@@ -252,7 +252,7 @@ mod_filters_server <- function(id, dm, rctv){
         )
       )
 
-    })
+    }, ignoreNULL = FALSE)
 
     ## Update active date filter
     shiny::updateDateRangeInput(
