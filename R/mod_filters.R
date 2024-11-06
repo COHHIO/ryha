@@ -185,21 +185,24 @@ mod_filters_server <- function(id, dm, rctv){
     ## Update geographic region filter (based on geographic regions of projects funded by funders reactive)
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
 
+      ### Get geocodes found in projects funded by selected funders
       geo_choices <- dm$project_coc |>
         dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
         dplyr::pull(geocode) |>
         unique()
 
+      ### Get additional data for eligible geocodes
       geo_data_filtered <- geocodes |>
         dplyr::filter(geocode %in% geo_choices) |>
         dplyr::arrange(name)
 
+      ### Separate choices based on type
       choices_city <- geo_data_filtered |>
         dplyr::filter(type == "City")
-      
       choices_county <- geo_data_filtered |>
         dplyr::filter(type == "County")
 
+      ### Update filter
       shinyWidgets::updatePickerInput(
         session = session,
         inputId = "geographic_region",
