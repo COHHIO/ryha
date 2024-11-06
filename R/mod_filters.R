@@ -52,18 +52,22 @@ mod_filters_ui <- function(id){
         ),
 
         # Project filter
-        shinyWidgets::pickerInput(
-          inputId = ns("project_filter_global"),
-          label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s) and found in selected geographic region(s)"),
-          width = "460px",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE,
-          # collapse the list of selected items in the UI
-          options = list(
-            `actions-box` = TRUE,
-            `selected-text-format` = 'count > 1',
-            container = "body"
+        ## Adding a div with id as a workaround to show popover when disabled
+        shiny::div(
+          id = ns("project_filter_global_div"),
+          shinyWidgets::pickerInput(
+            inputId = ns("project_filter_global"),
+            label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s) and found in selected geographic region(s)"),
+            width = "460px",
+            choices = NULL,
+            selected = NULL,
+            multiple = TRUE,
+            # collapse the list of selected items in the UI
+            options = list(
+              `actions-box` = TRUE,
+              `selected-text-format` = 'count > 1',
+              container = "body"
+            )
           )
         ),
 
@@ -241,6 +245,30 @@ mod_filters_server <- function(id, dm, rctv){
         selected = geo_choices
       )
     })
+
+    # Improve UX based on selected geographic region
+    shiny::observeEvent(input$geographic_region, {
+      # When no geographic regions are selected...
+      if (length(input$geographic_region) == 0) {
+        # Disable project input
+        shinyjs::disable(id = "project_filter_global")
+        # Add popover to inform the user that geographic region(s) should be selected
+        bs4Dash::addPopover(
+          id = "project_filter_global_div",
+          options = list(
+            content = "Please select geographic region(s)",
+            placement = "bottom",
+            trigger = "hover"
+          )
+        )
+      } else {
+        # When at least a funder is selected...
+        # Enable project input
+        shinyjs::enable(id = "project_filter_global")
+        # Remove popover
+        bs4Dash::removePopover(id = "project_filter_global_div")
+      }
+    }, ignoreNULL = FALSE)
 
     ## Update project filter (based on funder filter and geographic region)
     ### As geographic region choices depend on funder filter, any changes in funder selection
