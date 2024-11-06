@@ -50,7 +50,7 @@ mod_filters_ui <- function(id){
         # Project filter
         shinyWidgets::pickerInput(
           inputId = ns("project_filter_global"),
-          label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s)"),
+          label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s) and found in selected geographic region(s)"),
           width = "460px",
           choices = NULL,
           selected = NULL,
