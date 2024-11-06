@@ -31,6 +31,22 @@ mod_filters_ui <- function(id){
           )
         ),
 
+        # Geographic region filter
+        shinyWidgets::pickerInput(
+          inputId = ns("geographic_region"),
+          label = with_popover(text = "Geographic Region", title = NULL, content = "Showing cities and/or counties where a project funded by selected funder(s) is present"),
+          width = "460px",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE,
+          # collapse the list of selected items in the UI
+          options = list(
+            `actions-box` = TRUE,
+            `selected-text-format` = 'count > 1',
+            container = "body"
+          )
+        ),
+
         # Project filter
         shinyWidgets::pickerInput(
           inputId = ns("project_filter_global"),
