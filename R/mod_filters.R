@@ -37,7 +37,7 @@ mod_filters_ui <- function(id){
           id = ns("county_div"),
           shinyWidgets::pickerInput(
             inputId = ns("county"),
-            label = with_popover(text = "County", title = NULL, content = "Showing counties that have projects funded by the selected funders"),
+            label = with_popover(text = "County", title = NULL, content = "Showing counties with projects funded by the selected funders"),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -200,7 +200,7 @@ mod_filters_server <- function(id, dm, rctv){
         bs4Dash::addPopover(
           id = "county_div",
           options = list(
-            content = "Select at least one funder",
+            content = "Please select at least one funder",
             placement = "bottom",
             trigger = "hover"
           )
