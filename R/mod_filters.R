@@ -37,7 +37,7 @@ mod_filters_ui <- function(id){
           id = ns("county_div"),
           shinyWidgets::pickerInput(
             inputId = ns("county"),
-            label = with_popover(text = "County", title = NULL, content = "Showing counties where a project funded by selected funder(s) is present"),
+            label = with_popover(text = "County", title = NULL, content = "Showing counties that have projects funded by the selected funders"),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -57,7 +57,7 @@ mod_filters_ui <- function(id){
           id = ns("project_filter_global_div"),
           shinyWidgets::pickerInput(
             inputId = ns("project_filter_global"),
-            label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s) and found in selected counties"),
+            label = with_popover(text = "Project", title = NULL, content = "Showing projects funded by the selected funders and located in the selected counties"),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -196,17 +196,17 @@ mod_filters_server <- function(id, dm, rctv){
       if (length(rctv_projects_funded_by_funders()) == 0) {
         # Disable county input
         shinyjs::disable(id = "county")
-        # Add popover to inform the user that funder(s) should be selected
+        # Add popover to inform the user that at least one funder should be selected
         bs4Dash::addPopover(
           id = "county_div",
           options = list(
-            content = "Please select funder(s)",
+            content = "Select at least one funder",
             placement = "bottom",
             trigger = "hover"
           )
         )
       } else {
-        # When at least a funder is selected...
+        # When at least one funder is selected...
         # Enable county input
         shinyjs::enable(id = "county")
         # Remove popover
@@ -214,16 +214,16 @@ mod_filters_server <- function(id, dm, rctv){
       }
     })
 
-    ## Update county filter (based on counties of projects funded by funders reactive)
+    ## Update county filter to show only counties with projects funded by the selected funders
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
 
-      ### Get geocodes found in projects funded by selected funders
+      ### Get geocodes for projects funded by the selected funders
       geo_choices <- dm$project_coc |>
         dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
         dplyr::pull(geocode) |>
         unique()
 
-      ### Get additional data for eligible geocodes
+      ### Get county data for the selected geocodes
       county_choices <- CountyCodes |>
         dplyr::filter(geocode %in% geo_choices) |>
         dplyr::arrange(county)
@@ -243,7 +243,7 @@ mod_filters_server <- function(id, dm, rctv){
       if (length(input$county) == 0) {
         # Disable project input
         shinyjs::disable(id = "project_filter_global")
-        # Add popover to inform the user that counties should be selected
+        # Add popover to inform the user that at least one county should be selected
         bs4Dash::addPopover(
           id = "project_filter_global_div",
           options = list(
@@ -253,7 +253,7 @@ mod_filters_server <- function(id, dm, rctv){
           )
         )
       } else {
-        # When at least a funder is selected...
+        # When at least one county is selected...
         # Enable project input
         shinyjs::enable(id = "project_filter_global")
         # Remove popover
@@ -273,7 +273,7 @@ mod_filters_server <- function(id, dm, rctv){
         dplyr::pull(project_id) |>
         unique()
 
-      # Projects funded by selected funder(s) and found in selected counties
+      # Projects funded by selected funders and located in selected counties
       project_choices <- intersect(rctv_projects_funded_by_funders(), projects_found_in_geo)
       
       ### Order projects by name rather than id
