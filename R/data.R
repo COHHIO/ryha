@@ -3,6 +3,16 @@
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R15.B CountExchangeForSex>
 'CountExchangeForSexCodes'
 
+#' CountyCodes Codes
+#'
+#' A dataset containing geographic codes used by HUD, where each entry is associated with a county or city. 
+#' The `geocode` column contains identifiers that may refer to either a county or a city within a county:
+#' - If `geocode` refers to a county, the `county` column indicates the name of the county.
+#' - If `geocode` refers to a city, the `county` column shows the name of the county to which the city belongs.
+#'
+#' @source <https://www.hud.gov/sites/dfiles/CPD/documents/CoC/FY2024-GeoCodes-Report.pdf>
+"CountyCodes"
+
 #' DOB Data Quality Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.03.2 DOBDataQuality>
