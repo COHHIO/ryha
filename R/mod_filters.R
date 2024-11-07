@@ -37,7 +37,7 @@ mod_filters_ui <- function(id){
           id = ns("county_div"),
           shinyWidgets::pickerInput(
             inputId = ns("county"),
-            label = with_popover(text = "County", title = NULL, content = "Showing counties with projects funded by the selected funders"),
+            label = with_popover(text = "County", title = NULL, content = "Showing counties with projects funded by selected funders"),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -57,7 +57,7 @@ mod_filters_ui <- function(id){
           id = ns("project_filter_global_div"),
           shinyWidgets::pickerInput(
             inputId = ns("project_filter_global"),
-            label = with_popover(text = "Project", title = NULL, content = "Showing projects funded by the selected funders and located in the selected counties"),
+            label = with_popover(text = "Project", title = NULL, content = "Showing projects funded by selected funders and located in selected counties"),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -214,16 +214,16 @@ mod_filters_server <- function(id, dm, rctv){
       }
     })
 
-    ## Update county filter to show only counties with projects funded by the selected funders
+    ## Update county filter to show only counties with projects funded by selected funders
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
 
-      ### Get geocodes for projects funded by the selected funders
+      ### Get geocodes for projects funded by selected funders
       geo_choices <- dm$project_coc |>
         dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
         dplyr::pull(geocode) |>
         unique()
 
-      ### Get county data for the selected geocodes
+      ### Get county data for selected geocodes
       county_choices <- CountyCodes |>
         dplyr::filter(geocode %in% geo_choices) |>
         dplyr::arrange(county)
