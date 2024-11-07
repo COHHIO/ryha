@@ -5,11 +5,8 @@
 
 #' CountyCodes Codes
 #'
-#' A dataset containing geographic codes used by HUD, where each entry is associated with a county or city. 
-#' The `geocode` column contains identifiers that may refer to either a county or a city within a county:
-#' - If `geocode` refers to a county, the `county` column indicates the name of the county.
-#' - If `geocode` refers to a city, the `county` column shows the name of the county to which the city belongs.
-#'
+#' A county can contain multiple geocodes.
+#' 
 #' @source <https://www.hud.gov/sites/dfiles/CPD/documents/CoC/FY2024-GeoCodes-Report.pdf>
 "CountyCodes"
 

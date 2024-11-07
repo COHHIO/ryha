@@ -14,11 +14,6 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 CountyCodes
 }
 \description{
-A dataset containing geographic codes used by HUD, where each entry is associated with a county or city.
-The \code{geocode} column contains identifiers that may refer to either a county or a city within a county:
-\itemize{
-\item If \code{geocode} refers to a county, the \code{county} column indicates the name of the county.
-\item If \code{geocode} refers to a city, the \code{county} column shows the name of the county to which the city belongs.
-}
+A county can contain multiple geocodes.
 }
 \keyword{datasets}
