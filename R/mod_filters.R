@@ -31,13 +31,13 @@ mod_filters_ui <- function(id){
           )
         ),
 
-        # Geographic region filter
+        # County filter
         ## Adding a div with id as a workaround to show popover when disabled
         shiny::div(
-          id = ns("geographic_region_div"),
+          id = ns("county_div"),
           shinyWidgets::pickerInput(
-            inputId = ns("geographic_region"),
-            label = with_popover(text = "Geographic Region", title = NULL, content = "Showing cities and/or counties where a project funded by selected funder(s) is present"),
+            inputId = ns("county"),
+            label = with_popover(text = "County", title = NULL, content = "Showing counties where a project funded by selected funder(s) is present"),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -57,7 +57,7 @@ mod_filters_ui <- function(id){
           id = ns("project_filter_global_div"),
           shinyWidgets::pickerInput(
             inputId = ns("project_filter_global"),
-            label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s) and found in selected geographic region(s)"),
+            label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s) and found in selected counties"),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -194,11 +194,11 @@ mod_filters_server <- function(id, dm, rctv){
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
       # When no funders are selected...
       if (length(rctv_projects_funded_by_funders()) == 0) {
-        # Disable geographic region input
-        shinyjs::disable(id = "geographic_region")
+        # Disable county input
+        shinyjs::disable(id = "county")
         # Add popover to inform the user that funder(s) should be selected
         bs4Dash::addPopover(
-          id = "geographic_region_div",
+          id = "county_div",
           options = list(
             content = "Please select funder(s)",
             placement = "bottom",
@@ -207,14 +207,14 @@ mod_filters_server <- function(id, dm, rctv){
         )
       } else {
         # When at least a funder is selected...
-        # Enable geographic input
-        shinyjs::enable(id = "geographic_region")
+        # Enable county input
+        shinyjs::enable(id = "county")
         # Remove popover
-        bs4Dash::removePopover(id = "geographic_region_div")
+        bs4Dash::removePopover(id = "county_div")
       }
     })
 
-    ## Update geographic region filter (based on geographic regions of projects funded by funders reactive)
+    ## Update county filter (based on counties of projects funded by funders reactive)
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
 
       ### Get geocodes found in projects funded by selected funders
@@ -224,39 +224,30 @@ mod_filters_server <- function(id, dm, rctv){
         unique()
 
       ### Get additional data for eligible geocodes
-      geo_data_filtered <- geocodes |>
+      county_choices <- CountyCodes |>
         dplyr::filter(geocode %in% geo_choices) |>
-        dplyr::arrange(name)
-
-      ### Separate choices based on type
-      choices_city <- geo_data_filtered |>
-        dplyr::filter(type == "City")
-      choices_county <- geo_data_filtered |>
-        dplyr::filter(type == "County")
+        dplyr::arrange(county)
 
       ### Update filter
       shinyWidgets::updatePickerInput(
         session = session,
-        inputId = "geographic_region",
-        choices = list(
-          "City" = setNames(choices_city$geocode, choices_city$name),
-          "County" = setNames(choices_county$geocode, choices_county$name)
-        ),
-        selected = geo_choices
+        inputId = "county",
+        choices = setNames(county_choices$geocode, county_choices$county),
+        selected = county_choices
       )
     })
 
-    # Improve UX based on selected geographic region
-    shiny::observeEvent(input$geographic_region, {
-      # When no geographic regions are selected...
-      if (length(input$geographic_region) == 0) {
+    # Improve UX based on selected county
+    shiny::observeEvent(input$county, {
+      # When no counties are selected...
+      if (length(input$county) == 0) {
         # Disable project input
         shinyjs::disable(id = "project_filter_global")
-        # Add popover to inform the user that geographic region(s) should be selected
+        # Add popover to inform the user that counties should be selected
         bs4Dash::addPopover(
           id = "project_filter_global_div",
           options = list(
-            content = "Please select geographic region(s)",
+            content = "Please select at least one county",
             placement = "bottom",
             trigger = "hover"
           )
@@ -270,19 +261,19 @@ mod_filters_server <- function(id, dm, rctv){
       }
     }, ignoreNULL = FALSE)
 
-    ## Update project filter (based on funder filter and geographic region)
-    ### As geographic region choices depend on funder filter, any changes in funder selection
-    ### will trigger an update of geographic region choices. For that reason, we don't need
-    ### to observe both funder and geographic region inputs.
-    shiny::observeEvent(input$geographic_region, {
+    ## Update project filter (based on funder filter and county)
+    ### As county choices depend on funder filter, any changes in funder
+    ### selection will trigger an update of county choices. For that reason, 
+    ### we don't need to observe both funder and county inputs.
+    shiny::observeEvent(input$county, {
 
-      # Projects found in selected geographic regions(s)
+      # Projects found in selected counties
       projects_found_in_geo <- dm$project_coc |>
-        dplyr::filter(geocode %in% input$geographic_region) |>
+        dplyr::filter(geocode %in% input$county) |>
         dplyr::pull(project_id) |>
         unique()
 
-      # Projects funded by selected funder(s) and found in selected geographic region(s)
+      # Projects funded by selected funder(s) and found in selected counties
       project_choices <- intersect(rctv_projects_funded_by_funders(), projects_found_in_geo)
       
       ### Order projects by name rather than id
