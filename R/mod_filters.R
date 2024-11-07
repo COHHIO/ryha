@@ -233,7 +233,7 @@ mod_filters_server <- function(id, dm, rctv){
         session = session,
         inputId = "county",
         choices = setNames(county_choices$geocode, county_choices$county),
-        selected = county_choices
+        selected = county_choices$geocode
       )
     })
 
