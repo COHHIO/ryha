@@ -109,9 +109,15 @@ create_dm <- function(env,
       column_names = c(
         "project_id",
         "coc_code",
-        "county"
+        "geocode"
       )
-    )
+    ) |>
+      # Add county column
+      dplyr::left_join(CountyCodes, by = "geocode") |>
+      # Assign counties without a match to "Unknown"
+      tidyr::replace_na(list(county = "Unknown")) |> 
+      # Place county column after geocode
+      dplyr::relocate(county, .after = geocode)
 
     # Read "funder" data into memory
     funder <- read_data_from_table(

@@ -1129,13 +1129,7 @@ read_project_coc <- function(file) {
       "coc_code" = "co_c_code",
       # change project_id to orig_project_id (as project_id has a different meaning in the app)
       "orig_project_id" = "project_id"
-    ) |>
-    # Add county column
-    dplyr::left_join(CountyCodes, by = "geocode") |>
-    # Assign counties without a match to "Unknown"
-    tidyr::replace_na(list(county = "Unknown")) |> 
-    # Place county column after geocode
-    dplyr::relocate(county, .after = geocode)
+    )
 }
 
 #' Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table
