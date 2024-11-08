@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.project_coc
     orig_project_id text COLLATE pg_catalog."default",
     coc_code text COLLATE pg_catalog."default",
     geocode text COLLATE pg_catalog."default",
+    county text COLLATE pg_catalog."default",
     address1 text COLLATE pg_catalog."default",
     address2 text COLLATE pg_catalog."default",
     city text COLLATE pg_catalog."default",

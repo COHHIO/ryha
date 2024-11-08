@@ -217,23 +217,18 @@ mod_filters_server <- function(id, dm, rctv){
     ## Update county filter to show only counties with projects funded by selected funders
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
 
-      ### Get geocodes for projects funded by selected funders
-      geo_choices <- dm$project_coc |>
+      ### Get counties with projects funded by selected funders
+      county_choices <- dm$project_coc |>
         dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
-        dplyr::pull(geocode) |>
+        dplyr::pull(county) |>
         unique()
-
-      ### Get county data for selected geocodes
-      county_choices <- CountyCodes |>
-        dplyr::filter(geocode %in% geo_choices) |>
-        dplyr::arrange(county)
 
       ### Update filter
       shinyWidgets::updatePickerInput(
         session = session,
         inputId = "county",
-        choices = setNames(county_choices$geocode, county_choices$county),
-        selected = county_choices$geocode
+        choices = county_choices,
+        selected = county_choices
       )
     })
 
@@ -267,14 +262,14 @@ mod_filters_server <- function(id, dm, rctv){
     ### we don't need to observe both funder and county inputs.
     shiny::observeEvent(input$county, {
 
-      # Projects found in selected counties
-      projects_found_in_geo <- dm$project_coc |>
-        dplyr::filter(geocode %in% input$county) |>
+      # Projects located in selected counties
+      projects_located_in_counties <- dm$project_coc |>
+        dplyr::filter(county %in% input$county) |>
         dplyr::pull(project_id) |>
         unique()
 
       # Projects funded by selected funders and located in selected counties
-      project_choices <- intersect(rctv_projects_funded_by_funders(), projects_found_in_geo)
+      project_choices <- intersect(rctv_projects_funded_by_funders(), projects_located_in_counties)
       
       ### Order projects by name rather than id
       project_sorted <- dm$project |>

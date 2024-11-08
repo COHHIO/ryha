@@ -109,7 +109,7 @@ create_dm <- function(env,
       column_names = c(
         "project_id",
         "coc_code",
-        "geocode"
+        "county"
       )
     )
 
