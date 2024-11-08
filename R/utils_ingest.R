@@ -1132,8 +1132,8 @@ read_project_coc <- function(file) {
     ) |>
     # Add county column
     dplyr::left_join(CountyCodes, by = "geocode") |>
-    # Handle missing county codes
-    tidyr::replace_na(list(county = "Missing")) |> 
+    # Assign counties without a match to "Unknown"
+    tidyr::replace_na(list(county = "Unknown")) |> 
     # Place county column after geocode
     dplyr::relocate(county, .after = geocode)
 }
