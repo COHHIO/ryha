@@ -260,7 +260,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
       referral_data_filtered() |>
         dplyr::mutate(
           referral_source = dplyr::case_when(
-            is.na(referral_source) ~ "(Blanks)",
+            is.na(referral_source) ~ "(Blank)",
             TRUE ~ referral_source
           )
         ) |>
