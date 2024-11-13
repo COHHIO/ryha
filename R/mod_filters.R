@@ -37,7 +37,11 @@ mod_filters_ui <- function(id){
           id = ns("county_div"),
           shinyWidgets::pickerInput(
             inputId = ns("county"),
-            label = with_popover(text = "County", title = NULL, content = "Showing counties with projects funded by selected funders"),
+            label = with_popover(
+              text = "County",
+              title = NULL,
+              content = "Showing counties associated with selected funders"
+            ),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -57,7 +61,11 @@ mod_filters_ui <- function(id){
           id = ns("project_filter_global_div"),
           shinyWidgets::pickerInput(
             inputId = ns("project_filter_global"),
-            label = with_popover(text = "Project", title = NULL, content = "Showing projects funded by selected funders and located in selected counties"),
+            label = with_popover(
+              text = "Project",
+              title = NULL,
+              content = "Showing projects associated with selected funders and counties"
+            ),
             width = "460px",
             choices = NULL,
             selected = NULL,
@@ -258,7 +266,7 @@ mod_filters_server <- function(id, dm, rctv){
 
     ## Update project filter (based on funder filter and county)
     ### As county choices depend on funder filter, any changes in funder
-    ### selection will trigger an update of county choices. For that reason, 
+    ### selection will trigger an update of county choices. For that reason,
     ### we don't need to observe both funder and county inputs.
     shiny::observeEvent(input$county, {
 
@@ -270,7 +278,7 @@ mod_filters_server <- function(id, dm, rctv){
 
       # Projects funded by selected funders and located in selected counties
       project_choices <- intersect(rctv_projects_funded_by_funders(), projects_located_in_counties)
-      
+
       ### Order projects by name rather than id
       project_sorted <- dm$project |>
         dplyr::arrange(project_name) |>
