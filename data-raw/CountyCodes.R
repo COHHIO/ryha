@@ -141,10 +141,10 @@ county_data <- tibble::tribble(
   "399175", "Wyandot County"
 ) |>
   dplyr::mutate(
-    # Remove "County" from county name
+    # Remove "County" from county name when it appears at the end of the string
     county = stringr::str_replace(
       string = county,
-      pattern = " County",
+      pattern = " County$",
       replacement = ""
     )
   )
