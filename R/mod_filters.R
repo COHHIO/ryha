@@ -31,19 +31,51 @@ mod_filters_ui <- function(id){
           )
         ),
 
+        # County filter
+        ## Adding a div with id as a workaround to show popover when disabled
+        shiny::div(
+          id = ns("county_div"),
+          shinyWidgets::pickerInput(
+            inputId = ns("county"),
+            label = with_popover(
+              text = "County",
+              title = NULL,
+              content = "Showing counties associated with selected funders"
+            ),
+            width = "460px",
+            choices = NULL,
+            selected = NULL,
+            multiple = TRUE,
+            # collapse the list of selected items in the UI
+            options = list(
+              `actions-box` = TRUE,
+              `selected-text-format` = 'count > 1',
+              container = "body"
+            )
+          )
+        ),
+
         # Project filter
-        shinyWidgets::pickerInput(
-          inputId = ns("project_filter_global"),
-          label = with_popover(text = "Project", title = NULL, content = "Showing project(s) funded by selected funder(s)"),
-          width = "460px",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE,
-          # collapse the list of selected items in the UI
-          options = list(
-            `actions-box` = TRUE,
-            `selected-text-format` = 'count > 1',
-            container = "body"
+        ## Adding a div with id as a workaround to show popover when disabled
+        shiny::div(
+          id = ns("project_filter_global_div"),
+          shinyWidgets::pickerInput(
+            inputId = ns("project_filter_global"),
+            label = with_popover(
+              text = "Project",
+              title = NULL,
+              content = "Showing projects associated with selected funders and counties"
+            ),
+            width = "460px",
+            choices = NULL,
+            selected = NULL,
+            multiple = TRUE,
+            # collapse the list of selected items in the UI
+            options = list(
+              `actions-box` = TRUE,
+              `selected-text-format` = 'count > 1',
+              container = "body"
+            )
           )
         ),
 
@@ -158,15 +190,95 @@ mod_filters_server <- function(id, dm, rctv){
       selected = funder_choices
     )
 
-    ## Update project filter (based on funder filter)
-    shiny::observeEvent(input$funder, {
-
-      # Projects funded by selected funder(s)
-      projects_funded_by_funders <- dm$funder |>
+    ## Create reactive that stores projects funded by selected funders
+    rctv_projects_funded_by_funders <- shiny::eventReactive(input$funder, {
+      dm$funder |>
         dplyr::filter(funder %in% input$funder) |>
         dplyr::pull(project_id) |>
         unique()
-      
+    }, ignoreNULL = FALSE)
+
+    # Improve UX based on selected funders
+    shiny::observeEvent(rctv_projects_funded_by_funders(), {
+      # When no funders are selected...
+      if (length(rctv_projects_funded_by_funders()) == 0) {
+        # Disable county input
+        shinyjs::disable(id = "county")
+        # Add popover to inform the user that at least one funder should be selected
+        bs4Dash::addPopover(
+          id = "county_div",
+          options = list(
+            content = "Please select at least one funder",
+            placement = "bottom",
+            trigger = "hover"
+          )
+        )
+      } else {
+        # When at least one funder is selected...
+        # Enable county input
+        shinyjs::enable(id = "county")
+        # Remove popover
+        bs4Dash::removePopover(id = "county_div")
+      }
+    })
+
+    ## Update county filter to show only counties with projects funded by selected funders
+    shiny::observeEvent(rctv_projects_funded_by_funders(), {
+
+      ### Get counties with projects funded by selected funders
+      county_choices <- dm$project_coc |>
+        dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
+        dplyr::pull(county) |>
+        unique()
+
+      ### Update filter
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "county",
+        choices = county_choices,
+        selected = county_choices
+      )
+    })
+
+    # Improve UX based on selected county
+    shiny::observeEvent(input$county, {
+      # When no counties are selected...
+      if (length(input$county) == 0) {
+        # Disable project input
+        shinyjs::disable(id = "project_filter_global")
+        # Add popover to inform the user that at least one county should be selected
+        bs4Dash::addPopover(
+          id = "project_filter_global_div",
+          options = list(
+            content = "Please select at least one county",
+            placement = "bottom",
+            trigger = "hover"
+          )
+        )
+      } else {
+        # When at least one county is selected...
+        # Enable project input
+        shinyjs::enable(id = "project_filter_global")
+        # Remove popover
+        bs4Dash::removePopover(id = "project_filter_global_div")
+      }
+    }, ignoreNULL = FALSE)
+
+    ## Update project filter (based on funder filter and county)
+    ### As county choices depend on funder filter, any changes in funder
+    ### selection will trigger an update of county choices. For that reason,
+    ### we don't need to observe both funder and county inputs.
+    shiny::observeEvent(input$county, {
+
+      # Projects located in selected counties
+      projects_located_in_counties <- dm$project_coc |>
+        dplyr::filter(county %in% input$county) |>
+        dplyr::pull(project_id) |>
+        unique()
+
+      # Projects funded by selected funders and located in selected counties
+      project_choices <- intersect(rctv_projects_funded_by_funders(), projects_located_in_counties)
+
       ### Order projects by name rather than id
       project_sorted <- dm$project |>
         dplyr::arrange(project_name) |>
@@ -174,7 +286,7 @@ mod_filters_server <- function(id, dm, rctv){
         # append coc code to project name
         dplyr::mutate(project_name = paste0(project_name, " (", coc_code, ")")) |>
         # Filter by Funder
-        dplyr::filter(project_id %in% projects_funded_by_funders)
+        dplyr::filter(project_id %in% project_choices)
 
       ### Update filter
       shinyWidgets::updatePickerInput(
@@ -190,7 +302,7 @@ mod_filters_server <- function(id, dm, rctv){
         )
       )
 
-    })
+    }, ignoreNULL = FALSE)
 
     ## Update active date filter
     shiny::updateDateRangeInput(

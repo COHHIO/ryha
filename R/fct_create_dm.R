@@ -108,9 +108,14 @@ create_dm <- function(env,
       table_name = "project_coc",
       column_names = c(
         "project_id",
-        "coc_code"
+        "coc_code",
+        "geocode"
       )
-    )
+    ) |>
+      # Add county column
+      dplyr::left_join(CountyCodes, by = "geocode") |>
+      # Assign counties without a match to "Unknown"
+      tidyr::replace_na(list(county = "Unknown"))
 
     # Read "funder" data into memory
     funder <- read_data_from_table(
