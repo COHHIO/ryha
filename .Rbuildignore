@@ -12,3 +12,6 @@ $run_dev.*
 ^LICENSE\.md$
 ^dev$
 ^postgres/
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
