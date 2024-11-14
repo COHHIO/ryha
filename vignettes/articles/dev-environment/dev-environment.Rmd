@@ -23,7 +23,7 @@ title: "Development Environment"
 
 Once you have installed the necessary requirements, cloned the repository locally and created the `.devcontainer/.env` file, open the repository in VSCode and click **Reopen in Container...**:
 
-![](man/figures/README/reopen-in-container.png)
+![](reopen-in-container.png)
 
 *NOTE*: Alternatively, you can select **Dev Containers: Reopen in Container** from the Command Palette (`F1`) to perform this action.
 
@@ -31,13 +31,13 @@ The Dev Container initialization may take a few minutes, as it needs to create d
 
 The message `Done. Press any key to close the terminal.` in `TERMINAL` tab indicates that the process completed successfully:
 
-![](man/figures/README/quickstart-finish.png)
+![](quickstart-finish.png)
 
 *NOTE*: If you encounter any errors, you can review the logs to troubleshoot or contact a team member for assistance.
 
 To launch an R Terminal, select **R: Create R terminal** from the Command Palette (`F1`). Alternatively, you can click the ``r intToUtf8(0x2304)`` icon in VS Code Panel and select **R Terminal**:
 
-![](man/figures/README/quickstart-open-r.png)
+![](quickstart-open-r.png)
 
 Remember to select the R Terminal in the right sidebar to open it.
 
@@ -48,7 +48,7 @@ To exit the Dev Container, click **Dev Container** (bottom left corner) and sele
 - **Reopen Folder Locally**: This option will close the current Dev Container session and reopen the project folder in your local environment, outside of the containerized setup. It's useful when you want to switch back to your local development environment while keeping the same project open.
 - **Close Remote Connection**: This will close the connection to the Dev Container and stop the container. The current workspace will be closed, and you'll be returned to the main VS Code window without any active workspace or connection.
 
-![](man/figures/README/exit-container.png)
+![](exit-container.png)
 
 ### Remove Dev Container
 
@@ -70,14 +70,14 @@ The following steps demonstrate how to remove the container, images and volumes 
 1. Go to Containers tab
 1. Locate the container associated with your Dev Container and click the corresponding trash icon to stop and delete it
 
-![](man/figures/README/delete-container.png)
+![](delete-container.png)
 
 #### Remove Images
 
 1. Go to Images tab
 1. Locate the images associated with your Dev Container and click the corresponding trash icons to remove them from your local Docker repository
 
-![](man/figures/README/delete-images.png)
+![](delete-images.png)
 
 #### Remove Volumes
 
@@ -86,7 +86,7 @@ The following steps demonstrate how to remove the container, images and volumes 
 1. Select the associated volumes
 1. Click **Delete**
 
-![](man/figures/README/delete-volumes.png)
+![](delete-volumes.png)
 
 ### Container Details
 
@@ -157,11 +157,11 @@ Once logged in, follow these steps to Register the Server:
 
 1. Go to `Object > Register > Server...`. Alternatively, you can right-click `Servers` as shown below:
 
-![](man/figures/pgadmin/01.png)
+![](pgadmin/01.png)
 
 2. In `General`, provide a `Name` for the server. For example: `dev-db`.
 
-![](man/figures/pgadmin/02.png)
+![](pgadmin/02.png)
 
 3. In `Connection`, set the following configuration:
 
@@ -173,8 +173,8 @@ Once logged in, follow these steps to Register the Server:
 
 Maintenance database, Username and Password were defined under `db`'s `environment` property in `.devcontainer/docker-compose.yml`.
 
-![](man/figures/pgadmin/03.png)
+![](pgadmin/03.png)
 
 4. Click `Save`. If the development database was already populated, you should be able to see the tables with data:
 
-![](man/figures/pgadmin/04.png)
+![](pgadmin/04.png)
