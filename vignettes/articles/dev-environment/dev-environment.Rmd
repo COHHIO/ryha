@@ -2,16 +2,16 @@
 title: "Development Environment"
 ---
 
-[.devcontainer](/.devcontainer) directory contains the necessary files to set up a [development container](https://code.visualstudio.com/docs/devcontainers/containers):
+[.devcontainer](https://github.com/COHHIO/ryha/tree/master/.devcontainer) directory contains the necessary files to set up a [development container](https://code.visualstudio.com/docs/devcontainers/containers):
 
-- [.env.example](/.devcontainer/.env.example) is an *example* file that shows how to set the `RENV_PATHS_CACHE_HOST` environment variable (required to configure `{renv}`'s cache) based upon Windows OS. **You need to create a file named** `.env` **in the same directory as** `.env.example` **and set** `RENV_PATHS_CACHE_HOST` **value to a path in your local machine based upon** [{renv}'s Cache location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
-- [devcontainer.json](/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects.
-- [docker-compose.yml](/.devcontainer/docker-compose.yml) sets up a development environment with three services:
+- [.env.example](https://github.com/COHHIO/ryha/tree/master/.devcontainer/.env.example) is an *example* file that shows how to set the `RENV_PATHS_CACHE_HOST` environment variable (required to configure `{renv}`'s cache) based upon Windows OS. **You need to create a file named** `.env` **in the same directory as** `.env.example` **and set** `RENV_PATHS_CACHE_HOST` **value to a path in your local machine based upon** [{renv}'s Cache location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
+- [devcontainer.json](https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects.
+- [docker-compose.yml](https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml) sets up a development environment with three services:
   - `app`: A custom-built application container that mounts local directories and [runs indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
   - `db`: A PostgreSQL database container with [persistent storage](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/) and [exposed ports for access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port). Check [db](#db) section for instructions on how to connect to, populate and launch the application connected to the database.
   - `pgadmin`: A [pgAdmin](https://www.pgadmin.org/) container for database management. Check [pgadmin](#pgadmin) section for instructions on how to configure the server.
-- [Dockerfile.Dev](/.devcontainer/Dockerfile.Dev) contains a set of instructions on how to build the Docker image to run the application in development. **Any new system requirement needed for additional R packages installed must be added to this file**.
-- [install_dev_packages.R](/.devcontainer/install_dev_packages.R) runs `renv::restore()` to restore the project's dependencies from the [renv.lock](/renv.lock) file. In addition, we use this script to install development packages (i.e. packages that are not needed to run the application but help during development, such as `devtools`). **Add or remove development packages from this script based on your preferences**. This script is run as a `postCreateCommand` in `devcontainer.json` to leverage `{renv}`'s cache.
+- [Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev) contains a set of instructions on how to build the Docker image to run the application in development. **Any new system requirement needed for additional R packages installed must be added to this file**.
+- [install_dev_packages.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_dev_packages.R) runs `renv::restore()` to restore the project's dependencies from the [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock) file. In addition, we use this script to install development packages (i.e. packages that are not needed to run the application but help during development, such as `devtools`). **Add or remove development packages from this script based on your preferences**. This script is run as a `postCreateCommand` in `devcontainer.json` to leverage `{renv}`'s cache.
 
 ### Requirements
 
@@ -94,7 +94,7 @@ The container uses [Docker Compose](https://docs.docker.com/compose/) to initial
 
 #### app
 
-**app** creates a container based on [.devcontainer/Dockerfile.Dev](/.devcontainer/Dockerfile.Dev). This file:
+**app** creates a container based on [.devcontainer/Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev). This file:
 
 - installs the R version used in this project
 - installs R packages' system requirements
@@ -111,7 +111,7 @@ To run the app in development mode (without installing the {ryha} R package), ru
 
 #### db
 
-**db** creates a postgreSQL database. You can find the credentials under `db`'s `environment` property in [.devcontainer/docker-compose.yml](/.devcontainer/docker-compose.yml).
+**db** creates a postgreSQL database. You can find the credentials under `db`'s `environment` property in [.devcontainer/docker-compose.yml](https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml).
 
 The `ports` property allows the database to be accessible in the host machine (i.e., outside of the Dev Container). With this property set, the connection string will use `host = "localhost"` for external access.
 
@@ -135,7 +135,7 @@ con <- DBI::dbConnect(
 
 ##### Populate
 
-Once the container is created, you can run [postgres/populate_dev_database/populate_dev_database.R](/postgres/populate_dev_database/populate_dev_database.R) to create and populate the corresponding tables. To run this script you need to:
+Once the container is created, you can run [postgres/populate_dev_database/populate_dev_database.R](https://github.com/COHHIO/ryha/tree/master/postgres/populate_dev_database/populate_dev_database.R) to create and populate the corresponding tables. To run this script you need to:
 
 - Store `dm.rds` in the directory `postgres/populate_dev_database/data`. `dm.rds` is a snapshot of the database in production. It needs to be created by someone with access to the production database. The process to generate this object is to read each table in the database into a list of dataframes where each element is named after the table name the data was read from.
 - Run `devtools::load_all(".")` to have access to the different functions in `ryha` that are used in the script (e.g. `send_to_db()`).
