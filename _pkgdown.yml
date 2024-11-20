@@ -1,6 +1,7 @@
 url: ~
 template:
   bootstrap: 5
+  bootswatch: cosmo
 reference:
   - title: "Chart Functions"
     contents:
