@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   articles/data/data: data/data.html
   articles/dev-environment/dev-environment: dev-environment/dev-environment.html
-last_built: 2024-11-20T18:00Z
+last_built: 2024-11-21T17:47Z
 urls:
   reference: https://cohhio.github.io/ryha/reference
   article: https://cohhio.github.io/ryha/articles
