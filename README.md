@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of `{ryha}` is to provide a web-based application for in-depth,
+The goal of **ryha** is to provide a web-based application for in-depth,
 user-friendly provision & consumption of Youth Homelessness data across
 the State of Ohio.
 
@@ -16,7 +16,7 @@ This Shiny application is built using the [{golem}
 framework](https://thinkr-open.github.io/golem/), which means that this
 app is actually an *R package*.
 
-You can install `{ryha}` with:
+You can install **ryha** with:
 
 ``` r
 # install.packages("devtools")
@@ -33,9 +33,8 @@ Before launching the app:
 
   - `prod`, which connects to the database in production
   - `dev`, which connects to an internal database that is set up using
-    dev containers. Check [Development
-    Environment](#development-environment) section to learn how to set
-    up this development environment.
+    dev containers. Check `vignette("dev-environment")` to learn how to
+    set up this development environment.
   - `file`, which reads a provided `.rds` data model object and does not
     require any database connection.
 

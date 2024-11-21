@@ -19,20 +19,22 @@ The following requirements must be satisfied in order for the .zip file to be su
 * The file must be *.zip* extension
 * The .zip file must contain (at least) the following .csv files
   * **Client.csv**
+  * **CurrentLivingSituation.csv**
   * **Disabilities.csv**
   * **EmploymentEducation.csv**
-  * **CurrentLivingSituation.csv**
-  * **HealthAndDV.csv**
-  * **IncomeBenefits.csv**
   * **Enrollment.csv**
-  * **Services.csv**
-  * **Project.csv**
-  * **Organization.csv**
   * **Exit.csv**
   * **Export.csv**
+  * **Funder.csv**
+  * **HealthAndDV.csv**
+  * **IncomeBenefits.csv**
+  * **Organization.csv**
+  * **Project.csv**
+  * **ProjectCoC.csv**
+  * **Services.csv**
 * The **Organization.csv** file must contain exactly one (1) organization
 * The column naming conventions must match the expectations of the *ryha* database
 
 ## Data Dictionary
 
-The data dictionary for each element across each file can be found [here](https://files.hudexchange.info/resources/documents/HMIS-Data-Dictionary-2024.pdf). This data dictionary was used to develop the package datasets, which are created in [data-raw](data-raw) and stored in [data](data).
+The data dictionary for each element across each file can be found [here](https://files.hudexchange.info/resources/documents/HMIS-Data-Dictionary-2024.pdf). This data dictionary was used to develop the package datasets, which are created in [data-raw](https://github.com/COHHIO/ryha/tree/master/data-raw) and stored in [data](https://github.com/COHHIO/ryha/tree/master/data).

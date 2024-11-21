@@ -2,7 +2,7 @@ Package: ryha
 Title: R Youth Homelessness Analyzer
 Version: 1.4.0
 Authors@R: c(
-    person("Michael", "Thomas", , "mthomas@ketchbrookanalytics.com", role = "aut"),
+    person("Ketchbrook", "Analytics", , "info@ketchbrookanalytics.com", role = "aut"),
     person("Trevin", "Flickinger", , "trevinflickinger@cohhio.org", role = "cre")
   )
 Description: Shiny web application for visualizing HMIS data in the State
