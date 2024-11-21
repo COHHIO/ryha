@@ -33,8 +33,9 @@ Before launching the app:
 
   - `prod`, which connects to the database in production
   - `dev`, which connects to an internal database that is set up using
-    dev containers. Check `vignette("dev-environment")` to learn how to
-    set up this development environment.
+    dev containers. Check [Development
+    Environment](https://cohhio.github.io/ryha/articles/dev-environment/dev-environment.html)
+    article to learn how to set it up.
   - `file`, which reads a provided `.rds` data model object and does not
     require any database connection.
 
