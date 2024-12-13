@@ -12,7 +12,6 @@ test_that("filter_most_recent_enrollment_per_group keeps the enrollment without 
     dplyr::pull(enrollment_id)
 
   expect_equal(kept_enrollment, 1001)
-
 })
 
 test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the most recent exit date", {
@@ -29,7 +28,6 @@ test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the
     dplyr::pull(enrollment_id)
 
   expect_equal(kept_enrollment, 1001)
-
 })
 
 test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the most recent entry date", {
@@ -46,7 +44,6 @@ test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the
     dplyr::pull(enrollment_id)
 
   expect_equal(kept_enrollment, 1001)
-
 })
 
 test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the most recent date_updated", {
@@ -63,7 +60,6 @@ test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the
     dplyr::pull(enrollment_id)
 
   expect_equal(kept_enrollment, 1001)
-
 })
 
 test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the greater enrollment_id", {
@@ -80,5 +76,4 @@ test_that("filter_most_recent_enrollment_per_group keeps the enrollment with the
     dplyr::pull(enrollment_id)
 
   expect_equal(kept_enrollment, 1001)
-
 })
