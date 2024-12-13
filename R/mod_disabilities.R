@@ -267,26 +267,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     disabilities_data_recent <- shiny::reactive({
 
       disabilities_data_filtered() |>
-        # Remove duplicates from table
-        dplyr::distinct() |>
-        # Unique key to identify a youth
-        dplyr::group_by(personal_id, organization_id) |>
-        # Keep the values that correspond to the last date_updated
-        dplyr::filter(date_updated == max(date_updated)) |>
-        # Required ungroup step
-        dplyr::ungroup() |>
-        # Convert data to have one row per youth
         tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
-        # Sometimes, "Project start" and "Project exit" have the same date_updated value
-        # For that reason, we can still find duplicated youth
-        # In this scenario, we will keep "Project exit" row. The trick is to arrange the rows
-        # and keep the first row per client (as "exit" will show before "start" in the sorting)
-        dplyr::arrange(organization_id, personal_id, data_collection_stage) |>
-        dplyr::group_by(personal_id, organization_id) |>
-        # Keep first row per client
-        dplyr::filter(dplyr::row_number() == 1) |>
-        dplyr::ungroup()
-
+        filter_most_recent_data_collection_stage_per_enrollment()
     })
 
     # TODO // Implement these "improved" counts across the first infoBox for

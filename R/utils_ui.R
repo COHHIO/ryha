@@ -71,3 +71,27 @@ link_section <- function(section, label = "HMIS Data Standards Manual") {
     label
   )
 }
+
+filter_most_recent_data_collection_stage_per_enrollment <- function(data) {
+  data |>
+    dplyr::mutate(
+      # Convert data_collection_stage to ordered factor
+      data_collection_stage = factor(
+        x = data_collection_stage,
+        levels = c("Project start", "Project update", "Project annual assessment", "Project exit"),
+        labels = c("Project start", "Project not start nor exit", "Project not start nor exit", "Project exit"),
+        ordered = TRUE
+      )
+    ) |> 
+    # Group by enrollment
+    dplyr::group_by(enrollment_id, personal_id, organization_id) |>
+    # Keep rows that correspond to the most recent data_collection_stage
+    dplyr::filter(data_collection_stage == max(data_collection_stage)) |> 
+    # Keep rows that have the most recent date_updated
+    # (To handle multiple "Project not start nor exit" with different date_updated as most recent data_collection_stage)
+    dplyr::filter(date_updated == max(date_updated)) |>
+    # Handle multiple "Project not start nor exit" with the same date_updated as most recent data_collection_stage
+    dplyr::slice(1) |>
+    # Ungroup data
+    dplyr::ungroup() 
+}
