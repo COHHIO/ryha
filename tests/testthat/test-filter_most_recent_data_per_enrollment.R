@@ -5,7 +5,7 @@ test_that("filter works when there is only a 'Project start'", {
   ) |>
   dplyr::mutate(dplyr::across(date_updated, as.Date))
 
-  kept_data_collection_stage <- filter_most_recent_data_collection_stage_per_enrollment(mock_data) |> 
+  kept_data_collection_stage <- filter_most_recent_data_per_enrollment(mock_data) |> 
     dplyr::pull(test_row)
 
   expect_equal(kept_data_collection_stage, 1)
@@ -19,7 +19,7 @@ test_that("filter works when 'Project start' has date_updated greater than 'Proj
   ) |>
   dplyr::mutate(dplyr::across(date_updated, as.Date))
 
-  kept_data_collection_stage <- filter_most_recent_data_collection_stage_per_enrollment(mock_data) |> 
+  kept_data_collection_stage <- filter_most_recent_data_per_enrollment(mock_data) |> 
     dplyr::pull(test_row)
 
   expect_equal(kept_data_collection_stage, 2)
@@ -34,7 +34,7 @@ test_that("filter works when 'Project exit' has the lowest date_updated", {
   ) |>
   dplyr::mutate(dplyr::across(date_updated, as.Date))
 
-  kept_data_collection_stage <- filter_most_recent_data_collection_stage_per_enrollment(mock_data) |> 
+  kept_data_collection_stage <- filter_most_recent_data_per_enrollment(mock_data) |> 
     dplyr::pull(test_row)
 
   expect_equal(kept_data_collection_stage, 3)
@@ -51,7 +51,7 @@ test_that("filter works with multiple enrollments", {
   ) |>
   dplyr::mutate(dplyr::across(date_updated, as.Date))
 
-  kept_data_collection_stage <- filter_most_recent_data_collection_stage_per_enrollment(mock_data) |> 
+  kept_data_collection_stage <- filter_most_recent_data_per_enrollment(mock_data) |> 
     dplyr::pull(test_row)
 
   expect_equal(kept_data_collection_stage, c(3, 5))
@@ -66,7 +66,7 @@ test_that("filter works with multiple 'Project not start nor exit' that have the
   ) |>
   dplyr::mutate(dplyr::across(date_updated, as.Date))
 
-  kept_data_collection_stage <- filter_most_recent_data_collection_stage_per_enrollment(mock_data) |> 
+  kept_data_collection_stage <- filter_most_recent_data_per_enrollment(mock_data) |> 
     dplyr::pull(test_row)
 
   expect_equal(kept_data_collection_stage, 2)

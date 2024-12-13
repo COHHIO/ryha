@@ -268,7 +268,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
       disabilities_data_filtered() |>
         tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
-        filter_most_recent_data_collection_stage_per_enrollment()
+        filter_most_recent_data_per_enrollment()
     })
 
     # TODO // Implement these "improved" counts across the first infoBox for

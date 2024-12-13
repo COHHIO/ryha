@@ -72,7 +72,7 @@ link_section <- function(section, label = "HMIS Data Standards Manual") {
   )
 }
 
-filter_most_recent_data_collection_stage_per_enrollment <- function(data) {
+filter_most_recent_data_per_enrollment <- function(data) {
   data |>
     dplyr::mutate(
       # Convert data_collection_stage to ordered factor
