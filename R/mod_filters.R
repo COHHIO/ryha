@@ -176,9 +176,7 @@ mod_filters_server <- function(id, dm, rctv){
     ns <- session$ns
 
     # Update the values in the filters given the {dm} data
-
     ## Update funder filter
-
     ### Get sorted list of unique funders
     funder_choices <- dm$funder$funder |> unique() |> sort()
 
@@ -224,7 +222,6 @@ mod_filters_server <- function(id, dm, rctv){
 
     ## Update county filter to show only counties with projects funded by selected funders
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
-
       ### Get counties with projects funded by selected funders
       county_choices <- dm$project_coc |>
         dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
@@ -269,7 +266,6 @@ mod_filters_server <- function(id, dm, rctv){
     ### selection will trigger an update of county choices. For that reason,
     ### we don't need to observe both funder and county inputs.
     shiny::observeEvent(input$county, {
-
       # Projects located in selected counties
       projects_located_in_counties <- dm$project_coc |>
         dplyr::filter(county %in% input$county) |>
@@ -350,28 +346,20 @@ mod_filters_server <- function(id, dm, rctv){
 
     # Disable the "dedup_status_global" check-box if only 1 program is selected
     shiny::observeEvent(input$project_filter_global, {
-
       if (length(input$project_filter_global) < 2L) {
-
         shiny::updateCheckboxInput(
           session = session,
           inputId = "dedup_status_global",
           value = FALSE
         )
-
         shinyjs::disable(id = "dedup_status_global")
-
       } else {
-
         shinyjs::enable(id = "dedup_status_global")
-
       }
-
     })
 
     # Create filtered {dm} data
     clients_filtered <- shiny::eventReactive(input$apply_filters, {
-
       # Filter dm$client by age
       client <- dm$client |>
         dplyr::filter(
@@ -454,7 +442,6 @@ mod_filters_server <- function(id, dm, rctv){
     waiter::waiter_hide()
 
     return(clients_filtered)
-
   })
 }
 
