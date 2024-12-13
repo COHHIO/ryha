@@ -1,4 +1,4 @@
-filter_one_enrollment_per_group <- function(data, grouping_vars) {
+filter_most_recent_enrollment_per_group <- function(data, grouping_vars) {
     data |> 
       # Group data
       dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) |>

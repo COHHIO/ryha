@@ -398,7 +398,7 @@ mod_filters_server <- function(id, dm, rctv){
         # Remove individuals who exited *before* the first active date
         dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1]) |>
         # Keep one enrollment per person-organization
-        filter_one_enrollment_per_group(grouping_vars = c("organization_id", "personal_id"))
+        filter_most_recent_enrollment_per_group(grouping_vars = c("organization_id", "personal_id"))
 
       # Filter head of household accordingly
       if (input$heads_of_household_global == TRUE) {
@@ -423,7 +423,7 @@ mod_filters_server <- function(id, dm, rctv){
           # Remove youth with "Full SSN reported" that have missing SSN
           dplyr::filter(!is.na(ssn)) |>
           # Keep one enrollment per ssn
-          filter_one_enrollment_per_group(grouping_vars = "ssn")
+          filter_most_recent_enrollment_per_group(grouping_vars = "ssn")
       }
 
       # Update the reactiveValues list of selected projects
