@@ -254,13 +254,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Apply the filters to the disabilities data
     disabilities_data_filtered <- shiny::reactive({
-
       disabilities_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+        dplyr::semi_join(clients_filtered(), by = c("personal_id", "organization_id", "enrollment_id"))
     })
 
     # Each enrollment can have more than one data collection stage.
