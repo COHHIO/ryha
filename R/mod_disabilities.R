@@ -263,9 +263,10 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    # Subset most recent data for each youth
-    disabilities_data_recent <- shiny::reactive({
-
+    # Each enrollment can have more than one data collection stage.
+    # Some visuals require one value per enrollment.
+    # The following reactive filters the most recent data per enrollment.
+    most_recent_data_per_enrollment <- shiny::reactive({
       disabilities_data_filtered() |>
         tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
         filter_most_recent_data_per_enrollment()
@@ -290,7 +291,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Total number of youth with disabilities or substance use
     n_youth_with_disabilities_or_substance_use <- shiny::reactive({
 
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         dplyr::filter(
           rowSums(
             dplyr::across(
@@ -338,12 +339,12 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
       shiny::validate(
         shiny::need(
-          expr = nrow(disabilities_data_recent()) >= 1L,
+          expr = nrow(most_recent_data_per_enrollment()) >= 1L,
           message = "No data to display"
         )
       )
 
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         # Remove Substance Use Disorder column
         dplyr::select(-`Substance Use Disorder`) |>
         # Each disability had its own column, we need data to be in long format
@@ -404,12 +405,12 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
       shiny::validate(
         shiny::need(
-          expr = nrow(disabilities_data_recent()) >= 1L,
+          expr = nrow(most_recent_data_per_enrollment()) >= 1L,
           message = "No data to display"
         )
       )
 
-      use_disorders_data <- disabilities_data_recent() |>
+      use_disorders_data <- most_recent_data_per_enrollment() |>
         dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4])
 
       shiny::validate(
@@ -763,7 +764,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     output$missingness_stats_tbl1 <- reactable::renderReactable(
 
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         dplyr::mutate(
           `Answers Missing` = rowSums(
             dplyr::across(
@@ -786,7 +787,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     missingness_stats2 <- shiny::reactive({
 
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         tidyr::pivot_longer(
           cols = c(
             `Physical Disability`,
