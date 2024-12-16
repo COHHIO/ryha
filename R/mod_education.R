@@ -200,11 +200,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
     # Apply the filters to the education data
     education_data_filtered <- shiny::reactive({
 
-      education_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        ) |>
         # Bucket Last Grade Completed categories
         dplyr::mutate(
           last_grade_completed = dplyr::case_when(
@@ -239,6 +234,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
           )
         )
 
+      filter_data(education_data, clients_filtered())
     })
 
     # Total number of Youth in program(s) that exist in the `education.csv`
@@ -271,8 +267,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     last_grade_completed_pie_chart_data <- shiny::reactive({
-      validate_data(education_data_filtered())
-
       out <- education_data_filtered() |>
         dplyr::filter(
           last_grade_completed != "Unknown",
@@ -402,8 +396,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     school_status_pie_chart_data <- shiny::reactive({
 
-      validate_data(education_data_filtered())
-
       out <- education_data_filtered() |>
         dplyr::filter(
           !school_status %in% c(
@@ -454,8 +446,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in line chart
     school_status_sankey_chart_data <- shiny::reactive({
-
-      validate_data(education_data_filtered())
 
       ids_exited <- education_data_filtered() |>
         dplyr::filter(

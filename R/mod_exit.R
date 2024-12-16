@@ -152,15 +152,9 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
     })
 
     # Apply the filters to the services data
-    exit_data_filtered <- shiny::reactive(
-
-      exit_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
-    )
+    exit_data_filtered <- shiny::reactive({
+      filter_data(exit_data, clients_filtered())
+    })
 
     # Total number of Youth in program(s) that exist in the `Exit.csv` file
     # (after filters applied)
@@ -185,8 +179,6 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     completion_pie_chart_data <- shiny::reactive({
-
-      validate_data(exit_data_filtered())
 
       out <- exit_data_filtered() |>
         dplyr::filter(!is.na(project_completion_status)) |>
@@ -229,8 +221,6 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     exit_heatmap_data <- shiny::reactive({
-
-      validate_data(exit_data_filtered())
 
       out <- exit_data_filtered() |>
         dplyr::filter(

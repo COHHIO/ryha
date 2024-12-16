@@ -96,6 +96,24 @@ filter_most_recent_data_per_enrollment <- function(data) {
     dplyr::ungroup() 
 }
 
+filter_data <- function(data, clients_filtered, at = "enrollment") {
+  by_cols <- switch(
+    at,
+    enrollment = c("personal_id", "organization_id", "enrollment_id"),
+    youth = c("personal_id", "organization_id")
+  )
+
+  # Filter data
+  filtered_data <- data |> 
+    dplyr::semi_join(clients_filtered, by_cols)
+  
+  # Validate data
+  validate_data(filtered_data)
+
+  # Return data
+  filtered_data
+}
+
 validate_data <- function(data, message = "No data to display") {
   shiny::validate(
     shiny::need(

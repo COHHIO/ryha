@@ -139,13 +139,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
     # Apply the filters to the trafficking data
     health_data_filtered <- shiny::reactive(
-
-      health_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(health_data, clients_filtered())
     )
 
     # Apply the filters to the trafficking data
@@ -207,8 +201,6 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
     # Create reactive data frame to data to be displayed in pie chart
     pregnancy_pie_chart_data <- shiny::reactive({
-
-      validate_data(health_data_filtered())
 
       out <- health_data_filtered() |>
         dplyr::filter(

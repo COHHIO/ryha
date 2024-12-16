@@ -255,8 +255,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Filter disabilities data
     # disabilities_data_filtered is in long format (multiple rows per data collection stage)
     disabilities_data_filtered <- shiny::reactive({
-      disabilities_data |>
-        dplyr::semi_join(clients_filtered(), by = c("personal_id", "organization_id", "enrollment_id"))
+      filter_data(disabilities_data, clients_filtered())
     })
 
     # most_recent_data_per_enrollment is in wide format (one row per youth)
@@ -331,8 +330,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in chart
     disabilities_chart_data <- shiny::reactive({
-      validate_data(most_recent_data_per_enrollment())
-
       most_recent_data_per_enrollment() |>
         # Remove Substance Use Disorder column
         dplyr::select(-`Substance Use Disorder`) |>
@@ -391,8 +388,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     substance_pie_chart_data <- shiny::reactive({
-
-      validate_data(most_recent_data_per_enrollment())
 
       use_disorders_data <- most_recent_data_per_enrollment() |>
         dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4])

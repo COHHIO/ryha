@@ -240,13 +240,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
     # Apply the filters to the trafficking data
     trafficking_data_filtered <- shiny::reactive(
-
-      trafficking_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(trafficking_data, clients_filtered())
     )
 
     # Total number of Youth in program(s) that exist in the `education.csv`
@@ -298,8 +292,6 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     exchange_sex_pie_chart_data <- shiny::reactive({
-
-      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -373,8 +365,6 @@ validate_data(out)
     # Create reactive data frame to data to be displayed in pie chart
     count_sex_pie_chart_data <- shiny::reactive({
 
-      validate_data(trafficking_data_filtered())
-
       out <- trafficking_data_filtered() |>
         dplyr::filter(
           !count_of_exchange_for_sex %in% c(
@@ -426,8 +416,6 @@ validate_data(out)
     # Create reactive data frame to data to be displayed in pie chart
     asked_sex_pie_chart_data <- shiny::reactive({
 
-      validate_data(trafficking_data_filtered())
-
       out <- trafficking_data_filtered() |>
         dplyr::filter(
           asked_or_forced_to_exchange_for_sex %in% c("Yes", "No")
@@ -475,8 +463,6 @@ validate_data(out)
 
     # Create reactive data frame to data to be displayed in pie chart
     violence_labor_pie_chart_data <- shiny::reactive({
-
-      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -550,8 +536,6 @@ validate_data(out)
     # Create reactive data frame to data to be displayed in pie chart
     promise_labor_pie_chart_data <- shiny::reactive({
 
-      validate_data(trafficking_data_filtered())
-
       out <- trafficking_data_filtered() |>
         dplyr::filter(
           workplace_promise_difference %in% c("Yes", "No")
@@ -597,8 +581,6 @@ validate_data(out)
 
     # Create reactive data frame to data to be displayed in pie chart
     coerced_labor_pie_chart_data <- shiny::reactive({
-
-      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(

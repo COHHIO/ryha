@@ -254,13 +254,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     # Apply the filters to the domestic_violence data
     domestic_violence_data_filtered <- shiny::reactive({
-
-      domestic_violence_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(domestic_violence_data, clients_filtered())
     })
 
     # Total number of Youth in program(s) that exist in the `domestic_violence.csv`
@@ -288,8 +282,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     # Create reactive data frame to data to be displayed in pie chart
     victim_pie_chart_data <- shiny::reactive({
-
-      validate_data(domestic_violence_data_filtered())
 
       out <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -396,8 +388,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in pie chart
     when_occurred_pie_chart_data <- shiny::reactive({
 
-      validate_data(domestic_violence_data_filtered())
-
       out <- domestic_violence_data_filtered() |>
         dplyr::filter(
           !when_occurred %in% c(
@@ -446,8 +436,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     # Create reactive data frame to data to be displayed in line chart
     when_occurred_sankey_chart_data <- shiny::reactive({
-
-      validate_data(domestic_violence_data_filtered())
 
       ids_exited <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -524,8 +512,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in pie chart
     currently_fleeing_pie_chart_data <- shiny::reactive({
 
-      validate_data(domestic_violence_data_filtered())
-
       out <- domestic_violence_data_filtered() |>
         dplyr::filter(
           !currently_fleeing %in% c(
@@ -574,8 +560,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     # Create reactive data frame to data to be displayed in line chart
     currently_fleeing_sankey_chart_data <- shiny::reactive({
-
-      validate_data(domestic_violence_data_filtered())
 
       ids_exited <- domestic_violence_data_filtered() |>
         dplyr::filter(

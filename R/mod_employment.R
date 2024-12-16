@@ -152,13 +152,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     # Apply the filters to the employment data
     employment_data_filtered <- shiny::reactive({
-
-      employment_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(employment_data, clients_filtered())
     })
 
     # Total number of Youth in program(s) that exist in the `employment.csv`
@@ -184,8 +178,6 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     employed_pie_chart_data <- shiny::reactive({
-
-      validate_data(employment_data_filtered())
 
       out <- employment_data_filtered() |>
         dplyr::filter(employed %in% c("Yes", "No")) |>
@@ -228,8 +220,6 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     employment_type_pie_chart_data <- shiny::reactive({
-
-      validate_data(employment_data_filtered())
 
       out <- employment_data_filtered() |>
         dplyr::filter(
@@ -275,8 +265,6 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     not_employed_reason_pie_chart_data <- shiny::reactive({
 
-      validate_data(employment_data_filtered())
-
       out <- employment_data_filtered() |>
         dplyr::filter(
           not_employed_reason != "Data not collected"
@@ -320,8 +308,6 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in line chart
     employed_sankey_chart_data <- shiny::reactive({
-
-      validate_data(employment_data_filtered())
 
       ids_exited <- employment_data_filtered() |>
         dplyr::filter(

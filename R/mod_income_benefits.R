@@ -347,24 +347,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
     ## Apply the filters to the income data ----
     income_data_filtered <- shiny::reactive({
-
-      income_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(income_data, clients_filtered())
     })
 
     ## Apply the filters to the benefits data ----
     benefits_data_filtered <- shiny::reactive({
-
-      benefits_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(benefits_data, clients_filtered())
     })
 
     ## Filtered number of youth with income data ----
@@ -412,8 +400,6 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     # Create reactive data frame to data to be displayed in pie chart
     income_pie_chart_data <- shiny::reactive({
 
-      validate_data(income_data_filtered())
-
       out <- income_data_filtered() |>
         dplyr::filter(
           income_from_any_source %in% c("Yes", "No")
@@ -459,8 +445,6 @@ validate_data(out)
 
     # Create reactive data frame to data to be displayed in bar chart
     income_bar_chart_data <- shiny::reactive({
-
-      validate_data(income_data_filtered())
 
       out <- income_data_filtered() |>
         dplyr::select(
@@ -547,8 +531,6 @@ validate_data(out)
     # Create reactive data frame to data to be displayed in pie chart
     benefits_pie_chart_data <- shiny::reactive({
 
-      validate_data(benefits_data_filtered())
-
       out <- benefits_data_filtered() |>
         dplyr::filter(
           benefits_from_any_source %in% c("Yes", "No")
@@ -596,8 +578,6 @@ validate_data(out)
     # Create reactive data frame to data to be displayed in pie chart
     insurance_pie_chart_data <- shiny::reactive({
 
-      validate_data(benefits_data_filtered())
-
       out <- benefits_data_filtered() |>
         dplyr::filter(
           insurance_from_any_source %in% c("Yes", "No")
@@ -644,8 +624,6 @@ validate_data(out)
 
     ### Get data for income source pie chart ----
     income_source_pie_chart_data <- shiny::reactive({
-
-validate_data(income_data_filtered())
 
       out <- income_data_filtered() |>
         dplyr::select(
@@ -726,8 +704,6 @@ validate_data(out)
     ### Get data for benefits source pie chart ----
     benefits_source_pie_chart_data <- shiny::reactive({
 
-      validate_data(benefits_data_filtered())
-
       out <- benefits_data_filtered() |>
         dplyr::select(
           organization_id,
@@ -787,8 +763,6 @@ validate_data(out)
 
     ### Get data for insurance source pie chart ----
     insurance_source_pie_chart_data <- shiny::reactive({
-
-      validate_data(benefits_data_filtered())
 
       out <- benefits_data_filtered() |>
         dplyr::select(
@@ -861,8 +835,6 @@ validate_data(out)
     # Create reactive data frame to data to be displayed in line chart
     benefits_sankey_chart_data <- shiny::reactive({
 
-      validate_data(benefits_data_filtered())
-
       ids_exited <- benefits_data_filtered() |>
         dplyr::filter(
           benefits_from_any_source %in% c("Yes", "No")
@@ -900,8 +872,6 @@ validate_data(out)
     ### Get data for insurance sankey chart ----
     # Create reactive data frame to data to be displayed in line chart
     insurance_sankey_chart_data <- shiny::reactive({
-
-      validate_data(benefits_data_filtered())
 
       ids_exited <- benefits_data_filtered() |>
         dplyr::filter(

@@ -190,19 +190,11 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
 
     # Apply the filters to the gender data
     gender_data_filtered <- shiny::reactive({
-
-      gender_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id")
-        )
-
+      filter_data(gender_data, clients_filtered(), at = "youth")
     })
 
     # Create reactive data frame to data to be displayed in pie chart
     gender_pie_chart_data <- shiny::reactive({
-
-      validate_data(gender_data_filtered())
 
       gender_data_filtered() |>
         dplyr::count(gender) |>
@@ -269,21 +261,13 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
 
     # Apply the filters to the client data
     client_data_filtered <- shiny::reactive({
-
-      client_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id")
-        )
-
+      filter_data(client_data, clients_filtered(), at = "youth")
     })
 
     # Veteran ----
 
     # Create reactive data frame to data to be displayed in pie chart
     veteran_pie_chart_data <- shiny::reactive({
-
-      validate_data(client_data_filtered())
 
       client_data_filtered() |>
         dplyr::mutate(veteran_status = ifelse(
@@ -311,8 +295,6 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Create reactive data frame to data to be displayed in pie chart
     age_bar_chart_data <- shiny::reactive({
 
-      validate_data(client_data_filtered())
-
       client_data_filtered() |>
         dplyr::filter(!is.na(age)) |>
         dplyr::count(age) |>
@@ -337,19 +319,11 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
 
     # Apply the filters to the ethnicity data
     ethnicity_data_filtered <- shiny::reactive({
-
-      ethnicity_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id")
-        )
-
+      filter_data(ethnicity_data, clients_filtered(), at = "youth")
     })
 
     # Create reactive data frame to data to be displayed in pie chart
     ethnicity_bar_chart_data <- shiny::reactive({
-
-      validate_data(ethnicity_data_filtered())
 
       ethnicity_data_filtered() |>
         dplyr::filter(!is.na(ethnicity)) |>

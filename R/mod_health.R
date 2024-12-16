@@ -310,24 +310,12 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     # Apply the filters to the health data
     health_data_filtered <- shiny::reactive({
-
-      health_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(health_data, clients_filtered())
     })
 
     # Apply the filters to the counseling data
     counseling_data_filtered <- shiny::reactive({
-
-      counseling_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(counseling_data, clients_filtered())
     })
 
     # Total number of Youth in with health data available
@@ -375,8 +363,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     # Create reactive data frame to data to be displayed in pie chart
     general_pie_chart_data <- shiny::reactive({
-
-      validate_data(health_data_filtered())
 
       out <- health_data_filtered() |>
         dplyr::filter(
@@ -426,8 +412,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     # Create reactive data frame to data to be displayed in sankey chart
     general_sankey_chart_data <- shiny::reactive({
-
-      validate_data(health_data_filtered())
 
       ids_exited <- health_data_filtered() |>
         dplyr::filter(
@@ -518,8 +502,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in pie chart
     dental_pie_chart_data <- shiny::reactive({
 
-      validate_data(health_data_filtered())
-
       out <- health_data_filtered() |>
         dplyr::filter(
           !dental_health_status %in% c(
@@ -568,8 +550,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     # Create reactive data frame to data to be displayed in sankey chart
     dental_sankey_chart_data <- shiny::reactive({
-
-      validate_data(health_data_filtered())
 
       ids_exited <- health_data_filtered() |>
         dplyr::filter(
@@ -660,8 +640,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in pie chart
     mental_pie_chart_data <- shiny::reactive({
 
-      validate_data(health_data_filtered())
-
       out <- health_data_filtered() |>
         dplyr::filter(
           !mental_health_status %in% c(
@@ -710,8 +688,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     # Create reactive data frame to data to be displayed in sankey chart
     mental_sankey_chart_data <- shiny::reactive({
-
-      validate_data(health_data_filtered())
 
       ids_exited <- health_data_filtered() |>
         dplyr::filter(
@@ -801,8 +777,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     # Create reactive data frame to data to be displayed in pie chart
     counseling_pie_chart_data <- shiny::reactive({
-
-      validate_data(counseling_data_filtered())
 
       # Keep the most recently updated data for each individual
       out <- counseling_data_filtered() |>
