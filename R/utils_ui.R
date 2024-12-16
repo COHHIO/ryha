@@ -95,3 +95,12 @@ filter_most_recent_data_per_enrollment <- function(data) {
     # Ungroup data
     dplyr::ungroup() 
 }
+
+validate_data <- function(data, message = "No data to display") {
+  shiny::validate(
+    shiny::need(
+      expr = nrow(data) >= 1L,
+      message = message
+    )
+  )
+}

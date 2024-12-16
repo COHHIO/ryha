@@ -208,12 +208,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
     # Create reactive data frame to data to be displayed in pie chart
     pregnancy_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(health_data_filtered())
 
       out <- health_data_filtered() |>
         dplyr::filter(
@@ -237,12 +232,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(pregnancy_status) |>

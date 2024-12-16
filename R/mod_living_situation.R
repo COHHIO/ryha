@@ -250,12 +250,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
     # Create reactive data frame to data to be displayed in pie chart
     living_situation_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(living_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(living_data_filtered())
 
       out <- living_data_filtered() |>
         dplyr::arrange(
@@ -286,12 +281,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
         dplyr::filter(category != "Not enough data")
 
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(category) |>
@@ -312,12 +302,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
 
     destination_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(living_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(living_data_filtered())
 
       out <- living_data_filtered() |>
         dplyr::arrange(
@@ -388,12 +373,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
         ) |>
         dplyr::filter(category != "Not enough data")
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(category, wt = n) |>
@@ -441,12 +421,7 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
         dplyr::count(living_situation, destination) |>
         dplyr::arrange(living_situation, destination)
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(sankey_data) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(sankey_data)
 
       sankey_data |>
         dplyr::mutate(

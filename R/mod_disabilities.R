@@ -331,13 +331,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in chart
     disabilities_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(most_recent_data_per_enrollment()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(most_recent_data_per_enrollment())
 
       most_recent_data_per_enrollment() |>
         # Remove Substance Use Disorder column
@@ -398,22 +392,12 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     substance_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(most_recent_data_per_enrollment()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(most_recent_data_per_enrollment())
 
       use_disorders_data <- most_recent_data_per_enrollment() |>
         dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4])
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(use_disorders_data) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(use_disorders_data)
 
       use_disorders_data |>
         dplyr::count(`Substance Use Disorder`) |>
@@ -440,12 +424,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     physical_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(disabilities_data_filtered())
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
@@ -454,12 +433,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       disabilities_data_filtered() |>
         dplyr::filter(
@@ -491,12 +465,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     developmental_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(disabilities_data_filtered())
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
@@ -505,12 +474,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       disabilities_data_filtered() |>
         dplyr::filter(
@@ -542,12 +506,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     chronic_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(disabilities_data_filtered())
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
@@ -556,12 +515,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       disabilities_data_filtered() |>
         dplyr::filter(
@@ -593,12 +547,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     hiv_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(disabilities_data_filtered())
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
@@ -607,12 +556,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       disabilities_data_filtered() |>
         dplyr::filter(
@@ -644,12 +588,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     mental_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(disabilities_data_filtered())
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
@@ -658,12 +597,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       disabilities_data_filtered() |>
         dplyr::filter(
@@ -695,12 +629,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     substance_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(disabilities_data_filtered())
 
       ids_exited <- disabilities_data_filtered() |>
         dplyr::filter(
@@ -709,12 +638,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       disabilities_data_filtered() |>
         dplyr::filter(

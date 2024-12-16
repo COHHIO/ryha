@@ -202,12 +202,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Create reactive data frame to data to be displayed in pie chart
     gender_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(gender_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(gender_data_filtered())
 
       gender_data_filtered() |>
         dplyr::count(gender) |>
@@ -249,12 +244,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Create reactive data frame to data to be displayed in pie chart
     sexual_orientation_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(enrollment_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(enrollment_data_filtered())
 
       enrollment_data_filtered() |>
         dplyr::mutate(sexual_orientation = ifelse(
@@ -293,12 +283,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Create reactive data frame to data to be displayed in pie chart
     veteran_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(client_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(client_data_filtered())
 
       client_data_filtered() |>
         dplyr::mutate(veteran_status = ifelse(
@@ -326,12 +311,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Create reactive data frame to data to be displayed in pie chart
     age_bar_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(client_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(client_data_filtered())
 
       client_data_filtered() |>
         dplyr::filter(!is.na(age)) |>
@@ -369,12 +349,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Create reactive data frame to data to be displayed in pie chart
     ethnicity_bar_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ethnicity_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ethnicity_data_filtered())
 
       ethnicity_data_filtered() |>
         dplyr::filter(!is.na(ethnicity)) |>
@@ -403,12 +378,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
       out <- enrollment_data_filtered() |>
         dplyr::filter(!is.na(former_ward_child_welfare))
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(former_ward_child_welfare) |>
@@ -436,12 +406,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
       out <- enrollment_data_filtered() |>
         dplyr::filter(!is.na(former_ward_juvenile_justice))
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(former_ward_juvenile_justice) |>

@@ -299,12 +299,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     exchange_sex_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -328,12 +323,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(exchange_for_sex) |>
@@ -383,12 +373,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     count_sex_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -417,12 +402,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(count_of_exchange_for_sex) |>
@@ -446,12 +426,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     asked_sex_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -475,12 +450,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(asked_or_forced_to_exchange_for_sex) |>
@@ -506,12 +476,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     violence_labor_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -535,12 +500,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(work_place_violence_threats) |>
@@ -590,12 +550,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     promise_labor_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -619,12 +574,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(workplace_promise_difference) |>
@@ -648,12 +598,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     coerced_labor_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(trafficking_data_filtered())
 
       out <- trafficking_data_filtered() |>
         dplyr::filter(
@@ -677,12 +622,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(coerced_to_continue_work) |>

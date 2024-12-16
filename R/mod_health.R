@@ -376,12 +376,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in pie chart
     general_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(health_data_filtered())
 
       out <- health_data_filtered() |>
         dplyr::filter(
@@ -410,12 +405,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(general_health_status) |>
@@ -437,12 +427,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in sankey chart
     general_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(health_data_filtered())
 
       ids_exited <- health_data_filtered() |>
         dplyr::filter(
@@ -455,12 +440,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       health_data_filtered() |>
         dplyr::filter(
@@ -538,12 +518,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in pie chart
     dental_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(health_data_filtered())
 
       out <- health_data_filtered() |>
         dplyr::filter(
@@ -572,12 +547,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(dental_health_status) |>
@@ -599,12 +569,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in sankey chart
     dental_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(health_data_filtered())
 
       ids_exited <- health_data_filtered() |>
         dplyr::filter(
@@ -617,12 +582,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       health_data_filtered() |>
         dplyr::filter(
@@ -700,12 +660,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in pie chart
     mental_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(health_data_filtered())
 
       out <- health_data_filtered() |>
         dplyr::filter(
@@ -734,12 +689,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(mental_health_status) |>
@@ -761,12 +711,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in sankey chart
     mental_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(health_data_filtered())
 
       ids_exited <- health_data_filtered() |>
         dplyr::filter(
@@ -779,12 +724,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       health_data_filtered() |>
         dplyr::filter(
@@ -862,12 +802,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     # Create reactive data frame to data to be displayed in pie chart
     counseling_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(counseling_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(counseling_data_filtered())
 
       # Keep the most recently updated data for each individual
       out <- counseling_data_filtered() |>
@@ -892,12 +827,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(counseling_received) |>

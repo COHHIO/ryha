@@ -412,12 +412,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     # Create reactive data frame to data to be displayed in pie chart
     income_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(income_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(income_data_filtered())
 
       out <- income_data_filtered() |>
         dplyr::filter(
@@ -441,12 +436,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(income_from_any_source) |>
@@ -470,12 +460,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     # Create reactive data frame to data to be displayed in bar chart
     income_bar_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(income_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(income_data_filtered())
 
       out <- income_data_filtered() |>
         dplyr::select(
@@ -498,12 +483,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::mutate(
@@ -567,12 +547,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     # Create reactive data frame to data to be displayed in pie chart
     benefits_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(benefits_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(benefits_data_filtered())
 
       out <- benefits_data_filtered() |>
         dplyr::filter(
@@ -596,12 +571,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(benefits_from_any_source) |>
@@ -626,12 +596,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     # Create reactive data frame to data to be displayed in pie chart
     insurance_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(benefits_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(benefits_data_filtered())
 
       out <- benefits_data_filtered() |>
         dplyr::filter(
@@ -655,12 +620,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(insurance_from_any_source) |>
@@ -685,12 +645,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     ### Get data for income source pie chart ----
     income_source_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(income_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(income_data_filtered())
 
       out <- income_data_filtered() |>
         dplyr::select(
@@ -729,12 +684,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
         )
 
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(income_source) |>
@@ -776,12 +726,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     ### Get data for benefits source pie chart ----
     benefits_source_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(benefits_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(benefits_data_filtered())
 
       out <- benefits_data_filtered() |>
         dplyr::select(
@@ -813,12 +758,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(benefits_source) |>
@@ -848,12 +788,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     ### Get data for insurance source pie chart ----
     insurance_source_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(benefits_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(benefits_data_filtered())
 
       out <- benefits_data_filtered() |>
         dplyr::select(
@@ -894,12 +829,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+validate_data(out)
 
       out |>
         dplyr::count(insurance_source) |>
@@ -931,12 +861,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     # Create reactive data frame to data to be displayed in line chart
     benefits_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(benefits_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(benefits_data_filtered())
 
       ids_exited <- benefits_data_filtered() |>
         dplyr::filter(
@@ -944,12 +869,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       benefits_data_filtered() |>
         dplyr::filter(
@@ -981,12 +901,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     # Create reactive data frame to data to be displayed in line chart
     insurance_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(benefits_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(benefits_data_filtered())
 
       ids_exited <- benefits_data_filtered() |>
         dplyr::filter(
@@ -994,12 +909,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       benefits_data_filtered() |>
         dplyr::filter(

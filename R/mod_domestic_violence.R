@@ -289,12 +289,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in pie chart
     victim_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(domestic_violence_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(domestic_violence_data_filtered())
 
       out <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -318,12 +313,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(domestic_violence_survivor) |>
@@ -345,12 +335,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in line chart
     victim_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(domestic_violence_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(domestic_violence_data_filtered())
 
       ids_exited <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -358,12 +343,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -416,12 +396,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in pie chart
     when_occurred_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(domestic_violence_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(domestic_violence_data_filtered())
 
       out <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -450,12 +425,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(when_occurred) |>
@@ -477,12 +447,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in line chart
     when_occurred_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(domestic_violence_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(domestic_violence_data_filtered())
 
       ids_exited <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -495,12 +460,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -564,12 +524,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in pie chart
     currently_fleeing_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(domestic_violence_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(domestic_violence_data_filtered())
 
       out <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -598,12 +553,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(currently_fleeing) |>
@@ -625,12 +575,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     # Create reactive data frame to data to be displayed in line chart
     currently_fleeing_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(domestic_violence_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(domestic_violence_data_filtered())
 
       ids_exited <- domestic_violence_data_filtered() |>
         dplyr::filter(
@@ -643,12 +588,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       domestic_violence_data_filtered() |>
         dplyr::filter(

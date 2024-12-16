@@ -271,13 +271,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     last_grade_completed_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(education_data_filtered())
 
       out <- education_data_filtered() |>
         dplyr::filter(
@@ -302,12 +296,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(last_grade_completed) |>
@@ -332,12 +321,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     last_grade_completed_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
 
       ids_exited <- education_data_filtered() |>
         dplyr::filter(
@@ -352,6 +335,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
           message = "No data to display"
         )
       )
+      validate_data(education_data_filtered())
 
       education_data_filtered() |>
         dplyr::filter(
@@ -400,6 +384,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     # Create disabilities trend line chart
     output$last_grade_completed_sankey_chart <- echarts4r::renderEcharts4r({
+      validate_data(last_grade_completed_sankey_chart_data())
 
       last_grade_completed_sankey_chart_data() |>
         sankey_chart(
@@ -417,12 +402,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     school_status_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(education_data_filtered())
 
       out <- education_data_filtered() |>
         dplyr::filter(
@@ -451,12 +431,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(school_status) |>
@@ -480,12 +455,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     school_status_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(education_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(education_data_filtered())
 
       ids_exited <- education_data_filtered() |>
         dplyr::filter(
@@ -498,12 +468,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       education_data_filtered() |>
         dplyr::filter(

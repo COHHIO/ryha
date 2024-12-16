@@ -185,12 +185,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     employed_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(employment_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(employment_data_filtered())
 
       out <- employment_data_filtered() |>
         dplyr::filter(employed %in% c("Yes", "No")) |>
@@ -212,12 +207,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(employed) |>
@@ -239,12 +229,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     employment_type_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(employment_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(employment_data_filtered())
 
       out <- employment_data_filtered() |>
         dplyr::filter(
@@ -268,12 +253,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(employment_type) |>
@@ -295,12 +275,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     not_employed_reason_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(employment_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(employment_data_filtered())
 
       out <- employment_data_filtered() |>
         dplyr::filter(
@@ -324,12 +299,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(not_employed_reason) |>
@@ -351,12 +321,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
     # Create reactive data frame to data to be displayed in line chart
     employed_sankey_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(employment_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(employment_data_filtered())
 
       ids_exited <- employment_data_filtered() |>
         dplyr::filter(
@@ -364,12 +329,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
         ) |>
         get_ids_for_sankey()
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(ids_exited)
 
       employment_data_filtered() |>
         dplyr::filter(
