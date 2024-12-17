@@ -102,6 +102,31 @@ create_dm <- function(env,
       )
     )
 
+    # Read "project coc" data into memory
+    project_coc <- read_data_from_table(
+      connection = con,
+      table_name = "project_coc",
+      column_names = c(
+        "project_id",
+        "coc_code",
+        "geocode"
+      )
+    ) |>
+      # Add county column
+      dplyr::left_join(CountyCodes, by = "geocode") |>
+      # Assign counties without a match to "Unknown"
+      tidyr::replace_na(list(county = "Unknown"))
+
+    # Read "funder" data into memory
+    funder <- read_data_from_table(
+      connection = con,
+      table_name = "funder",
+      column_names = c(
+        "project_id",
+        "funder"
+      )
+    )
+
     # Read "client" table into memory
     client_tbl <- read_data_from_table(
       connection = con,
@@ -441,6 +466,8 @@ create_dm <- function(env,
     # Create {dm} object
     dm <- list(
       project = project,
+      project_coc = project_coc,
+      funder = funder,
       client = client,
       gender = gender,
       ethnicity = ethnicity,

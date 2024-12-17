@@ -8,3 +8,4 @@ rsconnect/
 db_data
 hkey.RDS
 postgres/populate_dev_database/data
+docs

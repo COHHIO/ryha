@@ -258,7 +258,12 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
       )
 
       referral_data_filtered() |>
-        dplyr::filter(!is.na(referral_source)) |>
+        dplyr::mutate(
+          referral_source = dplyr::case_when(
+            is.na(referral_source) ~ "(Blank)",
+            TRUE ~ referral_source
+          )
+        ) |>
         dplyr::distinct(personal_id, organization_id, referral_source) |>
         dplyr::count(referral_source) |>
         dplyr::arrange(n)

@@ -1,0 +1,88 @@
+url: https://cohhio.github.io/ryha/
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+reference:
+- title: Chart Functions
+  contents:
+  - bar_chart
+  - get_ids_for_sankey
+  - pie_chart
+  - prep_sankey_data
+  - sankey_chart
+- title: Package Datasets
+  contents:
+  - CountExchangeForSexCodes
+  - CountyCodes
+  - DataCollectionStageCodes
+  - DisabilityTypeCodes
+  - DOBDataQualityCodes
+  - EmploymentTypeCodes
+  - HealthStatusCodes
+  - HMISmetadata
+  - LastGradeCompletedCodes
+  - LengthOfStayCodes
+  - LivingCodes
+  - MonthsHomelessPastThreeYearsCodes
+  - NotEmployedReasonCodes
+  - NoYesCodes
+  - NoYesMissingCodes
+  - NoYesReasonsForMissingDataCodes
+  - PATHReferralOutcomeCodes
+  - ProjectCompletionStatusCodes
+  - ProjectTypeCodes
+  - RaceGenderNoneCodes
+  - ReasonNotInsuredCodes
+  - ReferralSourceCodes
+  - RelationshipToHoHCodes
+  - RHYNumberOfYearsCodes
+  - SchoolStatusCodes
+  - ServiceCodes
+  - SexualOrientationCodes
+  - SSNDataQualityCodes
+  - SubstanceUseDisorderCodes
+  - TimesHomelessPastThreeYearsCodes
+  - WhenDVOccurredCodes
+  - WorkerResponseCodes
+- title: Data Management Functions
+  contents:
+  - connect_to_db
+  - create_dm
+  - delete_from_db
+  - read_data_from_table
+  - send_to_db
+  - spinner_message
+- title: Data Processing Functions
+  contents:
+  - check_file_names
+  - find_file
+  - hash
+  - prep_tables
+  - process_data
+- title: Ingest Functions
+  contents:
+  - check_colnames
+  - read_benefits
+  - read_client
+  - read_disabilities
+  - read_domestic_violence
+  - read_education
+  - read_employment
+  - read_enrollment
+  - read_exit
+  - read_export
+  - read_funder
+  - read_health
+  - read_income
+  - read_living
+  - read_organization
+  - read_project
+  - read_project_coc
+  - read_services
+- title: UI Utils Functions
+  contents:
+  - link_section
+  - with_popover
+- title: Other Functions
+  contents: run_app
+

@@ -3,6 +3,13 @@
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R15.B CountExchangeForSex>
 'CountExchangeForSexCodes'
 
+#' CountyCodes Codes
+#'
+#' A county can contain multiple geocodes.
+#' 
+#' @source <https://www.hud.gov/sites/dfiles/CPD/documents/CoC/FY2024-GeoCodes-Report.pdf>
+"CountyCodes"
+
 #' DOB Data Quality Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.03.2 DOBDataQuality>

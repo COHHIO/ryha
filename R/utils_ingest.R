@@ -171,8 +171,7 @@ read_client <- function(file) {
 #' path <- "path/to/Disabilities.csv"
 #'
 #' read_disabilities(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -241,8 +240,7 @@ read_disabilities <- function(file) {
 #' path <- "path/to/EmploymentEducation.csv"
 #'
 #' read_education(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -310,8 +308,7 @@ read_education <- function(file) {
 #' path <- "path/to/EmploymentEducation.csv"
 #'
 #' read_employment(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -386,8 +383,7 @@ read_employment <- function(file) {
 #' path <- "path/to/CurrentLivingSituation.csv"
 #'
 #' read_living(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -449,8 +445,7 @@ read_living <- function(file) {
 #' path <- "path/to/HealthAndDV.csv"
 #'
 #' read_health(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -527,8 +522,7 @@ read_health <- function(file) {
 #' path <- "path/to/HealthAndDV.csv"
 #'
 #' read_domestic_violence(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -602,8 +596,7 @@ read_domestic_violence <- function(file) {
 #' path <- "path/to/IncomeBenefits.csv"
 #'
 #' read_income(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -731,8 +724,7 @@ read_income <- function(file) {
 #' path <- "path/to/IncomeBenefits.csv"
 #'
 #' read_benefits(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -844,8 +836,7 @@ read_benefits <- function(file) {
 #' path <- "path/to/Enrollment.csv"
 #'
 #' read_enrollment(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -987,8 +978,7 @@ read_enrollment <- function(file) {
 #' path <- "path/to/Services.csv"
 #'
 #' read_services(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1049,8 +1039,7 @@ read_services <- function(file) {
 #' path <- "path/to/Project.csv"
 #'
 #' read_project(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1088,6 +1077,61 @@ read_project <- function(file) {
 
 }
 
+#' Ingest "ProjectCoC.csv" file and perform ETL prep for "PROJECT COC" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "PROJECT COC" database table
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/ProjectCoC.csv"
+#'
+#' read_project_coc(
+#'   file = path
+#' )
+#' }
+read_project_coc <- function(file) {
+  expected_colnames <- c(
+    "ProjectCoCID",
+    "ProjectID",
+    "CoCCode",
+    "Geocode",
+    "Address1",
+    "Address2",
+    "City",
+    "State",
+    "ZIP",
+    "GeographyType",
+    "DateUpdated"
+  )
+
+  check_colnames(file, expected_colnames)
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "PROJECT COC" database table
+    col_select = expected_colnames,
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character(),
+      DateUpdated = readr::col_date()
+    )
+  ) |>
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(
+      # improve default column names
+      "project_coc_id" = "project_co_cid",
+      "coc_code" = "co_c_code",
+      # change project_id to orig_project_id (as project_id has a different meaning in the app)
+      "orig_project_id" = "project_id"
+    )
+}
+
 #' Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table
 #'
 #' @inheritParams read_client
@@ -1103,8 +1147,7 @@ read_project <- function(file) {
 #' path <- "path/to/Organization.csv"
 #'
 #' read_organization(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1146,8 +1189,7 @@ read_organization <- function(file) {
 #' path <- "path/to/Exit.csv"
 #'
 #' read_exit(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1319,8 +1361,7 @@ read_exit <- function(file) {
 #' path <- "path/to/Export.csv"
 #'
 #' read_export(
-#'   file = path,
-#'   submission_id = 1L
+#'   file = path
 #' )
 #'
 #' }
@@ -1353,6 +1394,52 @@ read_export <- function(file) {
 
 }
 
+#' Ingest "Funder.csv" file and perform ETL prep for "FUNDER" database table
+#'
+#' @inheritParams read_client
+#'
+#' @return A data frame, containing the transformed data to be written out to
+#'   the "FUNDER" database tables
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' path <- "path/to/Funder.csv"
+#'
+#' read_funder(
+#'   file = path
+#' )
+#' }
+read_funder <- function(file) {
+  expected_colnames <- c(
+    "ProjectID",
+    "Funder",
+    "OtherFunder"
+  )
+
+  check_colnames(file, expected_colnames)
+
+  readr::read_csv(
+    file = file,
+    # only read in columns needed for "FUNDER" database table
+    col_select = expected_colnames,
+    # define schema types
+    col_types = readr::cols(
+      .default = readr::col_character()
+    )
+  ) |>
+    # replace the integer codes with the plain-English description
+    dplyr::mutate(
+      Funder = lookup_codes(
+        var = Funder,
+        codes = FunderCodes
+      )
+    ) |>
+    janitor::clean_names(case = "snake") |>
+    dplyr::rename(orig_project_id = project_id)
+}
 
 #' Hash a value with a key
 #'
