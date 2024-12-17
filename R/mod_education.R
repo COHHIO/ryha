@@ -276,82 +276,24 @@ mod_education_server <- function(id, education_data, clients_filtered){
     })
 
     ## Sankey Chart ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    last_grade_completed_sankey_chart_data <- shiny::reactive({
-
-
-      ids_exited <- education_data_filtered() |>
-        dplyr::filter(
-          last_grade_completed != "Unknown",
-          !is.na(last_grade_completed)
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-      validate_data(education_data_filtered())
-
+    output$last_grade_completed_sankey_chart <- echarts4r::renderEcharts4r({
       education_data_filtered() |>
-        dplyr::filter(
-          last_grade_completed != "Unknown",
-          !is.na(last_grade_completed)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = last_grade_completed) |>
-        dplyr::mutate(
-          Entry = factor(
-            Entry,
-            levels = paste0(
-              c(
-                "Less than Grade 5",
-                "Grades 5-8",
-                "Grades 9-11",
-                "Some College",
-                "High school diploma/GED",
-                "College Degree/Vocational"
-              ),
-              " (Entry)"
-            ),
-            ordered = TRUE
-          ),
-          Exit = factor(
-            Exit,
-            levels = paste0(
-              c(
-                "Less than Grade 5",
-                "Grades 5-8",
-                "Grades 9-11",
-                "Some College",
-                "High school diploma/GED",
-                "College Degree/Vocational"
-              ),
-              " (Exit)"
-            ),
-            ordered = TRUE
+        prepare_sankey_data(
+          response_col = "last_grade_completed_grouped",
+          response_vals = c(
+            "Less than Grade 5",
+            "Grades 5-8",
+            "Grades 9-11",
+            "Some College",
+            "High school diploma/GED",
+            "College Degree/Vocational"
           )
         ) |>
-        dplyr::arrange(Entry, Exit)
-    })
-
-    # Create disabilities trend line chart
-    output$last_grade_completed_sankey_chart <- echarts4r::renderEcharts4r({
-      validate_data(last_grade_completed_sankey_chart_data())
-
-      last_grade_completed_sankey_chart_data() |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     # School Status ----
@@ -408,83 +350,25 @@ mod_education_server <- function(id, education_data, clients_filtered){
     })
 
     ## Sankey Chart ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    school_status_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- education_data_filtered() |>
-        dplyr::filter(
-          !school_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(school_status)
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      education_data_filtered() |>
-        dplyr::filter(
-          !school_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(school_status)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = school_status) |>
-        dplyr::mutate(
-          Entry = factor(
-            Entry,
-            levels = paste0(
-              c(
-                SchoolStatusCodes$Description[4],
-                SchoolStatusCodes$Description[3],
-                SchoolStatusCodes$Description[1:2],
-                SchoolStatusCodes$Description[6],
-                SchoolStatusCodes$Description[7],
-                SchoolStatusCodes$Description[5]
-              ),
-              " (Entry)"
-            ),
-            ordered = TRUE
-          ),
-          Exit = factor(
-            Exit,
-            levels = paste0(
-              c(
-                SchoolStatusCodes$Description[4],
-                SchoolStatusCodes$Description[3],
-                SchoolStatusCodes$Description[1:2],
-                SchoolStatusCodes$Description[6],
-                SchoolStatusCodes$Description[7],
-                SchoolStatusCodes$Description[5]
-              ),
-              " (Exit)"
-            ),
-            ordered = TRUE
-          )
-        ) |>
-        dplyr::arrange(Entry, Exit)
-
-    })
-
     # Create "School Status" sankey chart
     output$school_status_sankey_chart <- echarts4r::renderEcharts4r({
-
-      school_status_sankey_chart_data() |>
+      education_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "school_status",
+          response_vals = c(
+            "Obtained GED",
+            "Graduated from high school",
+            "Attending school regularly",
+            "Attending school irregularly",
+            "Suspended",
+            "Expelled"
+          )
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     last_grade_completed_missingness_stats <- shiny::reactive({

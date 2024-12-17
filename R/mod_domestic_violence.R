@@ -303,41 +303,17 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     })
 
-    # Create reactive data frame to data to be displayed in line chart
-    victim_sankey_chart_data <- shiny::reactive({
-
-      validate_data(domestic_violence_data_filtered())
-
-      ids_exited <- domestic_violence_data_filtered() |>
-        dplyr::filter(
-          domestic_violence_survivor %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      domestic_violence_data_filtered() |>
-        dplyr::filter(
-          domestic_violence_survivor %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = domestic_violence_survivor)
-
-    })
-
-    # Create disabilities trend line chart
     output$victim_sankey_chart <- echarts4r::renderEcharts4r({
-
-      victim_sankey_chart_data() |>
+      domestic_violence_data_filtered() |> 
+        prepare_sankey_data(
+          response_col = "domestic_violence_survivor",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     # Capture the data quality statistics for "domestic_violence_survivor" field
@@ -492,49 +468,17 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     })
 
-    # Create reactive data frame to data to be displayed in line chart
-    currently_fleeing_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- domestic_violence_data_filtered() |>
-        dplyr::filter(
-          !currently_fleeing %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(currently_fleeing)
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      domestic_violence_data_filtered() |>
-        dplyr::filter(
-          !currently_fleeing %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(currently_fleeing)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = currently_fleeing)
-
-    })
-
-    # Create disabilities trend line chart
     output$currently_fleeing_sankey_chart <- echarts4r::renderEcharts4r({
-
-      currently_fleeing_sankey_chart_data() |>
+      domestic_violence_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "currently_fleeing",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     # Capture the data quality statistics for "currently_fleeing" field

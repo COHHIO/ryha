@@ -830,79 +830,31 @@ validate_data(out)
     })
 
     ## Benefits Sankey Chart ----
-
-    ### Get data for benefits sankey chart ----
-    # Create reactive data frame to data to be displayed in line chart
-    benefits_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- benefits_data_filtered() |>
-        dplyr::filter(
-          benefits_from_any_source %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      benefits_data_filtered() |>
-        dplyr::filter(
-          benefits_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = benefits_from_any_source)
-
-    })
-
-    ### Render benefits sankey chart ----
     output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
-
-      benefits_sankey_chart_data() |>
+      benefits_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "benefits_from_any_source",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     )
 
     ## Health Insurance Sankey Chart ----
-
-    ### Get data for insurance sankey chart ----
-    # Create reactive data frame to data to be displayed in line chart
-    insurance_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- benefits_data_filtered() |>
-        dplyr::filter(
-          insurance_from_any_source %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      benefits_data_filtered() |>
-        dplyr::filter(
-          insurance_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = insurance_from_any_source)
-
-    })
-
-    ### Render insurance sankey chart ----
     output$insurance_sankey_chart <- echarts4r::renderEcharts4r(
-
-      insurance_sankey_chart_data() |>
+      benefits_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "insurance_from_any_source",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     )
 
     ## Data Quality Statistics ----

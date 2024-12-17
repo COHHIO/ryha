@@ -306,39 +306,17 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     })
 
-    # Create reactive data frame to data to be displayed in line chart
-    employed_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- employment_data_filtered() |>
-        dplyr::filter(
-          employed %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      employment_data_filtered() |>
-        dplyr::filter(
-          employed %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = employed)
-
-    })
-
-    # Create disabilities trend line chart
     output$employed_sankey_chart <- echarts4r::renderEcharts4r({
-
-      employed_sankey_chart_data() |>
+      employment_data_filtered() |> 
+        prepare_sankey_data(
+          response_col = "employed",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     missingness_stats <- shiny::reactive({

@@ -410,62 +410,24 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     })
 
-    # Create reactive data frame to data to be displayed in sankey chart
-    general_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- health_data_filtered() |>
-        dplyr::filter(
-          !general_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(general_health_status)
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      health_data_filtered() |>
-        dplyr::filter(
-          !general_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(general_health_status)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = general_health_status) |>
-        dplyr::mutate(
-          Entry = factor(
-            Entry,
-            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
-            ordered = TRUE
-          ),
-          Exit = factor(
-            Exit,
-            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
-            ordered = TRUE
-          )
-        ) |>
-        dplyr::arrange(Entry, Exit)
-
-    })
-
     # Create general health status sankey chart
     output$general_sankey_chart <- echarts4r::renderEcharts4r({
-
-      general_sankey_chart_data() |>
+      health_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "general_health_status",
+          response_vals = c(
+              "Excellent",
+              "Very good",
+              "Good",
+              "Fair",
+              "Poor"
+            )
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     # Capture the data quality statistics for "general_health_status" field
@@ -548,62 +510,24 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     })
 
-    # Create reactive data frame to data to be displayed in sankey chart
-    dental_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- health_data_filtered() |>
-        dplyr::filter(
-          !dental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(dental_health_status)
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      health_data_filtered() |>
-        dplyr::filter(
-          !dental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(dental_health_status)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = dental_health_status) |>
-        dplyr::mutate(
-          Entry = factor(
-            Entry,
-            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
-            ordered = TRUE
-          ),
-          Exit = factor(
-            Exit,
-            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
-            ordered = TRUE
-          )
-        ) |>
-        dplyr::arrange(Entry, Exit)
-
-    })
-
     # Create dental health status sankey chart
     output$dental_sankey_chart <- echarts4r::renderEcharts4r({
-
-      dental_sankey_chart_data() |>
+      health_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "dental_health_status",
+          response_vals = c(
+              "Excellent",
+              "Very good",
+              "Good",
+              "Fair",
+              "Poor"
+            )
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     # Capture the data quality statistics for "dental_health_status" field
@@ -686,62 +610,24 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     })
 
-    # Create reactive data frame to data to be displayed in sankey chart
-    mental_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- health_data_filtered() |>
-        dplyr::filter(
-          !mental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(mental_health_status)
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      health_data_filtered() |>
-        dplyr::filter(
-          !mental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(mental_health_status)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = mental_health_status) |>
-        dplyr::mutate(
-          Entry = factor(
-            Entry,
-            levels = paste0(HealthStatusCodes$Description[1:5], " (Entry)"),
-            ordered = TRUE
-          ),
-          Exit = factor(
-            Exit,
-            levels = paste0(HealthStatusCodes$Description[1:5], " (Exit)"),
-            ordered = TRUE
-          )
-        ) |>
-        dplyr::arrange(Entry, Exit)
-
-    })
-
     # Create mental health status sankey chart
     output$mental_sankey_chart <- echarts4r::renderEcharts4r({
-
-      mental_sankey_chart_data() |>
+      health_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "mental_health_status",
+          response_vals = c(
+              "Excellent",
+              "Very good",
+              "Good",
+              "Fair",
+              "Poor"
+            )
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     # Capture the data quality statistics for "mental_health_status" field
