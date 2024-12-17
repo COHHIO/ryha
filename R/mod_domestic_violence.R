@@ -140,27 +140,6 @@ mod_domestic_violence_ui <- function(id){
 
               )
 
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in When Occurred (Entry --> Exit)",
-                    content = link_section("4.11 Domestic Violence")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("when_occurred_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
             )
 
           ),
@@ -429,51 +408,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
       when_occurred_pie_chart_data() |>
         pie_chart(
           category = "when_occurred",
-          count = "n"
-        )
-
-    })
-
-    # Create reactive data frame to data to be displayed in line chart
-    when_occurred_sankey_chart_data <- shiny::reactive({
-
-      ids_exited <- domestic_violence_data_filtered() |>
-        dplyr::filter(
-          !when_occurred %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(when_occurred)
-        ) |>
-        get_ids_for_sankey()
-
-      validate_data(ids_exited)
-
-      domestic_violence_data_filtered() |>
-        dplyr::filter(
-          !when_occurred %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(when_occurred)
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = when_occurred)
-
-    })
-
-    # Create disabilities trend line chart
-    output$when_occurred_sankey_chart <- echarts4r::renderEcharts4r({
-
-      when_occurred_sankey_chart_data() |>
-        sankey_chart(
-          entry_status = "Entry",
-          exit_status = "Exit",
           count = "n"
         )
 
