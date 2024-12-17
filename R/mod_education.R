@@ -199,41 +199,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     # Apply the filters to the education data
     education_data_filtered <- shiny::reactive({
-
-        # Bucket Last Grade Completed categories
-        dplyr::mutate(
-          last_grade_completed = dplyr::case_when(
-            last_grade_completed == "Less than Grade 5" ~ "Less than Grade 5",
-            last_grade_completed == "Grades 5-6" ~ "Grades 5-8",
-            last_grade_completed == "Grades 7-8" ~ "Grades 5-8",
-            last_grade_completed == "Grades 9-11" ~ "Grades 9-11",
-            last_grade_completed == "Grades 12 / High school diploma" ~ "High school diploma/GED",
-            last_grade_completed == "School program does not have grade levels" ~ "Unknown",
-            last_grade_completed == "GED" ~ "High school diploma/GED",
-            last_grade_completed == "Some College" ~ "Some College",
-            last_grade_completed == "Associate's Degree" ~ "College Degree/Vocational",
-            last_grade_completed == "Bachelor's Degree" ~ "College Degree/Vocational",
-            last_grade_completed == "Graduate Degree" ~ "College Degree/Vocational",
-            last_grade_completed == "Vocational Degree" ~ "College Degree/Vocational",
-            last_grade_completed == "Client doesn't know" ~ "Unknown",
-            last_grade_completed == "Client refused" ~ "Unknown",
-            last_grade_completed == "Data not collected" ~ "Unknown"
-          ),
-          last_grade_completed = factor(
-            last_grade_completed,
-            levels = c(
-              "Less than Grade 5",
-              "Grades 5-8",
-              "Grades 9-11",
-              "High school diploma/GED",
-              "Some College",
-              "College Degree/Vocational",
-              "Unknown"
-            ),
-            ordered = TRUE
-          )
-        )
-
       filter_data(education_data, clients_filtered())
     })
 
@@ -269,33 +234,33 @@ mod_education_server <- function(id, education_data, clients_filtered){
     last_grade_completed_pie_chart_data <- shiny::reactive({
       out <- education_data_filtered() |>
         dplyr::filter(
-          last_grade_completed != "Unknown",
-          !is.na(last_grade_completed)
+          last_grade_completed_grouped != "Unknown",
+          !is.na(last_grade_completed_grouped)
         ) |>
         dplyr::arrange(
           organization_id,
           personal_id,
-          last_grade_completed,
+          last_grade_completed_grouped,
           dplyr::desc(date_updated)
         ) |>
         dplyr::select(
           organization_id,
           personal_id,
-          last_grade_completed
+          last_grade_completed_grouped
         ) |>
         dplyr::distinct(
           organization_id,
           personal_id,
-          last_grade_completed,
+          last_grade_completed_grouped,
           .keep_all = TRUE
         )
 
       validate_data(out)
 
       out |>
-        dplyr::count(last_grade_completed) |>
-        dplyr::arrange(last_grade_completed) |>
-        dplyr::mutate(last_grade_completed = as.character(last_grade_completed))
+        dplyr::count(last_grade_completed_grouped) |>
+        dplyr::arrange(last_grade_completed_grouped) |>
+        dplyr::mutate(last_grade_completed_grouped = as.character(last_grade_completed_grouped))
 
     })
 
@@ -304,7 +269,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
       last_grade_completed_pie_chart_data() |>
         pie_chart(
-          category = "last_grade_completed",
+          category = "last_grade_completed_grouped",
           count = "n"
         )
 

@@ -316,6 +316,63 @@ create_dm <- function(env,
         "date_updated",
         "organization_id"
       )
+    ) |>
+    dplyr::mutate(
+      # Bucket Last Grade Completed categories
+      last_grade_completed_grouped = factor(
+        last_grade_completed,
+        levels = c(
+          "Less than Grade 5",
+          "Grades 5-6",
+          "Grades 7-8",
+          "Grades 9-11",
+          "Grade 12 / High school diploma",
+          "GED",
+          "Some College",
+          "Associate's Degree",
+          "Bachelor's Degree",
+          "Graduate Degree",
+          "Vocational Degree",
+          "School program does not have grade levels",
+          "Client doesn't know",
+          "Client refused",
+          "Data not collected"
+        ),
+        labels = c(
+          "Less than Grade 5",
+          "Grades 5-8",
+          "Grades 5-8",
+          "Grades 9-11",
+          "High school diploma/GED",
+          "High school diploma/GED",
+          "Some College",
+          "College Degree/Vocational",
+          "College Degree/Vocational",
+          "College Degree/Vocational",
+          "College Degree/Vocational",
+          "Unknown",
+          "Unknown",
+          "Unknown",
+          "Unknown"
+        ),
+        ordered = TRUE
+      ),
+      school_status = factor(
+        school_status,
+        levels = c(
+          "Obtained GED",
+          "Graduated from high school",
+          "Attending school regularly",
+          "Attending school irregularly",
+          "Suspended",
+          "Expelled",
+          "Dropped out",
+          "Client doesn't know",
+          "Client refused",
+          "Data not collected"
+        ),
+        ordered = TRUE
+      )
     )
 
     enrollment <- read_data_from_table(
@@ -351,6 +408,27 @@ create_dm <- function(env,
         "data_collection_stage",
         "date_updated",
         "organization_id"
+      )
+    ) |> 
+    dplyr::mutate(
+      dplyr::across(
+        .cols = c(general_health_status, dental_health_status, mental_health_status),
+        .fns = function(col) {
+          factor(
+            col,
+            levels = c(
+              "Excellent",
+              "Very good",
+              "Good",
+              "Fair",
+              "Poor",
+              "Client doesn't know",
+              "Client prefers not to answer",
+              "Data not collected"
+            ),
+            ordered = TRUE
+          )
+        }
       )
     )
 
