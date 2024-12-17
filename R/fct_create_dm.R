@@ -601,6 +601,7 @@ read_data_from_table <- function(connection, table_name, column_names) {
       "SELECT {`column_names`*} FROM {`table_name`}",
       .con = connection
     )
-  )
+  ) |> 
+  tibble::as_tibble()
 
 }
