@@ -77,27 +77,6 @@ mod_domestic_violence_ui <- function(id){
 
               )
 
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in Domestic Violence Victim Response (Entry --> Exit)",
-                    content = link_section("4.11 Domestic Violence")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("victim_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
             )
 
           ),
@@ -182,27 +161,6 @@ mod_domestic_violence_ui <- function(id){
 
               )
 
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in Currently Fleeing (Entry --> Exit)",
-                    content = link_section("4.11 Domestic Violence")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("currently_fleeing_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
             )
 
           )
@@ -302,18 +260,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         )
 
     })
-
-    output$victim_sankey_chart <- echarts4r::renderEcharts4r({
-      domestic_violence_data_filtered() |> 
-        prepare_sankey_data(
-          response_col = "domestic_violence_survivor",
-          response_vals = c("Yes", "No")
-        ) |>
-        sankey_chart(
-          entry_status = "Entry",
-          exit_status = "Exit",
-          count = "n"
-        )
     })
 
     # Capture the data quality statistics for "domestic_violence_survivor" field
@@ -467,18 +413,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         )
 
     })
-
-    output$currently_fleeing_sankey_chart <- echarts4r::renderEcharts4r({
-      domestic_violence_data_filtered() |>
-        prepare_sankey_data(
-          response_col = "currently_fleeing",
-          response_vals = c("Yes", "No")
-        ) |>
-        sankey_chart(
-          entry_status = "Entry",
-          exit_status = "Exit",
-          count = "n"
-        )
     })
 
     # Capture the data quality statistics for "currently_fleeing" field
