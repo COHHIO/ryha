@@ -432,9 +432,9 @@
     },
     "echarts4r": {
       "Package": "echarts4r",
-      "Version": "0.4.4",
+      "Version": "0.4.5",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "broom",
@@ -449,7 +449,7 @@
         "scales",
         "shiny"
       ],
-      "Hash": "1ba0af31b6e1aaeaac2817f72135f260"
+      "Hash": "4247fd6acd3bdb4a481479f469956d2f"
     },
     "ellipsis": {
       "Package": "ellipsis",
