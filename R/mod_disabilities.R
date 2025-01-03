@@ -253,13 +253,12 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     })
 
     # Filter disabilities data
-    # disabilities_data_filtered is in long format (multiple rows per data collection stage)
+    # disabilities_data_filtered has one row per enrollment, data collection stage and disability type
     disabilities_data_filtered <- shiny::reactive({
       filter_data(disabilities_data, clients_filtered())
     })
 
-    # most_recent_data_per_enrollment is in wide format (one row per youth)
-    # Each row contains the most recent data for the most recent enrollment per youth
+    # Create reactive with the most recent data collected per enrollment
     most_recent_data_per_enrollment <- shiny::reactive({
       disabilities_data_filtered() |>
         tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
