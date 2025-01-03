@@ -391,8 +391,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       use_disorders_data <- most_recent_data_per_enrollment() |>
         dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4])
 
-      validate_data(use_disorders_data)
-
       use_disorders_data |>
         dplyr::count(`Substance Use Disorder`) |>
         # Match expected column name in chart
