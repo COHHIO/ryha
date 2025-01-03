@@ -483,7 +483,33 @@ create_dm <- function(env,
         "date_updated",
         "organization_id"
       )
-    )
+    ) |>
+      dplyr::mutate(
+        total_monthly_income_integer = as.integer(round(total_monthly_income, 0)),
+        total_monthly_income_grouped = dplyr::case_when(
+            total_monthly_income_integer == 0L ~ "No Income",
+            total_monthly_income_integer > 0L & total_monthly_income_integer <= 500L ~ "$1-$500",
+            total_monthly_income_integer > 500L & total_monthly_income_integer <= 1000L ~ "$551-$1,000",
+            total_monthly_income_integer > 1000L & total_monthly_income_integer <= 2000L ~ "$1,001-$2,000",
+            total_monthly_income_integer > 2000L & total_monthly_income_integer <= 3000L ~ "$2,001-$3,000",
+            total_monthly_income_integer > 3000L & total_monthly_income_integer <= 4000L ~ "$3,001-$4,000",
+            total_monthly_income_integer > 4000L & total_monthly_income_integer <= 5000L ~ "$4,001-$5,000",
+            total_monthly_income_integer > 5000L ~ "$5,001 or more"
+          ) |> 
+          factor(
+            levels = c(
+              "No Income",
+              "$1-$500",
+              "$551-$1,000",
+              "$1,001-$2,000",
+              "$2,001-$3,000",
+              "$3,001-$4,000",
+              "$4,001-$5,000",
+              "$5,001 or more"
+            ),
+            ordered = TRUE
+          )
+      )
 
     benefits <- read_data_from_table(
       connection = con,

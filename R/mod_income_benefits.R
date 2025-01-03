@@ -345,14 +345,24 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
     )
 
-    ## Apply the filters to the income data ----
+    ## Filter income data ----
     income_data_filtered <- shiny::reactive({
       filter_data(income_data, clients_filtered())
     })
 
-    ## Apply the filters to the benefits data ----
+    most_recent_income_data_per_enrollment <- shiny::reactive({
+      income_data_filtered() |> 
+        filter_most_recent_data_per_enrollment()
+    })
+
+    ## Filter benefits data ----
     benefits_data_filtered <- shiny::reactive({
       filter_data(benefits_data, clients_filtered())
+    })
+
+    most_recent_benefits_data_per_enrollment <- shiny::reactive({
+      benefits_data_filtered() |> 
+        filter_most_recent_data_per_enrollment()
     })
 
     ## Filtered number of youth with income data ----
@@ -395,119 +405,22 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     })
 
     ## Income Pie Chart ----
-
-    ### Get data for income pie chart ----
-    # Create reactive data frame to data to be displayed in pie chart
-    income_pie_chart_data <- shiny::reactive({
-
-      out <- income_data_filtered() |>
-        dplyr::filter(
-          income_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          income_from_any_source,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          income_from_any_source
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          income_from_any_source,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(income_from_any_source) |>
-        dplyr::arrange(income_from_any_source)
-
-    })
-
-    ### Render income pie chart ----
     output$income_pie_chart <- echarts4r::renderEcharts4r(
-
-      income_pie_chart_data() |>
+      most_recent_income_data_per_enrollment() |>
+        dplyr::filter(income_from_any_source %in% c("Yes", "No")) |>
+        dplyr::count(income_from_any_source) |>
         pie_chart(
           category = "income_from_any_source",
           count = "n"
         )
-
     )
 
     ## Income Bar Chart ----
-
-    # Create reactive data frame to data to be displayed in bar chart
-    income_bar_chart_data <- shiny::reactive({
-
-      out <- income_data_filtered() |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          total_monthly_income,
-          date_updated
-        ) |>
-        dplyr::filter(!is.na(total_monthly_income)) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          total_monthly_income,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(-date_updated) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::mutate(
-          total_monthly_income = as.integer(round(total_monthly_income, 0)),
-          total_monthly_income = dplyr::case_when(
-            total_monthly_income == 0L ~ "No Income",
-            total_monthly_income > 0L & total_monthly_income <= 500L ~ "$1-$500",
-            total_monthly_income > 500L & total_monthly_income <= 1000L ~ "$551-$1,000",
-            total_monthly_income > 1000L & total_monthly_income <= 2000L ~ "$1,001-$2,000",
-            total_monthly_income > 2000L & total_monthly_income <= 3000L ~ "$2,001-$3,000",
-            total_monthly_income > 3000L & total_monthly_income <= 4000L ~ "$3,001-$4,000",
-            total_monthly_income > 4000L & total_monthly_income <= 5000L ~ "$4,001-$5,000",
-            total_monthly_income > 5000L ~ "$5,001 or more"
-          ),
-          total_monthly_income = factor(
-            total_monthly_income,
-            levels = c(
-              "No Income",
-              "$1-$500",
-              "$551-$1,000",
-              "$1,001-$2,000",
-              "$2,001-$3,000",
-              "$3,001-$4,000",
-              "$4,001-$5,000",
-              "$5,001 or more"
-            ),
-            ordered = TRUE
-          )
-        ) |>
-        dplyr::count(total_monthly_income) |>
-        dplyr::arrange(total_monthly_income) |>
-        dplyr::mutate(total_monthly_income = as.character(total_monthly_income))
-
-    })
-
-    ### Render income bar chart ----
     output$income_bar_chart <- echarts4r::renderEcharts4r(
-
-      income_bar_chart_data() |>
-        echarts4r::e_charts(x = total_monthly_income) |>
+      most_recent_income_data_per_enrollment() |>
+        dplyr::filter(!is.na(total_monthly_income_grouped)) |>
+        dplyr::count(total_monthly_income_grouped, .drop = FALSE) |>
+        echarts4r::e_charts(x = total_monthly_income_grouped) |>
         echarts4r::e_bar(
           serie = n,
           name = "# of Youth",
@@ -522,250 +435,128 @@ validate_data(out)
         echarts4r::e_flip_coords() |>
         echarts4r::e_grid(containLabel = TRUE) |>
         echarts4r::e_show_loading()
-
     )
 
     ## Benefits Pie Chart ----
-
-    ### Get data for benefits pie chart ----
-    # Create reactive data frame to data to be displayed in pie chart
-    benefits_pie_chart_data <- shiny::reactive({
-
-      out <- benefits_data_filtered() |>
-        dplyr::filter(
-          benefits_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          benefits_from_any_source,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          benefits_from_any_source
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          benefits_from_any_source,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(benefits_from_any_source) |>
-        dplyr::arrange(benefits_from_any_source)
-
-    })
-
-    ### Render benefits pie chart ----
-    output$benefits_pie_chart <- echarts4r::renderEcharts4r(
-
-      benefits_pie_chart_data() |>
+    output$benefits_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_benefits_data_per_enrollment() |>
+        dplyr::filter(benefits_from_any_source %in% c("Yes", "No")) |>
+        dplyr::count(benefits_from_any_source) |> 
         pie_chart(
           category = "benefits_from_any_source",
           count = "n"
         )
-
-    )
-
-    ## Health Insurance Pie Chart ----
-
-    ### Get data for insurance pie chart ----
-    # Create reactive data frame to data to be displayed in pie chart
-    insurance_pie_chart_data <- shiny::reactive({
-
-      out <- benefits_data_filtered() |>
-        dplyr::filter(
-          insurance_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          insurance_from_any_source,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          insurance_from_any_source
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          insurance_from_any_source,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(insurance_from_any_source) |>
-        dplyr::arrange(insurance_from_any_source) |>
-        dplyr::rename(health_insurance_from_any_source = insurance_from_any_source)
-
     })
 
-    ### Render insurance pie chart ----
+    ## Health Insurance Pie Chart ----
     output$insurance_pie_chart <- echarts4r::renderEcharts4r({
-
-      insurance_pie_chart_data() |>
+      most_recent_benefits_data_per_enrollment() |>
+        dplyr::filter(insurance_from_any_source %in% c("Yes", "No")) |>
+        dplyr::count(insurance_from_any_source) |>
         pie_chart(
-          category = "health_insurance_from_any_source",
+          category = "insurance_from_any_source",
           count = "n"
         )
-
     })
 
     ## Income Source Pie Chart ----
-
-    ### Get data for income source pie chart ----
-    income_source_pie_chart_data <- shiny::reactive({
-
-      out <- income_data_filtered() |>
+    output$income_source_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_income_data_per_enrollment() |>
         dplyr::select(
+          enrollment_id,
           organization_id,
           personal_id,
-          earned:other_income_source,
-          date_updated
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          !dplyr::ends_with("_amount", ignore.case = FALSE)
+          earned,
+          unemployment,
+          ssi,
+          ssdi,
+          va_disability_service,
+          va_disability_non_service,
+          private_disability,
+          workers_comp,
+          tanf,
+          ga,
+          soc_sec_retirement,
+          pension,
+          child_support,
+          alimony,
+          other_income_source
         ) |>
         tidyr::pivot_longer(
           cols = earned:other_income_source,
           names_to = "income_source",
           values_to = "response"
         ) |>
-        dplyr::filter(response == "Yes") |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          income_source,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          income_source
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          income_source,
-          .keep_all = TRUE
-        )
-
-
-validate_data(out)
-
-      out |>
+        dplyr::filter(response == "Yes") |> 
         dplyr::count(income_source) |>
         dplyr::mutate(
-          income_source = dplyr::case_when(
-            income_source == "earned" ~ "Earned",
-            income_source == "unemployment" ~ "Unemployment",
-            income_source == "ssi" ~ "SSI",
-            income_source == "ssdi" ~ "SSDI",
-            income_source == "va_disability_service" ~ "VA Disability Service",
-            income_source == "va_disability_non_service" ~ "VA Disability Non Service",
-            income_source == "private_disability" ~ "Private Disability",
-            income_source == "workers_comp" ~ "Workers Comp",
-            income_source == "tanf" ~ "TANF",
-            income_source == "ga" ~ "GA",
-            income_source == "soc_sec_retirement" ~ "Social Security Retirement",
-            income_source == "pension" ~ "Pension",
-            income_source == "child_support" ~ "Child Support",
-            income_source == "alimony" ~ "Alimony",
-            income_source == "other_income_source" ~ "Other"
+          income_source = dplyr::recode(
+            income_source,
+            "earned" = "Earned",
+            "unemployment" = "Unemployment",
+            "ssi" = "SSI",
+            "ssdi" = "SSDI",
+            "va_disability_service" = "VA Disability Service",
+            "va_disability_non_service" = "VA Disability Non Service",
+            "private_disability" = "Private Disability",
+            "workers_comp" = "Workers Comp",
+            "tanf" = "TANF",
+            "ga" = "GA",
+            "soc_sec_retirement" = "Social Security Retirement",
+            "pension" = "Pension",
+            "child_support" = "Child Support",
+            "alimony" = "Alimony",
+            "other_income_source" = "Other"
           )
-        )
-
-    })
-
-    ### Render income source pie chart ----
-    output$income_source_pie_chart <- echarts4r::renderEcharts4r({
-
-      income_source_pie_chart_data() |>
+        ) |>
         pie_chart(
           category = "income_source",
           count = "n"
         )
-
     })
 
     ## Benefits Source Pie Chart ----
-
-    ### Get data for benefits source pie chart ----
-    benefits_source_pie_chart_data <- shiny::reactive({
-
-      out <- benefits_data_filtered() |>
+    output$benefits_source_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_benefits_data_per_enrollment() |>
         dplyr::select(
+          enrollment_id,
           organization_id,
-          personal_id,
-          snap:other_benefits_source,
-          date_updated
+          snap,
+          wic,
+          tanf_child_care,
+          tanf_transportation,
+          other_tanf,
+          other_benefits_source
         ) |>
         tidyr::pivot_longer(
           cols = snap:other_benefits_source,
           names_to = "benefits_source",
           values_to = "response"
         ) |>
-        dplyr::filter(response == "Yes") |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          benefits_source,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          benefits_source
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
+        dplyr::filter(response == "Yes") |> 
         dplyr::count(benefits_source) |>
         dplyr::mutate(
-          benefits_source = janitor::make_clean_names(
-            string = benefits_source,
-            case = "title"
+          benefits_source = dplyr::recode(
+            benefits_source,
+            "snap" = "Snap",
+            "wic" = "WIC",
+            "tanf_child_care" = "TANF Child Care",
+            "tanf_transportation" = "TANF Transportation",
+            "other_tanf" = "Other TANF",
+            "other_benefits_source" = "Other"
           )
         ) |>
-        dplyr::arrange(benefits_source)
-
-    })
-
-    ### Render benefits source pie chart ----
-    output$benefits_source_pie_chart <- echarts4r::renderEcharts4r({
-
-      benefits_source_pie_chart_data() |>
         pie_chart(
           category = "benefits_source",
           count = "n"
         )
-
     })
 
     ## Health Insurance Source Pie Chart ----
-
-    ### Get data for insurance source pie chart ----
-    insurance_source_pie_chart_data <- shiny::reactive({
-
-      out <- benefits_data_filtered() |>
+    output$insurance_source_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_benefits_data_per_enrollment() |>
         dplyr::select(
+          enrollment_id,
           organization_id,
           personal_id,
           medicaid,
@@ -777,56 +568,34 @@ validate_data(out)
           private_pay,
           state_health_ins,
           indian_health_services,
-          other_insurance,
-          date_updated
+          other_insurance
         ) |>
         tidyr::pivot_longer(
           cols = medicaid:other_insurance,
           names_to = "insurance_source",
           values_to = "response"
         ) |>
-        dplyr::filter(response == "Yes") |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          insurance_source,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          insurance_source
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
+        dplyr::filter(response == "Yes") |> 
         dplyr::count(insurance_source) |>
         dplyr::mutate(
-          insurance_source = janitor::make_clean_names(
-            string = insurance_source,
-            case = "title"
+          insurance_source = dplyr::recode(
+            insurance_source,
+            "medicaid" = "Medicaid",
+            "medicare" = "Medicare",
+            "schip" = "SCHIP",
+            "vha_services" = "VHA Services",
+            "employer_provided" = "Employer Provided",
+            "cobra" = "Cobra",
+            "private_pay" = "Private Pay",
+            "state_health_ins" = "State Health Insurance",
+            "indian_health_services" = "Indian Health Services",
+            "other_insurance" = "Other"
           )
         ) |>
-        dplyr::arrange(insurance_source) |>
-        dplyr::rename(health_insurance_source = insurance_source)
-
-    })
-
-    ### Render insurance source pie chart ----
-    output$insurance_source_pie_chart <- echarts4r::renderEcharts4r({
-
-      insurance_source_pie_chart_data() |>
         pie_chart(
-          category = "health_insurance_source",
+          category = "insurance_source",
           count = "n"
         )
-
     })
 
     ## Benefits Sankey Chart ----
