@@ -122,3 +122,11 @@ validate_data <- function(data, message = "No data to display") {
     )
   )
 }
+
+get_missing_categories <- function() {
+  c(
+    "Client doesn't know",
+    "Client prefers not to answer",
+    "Data not collected"
+  )
+}

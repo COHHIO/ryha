@@ -197,9 +197,15 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     })
 
-    # Apply the filters to the education data
+    # Filter education data
     education_data_filtered <- shiny::reactive({
       filter_data(education_data, clients_filtered())
+    })
+
+    # Create reactive with the most recent data collected per enrollment
+    most_recent_data_per_enrollment <- shiny::reactive({
+      education_data_filtered() |>
+        filter_most_recent_data_per_enrollment()
     })
 
     # Total number of Youth in program(s) that exist in the `education.csv`
@@ -227,52 +233,19 @@ mod_education_server <- function(id, education_data, clients_filtered){
     })
 
     # Last Grade Completed ----
-
     ## Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    last_grade_completed_pie_chart_data <- shiny::reactive({
-      out <- education_data_filtered() |>
+    output$last_grade_completed_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_data_per_enrollment() |>
+        # Remove missing values
         dplyr::filter(
           last_grade_completed_grouped != "Unknown",
           !is.na(last_grade_completed_grouped)
         ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          last_grade_completed_grouped,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          last_grade_completed_grouped
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          last_grade_completed_grouped,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
-        dplyr::count(last_grade_completed_grouped) |>
-        dplyr::arrange(last_grade_completed_grouped) |>
-        dplyr::mutate(last_grade_completed_grouped = as.character(last_grade_completed_grouped))
-
-    })
-
-    # Create education pie chart
-    output$last_grade_completed_pie_chart <- echarts4r::renderEcharts4r({
-
-      last_grade_completed_pie_chart_data() |>
+        dplyr::count(last_grade_completed_grouped) |> 
         pie_chart(
           category = "last_grade_completed_grouped",
           count = "n"
         )
-
     })
 
     ## Sankey Chart ----
@@ -297,56 +270,20 @@ mod_education_server <- function(id, education_data, clients_filtered){
     })
 
     # School Status ----
-
     ## Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    school_status_pie_chart_data <- shiny::reactive({
-
-      out <- education_data_filtered() |>
-        dplyr::filter(
-          !school_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(school_status)
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          school_status,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          school_status
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          school_status,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
-        dplyr::count(school_status) |>
-        dplyr::arrange(school_status)
-
-    })
-
-    # Create education pie chart
     output$school_status_pie_chart <- echarts4r::renderEcharts4r({
 
-      school_status_pie_chart_data() |>
+      most_recent_data_per_enrollment() |>
+        # Remove missing values
+        dplyr::filter(
+          !school_status %in% get_missing_categories(),
+          !is.na(school_status)
+        ) |>
+        dplyr::count(school_status) |> 
         pie_chart(
           category = "school_status",
           count = "n"
         )
-
     })
 
     ## Sankey Chart ----

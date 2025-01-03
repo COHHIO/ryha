@@ -187,57 +187,24 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     ns <- session$ns
 
     # Gender ----
-
-    # Apply the filters to the gender data
-    gender_data_filtered <- shiny::reactive({
-      filter_data(gender_data, clients_filtered(), at = "youth")
-    })
-
-    # Create reactive data frame to data to be displayed in pie chart
-    gender_pie_chart_data <- shiny::reactive({
-
-      gender_data_filtered() |>
-        dplyr::count(gender) |>
-        dplyr::arrange(gender)
-
-    })
-
     output$gender_pie_chart <- echarts4r::renderEcharts4r({
-
-      gender_pie_chart_data() |>
+      gender_data |> 
+        filter_data(clients_filtered(), at = "youth") |>
+        dplyr::count(gender) |>
+        dplyr::arrange(gender) |> 
         pie_chart(
           category = "gender",
           count = "n"
         )
-
     })
 
-    # Apply the filters to the client data
+    # Filter enrollment data
     enrollment_data_filtered <- shiny::reactive({
-
-      enrollment_data |>
-        dplyr::select(
-          personal_id,
-          organization_id,
-          enrollment_id,
-          sexual_orientation,
-          former_ward_child_welfare,
-          former_ward_juvenile_justice
-        ) |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(enrollment_data, clients_filtered())
     })
 
     # Sexual Orientation ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    sexual_orientation_pie_chart_data <- shiny::reactive({
-
-      validate_data(enrollment_data_filtered())
-
+    output$sexual_orientation_pie_chart <- echarts4r::renderEcharts4r({
       enrollment_data_filtered() |>
         dplyr::mutate(sexual_orientation = ifelse(
           is.na(sexual_orientation),
@@ -245,30 +212,19 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
           sexual_orientation
         )) |>
         dplyr::count(sexual_orientation) |>
-        dplyr::arrange(sexual_orientation)
-
-    })
-
-    output$sexual_orientation_pie_chart <- echarts4r::renderEcharts4r({
-
-      sexual_orientation_pie_chart_data() |>
         pie_chart(
           category = "sexual_orientation",
           count = "n"
         )
-
     })
 
-    # Apply the filters to the client data
+    # Filter client data
     client_data_filtered <- shiny::reactive({
       filter_data(client_data, clients_filtered(), at = "youth")
     })
 
     # Veteran ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    veteran_pie_chart_data <- shiny::reactive({
-
+    output$veteran_pie_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
         dplyr::mutate(veteran_status = ifelse(
           is.na(veteran_status),
@@ -276,126 +232,61 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
           veteran_status
         )) |>
         dplyr::count(veteran_status) |>
-        dplyr::arrange(veteran_status)
-
-    })
-
-    output$veteran_pie_chart <- echarts4r::renderEcharts4r({
-
-      veteran_pie_chart_data() |>
+        dplyr::arrange(veteran_status) |>
         pie_chart(
           category = "veteran_status",
           count = "n"
         )
-
     })
 
     # Age ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    age_bar_chart_data <- shiny::reactive({
-
+    output$age_bar_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
         dplyr::filter(!is.na(age)) |>
         dplyr::count(age) |>
         dplyr::arrange(age) |>
-        dplyr::mutate(age = as.factor(age))
-
-    })
-
-    output$age_bar_chart <- echarts4r::renderEcharts4r({
-
-      age_bar_chart_data() |>
+        dplyr::mutate(age = as.factor(age)) |>
         bar_chart(
           x = "age",
           y = "n",
           axis_flip = FALSE
         ) |>
         echarts4r::e_axis_labels(x = "Age", y = "# of Youth")
-
     })
 
     # Ethnicity ----
-
-    # Apply the filters to the ethnicity data
-    ethnicity_data_filtered <- shiny::reactive({
-      filter_data(ethnicity_data, clients_filtered(), at = "youth")
-    })
-
-    # Create reactive data frame to data to be displayed in pie chart
-    ethnicity_bar_chart_data <- shiny::reactive({
-
-      ethnicity_data_filtered() |>
+    output$ethnicity_bar_chart <- echarts4r::renderEcharts4r({
+      ethnicity_data |> 
+        filter_data(clients_filtered(), at = "youth") |>
         dplyr::filter(!is.na(ethnicity)) |>
         dplyr::count(ethnicity) |>
-        dplyr::arrange(n)
-
-    })
-
-    output$ethnicity_bar_chart <- echarts4r::renderEcharts4r({
-
-      ethnicity_bar_chart_data() |>
+        dplyr::arrange(n) |>
         bar_chart(
           x = "ethnicity",
           y = "n"
         )
-
     })
 
     # Welfare ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    welfare_pie_chart_data <- shiny::reactive({
-
-      shiny::req(enrollment_data_filtered())
-
-      out <- enrollment_data_filtered() |>
-        dplyr::filter(!is.na(former_ward_child_welfare))
-
-validate_data(out)
-
-      out |>
-        dplyr::count(former_ward_child_welfare) |>
-        dplyr::arrange(former_ward_child_welfare)
-
-    })
-
     output$welfare_pie_chart <- echarts4r::renderEcharts4r(
-
-      welfare_pie_chart_data() |>
+      enrollment_data_filtered() |>
+        dplyr::filter(!is.na(former_ward_child_welfare)) |>
+        dplyr::count(former_ward_child_welfare) |>
         pie_chart(
           category = "former_ward_child_welfare",
           count = "n"
         )
-
     )
 
     # Juvenile ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    juvenile_pie_chart_data <- shiny::reactive({
-
-      shiny::req(enrollment_data_filtered())
-
-      out <- enrollment_data_filtered() |>
-        dplyr::filter(!is.na(former_ward_juvenile_justice))
-
-validate_data(out)
-
-      out |>
-        dplyr::count(former_ward_juvenile_justice) |>
-        dplyr::arrange(former_ward_juvenile_justice)
-
-    })
-
     output$juvenile_pie_chart <- echarts4r::renderEcharts4r(
-
-      juvenile_pie_chart_data() |>
+      enrollment_data_filtered() |>
+        dplyr::filter(!is.na(former_ward_juvenile_justice)) |>
+        dplyr::count(former_ward_juvenile_justice) |>
         pie_chart(
           category = "former_ward_juvenile_justice",
           count = "n"
         )
-
     )
 
   })

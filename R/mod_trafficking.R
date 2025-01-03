@@ -238,7 +238,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
     )
 
-    # Apply the filters to the trafficking data
+    # Filter trafficking data
     trafficking_data_filtered <- shiny::reactive(
       filter_data(trafficking_data, clients_filtered())
     )
@@ -289,49 +289,14 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Sex Trafficking ----
 
     ## Exchange for Sex ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    exchange_sex_pie_chart_data <- shiny::reactive({
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          exchange_for_sex %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          exchange_for_sex,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          exchange_for_sex
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          exchange_for_sex,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(exchange_for_sex) |>
-        dplyr::arrange(exchange_for_sex)
-
-    })
-
-    # Create education pie chart
     output$exchange_sex_pie_chart <- echarts4r::renderEcharts4r(
-
-      exchange_sex_pie_chart_data() |>
+      trafficking_data_filtered() |> 
+        dplyr::filter(exchange_for_sex %in% c("Yes", "No")) |> 
+        dplyr::count(exchange_for_sex) |> 
         pie_chart(
           category = "exchange_for_sex",
           count = "n"
         )
-
     )
 
     # Create missingness stats data frame
@@ -361,148 +326,42 @@ validate_data(out)
     )
 
     ## Count of Exchange for Sex ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    count_sex_pie_chart_data <- shiny::reactive({
-
-      out <- trafficking_data_filtered() |>
+    output$count_sex_pie_chart <- echarts4r::renderEcharts4r(
+      trafficking_data_filtered() |>
+        # Remove missing values
         dplyr::filter(
-          !count_of_exchange_for_sex %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          !count_of_exchange_for_sex %in% get_missing_categories(),
           !is.na(count_of_exchange_for_sex)
         ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          count_of_exchange_for_sex,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          count_of_exchange_for_sex
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          count_of_exchange_for_sex,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
         dplyr::count(count_of_exchange_for_sex) |>
-        dplyr::arrange(count_of_exchange_for_sex)
-
-    })
-
-    # Create pie chart
-    output$count_sex_pie_chart <- echarts4r::renderEcharts4r(
-
-      count_sex_pie_chart_data() |>
         pie_chart(
           category = "count_of_exchange_for_sex",
           count = "n"
         )
-
     )
 
     ## Asked or Forced to Exchange for Sex ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    asked_sex_pie_chart_data <- shiny::reactive({
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          asked_or_forced_to_exchange_for_sex %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          asked_or_forced_to_exchange_for_sex,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          asked_or_forced_to_exchange_for_sex
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          asked_or_forced_to_exchange_for_sex,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(asked_or_forced_to_exchange_for_sex) |>
-        dplyr::arrange(asked_or_forced_to_exchange_for_sex)
-
-    })
-
-    # Create education pie chart
     output$asked_sex_pie_chart <- echarts4r::renderEcharts4r(
-
-      asked_sex_pie_chart_data() |>
+      trafficking_data_filtered() |>
+        dplyr::filter(asked_or_forced_to_exchange_for_sex %in% c("Yes", "No")) |>
+        dplyr::count(asked_or_forced_to_exchange_for_sex) |>
         pie_chart(
           category = "asked_or_forced_to_exchange_for_sex",
           count = "n"
         )
-
     )
 
     # Labor Trafficking ----
 
     ## Workplace Violence Threats ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    violence_labor_pie_chart_data <- shiny::reactive({
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          work_place_violence_threats %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          work_place_violence_threats,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          work_place_violence_threats
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          work_place_violence_threats,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(work_place_violence_threats) |>
-        dplyr::arrange(work_place_violence_threats)
-
-    })
-
-    # Create workplace violence threats pie chart
     output$violence_labor_pie_chart <- echarts4r::renderEcharts4r(
-
-      violence_labor_pie_chart_data() |>
+      trafficking_data_filtered() |>
+        dplyr::filter(work_place_violence_threats %in% c("Yes", "No")) |>
+        dplyr::count(work_place_violence_threats) |>
         pie_chart(
           category = "work_place_violence_threats",
           count = "n"
         )
-
     )
 
     # Create missingness stats data frame
@@ -532,95 +391,25 @@ validate_data(out)
     )
 
     ## Workplace Promise Difference ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    promise_labor_pie_chart_data <- shiny::reactive({
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          workplace_promise_difference %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          workplace_promise_difference,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          workplace_promise_difference
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          workplace_promise_difference,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(workplace_promise_difference) |>
-        dplyr::arrange(workplace_promise_difference)
-
-    })
-
-    # Create workplace violence threats pie chart
     output$promise_labor_pie_chart <- echarts4r::renderEcharts4r(
-
-      promise_labor_pie_chart_data() |>
+      trafficking_data_filtered() |>
+        dplyr::filter(workplace_promise_difference %in% c("Yes", "No")) |>
+        dplyr::count(workplace_promise_difference) |>
         pie_chart(
           category = "workplace_promise_difference",
           count = "n"
         )
-
     )
 
     ## Coerced to Continue Work ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    coerced_labor_pie_chart_data <- shiny::reactive({
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          coerced_to_continue_work %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          coerced_to_continue_work,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          coerced_to_continue_work
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          coerced_to_continue_work,
-          .keep_all = TRUE
-        )
-
-validate_data(out)
-
-      out |>
-        dplyr::count(coerced_to_continue_work) |>
-        dplyr::arrange(coerced_to_continue_work)
-
-    })
-
-    # Create workplace violence threats pie chart
     output$coerced_labor_pie_chart <- echarts4r::renderEcharts4r(
-
-      coerced_labor_pie_chart_data() |>
+      trafficking_data_filtered() |>
+        dplyr::filter(coerced_to_continue_work %in% c("Yes", "No")) |>
+        dplyr::count(coerced_to_continue_work) |>
         pie_chart(
           category = "coerced_to_continue_work",
           count = "n"
         )
-
     )
 
   })

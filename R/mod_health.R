@@ -308,12 +308,20 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
     })
 
-    # Apply the filters to the health data
+    # Filter health data
     health_data_filtered <- shiny::reactive({
       filter_data(health_data, clients_filtered())
     })
 
-    # Apply the filters to the counseling data
+    # Create reactive with the most recent data collected per enrollment
+    most_recent_health_data_per_enrollment <- shiny::reactive({
+      health_data_filtered() |>
+        # Health data should be collected only at Project start and Project exit
+        dplyr::filter(data_collection_stage %in% c("Project start", "Project exit")) |>
+        filter_most_recent_data_per_enrollment()
+    })
+
+    # Filter counseling data
     counseling_data_filtered <- shiny::reactive({
       filter_data(counseling_data, clients_filtered())
     })
@@ -360,54 +368,18 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     })
 
     # General Health ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    general_pie_chart_data <- shiny::reactive({
-
-      out <- health_data_filtered() |>
+    output$general_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_health_data_per_enrollment() |>
+        # Remove missing values
         dplyr::filter(
-          !general_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          !general_health_status %in% get_missing_categories(),
           !is.na(general_health_status)
         ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          general_health_status,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          general_health_status
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          general_health_status,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
         dplyr::count(general_health_status) |>
-        dplyr::arrange(general_health_status)
-
-    })
-
-    # Create general health status pie chart
-    output$general_pie_chart <- echarts4r::renderEcharts4r({
-
-      general_pie_chart_data() |>
         pie_chart(
           category = "general_health_status",
           count = "n"
         )
-
     })
 
     # Create general health status sankey chart
@@ -460,54 +432,18 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     )
 
     # Dental Health ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    dental_pie_chart_data <- shiny::reactive({
-
-      out <- health_data_filtered() |>
+    output$dental_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_health_data_per_enrollment() |>
+        # Remove missing values
         dplyr::filter(
-          !dental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          !dental_health_status %in% get_missing_categories(),
           !is.na(dental_health_status)
         ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          dental_health_status,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          dental_health_status
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          dental_health_status,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
         dplyr::count(dental_health_status) |>
-        dplyr::arrange(dental_health_status)
-
-    })
-
-    # Create dental health status pie chart
-    output$dental_pie_chart <- echarts4r::renderEcharts4r({
-
-      dental_pie_chart_data() |>
         pie_chart(
           category = "dental_health_status",
           count = "n"
         )
-
     })
 
     # Create dental health status sankey chart
@@ -560,54 +496,18 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     )
 
     # Mental Health ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    mental_pie_chart_data <- shiny::reactive({
-
-      out <- health_data_filtered() |>
+    output$mental_pie_chart <- echarts4r::renderEcharts4r({
+      most_recent_health_data_per_enrollment() |>
+        # Remove missing values
         dplyr::filter(
-          !mental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
+          !mental_health_status %in% get_missing_categories(),
           !is.na(mental_health_status)
         ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          mental_health_status,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          mental_health_status
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          mental_health_status,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
         dplyr::count(mental_health_status) |>
-        dplyr::arrange(mental_health_status)
-
-    })
-
-    # Create mental health status pie chart
-    output$mental_pie_chart <- echarts4r::renderEcharts4r({
-
-      mental_pie_chart_data() |>
         pie_chart(
           category = "mental_health_status",
           count = "n"
         )
-
     })
 
     # Create mental health status sankey chart
@@ -660,51 +560,15 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     )
 
     # Counseling ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    counseling_pie_chart_data <- shiny::reactive({
-
-      # Keep the most recently updated data for each individual
-      out <- counseling_data_filtered() |>
-        dplyr::filter(
-          counseling_received %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          counseling_received,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          counseling_received
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          counseling_received,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
+    output$counseling_pie_chart <- echarts4r::renderEcharts4r({
+      counseling_data_filtered() |>
+        dplyr::filter(counseling_received %in% c("Yes", "No")) |>
         dplyr::count(counseling_received) |>
-        dplyr::arrange(counseling_received)
-
-    })
-
-    # Create counseling pie chart
-    output$counseling_pie_chart <- echarts4r::renderEcharts4r(
-
-      counseling_pie_chart_data() |>
         pie_chart(
           category = "counseling_received",
           count = "n"
         )
-
-    )
+    })
 
     # Capture the data quality statistics for "counseling_received" field
     counseling_missingness_stats <- shiny::reactive(

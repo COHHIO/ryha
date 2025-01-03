@@ -150,9 +150,15 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     })
 
-    # Apply the filters to the employment data
+    # Filter employment data
     employment_data_filtered <- shiny::reactive({
       filter_data(employment_data, clients_filtered())
+    })
+
+    # Create reactive with the most recent data collected per enrollment
+    most_recent_data_per_enrollment <- shiny::reactive({
+      employment_data_filtered() |>
+        filter_most_recent_data_per_enrollment()
     })
 
     # Total number of Youth in program(s) that exist in the `employment.csv`
@@ -176,134 +182,46 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
       n_youth_with_employment_data()
     })
 
-    # Create reactive data frame to data to be displayed in pie chart
-    employed_pie_chart_data <- shiny::reactive({
-
-      out <- employment_data_filtered() |>
-        dplyr::filter(employed %in% c("Yes", "No")) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          employed,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          employed
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          employed,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
-        dplyr::count(employed) |>
-        dplyr::arrange(employed)
-
-    })
-
-    # Create employment pie chart
     output$employed_pie_chart <- echarts4r::renderEcharts4r({
-
-      employed_pie_chart_data() |>
+      most_recent_data_per_enrollment() |> 
+        # Remove missing values
+        dplyr::filter(
+          !employed %in% get_missing_categories(),
+          !is.na(employed)
+        ) |>
+        dplyr::count(employed) |>
         pie_chart(
           category = "employed",
           count = "n"
         )
-
     })
 
-    # Create reactive data frame to data to be displayed in pie chart
-    employment_type_pie_chart_data <- shiny::reactive({
-
-      out <- employment_data_filtered() |>
-        dplyr::filter(
-          employment_type %in% EmploymentTypeCodes$Description[1:3]
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          employment_type,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          employment_type
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          employment_type,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
-        dplyr::count(employment_type) |>
-        dplyr::arrange(employment_type)
-
-    })
-
-    # Create employment type pie chart
     output$employment_type_pie_chart <- echarts4r::renderEcharts4r({
-
-      employment_type_pie_chart_data() |>
+      most_recent_data_per_enrollment() |> 
+        # Remove missing values
+        dplyr::filter(
+          !employment_type %in% get_missing_categories(),
+          !is.na(employment_type)
+        ) |>
+        dplyr::count(employment_type) |>
         pie_chart(
           category = "employment_type",
           count = "n"
         )
-
     })
 
-    # Create reactive data frame to data to be displayed in pie chart
-    not_employed_reason_pie_chart_data <- shiny::reactive({
-
-      out <- employment_data_filtered() |>
-        dplyr::filter(
-          not_employed_reason != "Data not collected"
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          not_employed_reason,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          not_employed_reason
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          not_employed_reason,
-          .keep_all = TRUE
-        )
-
-      validate_data(out)
-
-      out |>
-        dplyr::count(not_employed_reason) |>
-        dplyr::arrange(not_employed_reason)
-
-    })
-
-    # Create "not employed reason" type pie chart
     output$not_employed_reason_pie_chart <- echarts4r::renderEcharts4r({
-
-      not_employed_reason_pie_chart_data() |>
+      most_recent_data_per_enrollment() |> 
+        # Remove missing values
+        dplyr::filter(
+          !not_employed_reason %in% get_missing_categories(),
+          !is.na(not_employed_reason)
+        ) |>
+        dplyr::count(not_employed_reason) |>
         pie_chart(
           category = "not_employed_reason",
           count = "n"
         )
-
     })
 
     output$employed_sankey_chart <- echarts4r::renderEcharts4r({
