@@ -20,7 +20,6 @@
 #' )
 #' }
 pie_chart <- function(data, category, count) {
-
   data |>
     # echarts4r::e_charts_() allows `x` to be a character string
     echarts4r::e_charts_(x = category) |>
