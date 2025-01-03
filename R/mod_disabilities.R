@@ -270,6 +270,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     n_youth_in_disability_data <- reactive({
 
+      # TODO: Same as nrow(most_recent_data_per_enrollment())
       disabilities_data_filtered() |>
         dplyr::select(organization_id, personal_id) |>
         dplyr::n_distinct()
