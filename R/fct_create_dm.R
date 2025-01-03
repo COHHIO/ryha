@@ -393,7 +393,16 @@ create_dm <- function(env,
         "organization_id",
         "date_updated"
       )
-    )
+    ) |>
+      # Bucket Living Situation categories
+      dplyr::left_join(
+        LivingCodes |>
+          dplyr::select(
+            description = Description,
+            living_situation_grouped = ExitCategory
+          ),
+        by = c("living_situation" = "description")
+      )
 
     health <- read_data_from_table(
       connection = con,
@@ -539,7 +548,16 @@ create_dm <- function(env,
         "organization_id",
         "date_updated"
       )
-    )
+    ) |>
+      # Bucket Destination categories (same as Living Situation)
+      dplyr::left_join(
+        LivingCodes |>
+          dplyr::select(
+            description = Description,
+            destination_grouped = ExitCategory
+          ),
+        by = c("destination" = "description")
+      )
 
     # Create {dm} object
     dm <- list(

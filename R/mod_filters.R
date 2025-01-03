@@ -426,9 +426,6 @@ mod_filters_server <- function(id, dm, rctv){
           filter_most_recent_enrollment_per_group(grouping_vars = "ssn")
       }
 
-      # Update the reactiveValues list of selected projects
-      rctv$selected_projects <- input$project_filter_global
-
       # Return the filtered data
       out |>
         dplyr::select(
