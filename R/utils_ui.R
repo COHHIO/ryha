@@ -79,7 +79,8 @@ filter_most_recent_data_per_enrollment <- function(data) {
       data_collection_stage = factor(
         x = data_collection_stage,
         levels = c("Project start", "Project update", "Project annual assessment", "Project exit"),
-        labels = c("Project start", "Project not start nor exit", "Project not start nor exit", "Project exit"),
+        # Treat Project annual assessment as an update
+        labels = c("Project start", "Project update", "Project update", "Project exit"),
         ordered = TRUE
       )
     ) |> 
@@ -88,9 +89,9 @@ filter_most_recent_data_per_enrollment <- function(data) {
     # Keep rows that correspond to the most recent data_collection_stage
     dplyr::filter(data_collection_stage == max(data_collection_stage)) |> 
     # Keep rows that have the most recent date_updated
-    # (To handle multiple "Project not start nor exit" with different date_updated as most recent data_collection_stage)
+    # (To handle multiple "Project update" with different date_updated as most recent data_collection_stage)
     dplyr::filter(date_updated == max(date_updated)) |>
-    # Handle multiple "Project not start nor exit" with the same date_updated as most recent data_collection_stage
+    # Handle multiple "Project update" with the same date_updated as most recent data_collection_stage
     dplyr::slice(1) |>
     # Ungroup data
     dplyr::ungroup() 

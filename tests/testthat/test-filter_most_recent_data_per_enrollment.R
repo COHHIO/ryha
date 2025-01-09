@@ -57,7 +57,7 @@ test_that("filter works with multiple enrollments", {
   expect_equal(kept_data_collection_stage, c(3, 5))
 })
 
-test_that("filter works with multiple 'Project not start nor exit' that have the same date_updated", {
+test_that("filter works with multiple 'Project update' that have the same date_updated", {
   mock_data <- tibble::tribble(
     ~test_row, ~organization_id, ~personal_id, ~enrollment_id,  ~data_collection_stage,  ~date_updated,
     1, 1L, 1L, 1000L, "Project start", "2022-12-31",
