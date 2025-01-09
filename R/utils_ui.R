@@ -72,6 +72,43 @@ link_section <- function(section, label = "HMIS Data Standards Manual") {
   )
 }
 
+#' Filter most recent data per enrollment
+#'
+#' `filter_most_recent_data_per_enrollment()` filters the most recent data
+#' for enrollments with data collected in multiple data collection stages
+#' following a set of rules.
+#' 
+#' @param data A data frame with multiple rows per enrollment
+#' 
+#' @details
+#' An enrollment's most recent data corresponds to data collected at "Project exit".
+#' If the enrollment has no "Project exit", the most recent data corresponds to data
+#' collected at the "Project update" with the most recent date_updated ("Project update"
+#' includes both "Project update" and "Project annual assessment" data_collection_stages). 
+#' If an enrollment has multiple "Project update" with the same most recent date_updated, 
+#' the tie is broken by selecting the first appearance. Finally, if an enrollment has no 
+#' "Project update", the most recent data corresponds to data collected at "Project start".
+#'
+#' The general rules described above wouldn't be applicable in certain scenarios (e.g.
+#' Employment data is collected at "Project start" and "Project exit" by definition,
+#' showing missing data for entries that correspond to a "Project update"). To address
+#' this issue, function's users are expected to preprocess the data accordingly before
+#' calling `filter_most_recent_data_per_enrollment()` (e.g. by filtering out data that
+#' correspond to "Project update" data collection stage).
+#' 
+#' @return A data frame with one row per enrollment
+#' 
+#' @examples 
+#' \dontrun{
+#' mock_data <- tibble::tribble(
+#'   ~test_row, ~organization_id, ~personal_id, ~enrollment_id,  ~data_collection_stage,  ~date_updated, ~status,
+#'   1, 1L, 1L, 1000L, "Project start", "2024-12-31", "A",
+#'   2, 1L, 1L, 1000L, "Project update", "2023-01-01", "B"
+#' ) |>
+#'   dplyr::mutate(dplyr::across(date_updated, as.Date))
+#' 
+#' filter_most_recent_data_per_enrollment(mock_data)
+#' }
 filter_most_recent_data_per_enrollment <- function(data) {
   data |>
     dplyr::mutate(
@@ -97,6 +134,22 @@ filter_most_recent_data_per_enrollment <- function(data) {
     dplyr::ungroup() 
 }
 
+#' Filter data based on clients and validate
+#'
+#' `filter_data()` filters the provided dataset to include only records that match 
+#' the given `clients_filtered` dataset at the specified level (enrollment or youth). 
+#' It then validates the filtered dataset to ensure it is not empty.
+#'
+#' @param data A data frame to be filtered
+#' @param clients_filtered A data frame containing the client records 
+#' to filter `data` by. Must contain columns that match the selected `at` level.
+#' @param at A character string specifying the filtering level.
+#' Either `"enrollment"` (default) or `"youth"`. 
+#' - `"enrollment"`: Filters data based on `personal_id`, `organization_id` and `enrollment_id`.
+#' - `"youth"`: Filters data based on `personal_id` and `organization_id`.
+#'
+#' @return A filtered data frame containing only the records matching the specified 
+#' clients. If no matching records are found, a validation error is triggered.
 filter_data <- function(data, clients_filtered, at = "enrollment") {
   by_cols <- switch(
     at,
@@ -115,6 +168,17 @@ filter_data <- function(data, clients_filtered, at = "enrollment") {
   filtered_data
 }
 
+#' Validate data
+#'
+#' `validate_data()` checks whether the provided dataset has at least one row.
+#' If the data is empty, it triggers a validation error with a specified message.
+#' 
+#' @param data A data frame to validate
+#' @param message A character string specifying the message to display when 
+#' the data is empty. Defaults to "No data to display".
+#' 
+#' @return This function does not return a value. It triggers a validation 
+#' error in a Shiny app if the dataset is empty, preventing further execution.
 validate_data <- function(data, message = "No data to display") {
   shiny::validate(
     shiny::need(
@@ -124,6 +188,10 @@ validate_data <- function(data, message = "No data to display") {
   )
 }
 
+#' Get missing data categories
+#'
+#' `get_missing_categories()` returns a character vector of standardized 
+#' categories representing missing data.
 get_missing_categories <- function() {
   c(
     "Client doesn't know",
