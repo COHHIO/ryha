@@ -6,9 +6,8 @@ reference:
 - title: Chart Functions
   contents:
   - bar_chart
-  - get_ids_for_sankey
   - pie_chart
-  - prep_sankey_data
+  - prepare_sankey_data
   - sankey_chart
 - title: Package Datasets
   contents:
@@ -59,6 +58,10 @@ reference:
   - hash
   - prep_tables
   - process_data
+  - filter_most_recent_enrollment_per_group
+  - filter_most_recent_data_per_enrollment
+  - filter_data
+  - get_missing_categories
 - title: Ingest Functions
   contents:
   - check_colnames
@@ -83,6 +86,7 @@ reference:
   contents:
   - link_section
   - with_popover
+  - validate_data
 - title: Other Functions
   contents: run_app
 
