@@ -374,6 +374,11 @@ create_dm <- function(env,
       last_grade_completed_grouped = factor(
         last_grade_completed,
         levels = c(
+          "Missing",
+          "Data not collected",
+          "Client prefers not to answer",
+          "Client doesn't know",
+          "School program does not have grade levels",
           "Less than Grade 5",
           "Grades 5-6",
           "Grades 7-8",
@@ -384,13 +389,14 @@ create_dm <- function(env,
           "Associate's Degree",
           "Bachelor's Degree",
           "Graduate Degree",
-          "Vocational Degree",
-          "School program does not have grade levels",
-          "Client doesn't know",
-          "Client refused",
-          "Data not collected"
+          "Vocational Degree"
         ),
         labels = c(
+          "Missing",
+          "Data not collected",
+          "Client prefers not to answer",
+          "Client doesn't know",
+          "School program does not have grade levels",
           "Less than Grade 5",
           "Grades 5-8",
           "Grades 5-8",
@@ -401,27 +407,24 @@ create_dm <- function(env,
           "College Degree/Vocational",
           "College Degree/Vocational",
           "College Degree/Vocational",
-          "College Degree/Vocational",
-          "Unknown",
-          "Unknown",
-          "Unknown",
-          "Unknown"
+          "College Degree/Vocational"
         ),
         ordered = TRUE
       ),
       school_status = factor(
         school_status,
         levels = c(
-          "Obtained GED",
-          "Graduated from high school",
-          "Attending school regularly",
-          "Attending school irregularly",
-          "Suspended",
-          "Expelled",
-          "Dropped out",
+          "Missing",
+          "Data not collected",
+          "Client prefers not to answer",
           "Client doesn't know",
-          "Client refused",
-          "Data not collected"
+          "Dropped out",
+          "Expelled",
+          "Suspended",
+          "Attending school irregularly",
+          "Attending school regularly",
+          "Graduated from high school",
+          "Obtained GED"
         ),
         ordered = TRUE
       )
