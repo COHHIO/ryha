@@ -94,14 +94,14 @@ mod_disabilities_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth with Substance Use by Type",
+            text = "# of Youth by Substance Use",
             content = link_section("4.10 Substance Use Disorder")
           ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("substance_pie_chart"),
+            outputId = ns("substance_chart"),
             height = "100%"
           )
         )
@@ -217,11 +217,6 @@ mod_disabilities_ui <- function(id){
             reactable::reactableOutput(outputId = ns("missingness_stats_tbl1")),
             shiny::br(),
             shiny::em("Note: \"Missing\" is defined as \"Client doesn't know\", \"Client prefers not to answer\", \"Data not collected\", or blank.")
-          ),
-
-          shiny::tabPanel(
-            title = "Missing by Disability",
-            reactable::reactableOutput(outputId = ns("missingness_stats_tbl2"))
           )
 
         )
@@ -260,9 +255,28 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Create reactive with the most recent data collected per enrollment
     most_recent_data_per_enrollment <- shiny::reactive({
-      disabilities_data_filtered() |>
+      out <- disabilities_data_filtered() |>
         tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
         filter_most_recent_data_per_enrollment()
+
+      # Handle missing responses
+      missing_columns <- setdiff(
+        c("Chronic Health Condition",
+          "Developmental Disability",
+          "HIV/AIDS",
+          "Mental Health Disorder",
+          "Physical Disability",
+          "Substance Use Disorder"),
+        colnames(out)
+      )
+
+      if (length(missing_columns) > 0) {
+        for (column in missing_columns) {
+          out[[column]] <- NA_character_
+        }
+      }
+
+      out
     })
 
     # TODO // Implement these "improved" counts across the first infoBox for
@@ -345,19 +359,25 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
           names_to = "Disability",
           values_to = "Response"
         ) |>
-        # We will consider NA values as "Data not collected"
-        tidyr::replace_na(list(Response = "Data not collected")) |>
+        # We will consider NA values as "Missing"
+        tidyr::replace_na(list(Response = "Missing")) |>
         dplyr::count(Disability, Response) |>
         dplyr::group_by(Disability) |>
         dplyr::mutate(pct = round(n / sum(n), 4)) |>
         dplyr::ungroup() |>
         # Order response categories
         dplyr::mutate(
-          Response = factor(Response, levels = c("Yes",
-                                                 "No",
-                                                 "Data not collected",
-                                                 "Client doesn't know",
-                                                 "Client prefers not to answer"))
+          Response = factor(
+            Response,
+            levels = c(
+              "Yes",
+              "No",
+              "Client doesn't know",
+              "Client prefers not to answer",
+              "Data not collected",
+              "Missing"
+            )
+          )
         ) |>
         dplyr::group_by(Response)
 
@@ -384,30 +404,43 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     })
 
-    ## Substance Use Disorder Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    substance_pie_chart_data <- shiny::reactive({
-
-      use_disorders_data <- most_recent_data_per_enrollment() |>
-        dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4])
-
-      use_disorders_data |>
-        dplyr::count(`Substance Use Disorder`) |>
-        # Match expected column name in chart
-        dplyr::rename(disability_response = "Substance Use Disorder")
-
-    })
+    ## Substance Use Disorder Chart ----
 
     # Create substance use pie chart
-    output$substance_pie_chart <- echarts4r::renderEcharts4r({
-
-      substance_pie_chart_data() |>
-        pie_chart(
-          category = "disability_response",
-          count = "n"
+    output$substance_chart <- echarts4r::renderEcharts4r({
+      most_recent_data_per_enrollment() |>
+        tidyr::replace_na(list(`Substance Use Disorder` = "Missing")) |>
+        dplyr::mutate(
+          `Substance Use Disorder` = factor(
+          `Substance Use Disorder`,
+            levels = c(
+              "Missing",
+              "Data not collected",
+              "Client prefers not to answer",
+              "Client doesn't know",
+              "No",
+              "Both alcohol and drug use disorders",
+              "Drug use disorder",
+              "Alcohol use disorder"
+            ),
+            labels = c(
+              "Missing",
+              "Data not collected",
+              "Client prefers not to answer",
+              "Client doesn't know",
+              "No substance use",
+              "Both alcohol and drug use disorders",
+              "Drug use disorder",
+              "Alcohol use disorder"
+            ),
+            ordered = TRUE
+          )  
+        ) |>
+        dplyr::count(`Substance Use Disorder`, .drop = FALSE) |> 
+        bar_chart(
+          x = "Substance Use Disorder",
+          y = "n"
         )
-
     })
 
     # Sankey Charts ----
@@ -542,39 +575,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         dplyr::count(`Answers Missing`, name = "# Youth") |>
         reactable::reactable()
 
-    )
-
-    missingness_stats2 <- shiny::reactive({
-
-      most_recent_data_per_enrollment() |>
-        tidyr::pivot_longer(
-          cols = c(
-            `Physical Disability`,
-            `Developmental Disability`,
-            `Chronic Health Condition`,
-            `HIV/AIDS`,
-            `Mental Health Disorder`,
-            `Substance Use Disorder`
-          ),
-          names_to = "Disability",
-          values_to = "Response"
-        ) |>
-        # We will consider NA values as "Data not collected"
-        tidyr::replace_na(list(Response = "Data not collected")) |>
-        dplyr::filter(Response %in%  c(
-          "Client doesn't know",
-          "Client prefers not to answer",
-          "Data not collected"
-        )) |>
-        dplyr::count(Disability, Response) |>
-        tidyr::pivot_wider(names_from = Response, values_from = n)
-
-    })
-
-    output$missingness_stats_tbl2 <- reactable::renderReactable(
-      reactable::reactable(
-        missingness_stats2()
-      )
     )
 
   })
