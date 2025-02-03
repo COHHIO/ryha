@@ -173,6 +173,9 @@ create_dm <- function(env,
         veteran_status,
         organization_id,
         date_updated
+      ) |> 
+      dplyr::mutate(
+        veteran_status = convert_to_ordered_factor(veteran_status, NoYesReasonsForMissingDataCodes)
       )
 
     # Prep "gender" table
@@ -211,16 +214,33 @@ create_dm <- function(env,
     # Avoid data wrangling errors when there is no data available
     if (nrow(gender) > 0) {
       gender <- gender |>
-        dplyr::mutate(
-          gender = dplyr::if_else(
-            is.na(gender),
-            "Missing Data",
-            stringr::str_replace_all(gender, "_", " ") |> tools::toTitleCase()
-          )
-        ) |>
         dplyr::arrange(
           organization_id,
           personal_id
+        ) |>
+        # "Missing" category needs to be assigned manually because data was longer pivot
+        dplyr::mutate(
+          gender = dplyr::if_else(
+            is.na(gender),
+            "Missing",
+            stringr::str_replace_all(gender, "_", " ") |> tools::toTitleCase()
+          )
+        ) |> 
+        dplyr::mutate(
+          gender = convert_to_ordered_factor(
+            gender,
+            list(
+              Description = c(
+                "Woman",
+                "Man",
+                "Non Binary",
+                "Culturally Specific",
+                "Transgender",
+                "Questioning",
+                "Different Identity"
+              )
+            )
+          )
         )
     }
 
@@ -262,16 +282,43 @@ create_dm <- function(env,
     # Avoid data wrangling errors when there is no data available
     if (nrow(ethnicity) > 0) {
       ethnicity <- ethnicity |>
-        dplyr::mutate(
-          ethnicity = dplyr::if_else(
-            ethnicity == "race_none" | is.na(ethnicity),
-            "Missing Data",
-            stringr::str_replace_all(ethnicity, "_", " ") |> tools::toTitleCase()
-          )
-        ) |>
         dplyr::arrange(
           organization_id,
           personal_id
+        ) |> 
+        # "Missing" category needs to be assigned manually because data was longer pivot
+        dplyr::mutate(
+          ethnicity = dplyr::if_else(
+            ethnicity == "race_none" | is.na(ethnicity),
+            "Missing",
+            stringr::str_replace_all(ethnicity, "_", " ") |> tools::toTitleCase()
+          )
+        ) |>
+        dplyr::mutate(
+          ethnicity = factor(
+            ethnicity,
+            levels = c(
+              "Missing",
+              "White",
+              "Native Hi Pacific",
+              "Mid East n African",
+              "Hispanic Latinaeo",
+              "Black Af American",
+              "Asian",
+              "Am Ind Ak Native"
+            ),
+            labels = c(
+              "Missing",
+              "White",
+              "Native Hawaiian or Pacific Islander",
+              "Middle Eastern or North African",
+              "Hispanic/Latina/e/o",
+              "Black, African American, or African",
+              "Asian or Asian American",
+              "American Indian, Alaska Native, or Indigenous"
+            ),
+            ordered = TRUE
+          )
         )
     }
 
@@ -402,6 +449,11 @@ create_dm <- function(env,
             living_situation_grouped = ExitCategory
           ),
         by = c("living_situation" = "description")
+      ) |> 
+      dplyr::mutate(
+        sexual_orientation = convert_to_ordered_factor(sexual_orientation, SexualOrientationCodes),
+        former_ward_child_welfare = convert_to_ordered_factor(former_ward_child_welfare, NoYesReasonsForMissingDataCodes),
+        former_ward_juvenile_justice = convert_to_ordered_factor(former_ward_juvenile_justice, NoYesReasonsForMissingDataCodes)
       )
 
     health <- read_data_from_table(
