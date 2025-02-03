@@ -4,7 +4,7 @@
 \alias{bar_chart}
 \title{Generate a bar chart using echarts4r}
 \usage{
-bar_chart(data, x, y, axis_flip = TRUE)
+bar_chart(data, x, y, pct_denominator = NULL, axis_flip = TRUE)
 }
 \arguments{
 \item{data}{A data frame containing the data to be plotted.}
@@ -14,6 +14,9 @@ representing the x-axis values.}
 
 \item{y}{A character string specifying the column name in the data frame
 representing the y-axis values.}
+
+\item{pct_denominator}{Optional numeric value specifying the denominator
+for percentage calculation.}
 
 \item{axis_flip}{A logical value indicating whether to flip the x and y axes.
 Default is TRUE.}

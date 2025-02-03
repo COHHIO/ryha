@@ -63,6 +63,8 @@ pie_chart <- function(data, category, count) {
 #' representing the x-axis values.
 #' @param y A character string specifying the column name in the data frame
 #' representing the y-axis values.
+#' @param pct_denominator Optional numeric value specifying the denominator 
+#' for percentage calculation.
 #' @param axis_flip A logical value indicating whether to flip the x and y axes.
 #' Default is TRUE.
 #'
@@ -77,7 +79,16 @@ pie_chart <- function(data, category, count) {
 #'   y = "y"
 #' )
 #' }
-bar_chart <- function(data, x, y, axis_flip = TRUE) {
+bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE) {
+
+  # Calculate percentage column
+  if (!is.null(pct_denominator)) {
+    data <- data |> 
+      dplyr::mutate(pct = n / pct_denominator)
+  } else {
+    data <- data |> 
+      dplyr::mutate(pct = n / sum(n))
+  }
 
   out <- data |>
     echarts4r::e_charts_(x = x) |>
@@ -86,18 +97,26 @@ bar_chart <- function(data, x, y, axis_flip = TRUE) {
       name = "# of Youth",
       legend = FALSE
     ) |>
-    echarts4r::e_tooltip(trigger = "item") |>
+    echarts4r::e_add_nested('extra', pct) |>
+    echarts4r::e_tooltip(
+      trigger = "axis",
+      formatter = htmlwidgets::JS("
+        function(params) {
+          return(
+            params[0].seriesName +
+            '<br/>' + params[0].marker + params[0].value[1] +
+            '<br/>' + '<strong>' + params[0].data.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + Math.round(params[0].data.extra.pct * 100) + '%)' + '</strong>'
+          )
+        }")
+    ) |> 
     echarts4r::e_grid(containLabel = TRUE)
 
   if (axis_flip) {
-
     out <- out |>
       echarts4r::e_flip_coords()
-
   }
 
   out
-
 }
 
 
