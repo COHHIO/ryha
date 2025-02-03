@@ -664,4 +664,10 @@ read_data_from_table <- function(connection, table_name, column_names) {
 
 }
 
+convert_to_ordered_factor <- function(x, codes) {
+  factor(
+    x,
+    levels = c("Missing", rev(codes$Description)),
+    ordered = TRUE
+  )
 }
