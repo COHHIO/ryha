@@ -349,6 +349,11 @@ create_dm <- function(env,
         "date_updated",
         "organization_id"
       )
+    ) |> 
+    dplyr::mutate(
+      employed = convert_to_ordered_factor(employed, NoYesReasonsForMissingDataCodes),
+      employment_type = convert_to_ordered_factor(employment_type, EmploymentTypeCodes),
+      not_employed_reason = convert_to_ordered_factor(not_employed_reason, NotEmployedReasonCodes)
     )
 
     education <- read_data_from_table(

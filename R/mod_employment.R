@@ -35,43 +35,21 @@ mod_employment_ui <- function(id){
     shiny::fluidRow(
 
       shiny::column(
-        width = 6,
-
+        width = 12,
         bs4Dash::box(
-          title = with_popover(
-            text = "# of Youth by Employment Status",
-            content = link_section("R6 Employment Status")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("employed_pie_chart"),
-            height = "100%"
-          )
-        )
-
-      ),
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
-            text = "# of Youth by Employment Type",
-            content = link_section("R6 Employment Status")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("employment_type_pie_chart"),
-            height = "100%"
-          )
-        )
-
+           title = with_popover(
+             text = "# of Youth by Employment Status",
+             content = link_section("R6 Employment Status")
+           ),
+           width = NULL,
+           height = DEFAULT_BOX_HEIGHT,
+           maximizable = TRUE,
+           echarts4r::echarts4rOutput(
+             outputId = ns("employed_chart"),
+             height = "100%"
+           )
+         )
       )
-
     ),
 
     shiny::fluidRow(
@@ -81,14 +59,14 @@ mod_employment_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Reason Not Employed",
+            text = "# of Employed Youth by Employment Type",
             content = link_section("R6 Employment Status")
           ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("not_employed_reason_pie_chart"),
+            outputId = ns("employment_type_chart"),
             height = "100%"
           )
         )
@@ -99,15 +77,20 @@ mod_employment_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = "Data Quality Statistics",
+          title = with_popover(
+            text = "# of Not Employed Youth by Reason Not Employed",
+            content = link_section("R6 Employment Status")
+          ),
           width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
-          reactable::reactableOutput(
-            outputId = ns("missingness_stats_tbl")
+          echarts4r::echarts4rOutput(
+            outputId = ns("not_employed_reason_chart"),
+            height = "100%"
           )
         )
 
-      )
+      ),
 
     ),
 
@@ -158,19 +141,19 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
     # Create reactive with the most recent data collected per enrollment
     most_recent_data_per_enrollment <- shiny::reactive({
       employment_data_filtered() |>
+        # Employment data should be collected only at Project start and Project exit
+        dplyr::filter(data_collection_stage %in% c("Project start", "Project exit")) |>
         filter_most_recent_data_per_enrollment()
     })
 
     # Total number of Youth in program(s) that exist in the `employment.csv`
     # file
-    n_youth_with_employment_data <- shiny::reactive(
-
+    n_youth_with_employment_data <- shiny::reactive({
       employment_data_filtered() |>
         dplyr::filter(employed %in% c("Yes", "No")) |>
         dplyr::distinct(personal_id, organization_id) |>
         nrow()
-
-    )
+    })
 
     # Render number of clients box value
     output$n_youth <- shiny::renderText({
@@ -182,45 +165,32 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
       n_youth_with_employment_data()
     })
 
-    output$employed_pie_chart <- echarts4r::renderEcharts4r({
+    output$employed_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |> 
-        # Remove missing values
-        dplyr::filter(
-          !employed %in% get_missing_categories(),
-          !is.na(employed)
-        ) |>
-        dplyr::count(employed) |>
-        pie_chart(
-          category = "employed",
-          count = "n"
+        dplyr::count(employed, .drop = FALSE) |>
+        bar_chart(
+          x = "employed",
+          y = "n"
         )
     })
 
-    output$employment_type_pie_chart <- echarts4r::renderEcharts4r({
+    output$employment_type_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |> 
-        # Remove missing values
-        dplyr::filter(
-          !employment_type %in% get_missing_categories(),
-          !is.na(employment_type)
-        ) |>
-        dplyr::count(employment_type) |>
-        pie_chart(
-          category = "employment_type",
-          count = "n"
+        dplyr::filter(employed == "Yes") |>
+        dplyr::count(employment_type, .drop = FALSE) |>
+        bar_chart(
+          x = "employment_type",
+          y = "n"
         )
     })
 
-    output$not_employed_reason_pie_chart <- echarts4r::renderEcharts4r({
+    output$not_employed_reason_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |> 
-        # Remove missing values
-        dplyr::filter(
-          !not_employed_reason %in% get_missing_categories(),
-          !is.na(not_employed_reason)
-        ) |>
-        dplyr::count(not_employed_reason) |>
-        pie_chart(
-          category = "not_employed_reason",
-          count = "n"
+        dplyr::filter(employed == "No") |>
+        dplyr::count(not_employed_reason, .drop = FALSE) |>
+        bar_chart(
+          x = "not_employed_reason",
+          y = "n"
         )
     })
 
@@ -236,26 +206,6 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
           count = "n"
         )
     })
-
-    missingness_stats <- shiny::reactive({
-
-      employment_data_filtered() |>
-        dplyr::mutate(employed = ifelse(
-          is.na(employed),
-          "(Blank)",
-          employed
-        )) |>
-        dplyr::filter(!employed %in% c("Yes", "No")) |>
-        dplyr::count(employed, name = "Count") |>
-        dplyr::rename(Response = employed)
-
-    })
-
-    output$missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        missingness_stats()
-      )
-    )
 
   })
 }
