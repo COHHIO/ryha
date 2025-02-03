@@ -639,13 +639,29 @@ create_dm <- function(env,
 #' }
 read_data_from_table <- function(connection, table_name, column_names) {
 
-  DBI::dbGetQuery(
+  # Read data
+  data <- DBI::dbGetQuery(
     conn = connection,
     statement = glue::glue_sql(
       "SELECT {`column_names`*} FROM {`table_name`}",
       .con = connection
     )
   ) |> 
-  tibble::as_tibble()
+    # Convert to tibble
+    tibble::as_tibble()
+
+  # Replace NA values
+  data <- data |> 
+    dplyr::mutate(
+      dplyr::across(
+        tidyselect::where(is.character),
+        ~ tidyr::replace_na(.x, "Missing")
+      )
+    )
+
+  # Return data
+  data
+
+}
 
 }
