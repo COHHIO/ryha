@@ -658,6 +658,7 @@ create_dm <- function(env,
         by = c("destination" = "description")
       ) |> 
       dplyr::mutate(
+        counseling_received = convert_to_ordered_factor(counseling_received, NoYesMissingCodes),
         exchange_for_sex = convert_to_ordered_factor(exchange_for_sex, NoYesReasonsForMissingDataCodes),
         count_of_exchange_for_sex = convert_to_ordered_factor(count_of_exchange_for_sex, CountExchangeForSexCodes),
         asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(asked_or_forced_to_exchange_for_sex, NoYesReasonsForMissingDataCodes),
