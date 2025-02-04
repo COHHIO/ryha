@@ -551,6 +551,7 @@ create_dm <- function(env,
       )
     ) |>
       dplyr::mutate(
+        income_from_any_source = convert_to_ordered_factor(income_from_any_source, NoYesReasonsForMissingDataCodes),
         total_monthly_income_integer = as.integer(round(total_monthly_income, 0)),
         total_monthly_income_grouped = dplyr::case_when(
             total_monthly_income_integer == 0L ~ "No Income",
@@ -560,10 +561,12 @@ create_dm <- function(env,
             total_monthly_income_integer > 2000L & total_monthly_income_integer <= 3000L ~ "$2,001-$3,000",
             total_monthly_income_integer > 3000L & total_monthly_income_integer <= 4000L ~ "$3,001-$4,000",
             total_monthly_income_integer > 4000L & total_monthly_income_integer <= 5000L ~ "$4,001-$5,000",
-            total_monthly_income_integer > 5000L ~ "$5,001 or more"
+            total_monthly_income_integer > 5000L ~ "$5,001 or more",
+            TRUE ~ "Missing"
           ) |> 
           factor(
             levels = c(
+              "Missing",
               "No Income",
               "$1-$500",
               "$551-$1,000",
@@ -605,7 +608,11 @@ create_dm <- function(env,
         "date_updated",
         "organization_id"
       )
-    )
+    ) |> 
+      dplyr::mutate(
+        benefits_from_any_source = convert_to_ordered_factor(benefits_from_any_source, NoYesReasonsForMissingDataCodes),
+        insurance_from_any_source = convert_to_ordered_factor(insurance_from_any_source, NoYesReasonsForMissingDataCodes)
+      )
 
     services <- read_data_from_table(
       connection = con,
