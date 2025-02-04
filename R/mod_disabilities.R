@@ -361,11 +361,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         ) |>
         # We will consider NA values as "Missing"
         tidyr::replace_na(list(Response = "Missing")) |>
-        dplyr::count(Disability, Response) |>
-        dplyr::group_by(Disability) |>
-        dplyr::mutate(pct = round(n / sum(n), 4)) |>
-        dplyr::ungroup() |>
-        # Order response categories
         dplyr::mutate(
           Response = factor(
             Response,
@@ -376,9 +371,15 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
               "Client prefers not to answer",
               "Data not collected",
               "Missing"
-            )
+            ),
+            ordered = TRUE
           )
         ) |>
+        dplyr::count(Disability, Response, .drop = FALSE) |>
+        dplyr::group_by(Disability) |>
+        dplyr::mutate(pct = round(n / sum(n), 4)) |>
+        dplyr::ungroup() |>
+        # Order response categories
         dplyr::group_by(Response)
 
     })
@@ -392,16 +393,17 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         echarts4r::e_add_nested('extra', pct) |>
         echarts4r::e_flip_coords() |>
         echarts4r::e_grid(containLabel = TRUE) |>
-        echarts4r::e_tooltip(formatter = htmlwidgets::JS("
-          function(params) {
-            return(
-              params.value[1] +
-              '<br/>' + params.marker + params.seriesName +
-              '<br/>' + '<strong>' + params.data.value[0] + ' (' + Math.round(params.data.extra.pct * 100) + '%)' + '</strong>'
-            )
-          }")
-        )
-
+        echarts4r::e_color(
+          c(
+           COLORS$YES_BAD , # "Yes",
+           COLORS$NO_GOOD , # "No",
+           COLORS$CLIENT_DOESNT_KNOW , # "Client doesn't know",
+           COLORS$CLIENT_PREFERS_NOT_TO_ANSWER , # "Client prefers not to answer",
+           COLORS$DATA_NOT_COLLECTED , # "Data not collected",
+           COLORS$MISSING   # "Missing"
+          )
+        ) |>
+        add_custom_tooltip(trigger = "axis")
     })
 
     ## Substance Use Disorder Chart ----

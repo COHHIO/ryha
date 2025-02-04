@@ -119,6 +119,28 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE) {
   out
 }
 
+add_custom_tooltip <- function(echart, trigger) {
+  if (trigger == "axis") {
+    echart |> 
+      echarts4r::e_tooltip(
+        trigger = "axis",
+        formatter = htmlwidgets::JS("
+          function(params) {
+            let tooltip = params[0].axisValue + '<br/>';
+            tooltip += '<table>';
+            params.forEach(function(item) {
+              let percentage = Math.round(item.data.extra.pct * 100) + '%';
+              tooltip += '<tr>' +
+                         '<td style=\"text-align: left; padding-right: 10px;\">' + item.marker + ' ' + item.seriesName + '</td>' +
+                         '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + percentage + ')</td>' +
+                         '</tr>';
+            });
+            tooltip += '</table>';
+            return tooltip;
+          }")
+      )
+  }
+}
 
 #' Generate a Sankey chart using echarts4r
 #'
