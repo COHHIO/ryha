@@ -656,6 +656,14 @@ create_dm <- function(env,
             destination_grouped = ExitCategory
           ),
         by = c("destination" = "description")
+      ) |> 
+      dplyr::mutate(
+        exchange_for_sex = convert_to_ordered_factor(exchange_for_sex, NoYesReasonsForMissingDataCodes),
+        count_of_exchange_for_sex = convert_to_ordered_factor(count_of_exchange_for_sex, CountExchangeForSexCodes),
+        asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(asked_or_forced_to_exchange_for_sex, NoYesReasonsForMissingDataCodes),
+        work_place_violence_threats = convert_to_ordered_factor(work_place_violence_threats, NoYesReasonsForMissingDataCodes),
+        workplace_promise_difference = convert_to_ordered_factor(workplace_promise_difference, NoYesReasonsForMissingDataCodes),
+        coerced_to_continue_work = convert_to_ordered_factor(coerced_to_continue_work, NoYesReasonsForMissingDataCodes)
       )
 
     # Create {dm} object

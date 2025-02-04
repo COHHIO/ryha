@@ -52,7 +52,7 @@ mod_trafficking_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
@@ -63,7 +63,33 @@ mod_trafficking_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("exchange_sex_pie_chart"),
+                    outputId = ns("exchange_sex_chart"),
+                    height = "100%"
+                  )
+                )
+
+              ),
+
+            ),
+
+            shiny::fluidRow(
+
+              shiny::column(
+                width = 6,
+
+                bs4Dash::box(
+                  title = with_popover(
+                    text = "# of Youth by Asked or Forced to Exchange Response",
+                    content = shiny::tagList(
+                      shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                      shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
+                    )
+                  ),
+                  width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
+                  maximizable = TRUE,
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("asked_sex_chart"),
                     height = "100%"
                   )
                 )
@@ -76,51 +102,17 @@ mod_trafficking_ui <- function(id){
                 bs4Dash::box(
                   title = with_popover(
                     text = "# of Youth by Count of Exchange for Sex Response",
-                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
+                    content = shiny::tagList(
+                      shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                      shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("count_sex_pie_chart"),
+                    outputId = ns("count_sex_chart"),
                     height = "100%"
-                  )
-                )
-
-              )
-
-            ),
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by Asked or Forced to Exchange Response",
-                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("asked_sex_pie_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("sex_missingness_stats_tbl")
                   )
                 )
 
@@ -147,7 +139,7 @@ mod_trafficking_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("violence_labor_pie_chart"),
+                    outputId = ns("violence_labor_chart"),
                     height = "100%"
                   )
                 )
@@ -166,7 +158,7 @@ mod_trafficking_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("promise_labor_pie_chart"),
+                    outputId = ns("promise_labor_chart"),
                     height = "100%"
                   )
                 )
@@ -178,33 +170,22 @@ mod_trafficking_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
                     text = "# of Youth by Coerced to Continue Work Response",
-                    content = link_section("R16 Labor Exploitation/Trafficking")
+                    content = shiny::tagList(
+                      shiny::p("Only youth that experienced workplace violence and/or promise difference are included."),
+                      shiny::p(link_section("R16 Labor Exploitation/Trafficking"))
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("coerced_labor_pie_chart"),
+                    outputId = ns("coerced_labor_chart"),
                     height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("labor_missingness_stats_tbl")
                   )
                 )
 
@@ -289,128 +270,69 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Sex Trafficking ----
 
     ## Exchange for Sex ----
-    output$exchange_sex_pie_chart <- echarts4r::renderEcharts4r(
+    output$exchange_sex_chart <- echarts4r::renderEcharts4r({
       trafficking_data_filtered() |> 
-        dplyr::filter(exchange_for_sex %in% c("Yes", "No")) |> 
-        dplyr::count(exchange_for_sex) |> 
-        pie_chart(
-          category = "exchange_for_sex",
-          count = "n"
+        dplyr::count(exchange_for_sex, .drop = FALSE) |> 
+        bar_chart(
+          x = "exchange_for_sex",
+          y = "n"
         )
-    )
-
-    # Create missingness stats data frame
-    exchange_sex_missingness_stats <- shiny::reactive({
-
-      trafficking_data_filtered() |>
-        dplyr::mutate(exchange_for_sex = ifelse(
-          is.na(exchange_for_sex),
-          "(Blank)",
-          exchange_for_sex
-        )) |>
-        dplyr::filter(
-          !exchange_for_sex %in% c("Yes", "No")
-        ) |>
-        dplyr::count(exchange_for_sex, name = "Count") |>
-        dplyr::rename(Response = exchange_for_sex)
-
     })
 
-    # Create missingness stats table for "exchange for sex"
-    output$sex_missingness_stats_tbl <- reactable::renderReactable(
-
-      reactable::reactable(
-        exchange_sex_missingness_stats()
-      )
-
-    )
-
     ## Count of Exchange for Sex ----
-    output$count_sex_pie_chart <- echarts4r::renderEcharts4r(
+    output$count_sex_chart <- echarts4r::renderEcharts4r({
       trafficking_data_filtered() |>
-        # Remove missing values
-        dplyr::filter(
-          !count_of_exchange_for_sex %in% get_missing_categories(),
-          !is.na(count_of_exchange_for_sex)
-        ) |>
-        dplyr::count(count_of_exchange_for_sex) |>
-        pie_chart(
-          category = "count_of_exchange_for_sex",
-          count = "n"
+        dplyr::filter(exchange_for_sex == "Yes") |> 
+        dplyr::count(count_of_exchange_for_sex, .drop = FALSE) |>
+        bar_chart(
+          x = "count_of_exchange_for_sex",
+          y = "n"
         )
-    )
+    })
 
     ## Asked or Forced to Exchange for Sex ----
-    output$asked_sex_pie_chart <- echarts4r::renderEcharts4r(
+    output$asked_sex_chart <- echarts4r::renderEcharts4r(
       trafficking_data_filtered() |>
-        dplyr::filter(asked_or_forced_to_exchange_for_sex %in% c("Yes", "No")) |>
-        dplyr::count(asked_or_forced_to_exchange_for_sex) |>
-        pie_chart(
-          category = "asked_or_forced_to_exchange_for_sex",
-          count = "n"
+        dplyr::filter(exchange_for_sex == "Yes") |> 
+        dplyr::count(asked_or_forced_to_exchange_for_sex, .drop = FALSE) |>
+        bar_chart(
+          x = "asked_or_forced_to_exchange_for_sex",
+          y = "n"
         )
     )
 
     # Labor Trafficking ----
 
     ## Workplace Violence Threats ----
-    output$violence_labor_pie_chart <- echarts4r::renderEcharts4r(
+    output$violence_labor_chart <- echarts4r::renderEcharts4r(
       trafficking_data_filtered() |>
-        dplyr::filter(work_place_violence_threats %in% c("Yes", "No")) |>
-        dplyr::count(work_place_violence_threats) |>
-        pie_chart(
-          category = "work_place_violence_threats",
-          count = "n"
+        dplyr::count(work_place_violence_threats, .drop = FALSE) |>
+        bar_chart(
+          x = "work_place_violence_threats",
+          y = "n"
         )
     )
 
-    # Create missingness stats data frame
-    labor_missingness_stats <- shiny::reactive({
-
-      trafficking_data_filtered() |>
-        dplyr::mutate(work_place_violence_threats = ifelse(
-          is.na(work_place_violence_threats),
-          "(Blank)",
-          work_place_violence_threats
-        )) |>
-        dplyr::filter(
-          !work_place_violence_threats %in% c("Yes", "No")
-        ) |>
-        dplyr::count(work_place_violence_threats, name = "Count") |>
-        dplyr::rename(Response = work_place_violence_threats)
-
-    })
-
-    # Create missingness stats table for "exchange for sex"
-    output$labor_missingness_stats_tbl <- reactable::renderReactable(
-
-      reactable::reactable(
-        labor_missingness_stats()
-      )
-
-    )
-
     ## Workplace Promise Difference ----
-    output$promise_labor_pie_chart <- echarts4r::renderEcharts4r(
+    output$promise_labor_chart <- echarts4r::renderEcharts4r(
       trafficking_data_filtered() |>
-        dplyr::filter(workplace_promise_difference %in% c("Yes", "No")) |>
-        dplyr::count(workplace_promise_difference) |>
-        pie_chart(
-          category = "workplace_promise_difference",
-          count = "n"
+        dplyr::count(workplace_promise_difference, .drop = FALSE) |>
+        bar_chart(
+          x = "workplace_promise_difference",
+          y = "n"
         )
     )
 
     ## Coerced to Continue Work ----
-    output$coerced_labor_pie_chart <- echarts4r::renderEcharts4r(
+    output$coerced_labor_chart <- echarts4r::renderEcharts4r({
       trafficking_data_filtered() |>
-        dplyr::filter(coerced_to_continue_work %in% c("Yes", "No")) |>
-        dplyr::count(coerced_to_continue_work) |>
-        pie_chart(
-          category = "coerced_to_continue_work",
-          count = "n"
+        dplyr::filter(work_place_violence_threats == "Yes" | workplace_promise_difference == "Yes") |>
+        dplyr::count(coerced_to_continue_work, .drop = FALSE) |>
+        bar_chart(
+          x = "coerced_to_continue_work",
+          y = "n"
         )
-    )
+    })
 
   })
 }
