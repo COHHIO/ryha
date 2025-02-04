@@ -515,7 +515,12 @@ create_dm <- function(env,
         "date_updated",
         "organization_id"
       )
-    )
+    ) |> 
+      dplyr::mutate(
+        domestic_violence_survivor = convert_to_ordered_factor(domestic_violence_survivor, NoYesReasonsForMissingDataCodes),
+        when_occurred = convert_to_ordered_factor(when_occurred, WhenDVOccurredCodes),
+        currently_fleeing = convert_to_ordered_factor(currently_fleeing, NoYesReasonsForMissingDataCodes)
+      )
 
     income <- read_data_from_table(
       connection = con,
