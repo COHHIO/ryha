@@ -493,7 +493,8 @@ create_dm <- function(env,
               "Poor",
               "Client doesn't know",
               "Client prefers not to answer",
-              "Data not collected"
+              "Data not collected",
+              "Missing"
             ),
             ordered = TRUE
           )

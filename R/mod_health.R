@@ -46,41 +46,34 @@ mod_health_ui <- function(id){
         bs4Dash::tabsetPanel(
           type = "pills",
 
-          # General Health ----
-
           shiny::tabPanel(
-            title = "General",
+            title = "Health Status",
 
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by General Health Status",
-                    content = link_section("R7 General Health Status")
+                    text = "# of Youth by Health Status",
+                    content = shiny::tagList(
+                      shiny::span("Each bar summarizes the responses for the corresponding health status."),
+                      shiny::br(),
+                      shiny::span("Refer to HMIS Data Standards Manual:"),
+                      shiny::tags$ul(
+                        shiny::tags$li(link_section("R7 General Health Status", label = "General Health Status")),
+                        shiny::tags$li(link_section("R8 Dental Health Status", label = "Dental Health Status")),
+                        shiny::tags$li(link_section("R9 Mental Health Status", label = "Mental Health Status"))
+                      )
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("general_pie_chart"),
+                    outputId = ns("health_status_chart"),
                     height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("general_missingness_stats_tbl")
                   )
                 )
 
@@ -89,152 +82,54 @@ mod_health_ui <- function(id){
             ),
 
             shiny::fluidRow(
+
               shiny::column(
                 width = 12,
 
-                bs4Dash::box(
+                bs4Dash::tabBox(
                   title = with_popover(
-                    text = "Changes in General Health Status (Entry --> Exit)",
-                    content = link_section("R7 General Health Status")
+                    text = "Changes in Health Status (Entry --> Exit)",
+                    content = shiny::tagList(
+                      shiny::span("Refer to HMIS Data Standards Manual:"),
+                      shiny::tags$ul(
+                        shiny::tags$li(link_section("R7 General Health Status", label = "General Health Status")),
+                        shiny::tags$li(link_section("R8 Dental Health Status", label = "Dental Health Status")),
+                        shiny::tags$li(link_section("R9 Mental Health Status", label = "Mental Health Status"))
+                      )
+                    )
                   ),
-                  width = NULL,
+                  type = "tabs",
+                  side = "right",
                   height = DEFAULT_BOX_HEIGHT,
+                  width = NULL,
                   maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("general_sankey_chart"),
-                    height = "100%"
-                  )
-                )
 
-              )
-            )
-
-          ),
-
-          # Dental Health ----
-
-          shiny::tabPanel(
-            title = "Dental",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by Dental Health Status",
-                    content = link_section("R8 Dental Health Status")
+                  shiny::tabPanel(
+                    title = "General",
+                    echarts4r::echarts4rOutput(
+                      outputId = ns("general_sankey_chart"),
+                      height = "100%"
+                    )
                   ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("dental_pie_chart"),
-                    height = "100%"
-                  )
-                )
 
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("dental_missingness_stats_tbl")
-                  )
-                )
-              )
-
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in Dental Health Status (Entry --> Exit)",
-                    content = link_section("R8 Dental Health Status")
+                  shiny::tabPanel(
+                    title = "Dental",
+                    echarts4r::echarts4rOutput(
+                      outputId = ns("dental_sankey_chart"),
+                      height = "100%"
+                    )
                   ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("dental_sankey_chart"),
-                    height = "100%"
+
+                  shiny::tabPanel(
+                    title = "Mental",
+                    echarts4r::echarts4rOutput(
+                      outputId = ns("mental_sankey_chart"),
+                      height = "100%"
+                    )
                   )
-                )
 
-              )
-            )
-
-          ),
-
-          # Mental Health ----
-
-          shiny::tabPanel(
-            title = "Mental",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by Mental Health Status",
-                    content = link_section("R9 Mental Health Status")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("mental_pie_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("mental_missingness_stats_tbl")
-                  )
-                )
-
-              )
-
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in Mental Health Status (Entry --> Exit)",
-                    content = link_section("R9 Mental Health Status")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("mental_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
+                ) |>
+                  shiny::tagAppendAttributes(class = "sankey-tabset")
               )
             )
 
@@ -248,7 +143,7 @@ mod_health_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
@@ -259,22 +154,8 @@ mod_health_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("counseling_pie_chart"),
+                    outputId = ns("counseling_chart"),
                     height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("counseling_missingness_stats_tbl")
                   )
                 )
 
@@ -368,18 +249,56 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     })
 
     # General Health ----
-    output$general_pie_chart <- echarts4r::renderEcharts4r({
+    output$health_status_chart <- echarts4r::renderEcharts4r({
       most_recent_health_data_per_enrollment() |>
-        # Remove missing values
-        dplyr::filter(
-          !general_health_status %in% get_missing_categories(),
-          !is.na(general_health_status)
+        tidyr::pivot_longer(
+          cols = c(
+            general_health_status,
+            dental_health_status,
+            mental_health_status
+          ),
+          names_to = "health_type",
+          values_to = "health_status"
         ) |>
-        dplyr::count(general_health_status) |>
-        pie_chart(
-          category = "general_health_status",
-          count = "n"
-        )
+        dplyr::mutate(
+          health_type = health_type |>
+            stringr::str_replace_all("_", " ") |>
+            stringr::str_to_title() |> 
+            factor(
+              levels = c(
+                "Mental Health Status",
+                "Dental Health Status",
+                "General Health Status"
+              ),
+              ordered = TRUE
+            )
+        ) |>
+        dplyr::count(health_type, health_status, .drop = FALSE) |>
+        dplyr::group_by(health_type) |>
+        dplyr::mutate(pct = round(n / sum(n), 4)) |>
+        dplyr::ungroup() |>
+        # Order response categories
+        dplyr::group_by(health_status) |> 
+        # Create chart
+        echarts4r::e_chart(x = health_type) |>
+        echarts4r::e_bar(serie = n, stack = "my_stack") |>
+        echarts4r::e_add_nested('extra', pct) |>
+        echarts4r::e_flip_coords() |>
+        echarts4r::e_grid(containLabel = TRUE) |>
+        echarts4r::e_color(
+          c(
+           COLORS$EXCELLENT , # "Excellent",
+           COLORS$VERY_GOOD , # "Very Good",
+           COLORS$GOOD , # "Good",
+           COLORS$FAIR , # "Fair",
+           COLORS$POOR , # "Poor",
+           COLORS$CLIENT_DOESNT_KNOW , # "Client doesn't know",
+           COLORS$CLIENT_PREFERS_NOT_TO_ANSWER , # "Client prefers not to answer",
+           COLORS$DATA_NOT_COLLECTED , # "Data not collected",
+           COLORS$MISSING   # "Missing"
+          )
+        ) |>
+        add_custom_tooltip(trigger = "axis")
     })
 
     # Create general health status sankey chart
@@ -398,50 +317,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
-          count = "n"
-        )
-    })
-
-    # Capture the data quality statistics for "general_health_status" field
-    general_missingness_stats <- shiny::reactive(
-
-      health_data_filtered() |>
-        dplyr::mutate(general_health_status = ifelse(
-          is.na(general_health_status),
-          "(Blank)",
-          general_health_status
-        )) |>
-        dplyr::filter(
-          general_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(general_health_status, name = "Count") |>
-        dplyr::rename(Response = general_health_status)
-
-    )
-
-    # Create the {reactable} table to hold the missingness stats
-    output$general_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        general_missingness_stats()
-      )
-    )
-
-    # Dental Health ----
-    output$dental_pie_chart <- echarts4r::renderEcharts4r({
-      most_recent_health_data_per_enrollment() |>
-        # Remove missing values
-        dplyr::filter(
-          !dental_health_status %in% get_missing_categories(),
-          !is.na(dental_health_status)
-        ) |>
-        dplyr::count(dental_health_status) |>
-        pie_chart(
-          category = "dental_health_status",
           count = "n"
         )
     })
@@ -466,50 +341,6 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         )
     })
 
-    # Capture the data quality statistics for "dental_health_status" field
-    dental_missingness_stats <- shiny::reactive({
-
-      health_data_filtered() |>
-        dplyr::mutate(dental_health_status = ifelse(
-          is.na(dental_health_status),
-          "(Blank)",
-          dental_health_status
-        )) |>
-        dplyr::filter(
-          dental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(dental_health_status, name = "Count") |>
-        dplyr::rename(Response = dental_health_status)
-
-    })
-
-    # Create the {reactable} table to hold the missingness stats
-    output$dental_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        dental_missingness_stats()
-      )
-    )
-
-    # Mental Health ----
-    output$mental_pie_chart <- echarts4r::renderEcharts4r({
-      most_recent_health_data_per_enrollment() |>
-        # Remove missing values
-        dplyr::filter(
-          !mental_health_status %in% get_missing_categories(),
-          !is.na(mental_health_status)
-        ) |>
-        dplyr::count(mental_health_status) |>
-        pie_chart(
-          category = "mental_health_status",
-          count = "n"
-        )
-    })
-
     # Create mental health status sankey chart
     output$mental_sankey_chart <- echarts4r::renderEcharts4r({
       health_data_filtered() |>
@@ -530,69 +361,15 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         )
     })
 
-    # Capture the data quality statistics for "mental_health_status" field
-    mental_missingness_stats <- shiny::reactive(
-
-      health_data_filtered() |>
-        dplyr::mutate(mental_health_status = ifelse(
-          is.na(mental_health_status),
-          "(Blank)",
-          mental_health_status
-        )) |>
-        dplyr::filter(
-          mental_health_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(mental_health_status, name = "Count") |>
-        dplyr::rename(Response = mental_health_status)
-
-    )
-
-    # Create the {reactable} table to hold the missingness stats
-    output$mental_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        mental_missingness_stats()
-      )
-    )
-
     # Counseling ----
-    output$counseling_pie_chart <- echarts4r::renderEcharts4r({
+    output$counseling_chart <- echarts4r::renderEcharts4r({
       counseling_data_filtered() |>
-        dplyr::filter(counseling_received %in% c("Yes", "No")) |>
-        dplyr::count(counseling_received) |>
-        pie_chart(
-          category = "counseling_received",
-          count = "n"
+        dplyr::count(counseling_received, .drop = FALSE) |>
+        bar_chart(
+          x = "counseling_received",
+          y = "n"
         )
     })
-
-    # Capture the data quality statistics for "counseling_received" field
-    counseling_missingness_stats <- shiny::reactive(
-
-      counseling_data_filtered() |>
-        dplyr::mutate(counseling_received = ifelse(
-          is.na(counseling_received),
-          "(Blank)",
-          counseling_received
-        )) |>
-        dplyr::filter(
-          !counseling_received %in% c("Yes", "No")
-        ) |>
-        dplyr::count(counseling_received, name = "Count") |>
-        dplyr::rename(Response = counseling_received)
-
-    )
-
-    # Create the {reactable} table to hold the missingness stats
-    output$counseling_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        counseling_missingness_stats()
-      )
-    )
 
   })
 }

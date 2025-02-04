@@ -187,7 +187,7 @@ mod_disabilities_ui <- function(id){
           )
 
         ) |>
-          shiny::tagAppendAttributes(id = "disability-tabset")
+          shiny::tagAppendAttributes(class = "sankey-tabset")
 
       )
 
