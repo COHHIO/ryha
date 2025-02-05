@@ -4,7 +4,14 @@
 \alias{bar_chart}
 \title{Generate a bar chart using echarts4r}
 \usage{
-bar_chart(data, x, y, pct_denominator = NULL, axis_flip = TRUE)
+bar_chart(
+  data,
+  x,
+  y,
+  pct_denominator = NULL,
+  axis_flip = TRUE,
+  tooltip_opts = list(confine = FALSE, extraCssText = "")
+)
 }
 \arguments{
 \item{data}{A data frame containing the data to be plotted.}

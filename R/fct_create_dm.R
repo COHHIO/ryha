@@ -455,10 +455,26 @@ create_dm <- function(env,
           dplyr::select(
             description = Description,
             living_situation_grouped = ExitCategory
-          ),
+          ) |>
+          dplyr::bind_rows(c(description = "Missing", living_situation_grouped = "Missing")),
         by = c("living_situation" = "description")
       ) |> 
       dplyr::mutate(
+        living_situation_grouped = convert_to_ordered_factor(
+          living_situation_grouped,
+          list(
+            Description = c(
+              "Permanent",
+              "Temporary",
+              "Institutional",
+              "Homeless",
+              "Other",
+              "Client doesn't know",
+              "Client prefers not to answer",
+              "Data not collected"
+            )
+          )
+        ),
         sexual_orientation = convert_to_ordered_factor(sexual_orientation, SexualOrientationCodes),
         former_ward_child_welfare = convert_to_ordered_factor(former_ward_child_welfare, NoYesReasonsForMissingDataCodes),
         former_ward_juvenile_justice = convert_to_ordered_factor(former_ward_juvenile_justice, NoYesReasonsForMissingDataCodes)
@@ -654,10 +670,47 @@ create_dm <- function(env,
           dplyr::select(
             description = Description,
             destination_grouped = ExitCategory
-          ),
+          ) |>
+          dplyr::bind_rows(c(description = "Missing", destination_grouped = "Missing")),
         by = c("destination" = "description")
       ) |> 
       dplyr::mutate(
+        destination_grouped = convert_to_ordered_factor(
+          destination_grouped,
+          list(
+            Description = c(
+              "Permanent",
+              "Temporary",
+              "Institutional",
+              "Homeless",
+              "Other",
+              "Client doesn't know",
+              "Client prefers not to answer",
+              "Data not collected"
+            )
+          )
+        ),
+        destination = convert_to_ordered_factor(
+          destination,
+          LivingCodes |> 
+            dplyr::mutate(
+              ExitCategory = dplyr::case_when(
+                ExitCategory %in% c("Client doesn't know", "Client prefers not to answer", "Data not collected") ~ "Other",
+                TRUE ~ ExitCategory
+              ) |> 
+                factor(
+                  levels = c(
+                    "Permanent",
+                    "Temporary",
+                    "Institutional",
+                    "Homeless",
+                    "Other"
+                  )
+                )
+            ) |> 
+            # Sort alphabetically inside each group
+            dplyr::arrange(ExitCategory, Description)
+        ),
         counseling_received = convert_to_ordered_factor(counseling_received, NoYesMissingCodes),
         exchange_for_sex = convert_to_ordered_factor(exchange_for_sex, NoYesReasonsForMissingDataCodes),
         count_of_exchange_for_sex = convert_to_ordered_factor(count_of_exchange_for_sex, CountExchangeForSexCodes),

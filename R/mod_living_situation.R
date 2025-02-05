@@ -49,7 +49,7 @@ mod_living_situation_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("living_situation_pie_chart"),
+            outputId = ns("living_situation_chart"),
             height = "100%"
           )
         )
@@ -72,7 +72,7 @@ mod_living_situation_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("destination_pie_chart"),
+            outputId = ns("destination_chart"),
             height = "100%"
           )
         )
@@ -111,7 +111,7 @@ mod_living_situation_ui <- function(id){
         bs4Dash::box(
           title = "# of Youth by Destination (at Exit)",
           width = NULL,
-          height = "680px",
+          height = "720px",
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
             outputId = ns("destination_bar_chart"),
@@ -121,54 +121,6 @@ mod_living_situation_ui <- function(id){
 
       )
     ),
-
-    bs4Dash::tabsetPanel(
-      type = "pills",
-
-      ## Benefits Tab Panel ----
-      shiny::tabPanel(
-        title = "Living Situation (Entry)",
-
-        shiny::fluidRow(
-          shiny::column(
-            width = 12,
-
-            bs4Dash::box(
-              title = "Data Quality Statistics - Living Situation (Entry)",
-              width = NULL,
-              maximizable = TRUE,
-              reactable::reactableOutput(
-                outputId = ns("living_situation_missingness_stats_tbl")
-              )
-            )
-
-          )
-        )
-
-      ),
-
-      shiny::tabPanel(
-        title = "Destination (Exit)",
-
-        shiny::fluidRow(
-          shiny::column(
-            width = 12,
-
-            bs4Dash::box(
-              title = "Data Quality Statistics - Destination (Exit)",
-              width = NULL,
-              maximizable = TRUE,
-              reactable::reactableOutput(
-                outputId = ns("destination_missingness_stats_tbl")
-              )
-            )
-
-          )
-        )
-
-      )
-
-    )
 
   )
 }
@@ -198,6 +150,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
               enrollment_id,
               personal_id,
               organization_id,
+              exit_date,
               destination,
               destination_grouped
             ),
@@ -235,57 +188,86 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
       n_youth_with_living_data()
     })
 
-    # Living Situation Pie Chart ----
-    output$living_situation_pie_chart <- echarts4r::renderEcharts4r({
+    # Living Situation Chart ----
+    output$living_situation_chart <- echarts4r::renderEcharts4r({
       living_data_filtered() |>
-        dplyr::count(living_situation_grouped) |>
-        dplyr::filter(!is.na(living_situation_grouped)) |>
-        pie_chart(
-          category = "living_situation_grouped",
-          count = "n"
+        dplyr::count(living_situation_grouped, .drop = FALSE) |>
+        bar_chart(
+          x = "living_situation_grouped",
+          y = "n"
         )
     })
 
     destination_chart_data <- shiny::reactive({
       living_data_filtered() |>
-        dplyr::count(destination, destination_grouped) |>
-        # Remove missing data
-        dplyr::filter(
-          !destination %in% c("No exit interview completed",
-                              "Worker unable to determine",
-                              "Client doesn't know",
-                              "Data not collected",
-                              "Client prefers not to answer"),
-          !is.na(destination)
-        )
+        dplyr::filter(!is.na(exit_date))
     })
 
     output$destination_bar_chart <- echarts4r::renderEcharts4r({
-       destination_chart_data() |>
-        dplyr::arrange(n) |>
+      destination_chart_data() |>
+        # Not using ".drop = FALSE" to avoid displaying zero-count responses, as the variable has many response categories.
+        dplyr::count(destination) |> 
+        # Assign color by destination_grouped
+        dplyr::mutate(
+          color = dplyr::case_when(
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Homeless") |> dplyr::pull(Description)) ~ COLORS$POOR,
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Institutional") |> dplyr::pull(Description)) ~ COLORS$FAIR,
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Temporary") |> dplyr::pull(Description)) ~ COLORS$GOOD,
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Permanent") |> dplyr::pull(Description)) ~ COLORS$EXCELLENT,
+            TRUE ~ COLORS$MISSING
+          )
+        ) |>
+        # Workaround to add legend by group
+        dplyr::mutate(
+          Other = NA,
+          Homeless = NA,
+          Institutional = NA,
+          Temporary = NA,
+          Permanent = NA
+        ) |> 
         bar_chart(
           x = "destination",
-          y = "n"
+          y = "n",
+          tooltip_opts = list(
+            confine = TRUE,
+            extraCssText = "width:auto; white-space:pre-wrap;"
+          )
         ) |>
+        echarts4r::e_add_nested("itemStyle", color) |> 
         echarts4r::e_y_axis(
           axisLabel = list(
             width = 350,
             overflow = "truncate"
           )
         ) |>
-        echarts4r::e_tooltip(
-          confine = TRUE,
-          extraCssText = "width:auto; white-space:pre-wrap;"
+        echarts4r::e_line(serie = Permanent) |> 
+        echarts4r::e_line(serie = Temporary) |> 
+        echarts4r::e_line(serie = Institutional) |> 
+        echarts4r::e_line(serie = Homeless) |> 
+        echarts4r::e_line(serie = Other) |> 
+        echarts4r::e_legend(
+          icon = "rect",
+          selectedMode = FALSE
+        ) |> 
+        echarts4r::e_color(
+          c(
+            "",
+            COLORS$EXCELLENT,
+            COLORS$GOOD,
+            COLORS$FAIR,
+            COLORS$POOR,
+            COLORS$MISSING
+          )
         )
     })
 
-    # Destination Pie Chart ----
-    output$destination_pie_chart <- echarts4r::renderEcharts4r({
+    # Destination Chart ----
+    output$destination_chart <- echarts4r::renderEcharts4r({
       destination_chart_data() |>
-        dplyr::count(destination_grouped, wt = n) |>
-        pie_chart(
-          category = "destination_grouped",
-          count = "n"
+        dplyr::count(destination_grouped, .drop = FALSE) |>
+        bar_chart(
+          x = "destination_grouped",
+          y = "n"
         )
     })
 
@@ -321,68 +303,6 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
           count = "n"
         )
     })
-
-    # Data Quality Stats Tables ----
-
-    ## Living Situation Data Quality ----
-    living_situation_missingness_stats <- shiny::reactive({
-
-      living_data_filtered() |>
-        dplyr::mutate(living_situation = ifelse(
-          is.na(living_situation),
-          "(Blank)",
-          living_situation
-        )) |>
-        dplyr::filter(
-          living_situation %in% c(
-            "No exit interview completed",
-            "Worker unable to determine",
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(living_situation, name = "Count") |>
-        dplyr::rename(Response = living_situation)
-
-    })
-
-    output$living_situation_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        living_situation_missingness_stats()
-      )
-    )
-
-    ## Destination Data Quality ----
-    destination_missingness_stats <- shiny::reactive({
-
-      living_data_filtered() |>
-        dplyr::mutate(destination = ifelse(
-          is.na(destination),
-          "(Blank)",
-          destination
-        )) |>
-        dplyr::filter(
-          destination %in% c(
-            "No exit interview completed",
-            "Worker unable to determine",
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(destination, name = "Count") |>
-        dplyr::rename(Response = destination)
-
-    })
-
-    output$destination_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        destination_missingness_stats()
-      )
-    )
 
   })
 }

@@ -79,7 +79,7 @@ pie_chart <- function(data, category, count) {
 #'   y = "y"
 #' )
 #' }
-bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE) {
+bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tooltip_opts = list(confine = FALSE, extraCssText = "")) {
 
   # Calculate percentage column
   if (!is.null(pct_denominator)) {
@@ -107,7 +107,9 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE) {
             '<br/>' + params[0].marker + params[0].value[1] +
             '<br/>' + '<strong>' + params[0].data.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + Math.round(params[0].data.extra.pct * 100) + '%)' + '</strong>'
           )
-        }")
+        }"),
+        confine = tooltip_opts$confine,
+        extraCssText = tooltip_opts$extraCssText
     ) |> 
     echarts4r::e_grid(containLabel = TRUE)
 
