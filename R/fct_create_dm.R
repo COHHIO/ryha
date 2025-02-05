@@ -718,7 +718,10 @@ create_dm <- function(env,
         asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(asked_or_forced_to_exchange_for_sex, NoYesReasonsForMissingDataCodes),
         work_place_violence_threats = convert_to_ordered_factor(work_place_violence_threats, NoYesReasonsForMissingDataCodes),
         workplace_promise_difference = convert_to_ordered_factor(workplace_promise_difference, NoYesReasonsForMissingDataCodes),
-        coerced_to_continue_work = convert_to_ordered_factor(coerced_to_continue_work, NoYesReasonsForMissingDataCodes)
+        coerced_to_continue_work = convert_to_ordered_factor(coerced_to_continue_work, NoYesReasonsForMissingDataCodes),
+        project_completion_status = convert_to_ordered_factor(project_completion_status, ProjectCompletionStatusCodes),
+        destination_safe_client = convert_to_ordered_factor(destination_safe_client, NoYesReasonsForMissingDataCodes),
+        destination_safe_worker = convert_to_ordered_factor(destination_safe_worker, WorkerResponseCodes)
       )
 
     # Create {dm} object
