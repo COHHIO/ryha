@@ -515,7 +515,8 @@ create_dm <- function(env,
             ordered = TRUE
           )
         }
-      )
+      ),
+      pregnancy_status = convert_to_ordered_factor(pregnancy_status, NoYesReasonsForMissingDataCodes)
     )
 
     domestic_violence <- read_data_from_table(
