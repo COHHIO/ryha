@@ -207,16 +207,35 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
       destination_chart_data() |>
         # Not using ".drop = FALSE" to avoid displaying zero-count responses, as the variable has many response categories.
         dplyr::count(destination) |> 
-        # Assign color by destination_grouped
         dplyr::mutate(
+          # Assign destination group
+          destination_group = dplyr::case_when(
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Homeless") |> dplyr::pull(Description)) ~ "Homeless",
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Institutional") |> dplyr::pull(Description)) ~ "Institutional",
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Temporary") |> dplyr::pull(Description)) ~ "Temporary",
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Permanent") |> dplyr::pull(Description)) ~ "Permanent",
+            TRUE ~ "Other"
+          ) |> 
+          factor(
+            levels = c(
+              "Other",
+              "Homeless",
+              "Institutional",
+              "Temporary",
+              "Permanent"
+            )
+          ),
+          # Assign color by destination_grouped
           color = dplyr::case_when(
-            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Homeless") |> dplyr::pull(Description)) ~ COLORS$POOR,
-            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Institutional") |> dplyr::pull(Description)) ~ COLORS$FAIR,
-            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Temporary") |> dplyr::pull(Description)) ~ COLORS$GOOD,
-            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Permanent") |> dplyr::pull(Description)) ~ COLORS$EXCELLENT,
-            TRUE ~ COLORS$MISSING
+            destination_group == "Other" ~ COLORS$MISSING,
+            destination_group == "Homeless" ~ COLORS$POOR,
+            destination_group == "Institutional" ~ COLORS$FAIR,
+            destination_group == "Temporary" ~ COLORS$GOOD,
+            destination_group == "Permanent" ~ COLORS$EXCELLENT
           )
         ) |>
+        # Sort by counts inside each group
+        dplyr::arrange(destination_group, n) |>
         # Workaround to add legend by group
         dplyr::mutate(
           Other = NA,
