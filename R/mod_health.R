@@ -298,7 +298,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
            COLORS$MISSING   # "Missing"
           )
         ) |>
-        add_custom_tooltip(trigger = "axis")
+        add_stacked_bar_tooltip()
     })
 
     # Create general health status sankey chart

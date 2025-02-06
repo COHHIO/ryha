@@ -403,7 +403,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
            COLORS$MISSING   # "Missing"
           )
         ) |>
-        add_custom_tooltip(trigger = "axis")
+        add_stacked_bar_tooltip()
     })
 
     ## Substance Use Disorder Chart ----

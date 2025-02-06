@@ -1,59 +1,3 @@
-#' Generate a pie chart using echarts4r
-#'
-#' This function generates a pie chart using the echarts4r package.
-#'
-#' @param data A data frame containing the data to be plotted.
-#' @param category A character string specifying the column name in the data
-#' frame representing the categories for the pie chart slices.
-#' @param count A character string specifying the column name in the data frame
-#' representing the counts or values associated with each category.
-#'
-#' @return A pie chart visualized using echarts4r.
-#'
-#' @examples
-#' \dontrun{
-#' mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
-#' pie_chart(
-#'   data = mock_data,
-#'   category = "x",
-#'   count = "y"
-#' )
-#' }
-pie_chart <- function(data, category, count) {
-  data |>
-    # echarts4r::e_charts_() allows `x` to be a character string
-    echarts4r::e_charts_(x = category) |>
-    echarts4r::e_pie_(
-      serie = count,
-      name = category |> janitor::make_clean_names(case = "title"),
-      legend = TRUE,
-      label = list(
-        show = TRUE,
-        position = "outside",
-        formatter = "{d}%"   # show the percentage as the label
-      ),
-      radius = c("50%", "70%"),
-      # emphasize the label when hovered over
-      emphasis = list(
-        label = list(
-          show = TRUE,
-          fontSize = "15",
-          fontWeight = "bold"
-        )
-      )
-    ) |>
-    echarts4r::e_legend(bottom = 0) |>   # place legend below chart
-    echarts4r::e_tooltip(trigger = "item") |>
-    echarts4r::e_grid(
-      top = "10",
-      left = "60",
-      right = "60",
-      containLabel = TRUE
-    ) |>
-    echarts4r::e_show_loading()
-
-}
-
 #' Generate a bar chart using echarts4r
 #'
 #' This function generates a bar chart using the echarts4r package.
@@ -67,6 +11,8 @@ pie_chart <- function(data, category, count) {
 #' for percentage calculation.
 #' @param axis_flip A logical value indicating whether to flip the x and y axes.
 #' Default is TRUE.
+#' @param tooltip_opts  A named list of additional tooltip options passed to 
+#' echarts4r's `e_tooltip()`. Supports `confine` and `extraCssText` options.
 #'
 #' @return A bar chart visualized using echarts4r.
 #'
@@ -139,27 +85,33 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tool
   out
 }
 
-add_custom_tooltip <- function(echart, trigger) {
-  if (trigger == "axis") {
-    echart |> 
-      echarts4r::e_tooltip(
-        trigger = "axis",
-        formatter = htmlwidgets::JS("
-          function(params) {
-            let tooltip = params[0].axisValue + '<br/>';
-            tooltip += '<table>';
-            params.forEach(function(item) {
-              let percentage = Math.round(item.data.extra.pct * 100) + '%';
-              tooltip += '<tr>' +
-                         '<td style=\"text-align: left; padding-right: 10px;\">' + item.marker + ' ' + item.seriesName + '</td>' +
-                         '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + percentage + ')</td>' +
-                         '</tr>';
-            });
-            tooltip += '</table>';
-            return tooltip;
-          }")
-      )
-  }
+#' Add tooltip to stacked bar chart
+#'
+#' `add_stacked_bar_tooltip()` adds a tooltip to an `echarts4r` stacked bar chart.
+#' The tooltip is triggered on the axis and displays values along with their percentages.
+#'
+#' @param echart An `echarts4r` object representing the stacked bar chart.
+#' 
+#' @return An `echarts4r` object with the tooltip applied.
+add_stacked_bar_tooltip <- function(echart) {
+  echart |> 
+    echarts4r::e_tooltip(
+      trigger = "axis",
+      formatter = htmlwidgets::JS("
+        function(params) {
+          let tooltip = params[0].axisValue + '<br/>';
+          tooltip += '<table>';
+          params.forEach(function(item) {
+            let percentage = Math.round(item.data.extra.pct * 100) + '%';
+            tooltip += '<tr>' +
+                       '<td style=\"text-align: left; padding-right: 10px;\">' + item.marker + ' ' + item.seriesName + '</td>' +
+                       '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + percentage + ')</td>' +
+                       '</tr>';
+          });
+          tooltip += '</table>';
+          return tooltip;
+        }")
+    )
 }
 
 #' Generate a Sankey chart using echarts4r

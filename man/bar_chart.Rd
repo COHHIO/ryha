@@ -27,6 +27,9 @@ for percentage calculation.}
 
 \item{axis_flip}{A logical value indicating whether to flip the x and y axes.
 Default is TRUE.}
+
+\item{tooltip_opts}{A named list of additional tooltip options passed to
+echarts4r's \code{e_tooltip()}. Supports \code{confine} and \code{extraCssText} options.}
 }
 \value{
 A bar chart visualized using echarts4r.

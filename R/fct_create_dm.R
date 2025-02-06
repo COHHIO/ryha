@@ -803,6 +803,18 @@ read_data_from_table <- function(connection, table_name, column_names) {
 
 }
 
+#' Convert vector to ordered factor
+#'
+#' `convert_to_ordered_factor()` converts a vector to an ordered factor, 
+#' ensuring that "Missing" appears as the first level, followed by the 
+#' descriptions from a provided `codes` data frame in reverse order.
+#'
+#' @param x A vector to be converted into an ordered factor.
+#' @param codes A data frame containing a column `Description` that defines
+#' the factor levels (excluding "Missing").
+#' 
+#' @return An ordered factor with levels starting with "Missing" and followed
+#' by the reversed descriptions.
 convert_to_ordered_factor <- function(x, codes) {
   factor(
     x,
