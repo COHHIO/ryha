@@ -90,6 +90,23 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tool
       dplyr::mutate(pct = n / sum(n))
   }
 
+  # If no bars colors were already defined...
+  if (!"color" %in% colnames(data)) {
+    # Differentiate missing categories from responses of interest
+    data <- data |>
+      dplyr::mutate(
+        color = dplyr::case_when(
+          .data[[x]] %in% c(
+            "Missing",
+            "Data not collected",
+            "Client prefers not to answer",
+            "Client doesn't know"
+          ) ~ COLORS$MISSING,
+          TRUE ~ COLORS$DEFAULT
+        )
+      )
+  }
+
   out <- data |>
     echarts4r::e_charts_(x = x) |>
     echarts4r::e_bar_(
@@ -97,6 +114,7 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tool
       name = "# of Youth",
       legend = FALSE
     ) |>
+    echarts4r::e_add_nested("itemStyle", color) |>
     echarts4r::e_add_nested('extra', pct) |>
     echarts4r::e_tooltip(
       trigger = "axis",

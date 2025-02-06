@@ -252,7 +252,6 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
             extraCssText = "width:auto; white-space:pre-wrap;"
           )
         ) |>
-        echarts4r::e_add_nested("itemStyle", color) |> 
         echarts4r::e_y_axis(
           axisLabel = list(
             width = 350,

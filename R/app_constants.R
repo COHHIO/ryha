@@ -1,6 +1,8 @@
 DEFAULT_BOX_HEIGHT <- "440px"
 
 COLORS <- list(
+  DEFAULT = "#5470C6",
+
   YES_BAD = "#D7191C",
   NO_GOOD = "#1A9641",
 
