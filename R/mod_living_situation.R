@@ -86,6 +86,24 @@ mod_living_situation_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
+          title = "# of Youth by Destination (at Exit)",
+          width = NULL,
+          height = "720px",
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("destination_bar_chart"),
+            height = "100%"
+          )
+        )
+
+      )
+    ),
+
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+
+        bs4Dash::box(
           title = with_popover(
             text = "Changes in General Living Situation Group (Entry --> Exit)",
             content = shiny::tagList(
@@ -102,25 +120,7 @@ mod_living_situation_ui <- function(id){
         )
 
       )
-    ),
-
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-
-        bs4Dash::box(
-          title = "# of Youth by Destination (at Exit)",
-          width = NULL,
-          height = "720px",
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("destination_bar_chart"),
-            height = "100%"
-          )
-        )
-
-      )
-    ),
+    )
 
   )
 }
