@@ -252,41 +252,17 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       n_youth()
     })
 
-    # Apply the filters to the disabilities data
+    # Filter disabilities data
+    # disabilities_data_filtered has one row per enrollment, data collection stage and disability type
     disabilities_data_filtered <- shiny::reactive({
-
-      disabilities_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(disabilities_data, clients_filtered())
     })
 
-    # Subset most recent data for each youth
-    disabilities_data_recent <- shiny::reactive({
-
+    # Create reactive with the most recent data collected per enrollment
+    most_recent_data_per_enrollment <- shiny::reactive({
       disabilities_data_filtered() |>
-        # Remove duplicates from table
-        dplyr::distinct() |>
-        # Unique key to identify a youth
-        dplyr::group_by(personal_id, organization_id) |>
-        # Keep the values that correspond to the last date_updated
-        dplyr::filter(date_updated == max(date_updated)) |>
-        # Required ungroup step
-        dplyr::ungroup() |>
-        # Convert data to have one row per youth
         tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
-        # Sometimes, "Project start" and "Project exit" have the same date_updated value
-        # For that reason, we can still find duplicated youth
-        # In this scenario, we will keep "Project exit" row. The trick is to arrange the rows
-        # and keep the first row per client (as "exit" will show before "start" in the sorting)
-        dplyr::arrange(organization_id, personal_id, data_collection_stage) |>
-        dplyr::group_by(personal_id, organization_id) |>
-        # Keep first row per client
-        dplyr::filter(dplyr::row_number() == 1) |>
-        dplyr::ungroup()
-
+        filter_most_recent_data_per_enrollment()
     })
 
     # TODO // Implement these "improved" counts across the first infoBox for
@@ -294,6 +270,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     n_youth_in_disability_data <- reactive({
 
+      # TODO: Same as nrow(most_recent_data_per_enrollment())
       disabilities_data_filtered() |>
         dplyr::select(organization_id, personal_id) |>
         dplyr::n_distinct()
@@ -308,7 +285,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Total number of youth with disabilities or substance use
     n_youth_with_disabilities_or_substance_use <- shiny::reactive({
 
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         dplyr::filter(
           rowSums(
             dplyr::across(
@@ -353,15 +330,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in chart
     disabilities_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_recent()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         # Remove Substance Use Disorder column
         dplyr::select(-`Substance Use Disorder`) |>
         # Each disability had its own column, we need data to be in long format
@@ -420,22 +389,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     substance_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_recent()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      use_disorders_data <- disabilities_data_recent() |>
+      use_disorders_data <- most_recent_data_per_enrollment() |>
         dplyr::filter(`Substance Use Disorder` %in% SubstanceUseDisorderCodes$Description[2:4])
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(use_disorders_data) >= 1L,
-          message = "No data to display"
-        )
-      )
 
       use_disorders_data |>
         dplyr::count(`Substance Use Disorder`) |>
@@ -456,318 +411,105 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
     })
 
     # Sankey Charts ----
-
     ## Physical Disabilities ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    physical_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Physical Disability",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Physical Disability",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = disability_response)
-
-    })
-
-    # Create physical sankey chart
     output$physical_sankey_chart <- echarts4r::renderEcharts4r({
-
-      physical_sankey_chart_data() |>
+      disabilities_data_filtered() |> 
+        dplyr::filter(disability_type == "Physical Disability") |> 
+        prepare_sankey_data(
+          response_col = "disability_response",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     ## Developmental Disabilities ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    developmental_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Developmental Disability",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Developmental Disability",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = disability_response)
-
-    })
-
-    # Create developmental sankey chart
     output$developmental_sankey_chart <- echarts4r::renderEcharts4r({
-
-      developmental_sankey_chart_data() |>
+      disabilities_data_filtered() |> 
+        dplyr::filter(disability_type == "Developmental Disability") |> 
+        prepare_sankey_data(
+          response_col = "disability_response",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     ## Chronic Health Condition ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    chronic_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Chronic Health Condition",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Chronic Health Condition",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = disability_response)
-
-    })
-
-    # Create chronic sankey chart
     output$chronic_sankey_chart <- echarts4r::renderEcharts4r({
-
-      chronic_sankey_chart_data() |>
+      disabilities_data_filtered() |> 
+        dplyr::filter(disability_type == "Chronic Health Condition") |> 
+        prepare_sankey_data(
+          response_col = "disability_response",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     ## HIV/AIDS ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    hiv_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "HIV/AIDS",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "HIV/AIDS",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = disability_response)
-
-    })
-
-    # Create chronic sankey chart
     output$hiv_sankey_chart <- echarts4r::renderEcharts4r({
-
-      hiv_sankey_chart_data() |>
+      disabilities_data_filtered() |> 
+        dplyr::filter(disability_type == "HIV/AIDS") |> 
+        prepare_sankey_data(
+          response_col = "disability_response",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     ## Mental Health Disorder ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    mental_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Mental Health Disorder",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Mental Health Disorder",
-          disability_response %in% c("Yes", "No")
-        ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
-        ) |>
-        prep_sankey_data(state_var = disability_response)
-
-    })
-
-    # Create disabilities trend line chart
     output$mental_sankey_chart <- echarts4r::renderEcharts4r({
-
-      mental_sankey_chart_data() |>
+      disabilities_data_filtered() |> 
+        dplyr::filter(disability_type == "Mental Health Disorder") |> 
+        prepare_sankey_data(
+          response_col = "disability_response",
+          response_vals = c("Yes", "No")
+        ) |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     ## Substance Use Disorder ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    substance_sankey_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(disabilities_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      ids_exited <- disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Substance Use Disorder",
-          disability_response %in% SubstanceUseDisorderCodes$Description[1:4]
-        ) |>
-        get_ids_for_sankey()
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(ids_exited) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      disabilities_data_filtered() |>
-        dplyr::filter(
-          disability_type == "Substance Use Disorder",
-          disability_response %in% SubstanceUseDisorderCodes$Description[1:4]
-        ) |>
+    output$substance_sankey_chart <- echarts4r::renderEcharts4r({
+      disabilities_data_filtered() |> 
+        dplyr::filter(disability_type == "Substance Use Disorder") |> 
         # Recode 'disability_response' to either "Yes" or "No"
         dplyr::mutate(
           disability_response = dplyr::case_when(
             disability_response == "No" ~ "No",
-            TRUE ~ "Yes"
+            disability_response %in% c(
+              "Alcohol use disorder",
+              "Drug use disorder",
+              "Both alcohol and drug use disorders"
+            ) ~ "Yes"
           )
         ) |>
-        dplyr::inner_join(
-          ids_exited,
-          by = c("organization_id", "personal_id")
+        prepare_sankey_data(
+          response_col = "disability_response",
+          response_vals = c("Yes", "No")
         ) |>
-        prep_sankey_data(state_var = disability_response)
-
-    })
-
-    # Create substance trend line chart
-    output$substance_sankey_chart <- echarts4r::renderEcharts4r({
-
-      substance_sankey_chart_data() |>
         sankey_chart(
           entry_status = "Entry",
           exit_status = "Exit",
           count = "n"
         )
-
     })
 
     # Missingness Statistics ----
@@ -781,7 +523,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     output$missingness_stats_tbl1 <- reactable::renderReactable(
 
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         dplyr::mutate(
           `Answers Missing` = rowSums(
             dplyr::across(
@@ -804,7 +546,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
 
     missingness_stats2 <- shiny::reactive({
 
-      disabilities_data_recent() |>
+      most_recent_data_per_enrollment() |>
         tidyr::pivot_longer(
           cols = c(
             `Physical Disability`,

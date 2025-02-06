@@ -1,6 +1,6 @@
 
 # devtools::load_all()
-con <- connect_to_db()
+con <- connect_to_db("prod")
 
 # Re-populate tables ----
 data <- process_data(file = "app_testing/app_testing/hudx-111_1667240256.zip")

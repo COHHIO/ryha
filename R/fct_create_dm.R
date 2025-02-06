@@ -316,6 +316,63 @@ create_dm <- function(env,
         "date_updated",
         "organization_id"
       )
+    ) |>
+    dplyr::mutate(
+      # Bucket Last Grade Completed categories
+      last_grade_completed_grouped = factor(
+        last_grade_completed,
+        levels = c(
+          "Less than Grade 5",
+          "Grades 5-6",
+          "Grades 7-8",
+          "Grades 9-11",
+          "Grade 12 / High school diploma",
+          "GED",
+          "Some College",
+          "Associate's Degree",
+          "Bachelor's Degree",
+          "Graduate Degree",
+          "Vocational Degree",
+          "School program does not have grade levels",
+          "Client doesn't know",
+          "Client refused",
+          "Data not collected"
+        ),
+        labels = c(
+          "Less than Grade 5",
+          "Grades 5-8",
+          "Grades 5-8",
+          "Grades 9-11",
+          "High school diploma/GED",
+          "High school diploma/GED",
+          "Some College",
+          "College Degree/Vocational",
+          "College Degree/Vocational",
+          "College Degree/Vocational",
+          "College Degree/Vocational",
+          "Unknown",
+          "Unknown",
+          "Unknown",
+          "Unknown"
+        ),
+        ordered = TRUE
+      ),
+      school_status = factor(
+        school_status,
+        levels = c(
+          "Obtained GED",
+          "Graduated from high school",
+          "Attending school regularly",
+          "Attending school irregularly",
+          "Suspended",
+          "Expelled",
+          "Dropped out",
+          "Client doesn't know",
+          "Client refused",
+          "Data not collected"
+        ),
+        ordered = TRUE
+      )
     )
 
     enrollment <- read_data_from_table(
@@ -336,7 +393,16 @@ create_dm <- function(env,
         "organization_id",
         "date_updated"
       )
-    )
+    ) |>
+      # Bucket Living Situation categories
+      dplyr::left_join(
+        LivingCodes |>
+          dplyr::select(
+            description = Description,
+            living_situation_grouped = ExitCategory
+          ),
+        by = c("living_situation" = "description")
+      )
 
     health <- read_data_from_table(
       connection = con,
@@ -351,6 +417,27 @@ create_dm <- function(env,
         "data_collection_stage",
         "date_updated",
         "organization_id"
+      )
+    ) |> 
+    dplyr::mutate(
+      dplyr::across(
+        .cols = c(general_health_status, dental_health_status, mental_health_status),
+        .fns = function(col) {
+          factor(
+            col,
+            levels = c(
+              "Excellent",
+              "Very good",
+              "Good",
+              "Fair",
+              "Poor",
+              "Client doesn't know",
+              "Client prefers not to answer",
+              "Data not collected"
+            ),
+            ordered = TRUE
+          )
+        }
       )
     )
 
@@ -396,7 +483,33 @@ create_dm <- function(env,
         "date_updated",
         "organization_id"
       )
-    )
+    ) |>
+      dplyr::mutate(
+        total_monthly_income_integer = as.integer(round(total_monthly_income, 0)),
+        total_monthly_income_grouped = dplyr::case_when(
+            total_monthly_income_integer == 0L ~ "No Income",
+            total_monthly_income_integer > 0L & total_monthly_income_integer <= 500L ~ "$1-$500",
+            total_monthly_income_integer > 500L & total_monthly_income_integer <= 1000L ~ "$551-$1,000",
+            total_monthly_income_integer > 1000L & total_monthly_income_integer <= 2000L ~ "$1,001-$2,000",
+            total_monthly_income_integer > 2000L & total_monthly_income_integer <= 3000L ~ "$2,001-$3,000",
+            total_monthly_income_integer > 3000L & total_monthly_income_integer <= 4000L ~ "$3,001-$4,000",
+            total_monthly_income_integer > 4000L & total_monthly_income_integer <= 5000L ~ "$4,001-$5,000",
+            total_monthly_income_integer > 5000L ~ "$5,001 or more"
+          ) |> 
+          factor(
+            levels = c(
+              "No Income",
+              "$1-$500",
+              "$551-$1,000",
+              "$1,001-$2,000",
+              "$2,001-$3,000",
+              "$3,001-$4,000",
+              "$4,001-$5,000",
+              "$5,001 or more"
+            ),
+            ordered = TRUE
+          )
+      )
 
     benefits <- read_data_from_table(
       connection = con,
@@ -461,7 +574,16 @@ create_dm <- function(env,
         "organization_id",
         "date_updated"
       )
-    )
+    ) |>
+      # Bucket Destination categories (same as Living Situation)
+      dplyr::left_join(
+        LivingCodes |>
+          dplyr::select(
+            description = Description,
+            destination_grouped = ExitCategory
+          ),
+        by = c("destination" = "description")
+      )
 
     # Create {dm} object
     dm <- list(
@@ -523,6 +645,7 @@ read_data_from_table <- function(connection, table_name, column_names) {
       "SELECT {`column_names`*} FROM {`table_name`}",
       .con = connection
     )
-  )
+  ) |> 
+  tibble::as_tibble()
 
 }

@@ -152,15 +152,9 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
     })
 
     # Apply the filters to the services data
-    exit_data_filtered <- shiny::reactive(
-
-      exit_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
-    )
+    exit_data_filtered <- shiny::reactive({
+      filter_data(exit_data, clients_filtered())
+    })
 
     # Total number of Youth in program(s) that exist in the `Exit.csv` file
     # (after filters applied)
@@ -186,13 +180,6 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
     # Create reactive data frame to data to be displayed in pie chart
     completion_pie_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(exit_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
       out <- exit_data_filtered() |>
         dplyr::filter(!is.na(project_completion_status)) |>
         dplyr::arrange(
@@ -213,12 +200,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(project_completion_status) |>
@@ -239,13 +221,6 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
 
     # Create reactive data frame to data to be displayed in pie chart
     exit_heatmap_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(exit_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
 
       out <- exit_data_filtered() |>
         dplyr::filter(
@@ -272,12 +247,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered){
           .keep_all = TRUE
         )
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(out)
 
       out |>
         dplyr::count(destination_safe_client, destination_safe_worker) |>

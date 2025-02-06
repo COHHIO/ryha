@@ -137,26 +137,21 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
     )
 
-    # Apply the filters to the trafficking data
+    # Filter health data
     health_data_filtered <- shiny::reactive(
-
-      health_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(health_data, clients_filtered())
     )
 
-    # Apply the filters to the trafficking data
+    most_recent_data_per_enrollment <- shiny::reactive({
+      health_data_filtered() |> 
+        dplyr::filter(data_collection_stage %in% c("Project start", "Project exit")) |>
+        filter_most_recent_data_per_enrollment()
+    })
+
+    # Filter enrollment data
     enrollment_data_filtered <- shiny::reactive(
-
       enrollment_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+        filter_data(clients_filtered()) 
     )
 
     # Total number of Youth in program(s) provided a "Yes" or "No" response to
@@ -202,63 +197,14 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
     })
 
     # Pregnancy Status ----
-
-    ## Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    pregnancy_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out <- health_data_filtered() |>
-        dplyr::filter(
-          pregnancy_status %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          pregnancy_status,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          pregnancy_status
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          pregnancy_status,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(pregnancy_status) |>
-        dplyr::arrange(pregnancy_status)
-
-    })
-
-    # Create pregnancy status pie chart
     output$pregnancy_pie_chart <- echarts4r::renderEcharts4r({
-
-      pregnancy_pie_chart_data() |>
+      most_recent_data_per_enrollment() |> 
+        dplyr::filter(pregnancy_status %in% c("Yes", "No")) |>
+        dplyr::count(pregnancy_status) |> 
         pie_chart(
           category = "pregnancy_status",
           count = "n"
         )
-
     })
 
     ## Data Quality Statistics ----

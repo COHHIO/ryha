@@ -20,7 +20,6 @@
 #' )
 #' }
 pie_chart <- function(data, category, count) {
-
   data |>
     # echarts4r::e_charts_() allows `x` to be a character string
     echarts4r::e_charts_(x = category) |>
@@ -153,136 +152,49 @@ sankey_chart <- function(data,
 
 }
 
-#' Get eligible IDs for generating a Sankey chart
+#' Prepare data for a Sankey chart
 #'
-#' `get_ids_for_sankey()` identifies IDs with both a Project start and a
-#' Project exit data collection stage.
+#' `prepare_sankey_data()` prepares data for visualization in a Sankey chart.
 #'
-#' @details
-#' For entries with multiple Project start the most recently updated data is kept.
+#' @param data A data frame
+#' @param response_col A character string specifying the name of the column 
+#'   with response values
+#' @param response_vals A vector of response values to include in the Sankey chart
 #'
-#' @param data A data frame containing the data from which to extract unique IDs.
-#'
-#' @return A data frame with unique combinations of organization and personal IDs
-#' that have at least a Project start and Project exit data collection stage.
-#'
-#' @examples
-#' \dontrun{
-#' mock_data <- tibble::tribble(
-#'   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated,
-#'   1, 101, "Project start", "2023-01-01",
-#'   1, 101, "Project exit", "2023-12-31",
-#'   2, 102, "Project start", "2023-01-01",
-#'   2, 102, "Project exit", "2023-12-31",
-#'   2, 103, "Project start", "2023-02-01",
-#'   3, 104, "Project start", "2023-02-01",
-#'   3, 104, "Project update", "2023-12-15",
-#'   3, 105, "Project start", "2023-01-01",
-#'   3, 105, "Project update", "2023-06-30",
-#'   3, 105, "Project exit", "2023-12-31"
-#' )
-#' get_ids_for_sankey(mock_data)
-#' }
-get_ids_for_sankey <- function(data) {
-
-  # TODO: Check scenario where a person has start-end-start.
-  data |>
-    dplyr::filter(
-      data_collection_stage %in% c("Project start", "Project exit")
-    ) |>
-    dplyr::arrange(
-      organization_id,
-      personal_id,
-      data_collection_stage,
-      # we'll keep only the most recently updated data
-      dplyr::desc(date_updated)
-    ) |>
-    dplyr::distinct(
-      organization_id,
-      personal_id,
-      data_collection_stage
-    ) |>
-    dplyr::group_by(organization_id, personal_id) |>
-    # ensure there's exactly 2 rows of data by individual (an entry & an exit)
-    dplyr::filter(dplyr::n() == 2L) |>
-    dplyr::ungroup() |>
-    dplyr::distinct(organization_id, personal_id)
-
-}
-
-#' Prepare data for generating a Sankey chart
-#'
-#' `prep_sankey_data()` prepares data by filtering, arranging, selecting, and
-#' transforming it to generate data suitable for creating a Sankey chart
-#' representing flow between stages.
-#'
-#' @param data A data frame containing the data to be prepared.
-#' @param state_var A character string specifying the column name representing
-#' the state variable to be used in the Sankey chart.
-#'
-#' @return A data frame with prepared data suitable for generating a Sankey chart.
+#' @return A data frame summarizing the transitions between entry and exit 
+#'   response values, with columns `Entry`, `Exit`, and `n` representing 
+#'   the start, end and count of each transition.
 #'
 #' @examples
 #' \dontrun{
-#' mock_data <- tibble::tribble(
-#'   ~organization_id, ~personal_id, ~data_collection_stage, ~date_updated, ~condition,
-#'   1, 101, "Project start", "2023-01-01", "A",
-#'   1, 101, "Project exit", "2023-12-31", "A",
-#'   2, 102, "Project start", "2023-01-01", "A",
-#'   2, 102, "Project exit", "2023-12-31", "B",
-#'   2, 103, "Project start", "2023-02-01", "A",
-#'   3, 104, "Project start", "2023-02-01", "B",
-#'   3, 104, "Project update", "2023-12-15", "B",
-#'   3, 105, "Project start", "2023-01-01", "B",
-#'   3, 105, "Project update", "2023-06-30", "B",
-#'   3, 105, "Project exit", "2023-12-31", "A"
+#' mock_data <- data.frame(
+#'   enrollment_id = rep(1:5, each = 2),
+#'   personal_id = rep(1:5, each = 2),
+#'   organization_id = 1,
+#'   data_collection_stage = rep(c("Project start", "Project exit"), 5),
+#'   status = c("A", "B", "A", "B", "B", "C", "A", "C", "A", "D")
 #' )
-#' prep_sankey_data(data = mock_data, state_var = "condition")
+#' 
+#' prepare_sankey_data(mock_data, response_col = "status", response_vals = c("A", "B", "C"))
 #' }
-prep_sankey_data <- function(data, state_var) {
-
-  data |>
+prepare_sankey_data <- function(data, response_col, response_vals) {
+  data |> 
     dplyr::filter(
-      data_collection_stage %in% c("Project start", "Project exit")
-    ) |>
-    dplyr::arrange(
-      organization_id,
-      personal_id,
-      data_collection_stage,
-      # keep only the most recently updated data
-      dplyr::desc(date_updated)
-    ) |>
-    dplyr::select(
-      organization_id,
-      personal_id,
-      data_collection_stage,
-      {{ state_var }}
-    ) |>
-    dplyr::distinct(
-      organization_id,
-      personal_id,
-      data_collection_stage,
-      .keep_all = TRUE
-    ) |>
-    dplyr::mutate(
-      id = paste0(organization_id, "_", personal_id)
-    ) |>
-    dplyr::select(id, data_collection_stage, {{ state_var }}) |>
-    dplyr::mutate(
-      data_collection_stage = dplyr::case_when(
-        data_collection_stage == "Project start" ~ "Entry",
-        data_collection_stage == "Project exit" ~ "Exit"
-      )
-    ) |>
-    tidyr::pivot_wider(
-      id_cols = id,
-      names_from = data_collection_stage,
-      values_from = {{ state_var }}
-    ) |>
+      # Each enrollment has one "Project start" and at most one "Project exit"
+      data_collection_stage %in% c("Project start", "Project exit"),
+      # Not all response values are included in the sankey chart
+      !!rlang::sym(response_col) %in% response_vals
+    ) |> 
+    # Select columns of interest
+    dplyr::select(enrollment_id, personal_id, organization_id, data_collection_stage, !!rlang::sym(response_col)) |> 
+    # Pivot to one row per youth
+    tidyr::pivot_wider(names_from = data_collection_stage, values_from = !!rlang::sym(response_col)) |> 
+    # Filter rows with both "Project start" and "Project exit"
+    dplyr::filter(!is.na(`Project start`), !is.na(`Project exit`)) |>
+    dplyr::count(`Project start`, `Project exit`) |> 
+    dplyr::rename("Entry" = "Project start", "Exit" = "Project exit") |> 
     dplyr::mutate(
       Entry = paste0(Entry, " (Entry)"),
       Exit = paste0(Exit, " (Exit)")
-    ) |>
-    dplyr::count(Entry, Exit)
-
+    )
 }
