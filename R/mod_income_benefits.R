@@ -57,7 +57,7 @@ mod_income_benefits_ui <- function(id){
               shiny::column(
                 width = 6,
 
-                ### Income Pie Chart ----
+                ### Income Chart ----
                 bs4Dash::box(
                   title = with_popover(
                     text = "Income Received (from Any Source)",
@@ -67,7 +67,7 @@ mod_income_benefits_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("income_pie_chart"),
+                    outputId = ns("income_chart"),
                     height = "100%"
                   )
                 )
@@ -77,17 +77,22 @@ mod_income_benefits_ui <- function(id){
               shiny::column(
                 width = 6,
 
-                ### Income Source Pie Chart ----
+                ### Income Source Chart ----
                 bs4Dash::box(
                   title = with_popover(
-                    text = "Income Received by Source (# of Youth)",
-                    content = link_section("4.02 Income and Sources")
+                    text = "Income Received by Source (# of Youth with Income)",
+                    content = shiny::tagList(
+                      shiny::p("Only youth who reported receiving income are included."),
+                      shiny::p("Each bar represents the percentage of youth who informed a given income source."),
+                      shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                      shiny::p(link_section("4.02 Income and Sources"))
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("income_source_pie_chart"),
+                    outputId = ns("income_source_chart"),
                     height = "100%"
                   )
                 )
@@ -101,10 +106,10 @@ mod_income_benefits_ui <- function(id){
               shiny::column(
                 width = 12,
 
-                ### Income Bar Chart ----
+                ### Monthly Income Chart ----
                 bs4Dash::box(
                   title = with_popover(
-                    text = "Total Monthly Income (# of Youth)",
+                    text = "Total Monthly Income (# of Youth with Income)",
                     content = link_section("4.02 Income and Sources")
                   ),
                   width = NULL,
@@ -113,25 +118,6 @@ mod_income_benefits_ui <- function(id){
                   echarts4r::echarts4rOutput(
                     outputId = ns("income_bar_chart"),
                     height = "100%"
-                  )
-                )
-
-              )
-
-            ),
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                ### Benefits Data Quality Table ----
-                bs4Dash::box(
-                  title = "Income Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("income_missingness_stats_tbl")
                   )
                 )
 
@@ -160,7 +146,7 @@ mod_income_benefits_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("benefits_pie_chart"),
+                    outputId = ns("benefits_chart"),
                     height = "100%"
                   )
                 )
@@ -173,14 +159,19 @@ mod_income_benefits_ui <- function(id){
                 ### Benefits Source Pie Chart ----
                 bs4Dash::box(
                   title = with_popover(
-                    text = "Benefits Received by Source",
-                    content = link_section("4.03 Non-Cash Benefits")
+                    text = "Benefits Received by Source (# of Youth with Benefits)",
+                    content = shiny::tagList(
+                      shiny::p("Only youth who reported receiving benefits are included."),
+                      shiny::p("Each bar represents the percentage of youth who informed a given benefit source."),
+                      shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                      shiny::p(link_section("4.03 Non-Cash Benefits"))
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("benefits_source_pie_chart"),
+                    outputId = ns("benefits_source_chart"),
                     height = "100%"
                   )
                 )
@@ -209,23 +200,6 @@ mod_income_benefits_ui <- function(id){
                 )
 
               )
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                ### Benefits Data Quality Table ----
-                bs4Dash::box(
-                  title = "Benefits Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("benefits_missingness_stats_tbl")
-                  )
-                )
-
-              )
             )
 
           ),
@@ -249,7 +223,7 @@ mod_income_benefits_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("insurance_pie_chart"),
+                    outputId = ns("insurance_chart"),
                     height = "100%"
                   )
                 )
@@ -262,14 +236,19 @@ mod_income_benefits_ui <- function(id){
                 ### Health Insurance Source Pie Chart ----
                 bs4Dash::box(
                   title = with_popover(
-                    text = "Health Insurance Received by Source",
-                    content = link_section("4.04 Health Insurance")
+                    text = "Health Insurance Received by Source (# of Youth with Insurance)",
+                    content = shiny::tagList(
+                      shiny::p("Only youth who reported receiving health insurance are included."),
+                      shiny::p("Each bar represents the percentage of youth who informed a given health insurance source."),
+                      shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                      shiny::p(link_section("4.04 Health Insurance"))
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("insurance_source_pie_chart"),
+                    outputId = ns("insurance_source_chart"),
                     height = "100%"
                   )
                 )
@@ -294,23 +273,6 @@ mod_income_benefits_ui <- function(id){
                   echarts4r::echarts4rOutput(
                     outputId = ns("insurance_sankey_chart"),
                     height = "100%"
-                  )
-                )
-
-              )
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                ### Health Insurance Data Quality Table ----
-                bs4Dash::box(
-                  title = "Health Insurance Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("insurance_missingness_stats_tbl")
                   )
                 )
 
@@ -404,64 +366,23 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       n_youth_with_benefits_data()
     })
 
-    ## Income Pie Chart ----
-    output$income_pie_chart <- echarts4r::renderEcharts4r(
+    ## Income Chart ----
+    output$income_chart <- echarts4r::renderEcharts4r(
       most_recent_income_data_per_enrollment() |>
-        dplyr::filter(income_from_any_source %in% c("Yes", "No")) |>
-        dplyr::count(income_from_any_source) |>
-        pie_chart(
-          category = "income_from_any_source",
-          count = "n"
+        dplyr::count(income_from_any_source, .drop = FALSE) |>
+        bar_chart(
+          x = "income_from_any_source",
+          y = "n"
         )
     )
 
-    ## Income Bar Chart ----
-    output$income_bar_chart <- echarts4r::renderEcharts4r(
-      most_recent_income_data_per_enrollment() |>
-        dplyr::filter(!is.na(total_monthly_income_grouped)) |>
-        dplyr::count(total_monthly_income_grouped, .drop = FALSE) |>
-        echarts4r::e_charts(x = total_monthly_income_grouped) |>
-        echarts4r::e_bar(
-          serie = n,
-          name = "# of Youth",
-          legend = FALSE,
-          label = list(
-            formatter = "{@[0]}",
-            show = TRUE,
-            position = "right"
-          )
-        ) |>
-        echarts4r::e_tooltip(trigger = "item") |>
-        echarts4r::e_flip_coords() |>
-        echarts4r::e_grid(containLabel = TRUE) |>
-        echarts4r::e_show_loading()
-    )
+    ## Income Source Chart ----
+    output$income_source_chart <- echarts4r::renderEcharts4r({
 
-    ## Benefits Pie Chart ----
-    output$benefits_pie_chart <- echarts4r::renderEcharts4r({
-      most_recent_benefits_data_per_enrollment() |>
-        dplyr::filter(benefits_from_any_source %in% c("Yes", "No")) |>
-        dplyr::count(benefits_from_any_source) |> 
-        pie_chart(
-          category = "benefits_from_any_source",
-          count = "n"
-        )
-    })
-
-    ## Health Insurance Pie Chart ----
-    output$insurance_pie_chart <- echarts4r::renderEcharts4r({
-      most_recent_benefits_data_per_enrollment() |>
-        dplyr::filter(insurance_from_any_source %in% c("Yes", "No")) |>
-        dplyr::count(insurance_from_any_source) |>
-        pie_chart(
-          category = "insurance_from_any_source",
-          count = "n"
-        )
-    })
-
-    ## Income Source Pie Chart ----
-    output$income_source_pie_chart <- echarts4r::renderEcharts4r({
-      most_recent_income_data_per_enrollment() |>
+      youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
+        dplyr::filter(income_from_any_source == "Yes")
+        
+      youth_with_income_from_any_source |>
         dplyr::select(
           enrollment_id,
           organization_id,
@@ -488,36 +409,84 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           values_to = "response"
         ) |>
         dplyr::filter(response == "Yes") |> 
-        dplyr::count(income_source) |>
         dplyr::mutate(
-          income_source = dplyr::recode(
+          income_source = factor(
             income_source,
-            "earned" = "Earned",
-            "unemployment" = "Unemployment",
-            "ssi" = "SSI",
-            "ssdi" = "SSDI",
-            "va_disability_service" = "VA Disability Service",
-            "va_disability_non_service" = "VA Disability Non Service",
-            "private_disability" = "Private Disability",
-            "workers_comp" = "Workers Comp",
-            "tanf" = "TANF",
-            "ga" = "GA",
-            "soc_sec_retirement" = "Social Security Retirement",
-            "pension" = "Pension",
-            "child_support" = "Child Support",
-            "alimony" = "Alimony",
-            "other_income_source" = "Other"
+            levels = c(
+              "other_income_source",
+              "alimony",
+              "child_support",
+              "pension",
+              "soc_sec_retirement",
+              "ga",
+              "tanf",
+              "workers_comp",
+              "private_disability",
+              "va_disability_non_service",
+              "va_disability_service",
+              "ssdi",
+              "ssi",
+              "unemployment",
+              "earned"
+            ),
+            labels = c(
+              "Other",
+              "Alimony",
+              "Child Support",
+              "Pension",
+              "Social Security Retirement",
+              "GA",
+              "TANF",
+              "Workers Comp",
+              "Private Disability",
+              "VA Disability Non Service",
+              "VA Disability Service",
+              "SSDI",
+              "SSI",
+              "Unemployment",
+              "Earned"
+            ),
+            ordered = TRUE
           )
         ) |>
-        pie_chart(
-          category = "income_source",
-          count = "n"
+        dplyr::count(income_source, .drop = FALSE) |>
+        bar_chart(
+          x = "income_source",
+          y = "n",
+          pct_denominator = nrow(youth_with_income_from_any_source)
         )
     })
 
-    ## Benefits Source Pie Chart ----
-    output$benefits_source_pie_chart <- echarts4r::renderEcharts4r({
+    ## Monthly Income Chart ----
+    output$income_bar_chart <- echarts4r::renderEcharts4r({
+      youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
+        dplyr::filter(income_from_any_source == "Yes")
+
+      youth_with_income_from_any_source |>
+        dplyr::count(total_monthly_income_grouped, .drop = FALSE) |>
+        bar_chart(
+          x = "total_monthly_income_grouped",
+          y = "n"
+        )
+    })
+
+    ## Benefits Chart ----
+    output$benefits_chart <- echarts4r::renderEcharts4r({
       most_recent_benefits_data_per_enrollment() |>
+        dplyr::count(benefits_from_any_source, .drop = FALSE) |> 
+        bar_chart(
+          x = "benefits_from_any_source",
+          y = "n"
+        )
+    })
+
+    ## Benefits Source Chart ----
+    output$benefits_source_chart <- echarts4r::renderEcharts4r({
+
+      youth_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment() |>
+        dplyr::filter(benefits_from_any_source == "Yes")
+        
+      youth_with_benefits_from_any_source |>
         dplyr::select(
           enrollment_id,
           organization_id,
@@ -534,27 +503,68 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           values_to = "response"
         ) |>
         dplyr::filter(response == "Yes") |> 
-        dplyr::count(benefits_source) |>
         dplyr::mutate(
-          benefits_source = dplyr::recode(
+          benefits_source = factor(
             benefits_source,
-            "snap" = "Snap",
-            "wic" = "WIC",
-            "tanf_child_care" = "TANF Child Care",
-            "tanf_transportation" = "TANF Transportation",
-            "other_tanf" = "Other TANF",
-            "other_benefits_source" = "Other"
+            levels = c(
+              "other_benefits_source",
+              "other_tanf",
+              "tanf_transportation",
+              "tanf_child_care",
+              "wic",
+              "snap"
+            ),
+            labels = c(
+              "Other",
+              "Other TANF",
+              "TANF Transportation",
+              "TANF Child Care",
+              "WIC",
+              "Snap"
+            ),
+            ordered = TRUE
           )
         ) |>
-        pie_chart(
-          category = "benefits_source",
+        dplyr::count(benefits_source, .drop = FALSE) |>
+        bar_chart(
+          x = "benefits_source",
+          y = "n",
+          pct_denominator = nrow(youth_with_benefits_from_any_source)
+        )
+
+    })
+
+    ## Benefits Sankey Chart ----
+    output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
+      benefits_data_filtered() |>
+        prepare_sankey_data(
+          response_col = "benefits_from_any_source",
+          response_vals = c("Yes", "No")
+        ) |>
+        sankey_chart(
+          entry_status = "Entry",
+          exit_status = "Exit",
           count = "n"
+        )
+    )
+
+    ## Health Insurance Chart ----
+    output$insurance_chart <- echarts4r::renderEcharts4r({
+      most_recent_benefits_data_per_enrollment() |>
+        dplyr::count(insurance_from_any_source, .drop = FALSE) |>
+        bar_chart(
+          x = "insurance_from_any_source",
+          y = "n"
         )
     })
 
-    ## Health Insurance Source Pie Chart ----
-    output$insurance_source_pie_chart <- echarts4r::renderEcharts4r({
-      most_recent_benefits_data_per_enrollment() |>
+    ## Health Insurance Source Chart ----
+    output$insurance_source_chart <- echarts4r::renderEcharts4r({
+
+      youth_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment() |>
+        dplyr::filter(insurance_from_any_source == "Yes")
+        
+      youth_with_insurance_from_any_source |>
         dplyr::select(
           enrollment_id,
           organization_id,
@@ -576,41 +586,43 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           values_to = "response"
         ) |>
         dplyr::filter(response == "Yes") |> 
-        dplyr::count(insurance_source) |>
         dplyr::mutate(
-          insurance_source = dplyr::recode(
+          insurance_source = factor(
             insurance_source,
-            "medicaid" = "Medicaid",
-            "medicare" = "Medicare",
-            "schip" = "SCHIP",
-            "vha_services" = "VHA Services",
-            "employer_provided" = "Employer Provided",
-            "cobra" = "Cobra",
-            "private_pay" = "Private Pay",
-            "state_health_ins" = "State Health Insurance",
-            "indian_health_services" = "Indian Health Services",
-            "other_insurance" = "Other"
+            levels = c(
+              "other_insurance",
+              "indian_health_services",
+              "state_health_ins",
+              "private_pay",
+              "cobra",
+              "employer_provided",
+              "vha_services",
+              "schip",
+              "medicare",
+              "medicaid"
+            ),
+            labels = c(
+              "Other",
+              "Indian Health Services",
+              "State Health Insurance",
+              "Private Pay",
+              "Cobra",
+              "Employer Provided",
+              "VHA Services",
+              "SCHIP",
+              "Medicare",
+              "Medicaid"
+            ),
+            ordered = TRUE
           )
         ) |>
-        pie_chart(
-          category = "insurance_source",
-          count = "n"
+        dplyr::count(insurance_source, .drop = FALSE) |>
+        bar_chart(
+          x = "insurance_source",
+          y = "n",
+          pct_denominator = nrow(youth_with_insurance_from_any_source)
         )
     })
-
-    ## Benefits Sankey Chart ----
-    output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
-      benefits_data_filtered() |>
-        prepare_sankey_data(
-          response_col = "benefits_from_any_source",
-          response_vals = c("Yes", "No")
-        ) |>
-        sankey_chart(
-          entry_status = "Entry",
-          exit_status = "Exit",
-          count = "n"
-        )
-    )
 
     ## Health Insurance Sankey Chart ----
     output$insurance_sankey_chart <- echarts4r::renderEcharts4r(
@@ -624,86 +636,6 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
           exit_status = "Exit",
           count = "n"
         )
-    )
-
-    ## Data Quality Statistics ----
-
-    ### Get data for income data quality table ----
-    income_missingness_stats <- shiny::reactive(
-
-      income_data_filtered() |>
-        dplyr::mutate(income_from_any_source = ifelse(
-          is.na(income_from_any_source),
-          "(Blank)",
-          income_from_any_source
-        )) |>
-        dplyr::filter(
-          !income_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::count(income_from_any_source, name = "Count") |>
-        dplyr::rename(Response = income_from_any_source)
-
-    )
-
-    ### Render income data quality table ----
-    output$income_missingness_stats_tbl <- reactable::renderReactable(
-
-      reactable::reactable(
-        income_missingness_stats()
-      )
-
-    )
-
-    ### Get data for benefits data quality table ----
-    benefits_missingness_stats <- shiny::reactive(
-
-      benefits_data_filtered() |>
-        dplyr::mutate(benefits_from_any_source = ifelse(
-          is.na(benefits_from_any_source),
-          "(Blank)",
-          benefits_from_any_source
-        )) |>
-        dplyr::filter(
-          !benefits_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::count(benefits_from_any_source, name = "Count") |>
-        dplyr::rename(Response = benefits_from_any_source)
-
-    )
-
-    ### Render benefits data quality table ----
-    output$benefits_missingness_stats_tbl <- reactable::renderReactable(
-
-      reactable::reactable(
-        benefits_missingness_stats()
-      )
-
-    )
-
-    ### Get data for insurance data quality table ----
-    insurance_missingness_stats <- shiny::reactive({
-
-      benefits_data_filtered() |>
-        dplyr::mutate(insurance_from_any_source = ifelse(
-          is.na(insurance_from_any_source),
-          "(Blank)",
-          insurance_from_any_source
-        )) |>
-        dplyr::filter(
-          !insurance_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::count(insurance_from_any_source, name = "Count") |>
-        dplyr::rename(Response = insurance_from_any_source)
-
-    })
-
-    ### Render insurance data quality table ----
-    output$insurance_missingness_stats_tbl <- reactable::renderReactable(
-
-      reactable::reactable(
-        insurance_missingness_stats()
-      )
-
     )
 
   })

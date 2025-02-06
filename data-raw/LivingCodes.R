@@ -29,13 +29,13 @@ LivingCodes <- tibble::tribble(
   435L, "Rental by client, with ongoing housing subsidy", "Permanent",
   421L, "Owned by client, with ongoing housing subsidy", "Permanent",
   411L, "Owned by client, no ongoing housing subsidy", "Permanent",
-  30L, "No exit interview completed", "Other",
+  30L, "No exit interview completed", "Data not collected",
   17L, "Other", "Other",
   24L, "Deceased", "Other",
-  37L, "Worker unable to determine", "Other",
-  8L, "Client doesn't know", "Other",
-  9L, "Client prefers not to answer", "Other",
-  99L, "Data not collected", "Other"
+  37L, "Worker unable to determine", "Client doesn't know",
+  8L, "Client doesn't know", "Client doesn't know",
+  9L, "Client prefers not to answer", "Client prefers not to answer",
+  99L, "Data not collected", "Data not collected"
 )
 
 usethis::use_data(LivingCodes, overwrite = TRUE)

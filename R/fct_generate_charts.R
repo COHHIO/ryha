@@ -1,59 +1,3 @@
-#' Generate a pie chart using echarts4r
-#'
-#' This function generates a pie chart using the echarts4r package.
-#'
-#' @param data A data frame containing the data to be plotted.
-#' @param category A character string specifying the column name in the data
-#' frame representing the categories for the pie chart slices.
-#' @param count A character string specifying the column name in the data frame
-#' representing the counts or values associated with each category.
-#'
-#' @return A pie chart visualized using echarts4r.
-#'
-#' @examples
-#' \dontrun{
-#' mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
-#' pie_chart(
-#'   data = mock_data,
-#'   category = "x",
-#'   count = "y"
-#' )
-#' }
-pie_chart <- function(data, category, count) {
-  data |>
-    # echarts4r::e_charts_() allows `x` to be a character string
-    echarts4r::e_charts_(x = category) |>
-    echarts4r::e_pie_(
-      serie = count,
-      name = category |> janitor::make_clean_names(case = "title"),
-      legend = TRUE,
-      label = list(
-        show = TRUE,
-        position = "outside",
-        formatter = "{d}%"   # show the percentage as the label
-      ),
-      radius = c("50%", "70%"),
-      # emphasize the label when hovered over
-      emphasis = list(
-        label = list(
-          show = TRUE,
-          fontSize = "15",
-          fontWeight = "bold"
-        )
-      )
-    ) |>
-    echarts4r::e_legend(bottom = 0) |>   # place legend below chart
-    echarts4r::e_tooltip(trigger = "item") |>
-    echarts4r::e_grid(
-      top = "10",
-      left = "60",
-      right = "60",
-      containLabel = TRUE
-    ) |>
-    echarts4r::e_show_loading()
-
-}
-
 #' Generate a bar chart using echarts4r
 #'
 #' This function generates a bar chart using the echarts4r package.
@@ -63,8 +7,12 @@ pie_chart <- function(data, category, count) {
 #' representing the x-axis values.
 #' @param y A character string specifying the column name in the data frame
 #' representing the y-axis values.
+#' @param pct_denominator Optional numeric value specifying the denominator 
+#' for percentage calculation.
 #' @param axis_flip A logical value indicating whether to flip the x and y axes.
 #' Default is TRUE.
+#' @param tooltip_opts  A named list of additional tooltip options passed to 
+#' echarts4r's `e_tooltip()`. Supports `confine` and `extraCssText` options.
 #'
 #' @return A bar chart visualized using echarts4r.
 #'
@@ -77,7 +25,33 @@ pie_chart <- function(data, category, count) {
 #'   y = "y"
 #' )
 #' }
-bar_chart <- function(data, x, y, axis_flip = TRUE) {
+bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tooltip_opts = list(confine = FALSE, extraCssText = "")) {
+
+  # Calculate percentage column
+  if (!is.null(pct_denominator)) {
+    data <- data |> 
+      dplyr::mutate(pct = n / pct_denominator)
+  } else {
+    data <- data |> 
+      dplyr::mutate(pct = n / sum(n))
+  }
+
+  # If no bars colors were already defined...
+  if (!"color" %in% colnames(data)) {
+    # Differentiate missing categories from responses of interest
+    data <- data |>
+      dplyr::mutate(
+        color = dplyr::case_when(
+          .data[[x]] %in% c(
+            "Missing",
+            "Data not collected",
+            "Client prefers not to answer",
+            "Client doesn't know"
+          ) ~ COLORS$MISSING,
+          TRUE ~ COLORS$DEFAULT
+        )
+      )
+  }
 
   out <- data |>
     echarts4r::e_charts_(x = x) |>
@@ -86,20 +60,59 @@ bar_chart <- function(data, x, y, axis_flip = TRUE) {
       name = "# of Youth",
       legend = FALSE
     ) |>
-    echarts4r::e_tooltip(trigger = "item") |>
+    echarts4r::e_add_nested("itemStyle", color) |>
+    echarts4r::e_add_nested('extra', pct) |>
+    echarts4r::e_tooltip(
+      trigger = "axis",
+      formatter = htmlwidgets::JS("
+        function(params) {
+          return(
+            params[0].seriesName +
+            '<br/>' + params[0].marker + params[0].value[1] +
+            '<br/>' + '<strong>' + params[0].data.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + Math.round(params[0].data.extra.pct * 100) + '%)' + '</strong>'
+          )
+        }"),
+        confine = tooltip_opts$confine,
+        extraCssText = tooltip_opts$extraCssText
+    ) |> 
     echarts4r::e_grid(containLabel = TRUE)
 
   if (axis_flip) {
-
     out <- out |>
       echarts4r::e_flip_coords()
-
   }
 
   out
-
 }
 
+#' Add tooltip to stacked bar chart
+#'
+#' `add_stacked_bar_tooltip()` adds a tooltip to an `echarts4r` stacked bar chart.
+#' The tooltip is triggered on the axis and displays values along with their percentages.
+#'
+#' @param echart An `echarts4r` object representing the stacked bar chart.
+#' 
+#' @return An `echarts4r` object with the tooltip applied.
+add_stacked_bar_tooltip <- function(echart) {
+  echart |> 
+    echarts4r::e_tooltip(
+      trigger = "axis",
+      formatter = htmlwidgets::JS("
+        function(params) {
+          let tooltip = params[0].axisValue + '<br/>';
+          tooltip += '<table>';
+          params.forEach(function(item) {
+            let percentage = Math.round(item.data.extra.pct * 100) + '%';
+            tooltip += '<tr>' +
+                       '<td style=\"text-align: left; padding-right: 10px;\">' + item.marker + ' ' + item.seriesName + '</td>' +
+                       '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + percentage + ')</td>' +
+                       '</tr>';
+          });
+          tooltip += '</table>';
+          return tooltip;
+        }")
+    )
+}
 
 #' Generate a Sankey chart using echarts4r
 #'

@@ -187,15 +187,3 @@ validate_data <- function(data, message = "No data to display") {
     )
   )
 }
-
-#' Get missing data categories
-#'
-#' `get_missing_categories()` returns a character vector of standardized 
-#' categories representing missing data.
-get_missing_categories <- function() {
-  c(
-    "Client doesn't know",
-    "Client prefers not to answer",
-    "Data not collected"
-  )
-}

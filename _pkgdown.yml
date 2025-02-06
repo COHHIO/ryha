@@ -5,8 +5,8 @@ template:
 reference:
 - title: Chart Functions
   contents:
+  - add_stacked_bar_tooltip
   - bar_chart
-  - pie_chart
   - prepare_sankey_data
   - sankey_chart
 - title: Package Datasets
@@ -46,6 +46,7 @@ reference:
 - title: Data Management Functions
   contents:
   - connect_to_db
+  - convert_to_ordered_factor
   - create_dm
   - delete_from_db
   - read_data_from_table
@@ -61,7 +62,6 @@ reference:
   - filter_most_recent_enrollment_per_group
   - filter_most_recent_data_per_enrollment
   - filter_data
-  - get_missing_categories
 - title: Ingest Functions
   contents:
   - check_colnames

@@ -1,16 +1,3 @@
-test_that("pie_chart function returns echarts object", {
-
-  mock_data <- data.frame(
-    category = c("A", "B", "C"),
-    count = c(10, 20, 30)
-  )
-
-  result <- pie_chart(mock_data, category = "category", count = "count")
-
-  expect_true("echarts4r" %in% class(result))
-
-})
-
 test_that("bar_chart function returns echarts object", {
 
   mock_data <- data.frame(

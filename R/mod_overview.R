@@ -21,13 +21,17 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = with_popover(
             text = "# of Youth by Gender",
-            content = link_section("3.06 Gender")
+            content = shiny::tagList(
+              shiny::p("Each bar represents the percentage of youth who self-identify with a given gender category."),
+              shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
+              shiny::p(link_section("3.06 Gender"))
+            )
           ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("gender_pie_chart"),
+            outputId = ns("gender_chart"),
             height = "100%"
           )
         )
@@ -48,7 +52,7 @@ mod_overview_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("sexual_orientation_pie_chart"),
+            outputId = ns("sexual_orientation_chart"),
             height = "100%"
           )
         )
@@ -73,7 +77,7 @@ mod_overview_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("veteran_pie_chart"),
+            outputId = ns("veteran_chart"),
             height = "100%"
           )
         )
@@ -88,7 +92,11 @@ mod_overview_ui <- function(id){
         bs4Dash::box(
           title = with_popover(
             text = "# of Youth by Race & Ethnicity",
-            content = link_section("3.04 Race and Ethnicity")
+            content = shiny::tagList(
+              shiny::p("Each bar represents the percentage of youth who self-identify with a given racial and/or ethnic category."),
+              shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
+              shiny::p(link_section("3.04 Race and Ethnicity"))
+            ) 
           ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
@@ -145,7 +153,7 @@ mod_overview_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("welfare_pie_chart"),
+            outputId = ns("welfare_chart"),
             height = "100%"
           )
         )
@@ -166,7 +174,7 @@ mod_overview_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("juvenile_pie_chart"),
+            outputId = ns("juvenile_chart"),
             height = "100%"
           )
         )
@@ -187,14 +195,14 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     ns <- session$ns
 
     # Gender ----
-    output$gender_pie_chart <- echarts4r::renderEcharts4r({
+    output$gender_chart <- echarts4r::renderEcharts4r({
       gender_data |> 
         filter_data(clients_filtered(), at = "youth") |>
-        dplyr::count(gender) |>
-        dplyr::arrange(gender) |> 
-        pie_chart(
-          category = "gender",
-          count = "n"
+        dplyr::count(gender, .drop = FALSE) |>
+        bar_chart(
+          x = "gender",
+          y = "n",
+          pct_denominator = nrow(clients_filtered())
         )
     })
 
@@ -204,17 +212,12 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     })
 
     # Sexual Orientation ----
-    output$sexual_orientation_pie_chart <- echarts4r::renderEcharts4r({
+    output$sexual_orientation_chart <- echarts4r::renderEcharts4r({
       enrollment_data_filtered() |>
-        dplyr::mutate(sexual_orientation = ifelse(
-          is.na(sexual_orientation),
-          "Missing Data",
-          sexual_orientation
-        )) |>
-        dplyr::count(sexual_orientation) |>
-        pie_chart(
-          category = "sexual_orientation",
-          count = "n"
+        dplyr::count(sexual_orientation, .drop = FALSE) |>
+        bar_chart(
+          x = "sexual_orientation",
+          y = "n"
         )
     })
 
@@ -224,18 +227,12 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     })
 
     # Veteran ----
-    output$veteran_pie_chart <- echarts4r::renderEcharts4r({
+    output$veteran_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
-        dplyr::mutate(veteran_status = ifelse(
-          is.na(veteran_status),
-          "Missing Data",
-          veteran_status
-        )) |>
-        dplyr::count(veteran_status) |>
-        dplyr::arrange(veteran_status) |>
-        pie_chart(
-          category = "veteran_status",
-          count = "n"
+        dplyr::count(veteran_status, .drop = FALSE) |>
+        bar_chart(
+          x = "veteran_status",
+          y = "n"
         )
     })
 
@@ -258,34 +255,31 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     output$ethnicity_bar_chart <- echarts4r::renderEcharts4r({
       ethnicity_data |> 
         filter_data(clients_filtered(), at = "youth") |>
-        dplyr::filter(!is.na(ethnicity)) |>
-        dplyr::count(ethnicity) |>
-        dplyr::arrange(n) |>
+        dplyr::count(ethnicity, .drop = FALSE) |>
         bar_chart(
           x = "ethnicity",
-          y = "n"
+          y = "n",
+          pct_denominator = nrow(clients_filtered())
         )
     })
 
     # Welfare ----
-    output$welfare_pie_chart <- echarts4r::renderEcharts4r(
+    output$welfare_chart <- echarts4r::renderEcharts4r(
       enrollment_data_filtered() |>
-        dplyr::filter(!is.na(former_ward_child_welfare)) |>
-        dplyr::count(former_ward_child_welfare) |>
-        pie_chart(
-          category = "former_ward_child_welfare",
-          count = "n"
+        dplyr::count(former_ward_child_welfare, .drop = FALSE) |>
+        bar_chart(
+          x = "former_ward_child_welfare",
+          y = "n"
         )
     )
 
     # Juvenile ----
-    output$juvenile_pie_chart <- echarts4r::renderEcharts4r(
+    output$juvenile_chart <- echarts4r::renderEcharts4r(
       enrollment_data_filtered() |>
-        dplyr::filter(!is.na(former_ward_juvenile_justice)) |>
-        dplyr::count(former_ward_juvenile_justice) |>
-        pie_chart(
-          category = "former_ward_juvenile_justice",
-          count = "n"
+        dplyr::count(former_ward_juvenile_justice, .drop = FALSE) |>
+        bar_chart(
+          x = "former_ward_juvenile_justice",
+          y = "n"
         )
     )
 
