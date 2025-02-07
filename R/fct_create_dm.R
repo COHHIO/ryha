@@ -724,6 +724,15 @@ create_dm <- function(env,
         destination_safe_worker = convert_to_ordered_factor(destination_safe_worker, WorkerResponseCodes)
       )
 
+    # Identify youth who are either heads of household or adults (e.g. at least 18 years old)
+    heads_of_household_and_adults <- enrollment |>
+      dplyr::select(enrollment_id, personal_id, organization_id, relationship_to_ho_h) |>
+      dplyr::left_join(
+        y = client |> dplyr::select(personal_id, organization_id, age),
+        by = c("personal_id", "organization_id")
+      ) |>
+      dplyr::filter(relationship_to_ho_h == "Self (head of household)" | age >= 18)
+
     # Create {dm} object
     dm <- list(
       project = project,
@@ -741,7 +750,8 @@ create_dm <- function(env,
       income = income,
       benefits = benefits,
       services = services,
-      exit = exit
+      exit = exit,
+      heads_of_household_and_adults = heads_of_household_and_adults
     )
 
     return(dm)
