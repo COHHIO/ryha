@@ -189,8 +189,7 @@ mod_overview_ui <- function(id){
 #' overview Server Functions
 #'
 #' @noRd
-mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
-                                ethnicity_data, clients_filtered){
+mod_overview_server <- function(id, client_data, enrollment_data, gender_data, ethnicity_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -208,7 +207,8 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
 
     # Filter enrollment data
     enrollment_data_filtered <- shiny::reactive({
-      filter_data(enrollment_data, clients_filtered())
+      filter_data(enrollment_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Sexual Orientation ----
@@ -229,6 +229,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Veteran ----
     output$veteran_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
+        dplyr::filter(age >= 18) |>
         dplyr::count(veteran_status, .drop = FALSE) |>
         bar_chart(
           x = "veteran_status",

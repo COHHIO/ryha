@@ -34,7 +34,8 @@ app_server <- function(input, output, session) {
       gender_data = dm$gender,
       enrollment_data = dm$enrollment,
       ethnicity_data = dm$ethnicity,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_disabilities_server(
