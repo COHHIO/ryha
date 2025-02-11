@@ -212,7 +212,7 @@ mod_education_server <- function(id, education_data, clients_filtered){
             last_grade_completed == "Grades 5-6" ~ "Grades 5-8",
             last_grade_completed == "Grades 7-8" ~ "Grades 5-8",
             last_grade_completed == "Grades 9-11" ~ "Grades 9-11",
-            last_grade_completed == "Grades 12 / High school diploma" ~ "High school diploma/GED",
+            last_grade_completed == "Grade 12 / High school diploma" ~ "High school diploma/GED",
             last_grade_completed == "School program does not have grade levels" ~ "Unknown",
             last_grade_completed == "GED" ~ "High school diploma/GED",
             last_grade_completed == "Some College" ~ "Some College",
