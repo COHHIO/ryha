@@ -1,6 +1,6 @@
 Package: ryha
 Title: R Youth Homelessness Analyzer
-Version: 1.5.0
+Version: 1.5.1
 Authors@R: c(
     person("Ketchbrook", "Analytics", , "info@ketchbrookanalytics.com", role = "aut"),
     person("Trevin", "Flickinger", , "trevinflickinger@cohhio.org", role = "cre")
