@@ -395,8 +395,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
         echarts4r::e_grid(containLabel = TRUE) |>
         echarts4r::e_color(
           c(
-           COLORS$YES_BAD , # "Yes",
-           COLORS$NO_GOOD , # "No",
+           COLORS$YES_NEUTRAL , # "Yes",
+           COLORS$NO_NEUTRAL , # "No",
            COLORS$CLIENT_DOESNT_KNOW , # "Client doesn't know",
            COLORS$CLIENT_PREFERS_NOT_TO_ANSWER , # "Client prefers not to answer",
            COLORS$DATA_NOT_COLLECTED , # "Data not collected",
