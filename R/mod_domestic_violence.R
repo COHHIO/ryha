@@ -36,139 +36,62 @@ mod_domestic_violence_ui <- function(id){
       shiny::column(
         width = 12,
 
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Domestic Violence Victim",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by Domestic Violence Victim Response",
-                    content = link_section("4.11 Domestic Violence")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("victim_pie_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("victim_missingness_stats_tbl")
-                  )
-                )
-
-              )
-
-            )
-
+        bs4Dash::box(
+          title = with_popover(
+            text = "# of Youth by Domestic Violence Victim Response",
+            content = link_section("4.11 Domestic Violence")
           ),
-
-          shiny::tabPanel(
-            title = "When Occurred",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by When Occurred Response",
-                    content = link_section("4.11 Domestic Violence")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("when_occurred_pie_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("when_occurred_missingness_stats_tbl")
-                  )
-                )
-
-              )
-
-            )
-
-          ),
-
-          shiny::tabPanel(
-            title = "Currently Fleeing",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by Currently Fleeing Response",
-                    content = link_section("4.11 Domestic Violence")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("currently_fleeing_pie_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("currently_fleeing_missingness_stats_tbl")
-                  )
-                )
-
-              )
-
-            )
-
+          width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("victim_chart"),
+            height = "100%"
           )
+        )
+      )
 
+    ),
+
+    shiny::fluidRow(
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = with_popover(
+            text = "# of Domestic Violence Victims by When Occurred Response",
+            content = link_section("4.11 Domestic Violence")
+          ),
+          width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("when_occurred_chart"),
+            height = "100%"
+          )
+        )
+
+      ),
+
+      shiny::column(
+        width = 6,
+
+        bs4Dash::box(
+          title = with_popover(
+            text = "# of Domestic Violence Victims by Currently Fleeing Response",
+            content = link_section("4.11 Domestic Violence")
+          ),
+          width = NULL,
+          height = DEFAULT_BOX_HEIGHT,
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("currently_fleeing_chart"),
+            height = "100%"
+          )
         )
 
       )
-
     )
 
   )
@@ -226,126 +149,34 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
     })
 
     # Create education pie chart
-    output$victim_pie_chart <- echarts4r::renderEcharts4r({
+    output$victim_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |>
-        dplyr::filter(domestic_violence_survivor %in% c("Yes", "No")) |>
-        dplyr::count(domestic_violence_survivor) |>
-        pie_chart(
-          category = "domestic_violence_survivor",
-          count = "n"
+        dplyr::count(domestic_violence_survivor, .drop = FALSE) |>
+        bar_chart(
+          x = "domestic_violence_survivor",
+          y = "n"
         )
     })
 
-    # Capture the data quality statistics for "domestic_violence_survivor" field
-    victim_missingness_stats <- shiny::reactive({
-
-      domestic_violence_data_filtered() |>
-        dplyr::mutate(domestic_violence_survivor = ifelse(
-          is.na(domestic_violence_survivor),
-          "(Blank)",
-          domestic_violence_survivor
-        )) |>
-        dplyr::filter(
-          !domestic_violence_survivor %in% c("Yes", "No")
-        ) |>
-        dplyr::count(domestic_violence_survivor, name = "Count") |>
-        dplyr::rename(Response = domestic_violence_survivor)
-
-    })
-
-    # Create the {reactable} table to hold the missingness stats
-    output$victim_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        victim_missingness_stats()
-      )
-    )
-
-    output$when_occurred_pie_chart <- echarts4r::renderEcharts4r({
+    output$when_occurred_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |>
-        # Remove missing values
-        dplyr::filter(
-          !when_occurred %in% get_missing_categories(),
-          !is.na(when_occurred)
-        ) |>
-        dplyr::count(when_occurred) |>
-        pie_chart(
-          category = "when_occurred",
-          count = "n"
+        dplyr::filter(domestic_violence_survivor == "Yes") |> 
+        dplyr::count(when_occurred, .drop = FALSE) |>
+        bar_chart(
+          x = "when_occurred",
+          y = "n"
         )
     })
 
-    # Capture the data quality statistics for "when_occurred" field
-    when_occurred_missingness_stats <- shiny::reactive({
-
-      domestic_violence_data_filtered() |>
-        dplyr::mutate(when_occurred = ifelse(
-          is.na(when_occurred),
-          "(Blank)",
-          when_occurred
-        )) |>
-        dplyr::filter(
-          domestic_violence_survivor == "Yes",
-          when_occurred %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(when_occurred, name = "Count") |>
-        dplyr::rename(Response = when_occurred)
-
-    })
-
-    # Create the {reactable} table to hold the missingness stats
-    output$when_occurred_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        when_occurred_missingness_stats()
-      )
-    )
-
-    output$currently_fleeing_pie_chart <- echarts4r::renderEcharts4r({
+    output$currently_fleeing_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |>
-        dplyr::filter(
-          !currently_fleeing %in% get_missing_categories(),
-          !is.na(currently_fleeing)
-        ) |>
-        dplyr::count(currently_fleeing) |>
-        pie_chart(
-          category = "currently_fleeing",
-          count = "n"
+        dplyr::filter(domestic_violence_survivor == "Yes") |> 
+        dplyr::count(currently_fleeing, .drop = FALSE) |>
+        bar_chart(
+          x = "currently_fleeing",
+          y = "n"
         )
     })
-
-    # Capture the data quality statistics for "currently_fleeing" field
-    currently_fleeing_missingness_stats <- shiny::reactive({
-
-      domestic_violence_data_filtered() |>
-        dplyr::mutate(currently_fleeing = ifelse(
-          is.na(currently_fleeing),
-          "(Blank)",
-          currently_fleeing
-        )) |>
-        dplyr::filter(
-          domestic_violence_survivor == "Yes",
-          currently_fleeing %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(currently_fleeing, name = "Count") |>
-        dplyr::rename(Response = currently_fleeing)
-
-    })
-
-    # Create the {reactable} table to hold the missingness stats
-    output$currently_fleeing_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        currently_fleeing_missingness_stats()
-      )
-    )
 
   })
 }

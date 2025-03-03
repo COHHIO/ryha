@@ -45,7 +45,7 @@ mod_education_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
@@ -60,22 +60,8 @@ mod_education_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("last_grade_completed_pie_chart"),
+                    outputId = ns("last_grade_completed_chart"),
                     height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("last_grade_completed_missingness_stats_tbl")
                   )
                 )
 
@@ -116,7 +102,7 @@ mod_education_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
@@ -127,22 +113,8 @@ mod_education_ui <- function(id){
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("school_status_pie_chart"),
+                    outputId = ns("school_status_chart"),
                     height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("school_status_missingness_stats_tbl")
                   )
                 )
 
@@ -233,18 +205,12 @@ mod_education_server <- function(id, education_data, clients_filtered){
     })
 
     # Last Grade Completed ----
-    ## Pie Chart ----
-    output$last_grade_completed_pie_chart <- echarts4r::renderEcharts4r({
+    output$last_grade_completed_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |>
-        # Remove missing values
-        dplyr::filter(
-          last_grade_completed_grouped != "Unknown",
-          !is.na(last_grade_completed_grouped)
-        ) |>
-        dplyr::count(last_grade_completed_grouped) |> 
-        pie_chart(
-          category = "last_grade_completed_grouped",
-          count = "n"
+        dplyr::count(last_grade_completed_grouped, .drop = FALSE) |>
+        bar_chart(
+          x = "last_grade_completed_grouped",
+          y = "n"
         )
     })
 
@@ -270,19 +236,12 @@ mod_education_server <- function(id, education_data, clients_filtered){
     })
 
     # School Status ----
-    ## Pie Chart ----
-    output$school_status_pie_chart <- echarts4r::renderEcharts4r({
-
+    output$school_status_chart <- echarts4r::renderEcharts4r({
       most_recent_data_per_enrollment() |>
-        # Remove missing values
-        dplyr::filter(
-          !school_status %in% get_missing_categories(),
-          !is.na(school_status)
-        ) |>
-        dplyr::count(school_status) |> 
-        pie_chart(
-          category = "school_status",
-          count = "n"
+        dplyr::count(school_status, .drop = FALSE) |> 
+        bar_chart(
+          x = "school_status",
+          y = "n"
         )
     })
 
@@ -307,60 +266,6 @@ mod_education_server <- function(id, education_data, clients_filtered){
           count = "n"
         )
     })
-
-    last_grade_completed_missingness_stats <- shiny::reactive({
-
-      education_data_filtered() |>
-        dplyr::mutate(last_grade_completed = ifelse(
-          is.na(last_grade_completed),
-          "(Blank)",
-          last_grade_completed
-        )) |>
-        dplyr::filter(
-          last_grade_completed %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(last_grade_completed, name = "Count") |>
-        dplyr::rename(Response = last_grade_completed)
-
-    })
-
-    output$last_grade_completed_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        last_grade_completed_missingness_stats()
-      )
-    )
-
-    school_status_missingness_stats <- shiny::reactive({
-
-      education_data_filtered() |>
-        dplyr::mutate(school_status = ifelse(
-          is.na(school_status),
-          "(Blank)",
-          school_status
-        )) |>
-        dplyr::filter(
-          school_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(school_status, name = "Count") |>
-        dplyr::rename(Response = school_status)
-
-    })
-
-    output$school_status_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        school_status_missingness_stats()
-      )
-    )
 
   })
 }
