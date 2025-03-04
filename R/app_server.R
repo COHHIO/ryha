@@ -54,7 +54,8 @@ app_server <- function(input, output, session) {
     mod_education_server(
       id = "education_1",
       education_data = dm$education,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_health_server(
