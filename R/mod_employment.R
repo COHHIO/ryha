@@ -121,7 +121,7 @@ mod_employment_ui <- function(id){
 #' employment Server Functions
 #'
 #' @noRd
-mod_employment_server <- function(id, employment_data, clients_filtered){
+mod_employment_server <- function(id, employment_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -135,7 +135,8 @@ mod_employment_server <- function(id, employment_data, clients_filtered){
 
     # Filter employment data
     employment_data_filtered <- shiny::reactive({
-      filter_data(employment_data, clients_filtered())
+      filter_data(employment_data, clients_filtered()) |>
+      dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Create reactive with the most recent data collected per enrollment

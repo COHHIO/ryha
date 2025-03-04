@@ -47,7 +47,8 @@ app_server <- function(input, output, session) {
     mod_employment_server(
       id = "employment_1",
       employment_data = dm$employment,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_education_server(
