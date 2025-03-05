@@ -293,7 +293,7 @@ mod_income_benefits_ui <- function(id){
 #' income_benefits Server Functions
 #'
 #' @noRd
-mod_income_benefits_server <- function(id, income_data, benefits_data, clients_filtered){
+mod_income_benefits_server <- function(id, income_data, benefits_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -309,7 +309,8 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
     ## Filter income data ----
     income_data_filtered <- shiny::reactive({
-      filter_data(income_data, clients_filtered())
+      filter_data(income_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     most_recent_income_data_per_enrollment <- shiny::reactive({
@@ -322,8 +323,14 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
       filter_data(benefits_data, clients_filtered())
     })
 
-    most_recent_benefits_data_per_enrollment <- shiny::reactive({
-      benefits_data_filtered() |> 
+    most_recent_benefits_data_per_enrollment_hh_and_adults <- shiny::reactive({
+      benefits_data_filtered() |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id")) |> 
+        filter_most_recent_data_per_enrollment()
+    })
+
+    most_recent_benefits_data_per_enrollment_all_clients <- shiny::reactive({
+      benefits_data_filtered() |>
         filter_most_recent_data_per_enrollment()
     })
 
@@ -472,7 +479,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
     ## Benefits Chart ----
     output$benefits_chart <- echarts4r::renderEcharts4r({
-      most_recent_benefits_data_per_enrollment() |>
+      most_recent_benefits_data_per_enrollment_hh_and_adults() |>
         dplyr::count(benefits_from_any_source, .drop = FALSE) |> 
         bar_chart(
           x = "benefits_from_any_source",
@@ -483,7 +490,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     ## Benefits Source Chart ----
     output$benefits_source_chart <- echarts4r::renderEcharts4r({
 
-      youth_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment() |>
+      youth_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment_hh_and_adults() |>
         dplyr::filter(benefits_from_any_source == "Yes")
         
       youth_with_benefits_from_any_source |>
@@ -550,7 +557,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
     ## Health Insurance Chart ----
     output$insurance_chart <- echarts4r::renderEcharts4r({
-      most_recent_benefits_data_per_enrollment() |>
+      most_recent_benefits_data_per_enrollment_all_clients() |>
         dplyr::count(insurance_from_any_source, .drop = FALSE) |>
         bar_chart(
           x = "insurance_from_any_source",
@@ -561,7 +568,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     ## Health Insurance Source Chart ----
     output$insurance_source_chart <- echarts4r::renderEcharts4r({
 
-      youth_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment() |>
+      youth_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment_all_clients() |>
         dplyr::filter(insurance_from_any_source == "Yes")
         
       youth_with_insurance_from_any_source |>

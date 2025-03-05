@@ -207,7 +207,7 @@ mod_trafficking_ui <- function(id){
 #' trafficking Server Functions
 #'
 #' @noRd
-mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
+mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -221,7 +221,8 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
     # Filter trafficking data
     trafficking_data_filtered <- shiny::reactive(
-      filter_data(trafficking_data, clients_filtered())
+      filter_data(trafficking_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     )
 
     # Total number of Youth in program(s) that exist in the `education.csv`
