@@ -172,7 +172,7 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
     # Filter education data
     education_data_filtered <- shiny::reactive({
       filter_data(education_data, clients_filtered()) |>
-      dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Create reactive with the most recent data collected per enrollment
