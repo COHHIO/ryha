@@ -155,7 +155,11 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
               destination_grouped
             ),
           by = c("enrollment_id", "personal_id", "organization_id")
-        )
+        ) |>
+        # Prior living situation is collected for head of household and adults.
+        # Destination is collected for all youth.
+        # Head of household and adults filter is applied to both for reporting consistency reasons
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Total number of Youth in program(s) that exist in the `employment.csv`
@@ -191,7 +195,6 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
     # Living Situation Chart ----
     output$living_situation_chart <- echarts4r::renderEcharts4r({
       living_data_filtered() |>
-        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id")) |>
         dplyr::count(living_situation_grouped, .drop = FALSE) |>
         bar_chart(
           x = "living_situation_grouped",
