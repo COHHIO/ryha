@@ -128,7 +128,7 @@ mod_living_situation_ui <- function(id){
 #' living_situation Server Functions
 #'
 #' @noRd
-mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered){
+mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -191,6 +191,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
     # Living Situation Chart ----
     output$living_situation_chart <- echarts4r::renderEcharts4r({
       living_data_filtered() |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id")) |>
         dplyr::count(living_situation_grouped, .drop = FALSE) |>
         bar_chart(
           x = "living_situation_grouped",

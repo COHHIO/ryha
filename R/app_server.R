@@ -99,7 +99,8 @@ app_server <- function(input, output, session) {
       id = "living_situation_1",
       enrollment_data = dm$enrollment,
       exit_data = dm$exit,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_parenting_server(
