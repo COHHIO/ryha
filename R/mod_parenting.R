@@ -47,7 +47,7 @@ mod_parenting_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Pregnancy Status",
+            text = "# of Head of Household and Adults by Pregnancy Status",
             content = link_section("R10 Pregnancy Status")
           ),
           width = NULL,

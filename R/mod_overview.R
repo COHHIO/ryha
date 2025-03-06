@@ -45,7 +45,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Sexual Orientation",
+            text = "# of Head of Household and Adults by Sexual Orientation",
             content = link_section("R3 Sexual Orientation")
           ),
           width = NULL,
@@ -70,7 +70,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Veteran Status",
+            text = "# of Adults by Veteran Status",
             content = link_section("3.07 Veteran Status")
           ),
           width = NULL,
@@ -146,7 +146,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Former Ward Child Welfare Response",
+            text = "# of Head of Household and Adults by Former Ward Child Welfare Response",
             content = link_section("R11 Formerly a Ward of Child Welfare/Foster Care Agency")
           ),
           width = NULL,
@@ -167,7 +167,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Former Ward Juvenile Justice Response",
+            text = "# of Head of Household and Adults by Former Ward Juvenile Justice Response",
             content = link_section("R12 Formerly a Ward of Juvenile Justice System")
           ),
           width = NULL,

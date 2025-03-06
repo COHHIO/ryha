@@ -49,7 +49,7 @@ mod_education_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Last Grade Completed Group",
+                    text = "# of Head of Household and Adults by Last Grade Completed Group",
                     content = shiny::tagList(
                       shiny::span("Response categories have been grouped to improve chart readability."),
                       shiny::br(),
@@ -106,7 +106,7 @@ mod_education_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by School Status",
+                    text = "# of Head of Household and Adults by School Status",
                     content = link_section("R5 School Status")
                   ),
                   width = NULL,
