@@ -163,7 +163,15 @@ create_dm <- function(env,
         age = lubridate::time_length(
           difftime(lubridate::today(), dob),
           "years"
-        ) |> floor()
+        ) |> floor(),
+        age_grouped = dplyr::case_when(
+          age >= 25  ~ "25 +",
+          age >= 18 & age <= 24 ~ "18 - 24",
+          age >= 14 & age <= 17 ~ "14 - 17",
+          age >= 6 & age <= 13 ~ "6 - 13",
+          age >= 0 & age <= 5 ~ "0 - 5",
+          TRUE ~ "Missing"
+        )
       ) |>
       dplyr::select(
         personal_id,
@@ -172,7 +180,8 @@ create_dm <- function(env,
         age,
         veteran_status,
         organization_id,
-        date_updated
+        date_updated,
+        age_grouped
       ) |> 
       dplyr::mutate(
         veteran_status = convert_to_ordered_factor(veteran_status, NoYesReasonsForMissingDataCodes)

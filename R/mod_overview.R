@@ -240,16 +240,19 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
     # Age ----
     output$age_bar_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
-        dplyr::filter(!is.na(age)) |>
-        dplyr::count(age) |>
-        dplyr::arrange(age) |>
-        dplyr::mutate(age = as.factor(age)) |>
-        bar_chart(
-          x = "age",
-          y = "n",
-          axis_flip = FALSE
+        dplyr::count(age_grouped) |>
+        dplyr::mutate(
+          age_grouped = factor(
+            age_grouped,
+            levels = c("Missing", "0 - 5", "6 - 13", "14 - 17", "18 - 24", "25 +")
+          )
         ) |>
-        echarts4r::e_axis_labels(x = "Age", y = "# of Youth")
+        dplyr::arrange(age_grouped) |>
+        bar_chart(
+          x = "age_grouped",
+          y = "n"
+        ) |>
+        echarts4r::e_axis_labels(x = "# of Youth", y = "Age")
     })
 
     # Ethnicity ----
