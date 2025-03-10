@@ -240,14 +240,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
     # Age ----
     output$age_bar_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
-        dplyr::count(age_grouped) |>
-        dplyr::mutate(
-          age_grouped = factor(
-            age_grouped,
-            levels = c("Missing", "0 - 5", "6 - 13", "14 - 17", "18 - 24", "25 +")
-          )
-        ) |>
-        dplyr::arrange(age_grouped) |>
+        dplyr::count(age_grouped, .drop = FALSE) |>
         bar_chart(
           x = "age_grouped",
           y = "n"

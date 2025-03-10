@@ -171,6 +171,10 @@ create_dm <- function(env,
           age >= 6 & age <= 13 ~ "6 - 13",
           age >= 0 & age <= 5 ~ "0 - 5",
           TRUE ~ "Missing"
+        ),
+        age_grouped = factor(
+          age_grouped,
+          levels = c("Missing", "0 - 5", "6 - 13", "14 - 17", "18 - 24", "25 +")
         )
       ) |>
       dplyr::select(
@@ -178,10 +182,10 @@ create_dm <- function(env,
         ssn,
         ssn_data_quality,
         age,
+        age_grouped,
         veteran_status,
         organization_id,
-        date_updated,
-        age_grouped
+        date_updated
       ) |> 
       dplyr::mutate(
         veteran_status = convert_to_ordered_factor(veteran_status, NoYesReasonsForMissingDataCodes)
