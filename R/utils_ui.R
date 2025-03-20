@@ -44,32 +44,33 @@ with_popover <- function(text, title = "More Info", content, placement = "right"
 
 }
 
-#' Create hyperlink to specific section in the HMIS Data Standards Manual
+#' Create span with hyperlink to the HMIS Data Standards Manual
 #'
-#' This function generates a hyperlink to a specific section within the HMIS Data
-#' Standards Manual. The link opens the manual in a new browser tab.
+#' `link_section()` generates a span that references a section and has a hyperlink to 
+#' the HMIS Data Standards Manual. The link opens the manual in a new browser tab.
 #'
-#' @param section The name or number of the section to link to.
-#' @param label The text to display as the link. Defaults to "HMIS Data Standards Manual".
+#' @param section The name or number of the section to refer to.
 #'
-#' @return HTML hyperlink to the specified section in the HMIS Data Standards Manual.
+#' @return HTML span with a referenced section and a hyperlink to the HMIS Data Standards Manual.
 #'
 #' @examples
 #' \dontrun{
 #' link_section("R4 Last Grade Completed")
 #' }
-link_section <- function(section, label = "HMIS Data Standards Manual") {
-  URL <- "https://files.hudexchange.info/resources/documents/HMIS-Data-Standards-Manual-2024.pdf"
+link_section <- function(section) {
+  shiny::span("For more information, refer to section ", shiny::tags$b(section), " in the ", link_data_standards_manual())
+}
 
-  parsed_section <- section |>
-    # %20 is how spaces are placed in URLs
-    stringr::str_replace_all(" ", "%20")
-
-  shiny::tags$a(
-    href = glue::glue("{ URL }#{ parsed_section }"),
-    target = "_blank",
-    label
-  )
+#' Create a Link to the HMIS Data Standards Manual
+#'
+#' `link_data_standards_manual()` generates an HTML anchor (`<a>`) tag that links to the 
+#' HMIS Data Standards Manual PDF.
+#'
+#' @return An HTML anchor (`<a>`) tag as a `shiny.tag` object.
+#' @export
+link_data_standards_manual <- function() {
+  URL <- "https://cohhio.org/wp-content/uploads/2025/03/HMIS-Data-Standards-Manual-2024.pdf"
+  shiny::tags$a(href = URL, target = "_blank", "HMIS Data Standards Manual")
 }
 
 #' Filter most recent data per enrollment
