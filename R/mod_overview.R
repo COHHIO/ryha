@@ -120,7 +120,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Age",
+            text = "# of Youth by Age Group",
             content = link_section("3.03 Date of Birth")
           ),
           width = NULL,
