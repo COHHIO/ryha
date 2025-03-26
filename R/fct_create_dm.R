@@ -165,16 +165,16 @@ create_dm <- function(env,
           "years"
         ) |> floor(),
         age_grouped = dplyr::case_when(
-          age >= 25  ~ "25 +",
-          age >= 18 & age <= 24 ~ "18 - 24",
-          age >= 14 & age <= 17 ~ "14 - 17",
-          age >= 6 & age <= 13 ~ "6 - 13",
-          age >= 0 & age <= 5 ~ "0 - 5",
+          age >= 25  ~ "25+",
+          age >= 18 & age <= 24 ~ "18-24",
+          age >= 14 & age <= 17 ~ "14-17",
+          age >= 6 & age <= 13 ~ "6-13",
+          age >= 0 & age <= 5 ~ "0-5",
           TRUE ~ "Missing"
         ),
         age_grouped = factor(
           age_grouped,
-          levels = c("Missing", "0 - 5", "6 - 13", "14 - 17", "18 - 24", "25 +")
+          levels = c("Missing", "0-5", "6-13", "14-17", "18-24", "25+")
         )
       ) |>
       dplyr::select(
