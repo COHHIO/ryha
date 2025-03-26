@@ -244,8 +244,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
         bar_chart(
           x = "age_grouped",
           y = "n"
-        ) |>
-        echarts4r::e_axis_labels(x = "# of Youth", y = "Age")
+        )
     })
 
     # Ethnicity ----
