@@ -38,7 +38,7 @@ mod_employment_ui <- function(id){
         width = 12,
         bs4Dash::box(
            title = with_popover(
-             text = "# of Head of Household and Adults by Employment Status",
+             text = "# of Head of Household and/or Adults by Employment Status",
              content = link_section("R6 Employment Status")
            ),
            width = NULL,

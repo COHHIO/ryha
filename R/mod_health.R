@@ -56,7 +56,7 @@ mod_health_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Head of Household and Adults by Health Status",
+                    text = "# of Head of Household and/or Adults by Health Status",
                     content = shiny::tagList(
                       shiny::span("Each bar summarizes the responses for the corresponding health status."),
                       shiny::br(),
@@ -147,7 +147,7 @@ mod_health_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Head of Household and Adults by Counseling Received Response",
+                    text = "# of Head of Household and/or Adults by Counseling Received Response",
                     content = link_section("R18 Counseling")
                   ),
                   width = NULL,

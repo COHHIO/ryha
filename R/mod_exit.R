@@ -49,7 +49,7 @@ mod_exit_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Head of Household and Adults by Project Completion Status",
+                    text = "# of Head of Household and/or Adults by Project Completion Status",
                     content = link_section("R17 Project Completion Status")
                   ),
                   width = NULL,
@@ -77,7 +77,7 @@ mod_exit_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Head of Household and Adults by Safe & Appropriate Exit Response",
+                    text = "# of Head of Household and/or Adults by Safe & Appropriate Exit Response",
                     content = link_section("R19 Safe and Appropriate Exit")
                   ),
                   width = NULL,

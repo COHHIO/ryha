@@ -60,7 +60,7 @@ mod_income_benefits_ui <- function(id){
                 ### Income Chart ----
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Head of Household and Adults by Income Received (from Any Source) Response",
+                    text = "# of Head of Household and/or Adults by Income Received (from Any Source) Response",
                     content = link_section("4.02 Income and Sources")
                   ),
                   width = NULL,
@@ -109,7 +109,7 @@ mod_income_benefits_ui <- function(id){
                 ### Monthly Income Chart ----
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Head of Household and Adults with Income by Total Monthly Income",
+                    text = "# of Head of Household and/or Adults with Income by Total Monthly Income",
                     content = link_section("4.02 Income and Sources")
                   ),
                   width = NULL,
@@ -139,7 +139,7 @@ mod_income_benefits_ui <- function(id){
                 ### Benefits Pie Chart ----
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Head of Household and Adults by Benefits Received (from Any Source) Response",
+                    text = "# of Head of Household and/or Adults by Benefits Received (from Any Source) Response",
                     content = link_section("4.03 Non-Cash Benefits")
                   ),
                   width = NULL,
