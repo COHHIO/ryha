@@ -21,7 +21,10 @@
 				"r.bracketedPaste": true,
 				"r.plot.useHttpgd": true,
 				"r.lsp.diagnostics": false,
-				"r.lsp.promptToInstall": false
+				"r.lsp.promptToInstall": false,
+				"r.session.viewers.viewColumn": {
+					"browser": "Disable"
+				}
 			}
 		}
 	}

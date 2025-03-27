@@ -52,42 +52,23 @@ mod_trafficking_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Exchange for Sex Response",
+                    text = "# of Head of Household and/or Adults by Exchange for Sex Response",
                     content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("exchange_sex_pie_chart"),
+                    outputId = ns("exchange_sex_chart"),
                     height = "100%"
                   )
                 )
 
               ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by Count of Exchange for Sex Response",
-                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("count_sex_pie_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
 
             ),
 
@@ -98,14 +79,17 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Asked or Forced to Exchange Response",
-                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
+                    text = "# of Head of Household and/or Adults by Asked or Forced to Exchange Response",
+                    content = shiny::tagList(
+                      shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                      shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("asked_sex_pie_chart"),
+                    outputId = ns("asked_sex_chart"),
                     height = "100%"
                   )
                 )
@@ -116,11 +100,19 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = "Data Quality Statistics",
+                  title = with_popover(
+                    text = "# of Head of Household and/or Adults by Count of Exchange for Sex Response",
+                    content = shiny::tagList(
+                      shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                      shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
+                    )
+                  ),
                   width = NULL,
+                  height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("sex_missingness_stats_tbl")
+                  echarts4r::echarts4rOutput(
+                    outputId = ns("count_sex_chart"),
+                    height = "100%"
                   )
                 )
 
@@ -140,14 +132,14 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Workplace Violence/Threats Response",
+                    text = "# of Head of Household and/or Adults by Workplace Violence/Threats Response",
                     content = link_section("R16 Labor Exploitation/Trafficking")
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("violence_labor_pie_chart"),
+                    outputId = ns("violence_labor_chart"),
                     height = "100%"
                   )
                 )
@@ -159,14 +151,14 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Workplace Promise Difference Response",
+                    text = "# of Head of Household and/or Adults by Workplace Promise Difference Response",
                     content = link_section("R16 Labor Exploitation/Trafficking")
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("promise_labor_pie_chart"),
+                    outputId = ns("promise_labor_chart"),
                     height = "100%"
                   )
                 )
@@ -178,33 +170,22 @@ mod_trafficking_ui <- function(id){
             shiny::fluidRow(
 
               shiny::column(
-                width = 6,
+                width = 12,
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Coerced to Continue Work Response",
-                    content = link_section("R16 Labor Exploitation/Trafficking")
+                    text = "# of Head of Household and/or Adults by Coerced to Continue Work Response",
+                    content = shiny::tagList(
+                      shiny::p("Only Head of Household and Adults that experienced workplace violence and/or promise difference are included."),
+                      shiny::p(link_section("R16 Labor Exploitation/Trafficking"))
+                    )
                   ),
                   width = NULL,
                   height = DEFAULT_BOX_HEIGHT,
                   maximizable = TRUE,
                   echarts4r::echarts4rOutput(
-                    outputId = ns("coerced_labor_pie_chart"),
+                    outputId = ns("coerced_labor_chart"),
                     height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = "Data Quality Statistics",
-                  width = NULL,
-                  maximizable = TRUE,
-                  reactable::reactableOutput(
-                    outputId = ns("labor_missingness_stats_tbl")
                   )
                 )
 
@@ -226,7 +207,7 @@ mod_trafficking_ui <- function(id){
 #' trafficking Server Functions
 #'
 #' @noRd
-mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
+mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -238,15 +219,10 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
     )
 
-    # Apply the filters to the trafficking data
+    # Filter trafficking data
     trafficking_data_filtered <- shiny::reactive(
-
-      trafficking_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(trafficking_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     )
 
     # Total number of Youth in program(s) that exist in the `education.csv`
@@ -295,411 +271,69 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
     # Sex Trafficking ----
 
     ## Exchange for Sex ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    exchange_sex_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
+    output$exchange_sex_chart <- echarts4r::renderEcharts4r({
+      trafficking_data_filtered() |> 
+        dplyr::count(exchange_for_sex, .drop = FALSE) |> 
+        bar_chart(
+          x = "exchange_for_sex",
+          y = "n"
         )
-      )
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          exchange_for_sex %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          exchange_for_sex,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          exchange_for_sex
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          exchange_for_sex,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(exchange_for_sex) |>
-        dplyr::arrange(exchange_for_sex)
-
     })
-
-    # Create education pie chart
-    output$exchange_sex_pie_chart <- echarts4r::renderEcharts4r(
-
-      exchange_sex_pie_chart_data() |>
-        pie_chart(
-          category = "exchange_for_sex",
-          count = "n"
-        )
-
-    )
-
-    # Create missingness stats data frame
-    exchange_sex_missingness_stats <- shiny::reactive({
-
-      trafficking_data_filtered() |>
-        dplyr::mutate(exchange_for_sex = ifelse(
-          is.na(exchange_for_sex),
-          "(Blank)",
-          exchange_for_sex
-        )) |>
-        dplyr::filter(
-          !exchange_for_sex %in% c("Yes", "No")
-        ) |>
-        dplyr::count(exchange_for_sex, name = "Count") |>
-        dplyr::rename(Response = exchange_for_sex)
-
-    })
-
-    # Create missingness stats table for "exchange for sex"
-    output$sex_missingness_stats_tbl <- reactable::renderReactable(
-
-      reactable::reactable(
-        exchange_sex_missingness_stats()
-      )
-
-    )
 
     ## Count of Exchange for Sex ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    count_sex_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
+    output$count_sex_chart <- echarts4r::renderEcharts4r({
+      trafficking_data_filtered() |>
+        dplyr::filter(exchange_for_sex == "Yes") |> 
+        dplyr::count(count_of_exchange_for_sex, .drop = FALSE) |>
+        bar_chart(
+          x = "count_of_exchange_for_sex",
+          y = "n"
         )
-      )
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          !count_of_exchange_for_sex %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          ),
-          !is.na(count_of_exchange_for_sex)
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          count_of_exchange_for_sex,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          count_of_exchange_for_sex
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          count_of_exchange_for_sex,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(count_of_exchange_for_sex) |>
-        dplyr::arrange(count_of_exchange_for_sex)
-
     })
-
-    # Create pie chart
-    output$count_sex_pie_chart <- echarts4r::renderEcharts4r(
-
-      count_sex_pie_chart_data() |>
-        pie_chart(
-          category = "count_of_exchange_for_sex",
-          count = "n"
-        )
-
-    )
 
     ## Asked or Forced to Exchange for Sex ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    asked_sex_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
+    output$asked_sex_chart <- echarts4r::renderEcharts4r(
+      trafficking_data_filtered() |>
+        dplyr::filter(exchange_for_sex == "Yes") |> 
+        dplyr::count(asked_or_forced_to_exchange_for_sex, .drop = FALSE) |>
+        bar_chart(
+          x = "asked_or_forced_to_exchange_for_sex",
+          y = "n"
         )
-      )
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          asked_or_forced_to_exchange_for_sex %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          asked_or_forced_to_exchange_for_sex,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          asked_or_forced_to_exchange_for_sex
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          asked_or_forced_to_exchange_for_sex,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(asked_or_forced_to_exchange_for_sex) |>
-        dplyr::arrange(asked_or_forced_to_exchange_for_sex)
-
-    })
-
-    # Create education pie chart
-    output$asked_sex_pie_chart <- echarts4r::renderEcharts4r(
-
-      asked_sex_pie_chart_data() |>
-        pie_chart(
-          category = "asked_or_forced_to_exchange_for_sex",
-          count = "n"
-        )
-
     )
 
     # Labor Trafficking ----
 
     ## Workplace Violence Threats ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    violence_labor_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          work_place_violence_threats %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          work_place_violence_threats,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          work_place_violence_threats
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          work_place_violence_threats,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(work_place_violence_threats) |>
-        dplyr::arrange(work_place_violence_threats)
-
-    })
-
-    # Create workplace violence threats pie chart
-    output$violence_labor_pie_chart <- echarts4r::renderEcharts4r(
-
-      violence_labor_pie_chart_data() |>
-        pie_chart(
-          category = "work_place_violence_threats",
-          count = "n"
-        )
-
-    )
-
-    # Create missingness stats data frame
-    labor_missingness_stats <- shiny::reactive({
-
+    output$violence_labor_chart <- echarts4r::renderEcharts4r(
       trafficking_data_filtered() |>
-        dplyr::mutate(work_place_violence_threats = ifelse(
-          is.na(work_place_violence_threats),
-          "(Blank)",
-          work_place_violence_threats
-        )) |>
-        dplyr::filter(
-          !work_place_violence_threats %in% c("Yes", "No")
-        ) |>
-        dplyr::count(work_place_violence_threats, name = "Count") |>
-        dplyr::rename(Response = work_place_violence_threats)
-
-    })
-
-    # Create missingness stats table for "exchange for sex"
-    output$labor_missingness_stats_tbl <- reactable::renderReactable(
-
-      reactable::reactable(
-        labor_missingness_stats()
-      )
-
+        dplyr::count(work_place_violence_threats, .drop = FALSE) |>
+        bar_chart(
+          x = "work_place_violence_threats",
+          y = "n"
+        )
     )
 
     ## Workplace Promise Difference ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    promise_labor_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
+    output$promise_labor_chart <- echarts4r::renderEcharts4r(
+      trafficking_data_filtered() |>
+        dplyr::count(workplace_promise_difference, .drop = FALSE) |>
+        bar_chart(
+          x = "workplace_promise_difference",
+          y = "n"
         )
-      )
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          workplace_promise_difference %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          workplace_promise_difference,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          workplace_promise_difference
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          workplace_promise_difference,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(workplace_promise_difference) |>
-        dplyr::arrange(workplace_promise_difference)
-
-    })
-
-    # Create workplace violence threats pie chart
-    output$promise_labor_pie_chart <- echarts4r::renderEcharts4r(
-
-      promise_labor_pie_chart_data() |>
-        pie_chart(
-          category = "workplace_promise_difference",
-          count = "n"
-        )
-
     )
 
     ## Coerced to Continue Work ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    coerced_labor_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(trafficking_data_filtered()) >= 1L,
-          message = "No data to display"
+    output$coerced_labor_chart <- echarts4r::renderEcharts4r({
+      trafficking_data_filtered() |>
+        dplyr::filter(work_place_violence_threats == "Yes" | workplace_promise_difference == "Yes") |>
+        dplyr::count(coerced_to_continue_work, .drop = FALSE) |>
+        bar_chart(
+          x = "coerced_to_continue_work",
+          y = "n"
         )
-      )
-
-      out <- trafficking_data_filtered() |>
-        dplyr::filter(
-          coerced_to_continue_work %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          coerced_to_continue_work,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          coerced_to_continue_work
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          coerced_to_continue_work,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(coerced_to_continue_work) |>
-        dplyr::arrange(coerced_to_continue_work)
-
     })
-
-    # Create workplace violence threats pie chart
-    output$coerced_labor_pie_chart <- echarts4r::renderEcharts4r(
-
-      coerced_labor_pie_chart_data() |>
-        pie_chart(
-          category = "coerced_to_continue_work",
-          count = "n"
-        )
-
-    )
 
   })
 }

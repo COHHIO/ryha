@@ -176,9 +176,7 @@ mod_filters_server <- function(id, dm, rctv){
     ns <- session$ns
 
     # Update the values in the filters given the {dm} data
-
     ## Update funder filter
-
     ### Get sorted list of unique funders
     funder_choices <- dm$funder$funder |> unique() |> sort()
 
@@ -224,7 +222,6 @@ mod_filters_server <- function(id, dm, rctv){
 
     ## Update county filter to show only counties with projects funded by selected funders
     shiny::observeEvent(rctv_projects_funded_by_funders(), {
-
       ### Get counties with projects funded by selected funders
       county_choices <- dm$project_coc |>
         dplyr::filter(project_id %in% rctv_projects_funded_by_funders()) |>
@@ -269,7 +266,6 @@ mod_filters_server <- function(id, dm, rctv){
     ### selection will trigger an update of county choices. For that reason,
     ### we don't need to observe both funder and county inputs.
     shiny::observeEvent(input$county, {
-
       # Projects located in selected counties
       projects_located_in_counties <- dm$project_coc |>
         dplyr::filter(county %in% input$county) |>
@@ -316,16 +312,16 @@ mod_filters_server <- function(id, dm, rctv){
     shinyWidgets::updatePickerInput(
       session = session,
       inputId = "gender_filter_global",
-      choices = unique( dm$gender$gender ) |> sort(),
-      selected = unique( dm$gender$gender ) |> sort()
+      choices = levels( dm$gender$gender ) |> sort(),
+      selected = levels( dm$gender$gender ) |> sort()
     )
 
     ## Update ethnicity filter
     shinyWidgets::updatePickerInput(
       session = session,
       inputId = "ethnicity_filter_global",
-      choices = unique( dm$ethnicity$ethnicity ) |> sort(),
-      selected = unique( dm$ethnicity$ethnicity ) |> sort()
+      choices = levels( dm$ethnicity$ethnicity ) |> sort(),
+      selected =  levels( dm$ethnicity$ethnicity ) |> sort()
     )
 
     ## Update age filter
@@ -350,28 +346,20 @@ mod_filters_server <- function(id, dm, rctv){
 
     # Disable the "dedup_status_global" check-box if only 1 program is selected
     shiny::observeEvent(input$project_filter_global, {
-
       if (length(input$project_filter_global) < 2L) {
-
         shiny::updateCheckboxInput(
           session = session,
           inputId = "dedup_status_global",
           value = FALSE
         )
-
         shinyjs::disable(id = "dedup_status_global")
-
       } else {
-
         shinyjs::enable(id = "dedup_status_global")
-
       }
-
     })
 
     # Create filtered {dm} data
     clients_filtered <- shiny::eventReactive(input$apply_filters, {
-
       # Filter dm$client by age
       client <- dm$client |>
         dplyr::filter(
@@ -409,25 +397,8 @@ mod_filters_server <- function(id, dm, rctv){
         dplyr::filter(entry_date <= input$active_date_filter_global[2]) |>
         # Remove individuals who exited *before* the first active date
         dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1]) |>
-        # Group data to select one enrollment per person-organization
-        dplyr::group_by(organization_id, personal_id) |>
-        # Apply filters one at the time until we are left with one enrollment per person-organization
-        ## Keep enrollment(s) without exit date (or with the most recent exit date if all enrollments have an exit date)
-        dplyr::mutate(aux_exit = dplyr::case_when(
-          is.na(exit_date) ~ as.Date("9999-01-01"),
-          TRUE ~ exit_date
-        )) |>
-        dplyr::filter(aux_exit == max(aux_exit)) |>
-        dplyr::select(-aux_exit) |>
-        ## Keep enrollment(s) that have the latest entry date
-        dplyr::filter(entry_date == max(entry_date)) |>
-        ## Keep enrollment(s) that have the latest date updated
-        dplyr::filter(date_updated == max(date_updated)) |>
-        ## Keep enrollment with the highest enrollment_id
-        dplyr::filter(enrollment_id == max(enrollment_id)) |>
-        # Ungroup data
-        dplyr::ungroup()
-        # At this point we should have one enrollment per person-organization
+        # Keep one enrollment per person-organization
+        filter_most_recent_enrollment_per_group(grouping_vars = c("organization_id", "personal_id"))
 
       # Filter head of household accordingly
       if (input$heads_of_household_global == TRUE) {
@@ -451,27 +422,9 @@ mod_filters_server <- function(id, dm, rctv){
           dplyr::filter(ssn_data_quality == "Full SSN reported") |>
           # Remove youth with "Full SSN reported" that have missing SSN
           dplyr::filter(!is.na(ssn)) |>
-          # Group data to select one enrollment per ssn
-          dplyr::group_by(ssn) |>
-          # Apply filters one at the time until we are left with one enrollment per ssn
-          ## Keep enrollment(s) without exit date (or with the most recent exit date if all enrollments have an exit date)
-          dplyr::mutate(aux_exit = dplyr::case_when(
-            is.na(exit_date) ~ as.Date("9999-01-01"),
-            TRUE ~ exit_date
-          )) |>
-          dplyr::filter(aux_exit == max(aux_exit)) |>
-          dplyr::select(-aux_exit) |>
-          ## Keep enrollment(s) that have the latest entry date
-          dplyr::filter(entry_date == max(entry_date)) |>
-          ## Keep enrollment(s) that have the latest date updated
-          dplyr::filter(date_updated == max(date_updated)) |>
-          ## Keep enrollment with the highest enrollment_id
-          dplyr::filter(enrollment_id == max(enrollment_id)) |>
-          dplyr::ungroup()
+          # Keep one enrollment per ssn
+          filter_most_recent_enrollment_per_group(grouping_vars = "ssn")
       }
-
-      # Update the reactiveValues list of selected projects
-      rctv$selected_projects <- input$project_filter_global
 
       # Return the filtered data
       out |>
@@ -486,7 +439,6 @@ mod_filters_server <- function(id, dm, rctv){
     waiter::waiter_hide()
 
     return(clients_filtered)
-
   })
 }
 

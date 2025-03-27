@@ -2,21 +2,19 @@
 % Please edit documentation in R/utils_ui.R
 \name{link_section}
 \alias{link_section}
-\title{Create hyperlink to specific section in the HMIS Data Standards Manual}
+\title{Create span with hyperlink to the HMIS Data Standards Manual}
 \usage{
-link_section(section, label = "HMIS Data Standards Manual")
+link_section(section)
 }
 \arguments{
-\item{section}{The name or number of the section to link to.}
-
-\item{label}{The text to display as the link. Defaults to "HMIS Data Standards Manual".}
+\item{section}{The name or number of the section to refer to.}
 }
 \value{
-HTML hyperlink to the specified section in the HMIS Data Standards Manual.
+HTML span with a referenced section and a hyperlink to the HMIS Data Standards Manual.
 }
 \description{
-This function generates a hyperlink to a specific section within the HMIS Data
-Standards Manual. The link opens the manual in a new browser tab.
+\code{link_section()} generates a span that references a section and has a hyperlink to
+the HMIS Data Standards Manual. The link opens the manual in a new browser tab.
 }
 \examples{
 \dontrun{

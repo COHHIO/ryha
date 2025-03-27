@@ -4,7 +4,14 @@
 \alias{bar_chart}
 \title{Generate a bar chart using echarts4r}
 \usage{
-bar_chart(data, x, y, axis_flip = TRUE)
+bar_chart(
+  data,
+  x,
+  y,
+  pct_denominator = NULL,
+  axis_flip = TRUE,
+  tooltip_opts = list(confine = FALSE, extraCssText = "")
+)
 }
 \arguments{
 \item{data}{A data frame containing the data to be plotted.}
@@ -15,8 +22,14 @@ representing the x-axis values.}
 \item{y}{A character string specifying the column name in the data frame
 representing the y-axis values.}
 
+\item{pct_denominator}{Optional numeric value specifying the denominator
+for percentage calculation.}
+
 \item{axis_flip}{A logical value indicating whether to flip the x and y axes.
 Default is TRUE.}
+
+\item{tooltip_opts}{A named list of additional tooltip options passed to
+echarts4r's \code{e_tooltip()}. Supports \code{confine} and \code{extraCssText} options.}
 }
 \value{
 A bar chart visualized using echarts4r.

@@ -34,7 +34,8 @@ app_server <- function(input, output, session) {
       gender_data = dm$gender,
       enrollment_data = dm$enrollment,
       ethnicity_data = dm$ethnicity,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_disabilities_server(
@@ -46,33 +47,38 @@ app_server <- function(input, output, session) {
     mod_employment_server(
       id = "employment_1",
       employment_data = dm$employment,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_education_server(
       id = "education_1",
       education_data = dm$education,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_health_server(
       id = "health_1",
       health_data = dm$health,
       counseling_data = dm$exit,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_domestic_violence_server(
       id = "domestic_violence_1",
       domestic_violence_data = dm$domestic_violence,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_income_benefits_server(
       id = "income_benefits_1",
       income_data = dm$income,
       benefits_data = dm$benefits,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_services_server(
@@ -85,29 +91,31 @@ app_server <- function(input, output, session) {
     mod_trafficking_server(
       id = "trafficking_1",
       trafficking_data = dm$exit,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_living_situation_server(
       id = "living_situation_1",
-      project_data = dm$project,
       enrollment_data = dm$enrollment,
       exit_data = dm$exit,
       clients_filtered = clients_filtered,
-      rctv = rctv
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_parenting_server(
       id = "parenting_1",
       health_data = dm$health,
       enrollment_data = dm$enrollment,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
     mod_exit_server(
       id = "exit_1",
       exit_data = dm$exit,
-      clients_filtered = clients_filtered
+      clients_filtered = clients_filtered,
+      heads_of_household_and_adults = dm$heads_of_household_and_adults
     )
 
   } else {

@@ -38,7 +38,7 @@ mod_living_situation_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Living Situation Group (at Entry)",
+            text = "# of Head of Household and/or Adults by Living Situation Group (at Entry)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
               shiny::br(),
@@ -49,7 +49,7 @@ mod_living_situation_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("living_situation_pie_chart"),
+            outputId = ns("living_situation_chart"),
             height = "100%"
           )
         )
@@ -61,7 +61,7 @@ mod_living_situation_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Destination Group (at Exit)",
+            text = "# of Head of Household and/or Adults by Destination Group (at Exit)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
               shiny::br(),
@@ -72,13 +72,31 @@ mod_living_situation_ui <- function(id){
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("destination_pie_chart"),
+            outputId = ns("destination_chart"),
             height = "100%"
           )
         )
 
       )
 
+    ),
+
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+
+        bs4Dash::box(
+          title = "# of Head of Household and/or Adults by Destination (at Exit)",
+          width = NULL,
+          height = "720px",
+          maximizable = TRUE,
+          echarts4r::echarts4rOutput(
+            outputId = ns("destination_bar_chart"),
+            height = "100%"
+          )
+        )
+
+      )
     ),
 
     shiny::fluidRow(
@@ -102,72 +120,6 @@ mod_living_situation_ui <- function(id){
         )
 
       )
-    ),
-
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-
-        bs4Dash::box(
-          title = "# of Youth by Destination (at Exit)",
-          width = NULL,
-          height = "680px",
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("destination_bar_chart"),
-            height = "100%"
-          )
-        )
-
-      )
-    ),
-
-    bs4Dash::tabsetPanel(
-      type = "pills",
-
-      ## Benefits Tab Panel ----
-      shiny::tabPanel(
-        title = "Living Situation (Entry)",
-
-        shiny::fluidRow(
-          shiny::column(
-            width = 12,
-
-            bs4Dash::box(
-              title = "Data Quality Statistics - Living Situation (Entry)",
-              width = NULL,
-              maximizable = TRUE,
-              reactable::reactableOutput(
-                outputId = ns("living_situation_missingness_stats_tbl")
-              )
-            )
-
-          )
-        )
-
-      ),
-
-      shiny::tabPanel(
-        title = "Destination (Exit)",
-
-        shiny::fluidRow(
-          shiny::column(
-            width = 12,
-
-            bs4Dash::box(
-              title = "Data Quality Statistics - Destination (Exit)",
-              width = NULL,
-              maximizable = TRUE,
-              reactable::reactableOutput(
-                outputId = ns("destination_missingness_stats_tbl")
-              )
-            )
-
-          )
-        )
-
-      )
-
     )
 
   )
@@ -176,7 +128,7 @@ mod_living_situation_ui <- function(id){
 #' living_situation Server Functions
 #'
 #' @noRd
-mod_living_situation_server <- function(id, project_data, enrollment_data, exit_data, clients_filtered, rctv){
+mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -190,29 +142,24 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
 
     # Apply the filters to the enrollment data
     living_data_filtered <- shiny::reactive({
-
-      shiny::req(rctv$selected_projects)
-
-      project_ids <- project_data |>
-        dplyr::filter(project_id %in% rctv$selected_projects) |>
-        dplyr::pull(project_id)
-
-      enrollment_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        ) |>
-        dplyr::filter(project_id %in% project_ids) |>
+      filter_data(enrollment_data, clients_filtered()) |>
+        # Add destination data
         dplyr::left_join(
           exit_data |>
             dplyr::select(
               enrollment_id,
+              personal_id,
               organization_id,
-              destination
+              exit_date,
+              destination,
+              destination_grouped
             ),
-          by = c("enrollment_id", "organization_id")
-        )
-
+          by = c("enrollment_id", "personal_id", "organization_id")
+        ) |>
+        # Prior living situation is collected for head of household and adults.
+        # Destination is collected for all youth.
+        # Head of household and adults filter is applied to both for reporting consistency reasons
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Total number of Youth in program(s) that exist in the `employment.csv`
@@ -245,119 +192,69 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
       n_youth_with_living_data()
     })
 
-    # Living Situation Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    living_situation_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(living_data_filtered()) >= 1L,
-          message = "No data to display"
+    # Living Situation Chart ----
+    output$living_situation_chart <- echarts4r::renderEcharts4r({
+      living_data_filtered() |>
+        dplyr::count(living_situation_grouped, .drop = FALSE) |>
+        bar_chart(
+          x = "living_situation_grouped",
+          y = "n"
         )
-      )
-
-      out <- living_data_filtered() |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          living_situation,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          living_situation
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          living_situation,
-          .keep_all = TRUE
-        ) |>
-        dplyr::inner_join(
-          LivingCodes |>
-            dplyr::select(
-              description = Description,
-              category = ExitCategory
-            ),
-          by = c("living_situation" = "description")
-        ) |>
-        dplyr::filter(category != "Not enough data")
-
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(category) |>
-        dplyr::arrange(category)
-
-    })
-
-    # Create living situation pie chart
-    output$living_situation_pie_chart <- echarts4r::renderEcharts4r({
-
-      living_situation_pie_chart_data() |>
-        pie_chart(
-          category = "category",
-          count = "n"
-        )
-
     })
 
     destination_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(living_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out <- living_data_filtered() |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          destination,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          destination
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          destination,
-          .keep_all = TRUE
-        )
-
-      out |>
-        dplyr::count(destination) |>
-        dplyr::arrange(n) |>
-        dplyr::filter(
-          !is.na(destination),
-          !destination %in% c("No exit interview completed",
-                              "Worker unable to determine",
-                              "Client doesn't know",
-                              "Data not collected",
-                              "Client prefers not to answer")
-        )
-
+      living_data_filtered() |>
+        dplyr::filter(!is.na(exit_date))
     })
 
     output$destination_bar_chart <- echarts4r::renderEcharts4r({
-
       destination_chart_data() |>
+        # Not using ".drop = FALSE" to avoid displaying zero-count responses, as the variable has many response categories.
+        dplyr::count(destination) |> 
+        dplyr::mutate(
+          # Assign destination group
+          destination_group = dplyr::case_when(
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Homeless") |> dplyr::pull(Description)) ~ "Homeless",
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Institutional") |> dplyr::pull(Description)) ~ "Institutional",
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Temporary") |> dplyr::pull(Description)) ~ "Temporary",
+            destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Permanent") |> dplyr::pull(Description)) ~ "Permanent",
+            TRUE ~ "Other"
+          ) |> 
+          factor(
+            levels = c(
+              "Other",
+              "Homeless",
+              "Institutional",
+              "Temporary",
+              "Permanent"
+            )
+          ),
+          # Assign color by destination_grouped
+          color = dplyr::case_when(
+            destination_group == "Other" ~ COLORS$MISSING,
+            destination_group == "Homeless" ~ COLORS$POOR,
+            destination_group == "Institutional" ~ COLORS$FAIR,
+            destination_group == "Temporary" ~ COLORS$GOOD,
+            destination_group == "Permanent" ~ COLORS$EXCELLENT
+          )
+        ) |>
+        # Sort by counts inside each group
+        dplyr::arrange(destination_group, n) |>
+        # Workaround to add legend by group
+        dplyr::mutate(
+          Other = NA,
+          Homeless = NA,
+          Institutional = NA,
+          Temporary = NA,
+          Permanent = NA
+        ) |> 
         bar_chart(
           x = "destination",
-          y = "n"
+          y = "n",
+          tooltip_opts = list(
+            confine = TRUE,
+            extraCssText = "width:auto; white-space:pre-wrap;"
+          )
         ) |>
         echarts4r::e_y_axis(
           axisLabel = list(
@@ -365,170 +262,69 @@ mod_living_situation_server <- function(id, project_data, enrollment_data, exit_
             overflow = "truncate"
           )
         ) |>
-        echarts4r::e_tooltip(
-          confine = TRUE,
-          extraCssText = "width:auto; white-space:pre-wrap;"
+        echarts4r::e_line(serie = Permanent) |> 
+        echarts4r::e_line(serie = Temporary) |> 
+        echarts4r::e_line(serie = Institutional) |> 
+        echarts4r::e_line(serie = Homeless) |> 
+        echarts4r::e_line(serie = Other) |> 
+        echarts4r::e_legend(
+          icon = "rect",
+          selectedMode = FALSE
+        ) |> 
+        echarts4r::e_color(
+          c(
+            "",
+            COLORS$EXCELLENT,
+            COLORS$GOOD,
+            COLORS$FAIR,
+            COLORS$POOR,
+            COLORS$MISSING
+          )
         )
-
     })
 
-    # Destination Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    destination_pie_chart_data <- shiny::reactive({
-
-      out <- destination_chart_data() |>
-        dplyr::inner_join(
-          LivingCodes |>
-            dplyr::select(
-              description = Description,
-              category = ExitCategory
-            ),
-          by = c("destination" = "description")
-        ) |>
-        dplyr::filter(category != "Not enough data")
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
+    # Destination Chart ----
+    output$destination_chart <- echarts4r::renderEcharts4r({
+      destination_chart_data() |>
+        dplyr::count(destination_grouped, .drop = FALSE) |>
+        bar_chart(
+          x = "destination_grouped",
+          y = "n"
         )
-      )
-
-      out |>
-        dplyr::count(category, wt = n) |>
-        dplyr::arrange(category)
-
     })
-
-    # Create employment type pie chart
-    output$destination_pie_chart <- echarts4r::renderEcharts4r({
-
-      destination_pie_chart_data() |>
-        pie_chart(
-          category = "category",
-          count = "n"
-        )
-
-    })
-
 
     # Sankey Chart ----
-
-    # Create reactive data frame to data to be displayed in line chart
-    sankey_chart_data <- shiny::reactive({
-
-      sankey_data <- living_data_filtered() |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          living_situation,
-          destination
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          .keep_all = TRUE
-        ) |>
-        dplyr::mutate(
-          living_situation = LivingCodes$ExitCategory[match(x = living_situation, table = LivingCodes$Description)],
-          destination = LivingCodes$ExitCategory[match(x = destination, table = LivingCodes$Description)],
-        ) |>
-        dplyr::filter(
-          living_situation != "Not enough data",
-          destination != "Not enough data"
-        ) |>
-        dplyr::count(living_situation, destination) |>
-        dplyr::arrange(living_situation, destination)
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(sankey_data) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      sankey_data |>
-        dplyr::mutate(
-          living_situation = paste0(living_situation, " (Entry)"),
-          destination = paste0(destination, " (Exit)")
-        )
-
-    })
-
-    # Create sankey chart
     output$sankey_chart <- echarts4r::renderEcharts4r({
-
-      sankey_chart_data() |>
+      living_data_filtered() |>
+        # Pivot longer to match expected data format
+        tidyr::pivot_longer(
+          cols = c(living_situation_grouped, destination_grouped),
+          names_to = "data_collection_stage",
+          values_to = "living_situation_response"
+        ) |>
+        # Recode column accordingly
+        dplyr::mutate(
+          data_collection_stage = dplyr::recode(
+            data_collection_stage,
+            "living_situation_grouped" = "Project start",
+            "destination_grouped" = "Project exit"
+          )
+        ) |> 
+        prepare_sankey_data(
+          response_col = "living_situation_response",
+          response_vals = c(
+            "Homeless",
+            "Institutional",
+            "Temporary",
+            "Permanent"
+          )
+        ) |>
         sankey_chart(
-          entry_status = "living_situation",
-          exit_status = "destination",
+          entry_status = "Entry",
+          exit_status = "Exit",
           count = "n"
         )
-
     })
-
-    # Data Quality Stats Tables ----
-
-    ## Living Situation Data Quality ----
-    living_situation_missingness_stats <- shiny::reactive({
-
-      living_data_filtered() |>
-        dplyr::mutate(living_situation = ifelse(
-          is.na(living_situation),
-          "(Blank)",
-          living_situation
-        )) |>
-        dplyr::filter(
-          living_situation %in% c(
-            "No exit interview completed",
-            "Worker unable to determine",
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(living_situation, name = "Count") |>
-        dplyr::rename(Response = living_situation)
-
-    })
-
-    output$living_situation_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        living_situation_missingness_stats()
-      )
-    )
-
-    ## Destination Data Quality ----
-    destination_missingness_stats <- shiny::reactive({
-
-      living_data_filtered() |>
-        dplyr::mutate(destination = ifelse(
-          is.na(destination),
-          "(Blank)",
-          destination
-        )) |>
-        dplyr::filter(
-          destination %in% c(
-            "No exit interview completed",
-            "Worker unable to determine",
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(destination, name = "Count") |>
-        dplyr::rename(Response = destination)
-
-    })
-
-    output$destination_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        destination_missingness_stats()
-      )
-    )
 
   })
 }

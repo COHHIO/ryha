@@ -210,12 +210,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
     # Create reactive data frame to data to be displayed in bar chart
     services_bar_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(services_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(services_data_filtered())
 
       services_data_filtered() |>
         dplyr::filter(!is.na(type_provided)) |>
@@ -250,12 +245,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
     # Create reactive data frame to data to be displayed in bar chart
     referral_bar_chart_data <- shiny::reactive({
 
-      shiny::validate(
-        shiny::need(
-          expr = nrow(referral_data_filtered()) >= 1L,
-          message = "No data to display"
-        )
-      )
+      validate_data(referral_data_filtered())
 
       referral_data_filtered() |>
         dplyr::mutate(

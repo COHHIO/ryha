@@ -41,20 +41,20 @@ mod_parenting_ui <- function(id){
 
     shiny::fluidRow(
 
-      # Pregnancy Pie Chart ----
+      # Pregnancy Chart ----
       shiny::column(
         width = 6,
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Pregnancy Status",
+            text = "# of Head of Household and/or Adults by Pregnancy Status",
             content = link_section("R10 Pregnancy Status")
           ),
           width = NULL,
           height = DEFAULT_BOX_HEIGHT,
           maximizable = TRUE,
           echarts4r::echarts4rOutput(
-            outputId = ns("pregnancy_pie_chart"),
+            outputId = ns("pregnancy_chart"),
             height = "100%"
           )
         )
@@ -75,42 +75,6 @@ mod_parenting_ui <- function(id){
           reactable::reactableOutput(
             outputId = ns("parenting_tbl")
           )
-        ),
-
-        # Data Quality Statistics ----
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          ## Pregnancy ----
-          shiny::tabPanel(
-            title = "Pregnancy",
-
-            bs4Dash::box(
-              title = "Pregnancy Status Data Quality Statistics",
-              width = NULL,
-              maximizable = TRUE,
-              reactable::reactableOutput(
-                outputId = ns("pregnancy_missingness_stats_tbl")
-              )
-            )
-
-          ),
-
-          ## Parenting ----
-          shiny::tabPanel(
-            title = "Parenting",
-
-            bs4Dash::box(
-              title = "Parenting Status Data Quality Statistics",
-              width = NULL,
-              maximizable = TRUE,
-              reactable::reactableOutput(
-                outputId = ns("parenting_missingness_stats_tbl")
-              )
-            )
-
-          )
-
         )
 
       )
@@ -123,7 +87,7 @@ mod_parenting_ui <- function(id){
 #' parenting Server Functions
 #'
 #' @noRd
-mod_parenting_server <- function(id, health_data, enrollment_data, clients_filtered){
+mod_parenting_server <- function(id, health_data, enrollment_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -137,26 +101,22 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
     )
 
-    # Apply the filters to the trafficking data
+    # Filter health data
     health_data_filtered <- shiny::reactive(
-
-      health_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+      filter_data(health_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     )
 
-    # Apply the filters to the trafficking data
+    most_recent_data_per_enrollment <- shiny::reactive({
+      health_data_filtered() |> 
+        dplyr::filter(data_collection_stage %in% c("Project start", "Project exit")) |>
+        filter_most_recent_data_per_enrollment()
+    })
+
+    # Filter enrollment data
     enrollment_data_filtered <- shiny::reactive(
-
       enrollment_data |>
-        dplyr::inner_join(
-          clients_filtered(),
-          by = c("personal_id", "organization_id", "enrollment_id")
-        )
-
+        filter_data(clients_filtered()) 
     )
 
     # Total number of Youth in program(s) provided a "Yes" or "No" response to
@@ -202,95 +162,16 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
     })
 
     # Pregnancy Status ----
-
-    ## Pie Chart ----
-
-    # Create reactive data frame to data to be displayed in pie chart
-    pregnancy_pie_chart_data <- shiny::reactive({
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(health_data_filtered()) >= 1L,
-          message = "No data to display"
+    output$pregnancy_chart <- echarts4r::renderEcharts4r({
+      most_recent_data_per_enrollment() |> 
+        dplyr::count(pregnancy_status, .drop = FALSE) |> 
+        bar_chart(
+          x = "pregnancy_status",
+          y = "n"
         )
-      )
-
-      out <- health_data_filtered() |>
-        dplyr::filter(
-          pregnancy_status %in% c("Yes", "No")
-        ) |>
-        dplyr::arrange(
-          organization_id,
-          personal_id,
-          pregnancy_status,
-          dplyr::desc(date_updated)
-        ) |>
-        dplyr::select(
-          organization_id,
-          personal_id,
-          pregnancy_status
-        ) |>
-        dplyr::distinct(
-          organization_id,
-          personal_id,
-          pregnancy_status,
-          .keep_all = TRUE
-        )
-
-      shiny::validate(
-        shiny::need(
-          expr = nrow(out) >= 1L,
-          message = "No data to display"
-        )
-      )
-
-      out |>
-        dplyr::count(pregnancy_status) |>
-        dplyr::arrange(pregnancy_status)
-
-    })
-
-    # Create pregnancy status pie chart
-    output$pregnancy_pie_chart <- echarts4r::renderEcharts4r({
-
-      pregnancy_pie_chart_data() |>
-        pie_chart(
-          category = "pregnancy_status",
-          count = "n"
-        )
-
     })
 
     ## Data Quality Statistics ----
-
-    # Capture the data quality statistics for "mental_health_status" field
-    pregnancy_missingness_stats <- shiny::reactive(
-
-      health_data_filtered() |>
-        dplyr::mutate(pregnancy_status = ifelse(
-          is.na(pregnancy_status),
-          "(Blank)",
-          pregnancy_status
-        )) |>
-        dplyr::filter(
-          pregnancy_status %in% c(
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(pregnancy_status, name = "Count") |>
-        dplyr::rename(Response = pregnancy_status)
-
-    )
-
-    # Create the {reactable} table to hold the missingness stats
-    output$pregnancy_missingness_stats_tbl <- reactable::renderReactable(
-      reactable::reactable(
-        pregnancy_missingness_stats()
-      )
-    )
 
     # Parenting ----
 
@@ -345,27 +226,6 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
             footerStyle = list(fontWeight = "bold")
           )
         )
-
-    )
-
-    ## Data Quality Statistics Table ----
-    output$parenting_missingness_stats_tbl <- reactable::renderReactable(
-
-      enrollment_data_filtered() |>
-        dplyr::mutate(relationship_to_ho_h = ifelse(
-          is.na(relationship_to_ho_h),
-          "(Blank)",
-          relationship_to_ho_h
-        )) |>
-        dplyr::filter(
-          relationship_to_ho_h %in% c(
-            "Data not collected",
-            "(Blank)"
-          )
-        ) |>
-        dplyr::count(relationship_to_ho_h, name = "Count") |>
-        dplyr::rename(Response = relationship_to_ho_h) |>
-        reactable::reactable()
 
     )
 
