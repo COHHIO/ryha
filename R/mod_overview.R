@@ -120,7 +120,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Age",
+            text = "# of Youth by Age Group",
             content = link_section("3.03 Date of Birth")
           ),
           width = NULL,
@@ -240,16 +240,11 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
     # Age ----
     output$age_bar_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
-        dplyr::filter(!is.na(age)) |>
-        dplyr::count(age) |>
-        dplyr::arrange(age) |>
-        dplyr::mutate(age = as.factor(age)) |>
+        dplyr::count(age_grouped, .drop = FALSE) |>
         bar_chart(
-          x = "age",
-          y = "n",
-          axis_flip = FALSE
-        ) |>
-        echarts4r::e_axis_labels(x = "Age", y = "# of Youth")
+          x = "age_grouped",
+          y = "n"
+        )
     })
 
     # Ethnicity ----

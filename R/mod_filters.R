@@ -312,16 +312,16 @@ mod_filters_server <- function(id, dm, rctv){
     shinyWidgets::updatePickerInput(
       session = session,
       inputId = "gender_filter_global",
-      choices = unique( dm$gender$gender ) |> sort(),
-      selected = unique( dm$gender$gender ) |> sort()
+      choices = levels( dm$gender$gender ) |> sort(),
+      selected = levels( dm$gender$gender ) |> sort()
     )
 
     ## Update ethnicity filter
     shinyWidgets::updatePickerInput(
       session = session,
       inputId = "ethnicity_filter_global",
-      choices = unique( dm$ethnicity$ethnicity ) |> sort(),
-      selected = unique( dm$ethnicity$ethnicity ) |> sort()
+      choices = levels( dm$ethnicity$ethnicity ) |> sort(),
+      selected =  levels( dm$ethnicity$ethnicity ) |> sort()
     )
 
     ## Update age filter
