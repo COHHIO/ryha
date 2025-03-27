@@ -47,7 +47,7 @@ mod_parenting_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Pregnancy Status",
+            text = "# of Head of Household and/or Adults by Pregnancy Status",
             content = link_section("R10 Pregnancy Status")
           ),
           width = NULL,
@@ -87,7 +87,7 @@ mod_parenting_ui <- function(id){
 #' parenting Server Functions
 #'
 #' @noRd
-mod_parenting_server <- function(id, health_data, enrollment_data, clients_filtered){
+mod_parenting_server <- function(id, health_data, enrollment_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -103,7 +103,8 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
     # Filter health data
     health_data_filtered <- shiny::reactive(
-      filter_data(health_data, clients_filtered())
+      filter_data(health_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     )
 
     most_recent_data_per_enrollment <- shiny::reactive({

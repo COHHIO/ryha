@@ -49,7 +49,7 @@ mod_education_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Last Grade Completed Group",
+                    text = "# of Head of Household and/or Adults by Last Grade Completed Group",
                     content = shiny::tagList(
                       shiny::span("Response categories have been grouped to improve chart readability."),
                       shiny::br(),
@@ -106,7 +106,7 @@ mod_education_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by School Status",
+                    text = "# of Head of Household and/or Adults by School Status",
                     content = link_section("R5 School Status")
                   ),
                   width = NULL,
@@ -157,7 +157,7 @@ mod_education_ui <- function(id){
 #' education Server Functions
 #'
 #' @noRd
-mod_education_server <- function(id, education_data, clients_filtered){
+mod_education_server <- function(id, education_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -171,7 +171,8 @@ mod_education_server <- function(id, education_data, clients_filtered){
 
     # Filter education data
     education_data_filtered <- shiny::reactive({
-      filter_data(education_data, clients_filtered())
+      filter_data(education_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Create reactive with the most recent data collected per enrollment

@@ -56,7 +56,7 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Exchange for Sex Response",
+                    text = "# of Head of Household and/or Adults by Exchange for Sex Response",
                     content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
                   ),
                   width = NULL,
@@ -79,7 +79,7 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Asked or Forced to Exchange Response",
+                    text = "# of Head of Household and/or Adults by Asked or Forced to Exchange Response",
                     content = shiny::tagList(
                       shiny::p("Only youth that ever received anything in exchange for sex are included."),
                       shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
@@ -101,7 +101,7 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Count of Exchange for Sex Response",
+                    text = "# of Head of Household and/or Adults by Count of Exchange for Sex Response",
                     content = shiny::tagList(
                       shiny::p("Only youth that ever received anything in exchange for sex are included."),
                       shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
@@ -132,7 +132,7 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Workplace Violence/Threats Response",
+                    text = "# of Head of Household and/or Adults by Workplace Violence/Threats Response",
                     content = link_section("R16 Labor Exploitation/Trafficking")
                   ),
                   width = NULL,
@@ -151,7 +151,7 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Workplace Promise Difference Response",
+                    text = "# of Head of Household and/or Adults by Workplace Promise Difference Response",
                     content = link_section("R16 Labor Exploitation/Trafficking")
                   ),
                   width = NULL,
@@ -174,9 +174,9 @@ mod_trafficking_ui <- function(id){
 
                 bs4Dash::box(
                   title = with_popover(
-                    text = "# of Youth by Coerced to Continue Work Response",
+                    text = "# of Head of Household and/or Adults by Coerced to Continue Work Response",
                     content = shiny::tagList(
-                      shiny::p("Only youth that experienced workplace violence and/or promise difference are included."),
+                      shiny::p("Only Head of Household and Adults that experienced workplace violence and/or promise difference are included."),
                       shiny::p(link_section("R16 Labor Exploitation/Trafficking"))
                     )
                   ),
@@ -207,7 +207,7 @@ mod_trafficking_ui <- function(id){
 #' trafficking Server Functions
 #'
 #' @noRd
-mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
+mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -221,7 +221,8 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered){
 
     # Filter trafficking data
     trafficking_data_filtered <- shiny::reactive(
-      filter_data(trafficking_data, clients_filtered())
+      filter_data(trafficking_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     )
 
     # Total number of Youth in program(s) that exist in the `education.csv`

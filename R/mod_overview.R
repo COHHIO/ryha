@@ -45,7 +45,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Sexual Orientation",
+            text = "# of Head of Household and/or Adults by Sexual Orientation",
             content = link_section("R3 Sexual Orientation")
           ),
           width = NULL,
@@ -70,7 +70,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Veteran Status",
+            text = "# of Adults by Veteran Status",
             content = link_section("3.07 Veteran Status")
           ),
           width = NULL,
@@ -146,7 +146,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Former Ward Child Welfare Response",
+            text = "# of Head of Household and/or Adults by Former Ward Child Welfare Response",
             content = link_section("R11 Formerly a Ward of Child Welfare/Foster Care Agency")
           ),
           width = NULL,
@@ -167,7 +167,7 @@ mod_overview_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Former Ward Juvenile Justice Response",
+            text = "# of Head of Household and/or Adults by Former Ward Juvenile Justice Response",
             content = link_section("R12 Formerly a Ward of Juvenile Justice System")
           ),
           width = NULL,
@@ -189,8 +189,7 @@ mod_overview_ui <- function(id){
 #' overview Server Functions
 #'
 #' @noRd
-mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
-                                ethnicity_data, clients_filtered){
+mod_overview_server <- function(id, client_data, enrollment_data, gender_data, ethnicity_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -208,7 +207,8 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
 
     # Filter enrollment data
     enrollment_data_filtered <- shiny::reactive({
-      filter_data(enrollment_data, clients_filtered())
+      filter_data(enrollment_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Sexual Orientation ----
@@ -229,6 +229,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data,
     # Veteran ----
     output$veteran_chart <- echarts4r::renderEcharts4r({
       client_data_filtered() |>
+        dplyr::filter(age >= 18) |>
         dplyr::count(veteran_status, .drop = FALSE) |>
         bar_chart(
           x = "veteran_status",

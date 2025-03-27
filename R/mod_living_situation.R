@@ -38,7 +38,7 @@ mod_living_situation_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Living Situation Group (at Entry)",
+            text = "# of Head of Household and/or Adults by Living Situation Group (at Entry)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
               shiny::br(),
@@ -61,7 +61,7 @@ mod_living_situation_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Destination Group (at Exit)",
+            text = "# of Head of Household and/or Adults by Destination Group (at Exit)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
               shiny::br(),
@@ -86,7 +86,7 @@ mod_living_situation_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
-          title = "# of Youth by Destination (at Exit)",
+          title = "# of Head of Household and/or Adults by Destination (at Exit)",
           width = NULL,
           height = "720px",
           maximizable = TRUE,
@@ -128,7 +128,7 @@ mod_living_situation_ui <- function(id){
 #' living_situation Server Functions
 #'
 #' @noRd
-mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered){
+mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -155,7 +155,11 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
               destination_grouped
             ),
           by = c("enrollment_id", "personal_id", "organization_id")
-        )
+        ) |>
+        # Prior living situation is collected for head of household and adults.
+        # Destination is collected for all youth.
+        # Head of household and adults filter is applied to both for reporting consistency reasons
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Total number of Youth in program(s) that exist in the `employment.csv`

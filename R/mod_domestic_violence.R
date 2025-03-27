@@ -38,7 +38,7 @@ mod_domestic_violence_ui <- function(id){
 
         bs4Dash::box(
           title = with_popover(
-            text = "# of Youth by Domestic Violence Victim Response",
+            text = "# of Head of Household and/or Adults by Domestic Violence Victim Response",
             content = link_section("4.11 Domestic Violence")
           ),
           width = NULL,
@@ -100,7 +100,7 @@ mod_domestic_violence_ui <- function(id){
 #' domestic_violence Server Functions
 #'
 #' @noRd
-mod_domestic_violence_server <- function(id, domestic_violence_data, clients_filtered){
+mod_domestic_violence_server <- function(id, domestic_violence_data, clients_filtered, heads_of_household_and_adults){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -114,7 +114,8 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
     # Filter domestic violence data
     domestic_violence_data_filtered <- shiny::reactive({
-      filter_data(domestic_violence_data, clients_filtered())
+      filter_data(domestic_violence_data, clients_filtered()) |>
+        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     })
 
     # Create reactive with the most recent data collected per enrollment
