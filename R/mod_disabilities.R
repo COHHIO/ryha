@@ -68,14 +68,15 @@ mod_disabilities_ui <- function(id){
               shiny::br(),
               shiny::span("Youth with multiple disabilities are counted once per disability."),
               shiny::br(),
-              shiny::span("Refer to HMIS Data Standards Manual:"),
+              shiny::span("For more information, refer to sections:"),
               shiny::tags$ul(
-                shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
-                shiny::tags$li(link_section("4.06 Developmental Disability", label = "Developmental Disability")),
-                shiny::tags$li(link_section("4.07 Chronic Health Condition", label = "Chronic Health Condition")),
-                shiny::tags$li(link_section("4.08 HIV/AIDS", label = "HIV/AIDS")),
-                shiny::tags$li(link_section("4.09 Mental Health Disorder", label = "Mental Health Disorder"))
-              )
+                shiny::tags$li(shiny::tags$b("4.05 Physical Disability")),
+                shiny::tags$li(shiny::tags$b("4.06 Developmental Disability")),
+                shiny::tags$li(shiny::tags$b("4.07 Chronic Health Condition")),
+                shiny::tags$li(shiny::tags$b("4.08 HIV/AIDS")),
+                shiny::tags$li(shiny::tags$b("4.09 Mental Health Disorder"))
+              ),
+              shiny::span("in the ", link_data_standards_manual())
             )
           ),
           width = NULL,
@@ -121,15 +122,15 @@ mod_disabilities_ui <- function(id){
           title = with_popover(
             text = "Changes in Disability Status (Entry --> Exit)",
             content = shiny::tagList(
-              shiny::span("Refer to HMIS Data Standards Manual:"),
+              shiny::span("For more information, refer to sections:"),
               shiny::tags$ul(
-                shiny::tags$li(link_section("4.05 Physical Disability", label = "Physical Disability")),
-                shiny::tags$li(link_section("4.06 Developmental Disability", label = "Developmental Disability")),
-                shiny::tags$li(link_section("4.07 Chronic Health Condition", label = "Chronic Health Condition")),
-                shiny::tags$li(link_section("4.08 HIV/AIDS", label = "HIV/AIDS")),
-                shiny::tags$li(link_section("4.09 Mental Health Disorder", label = "Mental Health Disorder")),
-                shiny::tags$li(link_section("4.10 Substance Use Disorder", label = "Substance Use Disorder"))
-              )
+                shiny::tags$li(shiny::tags$b("4.05 Physical Disability")),
+                shiny::tags$li(shiny::tags$b("4.06 Developmental Disability")),
+                shiny::tags$li(shiny::tags$b("4.07 Chronic Health Condition")),
+                shiny::tags$li(shiny::tags$b("4.08 HIV/AIDS")),
+                shiny::tags$li(shiny::tags$b("4.09 Mental Health Disorder"))
+              ),
+              shiny::span("in the ", link_data_standards_manual())
             )
           ),
           type = "tabs",

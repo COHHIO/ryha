@@ -85,6 +85,7 @@ reference:
 - title: UI Utils Functions
   contents:
   - link_section
+  - link_data_standards_manual
   - with_popover
   - validate_data
 - title: Other Functions

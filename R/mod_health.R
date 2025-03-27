@@ -60,12 +60,13 @@ mod_health_ui <- function(id){
                     content = shiny::tagList(
                       shiny::span("Each bar summarizes the responses for the corresponding health status."),
                       shiny::br(),
-                      shiny::span("Refer to HMIS Data Standards Manual:"),
+                      shiny::span("For more information, refer to sections:"),
                       shiny::tags$ul(
-                        shiny::tags$li(link_section("R7 General Health Status", label = "General Health Status")),
-                        shiny::tags$li(link_section("R8 Dental Health Status", label = "Dental Health Status")),
-                        shiny::tags$li(link_section("R9 Mental Health Status", label = "Mental Health Status"))
-                      )
+                        shiny::tags$li(shiny::tags$b("R7 General Health Status")),
+                        shiny::tags$li(shiny::tags$b("R8 Dental Health Status")),
+                        shiny::tags$li(shiny::tags$b("R9 Mental Health Status"))
+                      ),
+                      shiny::span("in the ", link_data_standards_manual())
                     )
                   ),
                   width = NULL,
@@ -90,12 +91,13 @@ mod_health_ui <- function(id){
                   title = with_popover(
                     text = "Changes in Health Status (Entry --> Exit)",
                     content = shiny::tagList(
-                      shiny::span("Refer to HMIS Data Standards Manual:"),
+                      shiny::span("For more information, refer to sections:"),
                       shiny::tags$ul(
-                        shiny::tags$li(link_section("R7 General Health Status", label = "General Health Status")),
-                        shiny::tags$li(link_section("R8 Dental Health Status", label = "Dental Health Status")),
-                        shiny::tags$li(link_section("R9 Mental Health Status", label = "Mental Health Status"))
-                      )
+                        shiny::tags$li(shiny::tags$b("R7 General Health Status")),
+                        shiny::tags$li(shiny::tags$b("R8 Dental Health Status")),
+                        shiny::tags$li(shiny::tags$b("R9 Mental Health Status"))
+                      ),
+                      shiny::span("in the ", link_data_standards_manual())
                     )
                   ),
                   type = "tabs",
