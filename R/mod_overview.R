@@ -11,178 +11,106 @@ mod_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
+    bslib::layout_columns(
+      bslib::card(
+        height = DEFAULT_BOX_HEIGHT,
+        full_screen = TRUE,
 
-      shiny::column(
-        width = 6,
-
-        # Gender ----
-
-        bs4Dash::box(
-          title = with_popover(
+        bslib::card_header(
+          with_tooltip(
             text = "# of Youth by Gender",
             content = shiny::tagList(
               shiny::p("Each bar represents the percentage of youth who self-identify with a given gender category."),
               shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
               shiny::p(link_section("3.06 Gender"))
             )
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("gender_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("gender_chart"), height = "100%")
       ),
+      bslib::card(
+        height = DEFAULT_BOX_HEIGHT,
+        full_screen = TRUE,
 
-      shiny::column(
-        width = 6,
-
-        # Sexual Orientation ----
-
-        bs4Dash::box(
-          title = with_popover(
+        bslib::card_header(
+          with_tooltip(
             text = "# of Head of Household and/or Adults by Sexual Orientation",
             content = link_section("R3 Sexual Orientation")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("sexual_orientation_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("sexual_orientation_chart"), height = "100%")
       )
 
     ),
 
-    shiny::fluidRow(
+    bslib::layout_columns(
+      bslib::card(
+        height = DEFAULT_BOX_HEIGHT,
+        full_screen = TRUE,
 
-      shiny::column(
-        width = 6,
-
-        # Veteran Status ----
-
-        bs4Dash::box(
-          title = with_popover(
+        bslib::card_header(
+          with_tooltip(
             text = "# of Adults by Veteran Status",
             content = link_section("3.07 Veteran Status")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("veteran_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("veteran_chart"), height = "100%")
       ),
+      bslib::card(
+        height = DEFAULT_BOX_HEIGHT,
+        full_screen = TRUE,
 
-      shiny::column(
-        width = 6,
-
-        # Ethnicity ----
-
-        bs4Dash::box(
-          title = with_popover(
+        bslib::card_header(
+          with_tooltip(
             text = "# of Youth by Race & Ethnicity",
             content = shiny::tagList(
               shiny::p("Each bar represents the percentage of youth who self-identify with a given racial and/or ethnic category."),
               shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
               shiny::p(link_section("3.04 Race and Ethnicity"))
-            ) 
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("ethnicity_bar_chart"),
-            height = "100%"
+            )
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("ethnicity_bar_chart"), height = "100%")
       )
-
     ),
+    bslib::card(
+      height = DEFAULT_BOX_HEIGHT,
+      full_screen = TRUE,
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        # Age ----
-
-        bs4Dash::box(
-          title = with_popover(
+      bslib::card_header(
+        with_tooltip(
             text = "# of Youth by Age Group",
             content = link_section("3.03 Date of Birth")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("age_bar_chart"),
-            height = "100%"
-          )
         )
-
-      )
-
+      ),
+      echarts4r::echarts4rOutput(outputId = ns("age_bar_chart"), height = "100%")
     ),
+    bslib::layout_columns(
+      bslib::card(
+        height = DEFAULT_BOX_HEIGHT,
+        full_screen = TRUE,
 
-
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 6,
-
-        # Welfare ----
-
-        bs4Dash::box(
-          title = with_popover(
+        bslib::card_header(
+          with_tooltip(
             text = "# of Head of Household and/or Adults by Former Ward Child Welfare Response",
             content = link_section("R11 Formerly a Ward of Child Welfare/Foster Care Agency")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("welfare_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("welfare_chart"), height = "100%")
       ),
+      bslib::card(
+        height = DEFAULT_BOX_HEIGHT,
+        full_screen = TRUE,
 
-      shiny::column(
-        width = 6,
-
-        # Juvenile ----
-
-        bs4Dash::box(
-          title = with_popover(
+        bslib::card_header(
+          with_tooltip(
             text = "# of Head of Household and/or Adults by Former Ward Juvenile Justice Response",
             content = link_section("R12 Formerly a Ward of Juvenile Justice System")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("juvenile_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("juvenile_chart"), height = "100%")
       )
-
     )
-
   )
 }
 
