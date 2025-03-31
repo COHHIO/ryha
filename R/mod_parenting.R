@@ -46,7 +46,7 @@ mod_parenting_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Head of Household and/or Adults by Pregnancy Status",
             content = link_section("R10 Pregnancy Status")
           ),
@@ -66,7 +66,7 @@ mod_parenting_ui <- function(id){
 
         # Parenting Table ----
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Youth Parenting",
             content = shiny::HTML("A youth is defined as <strong>Parenting</strong> if there is at least one youth enrolled as the head of household's child")
           ),

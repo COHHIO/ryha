@@ -37,7 +37,7 @@ mod_living_situation_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Head of Household and/or Adults by Living Situation Group (at Entry)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
@@ -60,7 +60,7 @@ mod_living_situation_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Head of Household and/or Adults by Destination Group (at Exit)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
@@ -104,7 +104,7 @@ mod_living_situation_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "Changes in General Living Situation Group (Entry --> Exit)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability.")

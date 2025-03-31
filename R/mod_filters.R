@@ -37,9 +37,8 @@ mod_filters_ui <- function(id){
           id = ns("county_div"),
           shinyWidgets::pickerInput(
             inputId = ns("county"),
-            label = with_popover(
+            label = with_tooltip(
               text = "County",
-              title = NULL,
               content = "Showing counties associated with selected funders"
             ),
             width = "460px",
@@ -61,9 +60,8 @@ mod_filters_ui <- function(id){
           id = ns("project_filter_global_div"),
           shinyWidgets::pickerInput(
             inputId = ns("project_filter_global"),
-            label = with_popover(
+            label = with_tooltip(
               text = "Project",
-              title = NULL,
               content = "Showing projects associated with selected funders and counties"
             ),
             width = "460px",

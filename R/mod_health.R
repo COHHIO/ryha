@@ -55,7 +55,7 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_popover(
+                  title = with_tooltip(
                     text = "# of Head of Household and/or Adults by Health Status",
                     content = shiny::tagList(
                       shiny::span("Each bar summarizes the responses for the corresponding health status."),
@@ -88,7 +88,7 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::tabBox(
-                  title = with_popover(
+                  title = with_tooltip(
                     text = "Changes in Health Status (Entry --> Exit)",
                     content = shiny::tagList(
                       shiny::span("For more information, refer to sections:"),
@@ -148,7 +148,7 @@ mod_health_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_popover(
+                  title = with_tooltip(
                     text = "# of Head of Household and/or Adults by Counseling Received Response",
                     content = link_section("R18 Counseling")
                   ),

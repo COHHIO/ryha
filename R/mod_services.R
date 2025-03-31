@@ -61,7 +61,7 @@ mod_services_ui <- function(id){
       shiny::column(
         width = 12,
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Youth by Service Type Provided",
             content = link_section("R14 RHY Service Connections")
           ),
@@ -82,7 +82,7 @@ mod_services_ui <- function(id){
       shiny::column(
         width = 12,
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Youth by Referral Source",
             content = link_section("R1 Referral Source")
           ),

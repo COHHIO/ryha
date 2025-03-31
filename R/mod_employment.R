@@ -37,7 +37,7 @@ mod_employment_ui <- function(id){
       shiny::column(
         width = 12,
         bs4Dash::box(
-           title = with_popover(
+           title = with_tooltip(
              text = "# of Head of Household and/or Adults by Employment Status",
              content = link_section("R6 Employment Status")
            ),
@@ -58,7 +58,7 @@ mod_employment_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Employed Youth by Employment Type",
             content = link_section("R6 Employment Status")
           ),
@@ -77,7 +77,7 @@ mod_employment_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "# of Not Employed Youth by Reason Not Employed",
             content = link_section("R6 Employment Status")
           ),
@@ -99,7 +99,7 @@ mod_employment_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
-          title = with_popover(
+          title = with_tooltip(
             text = "Changes in Employed Status (Entry --> Exit)",
             content = link_section("R6 Employment Status")
           ),

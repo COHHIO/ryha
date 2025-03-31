@@ -48,7 +48,7 @@ mod_exit_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_popover(
+                  title = with_tooltip(
                     text = "# of Head of Household and/or Adults by Project Completion Status",
                     content = link_section("R17 Project Completion Status")
                   ),
@@ -76,7 +76,7 @@ mod_exit_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_popover(
+                  title = with_tooltip(
                     text = "# of Head of Household and/or Adults by Safe & Appropriate Exit Response",
                     content = link_section("R19 Safe and Appropriate Exit")
                   ),
