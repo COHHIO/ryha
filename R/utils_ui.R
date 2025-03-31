@@ -1,3 +1,8 @@
+# TODO: add documentation
+get_nav_panel_title <- function(text, icon) {
+  shiny::span(shiny::icon(icon), shiny::HTML(glue::glue("<br>{text}")))
+}
+
 #' Create message with spinner
 #'
 #' @param message String. The message that should be placed below spinner
