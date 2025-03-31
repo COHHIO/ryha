@@ -22,6 +22,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 && rm -rf /var/lib/apt/lists/*
 
 # Pin renv version
-ENV RENV_VERSION 1.0.3
+ENV RENV_VERSION 1.1.4
 RUN R -q -e "options(warn=2); install.packages('remotes')"
 RUN R -q -e "options(warn=2); remotes::install_version('renv', '${RENV_VERSION}')"
