@@ -12,6 +12,7 @@ app_ui <- function(request) {
 
     # Your application UI logic
     bslib::page_navbar(
+      id = "navbar",
       fillable = FALSE,
 
       title = "Youth Data Dashboard",
@@ -90,6 +91,7 @@ app_ui <- function(request) {
 
       bslib::nav_panel(
         title = shiny::span(shiny::icon("question"), "Help"),
+        value = "Help",
         shiny::fluidRow(
           shiny::column(width = 2),
 

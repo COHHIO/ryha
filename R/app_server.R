@@ -149,12 +149,10 @@ app_server <- function(input, output, session) {
   )
 
   # Define logic to navigate to "Help Page" when the link is clicked
-  # input$to_help is defined using JavaScript
   shiny::observeEvent(input$to_help, {
-    bs4Dash::updateTabItems(
-      session = session,
-      inputId = "left_sidebar_menu",
-      selected = "help_page"
+    bslib::nav_select(
+      id = "navbar",
+      selected = "Help"
     )
   })
 }
