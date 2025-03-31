@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.3.1
+FROM rocker/r-ver:4.4.3
 
 # System library dependency for the app
 RUN apt-get update && apt-get install --no-install-recommends -y \
