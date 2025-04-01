@@ -11,141 +11,73 @@ mod_health_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Health Status",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Health Status",
-                    content = shiny::tagList(
-                      shiny::span("Each bar summarizes the responses for the corresponding health status."),
-                      shiny::br(),
-                      shiny::span("For more information, refer to sections:"),
-                      shiny::tags$ul(
-                        shiny::tags$li(shiny::tags$b("R7 General Health Status")),
-                        shiny::tags$li(shiny::tags$b("R8 Dental Health Status")),
-                        shiny::tags$li(shiny::tags$b("R9 Mental Health Status"))
-                      ),
-                      shiny::span("in the ", link_data_standards_manual())
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("health_status_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
-            ),
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::tabBox(
-                  title = with_popover(
-                    text = "Changes in Health Status (Entry --> Exit)",
-                    content = shiny::tagList(
-                      shiny::span("For more information, refer to sections:"),
-                      shiny::tags$ul(
-                        shiny::tags$li(shiny::tags$b("R7 General Health Status")),
-                        shiny::tags$li(shiny::tags$b("R8 Dental Health Status")),
-                        shiny::tags$li(shiny::tags$b("R9 Mental Health Status"))
-                      ),
-                      shiny::span("in the ", link_data_standards_manual())
-                    )
-                  ),
-                  type = "tabs",
-                  side = "right",
-                  height = DEFAULT_BOX_HEIGHT,
-                  width = NULL,
-                  maximizable = TRUE,
-
-                  shiny::tabPanel(
-                    title = "General",
-                    echarts4r::echarts4rOutput(
-                      outputId = ns("general_sankey_chart"),
-                      height = "100%"
-                    )
-                  ),
-
-                  shiny::tabPanel(
-                    title = "Dental",
-                    echarts4r::echarts4rOutput(
-                      outputId = ns("dental_sankey_chart"),
-                      height = "100%"
-                    )
-                  ),
-
-                  shiny::tabPanel(
-                    title = "Mental",
-                    echarts4r::echarts4rOutput(
-                      outputId = ns("mental_sankey_chart"),
-                      height = "100%"
-                    )
-                  )
-
-                ) |>
-                  shiny::tagAppendAttributes(class = "sankey-tabset")
+    bslib::card(
+      bslib::card_header(shiny::h2("Health Status")),
+      bslib::layout_columns(
+        custom_card(
+          bslib::card_header(
+            with_popover(
+              text = "# of Head of Household and/or Adults by Health Status",
+              content = shiny::tagList(
+                shiny::span("Each bar summarizes the responses for the corresponding health status."),
+                shiny::br(),
+                shiny::span("For more information, refer to sections:"),
+                shiny::tags$ul(
+                  shiny::tags$li(shiny::tags$b("R7 General Health Status")),
+                  shiny::tags$li(shiny::tags$b("R8 Dental Health Status")),
+                  shiny::tags$li(shiny::tags$b("R9 Mental Health Status"))
+                ),
+                shiny::span("in the ", link_data_standards_manual())
               )
             )
-
           ),
-
-          # Counseling ----
-
-          shiny::tabPanel(
-            title = "Counseling",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Counseling Received Response",
-                    content = link_section("R18 Counseling")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("counseling_chart"),
-                    height = "100%"
-                  )
-                )
-
+          echarts4r::echarts4rOutput(outputId = ns("health_status_chart"), height = "100%")
+        ),
+        custom_card(
+          bslib::card_header(
+            with_popover(
+              text = "Changes in Health Status (Entry --> Exit)",
+              content = shiny::tagList(
+                shiny::span("For more information, refer to sections:"),
+                shiny::tags$ul(
+                  shiny::tags$li(shiny::tags$b("R7 General Health Status")),
+                  shiny::tags$li(shiny::tags$b("R8 Dental Health Status")),
+                  shiny::tags$li(shiny::tags$b("R9 Mental Health Status"))
+                ),
+                shiny::span("in the ", link_data_standards_manual())
               )
-
             )
-
-          )
-
+          ),
+          bslib::navset_card_tab(
+            bslib::nav_panel(
+              title = "General",
+              echarts4r::echarts4rOutput(outputId = ns("general_sankey_chart"), height = "100%")
+            ),
+            bslib::nav_panel(
+              title = "Dental",
+              echarts4r::echarts4rOutput(outputId = ns("dental_sankey_chart"), height = "100%")
+            ),
+            bslib::nav_panel(
+              title = "Mental",
+              echarts4r::echarts4rOutput(outputId = ns("mental_sankey_chart"), height = "100%")
+            )
+          ) |>
+            shiny::tagAppendAttributes(class = "nav-justified")
         )
-
       )
-
-    )
-
+    ),
+    bslib::card(
+      bslib::card_header(shiny::h2("Counseling")),
+      custom_card(
+        bslib::card_header(
+          with_popover(
+            text = "# of Head of Household and/or Adults by Counseling Received Response",
+            content = link_section("R18 Counseling")
+          )
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("counseling_chart"), height = "100%")
+      )
+    ),
   )
 }
 
