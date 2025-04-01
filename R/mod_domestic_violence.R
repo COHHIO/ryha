@@ -11,67 +11,35 @@ mod_domestic_violence_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        bs4Dash::box(
-          title = with_popover(
-            text = "# of Head of Household and/or Adults by Domestic Violence Victim Response",
-            content = link_section("4.11 Domestic Violence")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("victim_chart"),
-            height = "100%"
-          )
+    custom_card(
+      bslib::card_header(
+        with_popover(
+          text = "# of Head of Household and/or Adults by Domestic Violence Victim Response",
+          content = link_section("4.11 Domestic Violence")
         )
-      )
-
+      ),
+      echarts4r::echarts4rOutput(outputId = ns("victim_chart"), height = "100%")   
     ),
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+    bslib::layout_columns(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "# of Domestic Violence Victims by When Occurred Response",
             content = link_section("4.11 Domestic Violence")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("when_occurred_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("when_occurred_chart"), height = "100%")   
       ),
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "# of Domestic Violence Victims by Currently Fleeing Response",
             content = link_section("4.11 Domestic Violence")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("currently_fleeing_chart"),
-            height = "100%"
           )
-        )
-
-      )
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("currently_fleeing_chart"), height = "100%")   
+      ),
     )
 
   )
