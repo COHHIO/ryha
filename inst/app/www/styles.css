@@ -50,20 +50,6 @@ smaller screen widths */
   padding: .75rem 1.25rem;
 }
 
-/* Set height for elements in sankey-tabset (default view)*/
-.sankey-tabset .card-body,
-.sankey-tabset .tab-content,
-.sankey-tabset .tab-pane.active {
-    height: 440px;
-}
-
-/* Set height for elements in sankey-tabset (maximized view)*/
-.sankey-tabset .maximized-card .card-body,
-.sankey-tabset .maximized-card .tab-content,
-.sankey-tabset .maximized-card .tab-pane.active {
-    height: 100%;
-}
-
 /* Add custom style to error modal */
 .error-modal .modal-header {
   background-color: red;

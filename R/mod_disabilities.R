@@ -11,15 +11,10 @@ mod_disabilities_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    # Charts ----
-
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+    bslib::layout_columns(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "Disability Prevalence in Youth",
             content = shiny::tagList(
               shiny::span("Each bar summarizes the responses for the corresponding disability."),
@@ -36,153 +31,76 @@ mod_disabilities_ui <- function(id){
               ),
               shiny::span("in the ", link_data_standards_manual())
             )
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("disabilities_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("disabilities_chart"), height = "100%")
       ),
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "# of Youth by Substance Use",
             content = link_section("4.10 Substance Use Disorder")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("substance_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("substance_chart"), height = "100%")
       )
-
     ),
 
-    # Sankey Charts ----
-
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        bs4Dash::tabBox(
-          title = with_popover(
-            text = "Changes in Disability Status (Entry --> Exit)",
-            content = shiny::tagList(
-              shiny::span("For more information, refer to sections:"),
-              shiny::tags$ul(
-                shiny::tags$li(shiny::tags$b("4.05 Physical Disability")),
-                shiny::tags$li(shiny::tags$b("4.06 Developmental Disability")),
-                shiny::tags$li(shiny::tags$b("4.07 Chronic Health Condition")),
-                shiny::tags$li(shiny::tags$b("4.08 HIV/AIDS")),
-                shiny::tags$li(shiny::tags$b("4.09 Mental Health Disorder"))
-              ),
-              shiny::span("in the ", link_data_standards_manual())
-            )
-          ),
-          type = "tabs",
-          side = "right",
-          height = DEFAULT_BOX_HEIGHT,
-          width = NULL,
-          maximizable = TRUE,
-
-          shiny::tabPanel(
-            title = "Physical",
-            echarts4r::echarts4rOutput(
-              outputId = ns("physical_sankey_chart"),
-              height = "100%"
-            )
-          ),
-
-          shiny::tabPanel(
-            title = "Developmental",
-            echarts4r::echarts4rOutput(
-              outputId = ns("developmental_sankey_chart"),
-              height = "100%"
-            )
-          ),
-
-          shiny::tabPanel(
-            title = "Chronic",
-            echarts4r::echarts4rOutput(
-              outputId = ns("chronic_sankey_chart"),
-              height = "100%"
-            )
-          ),
-
-          shiny::tabPanel(
-            title = "HIV/AIDS",
-            echarts4r::echarts4rOutput(
-              outputId = ns("hiv_sankey_chart"),
-              height = "100%"
-            )
-          ),
-
-          shiny::tabPanel(
-            title = "Mental",
-            echarts4r::echarts4rOutput(
-              outputId = ns("mental_sankey_chart"),
-              height = "100%"
-            )
-          ),
-
-          shiny::tabPanel(
-            title = "Substance Use",
-            echarts4r::echarts4rOutput(
-              outputId = ns("substance_sankey_chart"),
-              height = "100%"
-            )
+    custom_card(
+      bslib::card_header(
+        with_popover(
+          text = "Changes in Disability Status (Entry --> Exit)",
+          content = shiny::tagList(
+            shiny::span("For more information, refer to sections:"),
+            shiny::tags$ul(
+              shiny::tags$li(shiny::tags$b("4.05 Physical Disability")),
+              shiny::tags$li(shiny::tags$b("4.06 Developmental Disability")),
+              shiny::tags$li(shiny::tags$b("4.07 Chronic Health Condition")),
+              shiny::tags$li(shiny::tags$b("4.08 HIV/AIDS")),
+              shiny::tags$li(shiny::tags$b("4.09 Mental Health Disorder"))
+            ),
+            shiny::span("in the ", link_data_standards_manual())
           )
-
-        ) |>
-          shiny::tagAppendAttributes(class = "sankey-tabset")
-
-      )
-
+        )
+      ),
+      bslib::navset_card_tab(
+        bslib::nav_panel(
+          title = "Physical",
+          echarts4r::echarts4rOutput(outputId = ns("physical_sankey_chart"), height = "100%")
+        ),
+        bslib::nav_panel(
+          title = "Developmental",
+          echarts4r::echarts4rOutput(outputId = ns("developmental_sankey_chart"), height = "100%")
+        ),
+        bslib::nav_panel(
+          title = "Chronic",
+          echarts4r::echarts4rOutput(outputId = ns("chronic_sankey_chart"), height = "100%")
+        ),
+        bslib::nav_panel(
+          title = "HIV/AIDS",
+          echarts4r::echarts4rOutput(outputId = ns("hiv_sankey_chart"), height = "100%")
+        ),
+        bslib::nav_panel(
+          title = "Mental",
+          echarts4r::echarts4rOutput(outputId = ns("mental_sankey_chart"), height = "100%")
+        ),
+        bslib::nav_panel(
+          title = "Substance Use",
+          echarts4r::echarts4rOutput(outputId = ns("substance_sankey_chart"), height = "100%")
+        )
+      ) |>
+        shiny::tagAppendAttributes(class = "nav-justified")
     ),
 
-    # Data Quality Stats ----
-
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-
-        bs4Dash::tabBox(
-          title = "Data Quality Statistics",
-          type = "tabs",
-          side = "right",
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-
-          # shiny::tabPanel(
-          #   title = "Summary",
-          #   shiny::htmlOutput(ns("data_quality_string")),
-          # ),
-
-          shiny::tabPanel(
-            title = "Youth by Number of Answers Missing",
-            reactable::reactableOutput(outputId = ns("missingness_stats_tbl1")),
-            shiny::br(),
-            shiny::em("Note: \"Missing\" is defined as \"Client doesn't know\", \"Client prefers not to answer\", \"Data not collected\", or blank.")
-          )
-
+    custom_card(
+      bslib::card_header(
+        with_popover(
+          text = "Data Quality Statistics - Youth by Number of Answers Missing",
+          content = shiny::em("\"Missing\" is defined as \"Client doesn't know\", \"Client prefers not to answer\", \"Data not collected\", or blank.")
         )
-
-      )
+      ),
+      reactable::reactableOutput(outputId = ns("missingness_stats_tbl1"))
     )
-
   )
 }
 
