@@ -13,33 +13,6 @@ mod_services_ui <- function(id){
 
     shiny::fluidRow(
 
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_services")),
-        subtitle = "Total # of Youth with Services Data Available",
-        icon = shiny::icon("hands-helping"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_referral")),
-        subtitle = "Total # of Youth with Referral Data Available",
-        icon = shiny::icon("hands-helping"),
-        width = 4
-      ),
-
-    ),
-
-    shiny::hr(),
-
-    shiny::fluidRow(
-
       shiny::column(
         width = 3,
 
@@ -127,14 +100,6 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
 
     })
 
-    # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive({
-
-      clients_filtered() |>
-        nrow()
-
-    })
-
     # Apply the filters to the services data
     services_data_filtered <- shiny::reactive(
 
@@ -150,17 +115,6 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
           clients_filtered(),
           by = c("personal_id", "organization_id", "enrollment_id")
         )
-
-    )
-
-    # Total number of Youth in program(s) that exist in the `services.csv`
-    # file
-    n_youth_with_services_data <- shiny::reactive(
-
-      services_data_filtered() |>
-        dplyr::filter(!is.na(type_provided)) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
 
     )
 
@@ -180,31 +134,6 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
           by = c("personal_id", "organization_id", "enrollment_id")
         )
 
-    })
-
-    # Total number of Youth with referral data available
-    n_youth_with_referral_data <- shiny::reactive(
-
-      referral_data_filtered() |>
-        dplyr::filter(!is.na(referral_source)) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    # Render number of youth w/ services box value
-    output$n_youth_with_services <- shiny::renderText({
-      n_youth_with_services_data()
-    })
-
-    # Render number of youth w/ referral box value
-    output$n_youth_with_referral <- shiny::renderText({
-      n_youth_with_referral_data()
     })
 
     # Create reactive data frame to data to be displayed in bar chart
