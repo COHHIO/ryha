@@ -11,167 +11,83 @@ mod_trafficking_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Sex Trafficking",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Exchange for Sex Response",
-                    content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("exchange_sex_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-            ),
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Asked or Forced to Exchange Response",
-                    content = shiny::tagList(
-                      shiny::p("Only youth that ever received anything in exchange for sex are included."),
-                      shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("asked_sex_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Count of Exchange for Sex Response",
-                    content = shiny::tagList(
-                      shiny::p("Only youth that ever received anything in exchange for sex are included."),
-                      shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("count_sex_chart"),
-                    height = "100%"
-                  )
-                )
-
+    bslib::card(
+      bslib::navset_card_tab(
+        bslib::nav_panel(
+          title = "Sex Trafficking",
+          custom_card(
+            bslib::card_header(
+              with_popover(
+                text = "# of Head of Household and/or Adults by Exchange for Sex Response",
+                content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
               )
-
-            )
-
+            ),
+            echarts4r::echarts4rOutput(outputId = ns("exchange_sex_chart"), height = "100%")
           ),
-
-          shiny::tabPanel(
-            title = "Labor Trafficking",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Workplace Violence/Threats Response",
-                    content = link_section("R16 Labor Exploitation/Trafficking")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("violence_labor_chart"),
-                    height = "100%"
+          bslib::layout_columns(
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "# of Head of Household and/or Adults by Asked or Forced to Exchange Response",
+                  content = shiny::tagList(
+                    shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                    shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
                   )
                 )
-
               ),
-
-              shiny::column(
-                width = 6,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Workplace Promise Difference Response",
-                    content = link_section("R16 Labor Exploitation/Trafficking")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("promise_labor_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
+              echarts4r::echarts4rOutput(outputId = ns("asked_sex_chart"), height = "100%")
             ),
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Coerced to Continue Work Response",
-                    content = shiny::tagList(
-                      shiny::p("Only Head of Household and Adults that experienced workplace violence and/or promise difference are included."),
-                      shiny::p(link_section("R16 Labor Exploitation/Trafficking"))
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("coerced_labor_chart"),
-                    height = "100%"
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "# of Head of Household and/or Adults by Count of Exchange for Sex Response",
+                  content = shiny::tagList(
+                    shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                    shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
                   )
                 )
-
-              )
-
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("count_sex_chart"), height = "100%")
             )
-
           )
-
+        ),
+        bslib::nav_panel(
+          title = "Labor Trafficking",
+          bslib::layout_columns(
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "# of Head of Household and/or Adults by Workplace Violence/Threats Response",
+                  content = link_section("R16 Labor Exploitation/Trafficking")
+                )
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("violence_labor_chart"), height = "100%")
+            ),
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "# of Head of Household and/or Adults by Workplace Promise Difference Response",
+                  content = link_section("R16 Labor Exploitation/Trafficking")
+                )
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("promise_labor_chart"), height = "100%")
+            )
+          ),
+          custom_card(
+            bslib::card_header(
+              with_popover(
+                text = "# of Head of Household and/or Adults by Coerced to Continue Work Response",
+                content = shiny::tagList(
+                  shiny::p("Only Head of Household and Adults that experienced workplace violence and/or promise difference are included."),
+                  shiny::p(link_section("R16 Labor Exploitation/Trafficking"))
+                )
+              )
+            ),
+            echarts4r::echarts4rOutput(outputId = ns("coerced_labor_chart"), height = "100%")
+          )
         )
-
-      )
-
+      ) |>
+        shiny::tagAppendAttributes(class = "nav-justified")
     )
 
   )
