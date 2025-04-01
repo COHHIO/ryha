@@ -13,26 +13,6 @@ mod_education_ui <- function(id){
 
     shiny::fluidRow(
 
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 6
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_education")),
-        subtitle = "Total # of Youth with Education Data Available",
-        icon = shiny::icon("book-open"),
-        width = 6
-      )
-
-    ),
-
-    shiny::hr(),
-
-    shiny::fluidRow(
-
       shiny::column(
         width = 12,
 
@@ -161,14 +141,6 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive({
-
-      clients_filtered() |>
-        nrow()
-
-    })
-
     # Filter education data
     education_data_filtered <- shiny::reactive({
       filter_data(education_data, clients_filtered()) |>
@@ -179,30 +151,6 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
     most_recent_data_per_enrollment <- shiny::reactive({
       education_data_filtered() |>
         filter_most_recent_data_per_enrollment()
-    })
-
-    # Total number of Youth in program(s) that exist in the `education.csv`
-    # file
-    n_youth_with_education_data <- shiny::reactive(
-
-      education_data_filtered() |>
-        dplyr::filter(
-          last_grade_completed != "Unknown",
-          !is.na(last_grade_completed)
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    # Render number of projects box value
-    output$n_youth_with_education <- shiny::renderText({
-      n_youth_with_education_data()
     })
 
     # Last Grade Completed ----
