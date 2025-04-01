@@ -11,74 +11,29 @@ mod_exit_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Project Completion Status",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Project Completion Status",
-                    content = link_section("R17 Project Completion Status")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("completion_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
-            )
-
-          ),
-
-          shiny::tabPanel(
-            title = "Safe & Appropriate Exit",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Safe & Appropriate Exit Response",
-                    content = link_section("R19 Safe and Appropriate Exit")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("exit_heatmap"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
-            )
-
+    bslib::card(
+      bslib::card_header(shiny::h2("Project Completion Status")),
+      custom_card(
+        bslib::card_header(
+          with_popover(
+            text = "# of Head of Household and/or Adults by Project Completion Status",
+            content = link_section("R17 Project Completion Status")
           )
-
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("completion_chart"), height = "100%")
       )
-
+    ),
+    bslib::card(
+      bslib::card_header(shiny::h2("Safe & Appropriate Exit")),
+      custom_card(
+        bslib::card_header(
+          with_popover(
+            text = "# of Head of Household and/or Adults by Safe & Appropriate Exit Response",
+            content = link_section("R19 Safe and Appropriate Exit")
+          )
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("exit_heatmap"), height = "100%")
+      )
     )
 
   )
