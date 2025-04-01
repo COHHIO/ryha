@@ -11,48 +11,6 @@ mod_disabilities_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    # Boxes ----
-
-    shiny::fluidRow(
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-
-        ## TODO: Implement these "improved" counts
-        ## Number of youth in disabilities data (post filters)
-        ## This number corresponds to the number of youth in disability table,
-        ##   regardless of data quality (youth with data not collected in all
-        ##   disability columns is still counted here)
-        # value = shiny::textOutput(outputId = ns("n_youth_in_disability_data")),
-        # subtitle = "Total # of Youth in Disabilities Data"
-
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 4
-      ),
-
-      # Number of youth with disabilities or substance use (post filters)
-      # This number corresponds to youth that have a value of "Yes" in one
-      # of the columns that refer to disabilities or substance use. In case
-      # the youth has multiple entries, the most recent value will be used.
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_disabilities_or_substance_use")),
-        subtitle = "Total # of Youth with Disabilities or Substance Use",
-        icon = shiny::icon("accessible-icon"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_without_disabilities_or_substance_use")),
-        subtitle = "Total # of Youth without Informed Disabilities or Substance Use",
-        icon = shiny::icon("accessible-icon"),
-        width = 4
-      )
-
-    ),
-
-    shiny::hr(),
-
     # Charts ----
 
     shiny::fluidRow(
@@ -235,19 +193,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive({
-
-      clients_filtered() |>
-        nrow()
-
-    })
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
     # Filter disabilities data
     # disabilities_data_filtered has one row per enrollment, data collection stage and disability type
     disabilities_data_filtered <- shiny::reactive({
@@ -278,65 +223,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
       }
 
       out
-    })
-
-    # TODO // Implement these "improved" counts across the first infoBox for
-    # all pages
-
-    n_youth_in_disability_data <- reactive({
-
-      # TODO: Same as nrow(most_recent_data_per_enrollment())
-      disabilities_data_filtered() |>
-        dplyr::select(organization_id, personal_id) |>
-        dplyr::n_distinct()
-
-    })
-
-    # # Render number of youth in disabilities data
-    # output$n_youth_in_disability_data <- shiny::renderText({
-    #   n_youth_in_disability_data(),
-    # })
-
-    # Total number of youth with disabilities or substance use
-    n_youth_with_disabilities_or_substance_use <- shiny::reactive({
-
-      most_recent_data_per_enrollment() |>
-        dplyr::filter(
-          rowSums(
-            dplyr::across(
-              .cols = c(
-                `Physical Disability`,
-                `Developmental Disability`,
-                `Chronic Health Condition`,
-                `HIV/AIDS`,
-                `Mental Health Disorder`,
-                `Substance Use Disorder`
-              ),
-              .fns = function(value) value == "Yes"
-            )
-          ) > 0
-        ) |>
-        nrow()
-
-    })
-
-    # Render number of youth with disabilities or substance use box value
-    output$n_youth_with_disabilities_or_substance_use <- shiny::renderText({
-      n_youth_with_disabilities_or_substance_use()
-    })
-
-    # Create reactive count of the number of youth without disabilities or substance use
-    # We are counting number of youth without a "Yes" in any column, so any missing data
-    # is counted as a "No"
-    n_youth_without_disabilities_or_substance_use <- shiny::reactive(
-
-      n_youth_in_disability_data() - n_youth_with_disabilities_or_substance_use()
-
-    )
-
-    # Render number of youth with no disabilities box value
-    output$n_youth_without_disabilities_or_substance_use <- shiny::renderText({
-      n_youth_without_disabilities_or_substance_use()
     })
 
     # Charts ----
@@ -547,15 +433,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered){
           count = "n"
         )
     })
-
-    # Missingness Statistics ----
-    # output$data_quality_string <- shiny::renderUI({
-    #   glue::glue(
-    #     "<strong>{round(n_youth_in_disability_data()/n_youth(), 2) * 100}%</strong>
-    #     of youth in selected program(s) have entries in Disabilities Data."
-    #   ) |>
-    #     shiny::HTML()
-    # })
 
     output$missingness_stats_tbl1 <- reactable::renderReactable(
 
