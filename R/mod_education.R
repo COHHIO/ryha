@@ -11,124 +11,57 @@ mod_education_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          shiny::tabPanel(
-            title = "Last Grade Completed",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Last Grade Completed Group",
-                    content = shiny::tagList(
-                      shiny::span("Response categories have been grouped to improve chart readability."),
-                      shiny::br(),
-                      link_section("R4 Last Grade Completed")
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("last_grade_completed_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in Last Grade Completed Group (Entry --> Exit)",
-                    content = shiny::tagList(
-                      shiny::span("Response categories have been grouped to improve chart readability."),
-                      shiny::br(),
-                      link_section("R4 Last Grade Completed")
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("last_grade_completed_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
+    bslib::layout_columns(
+      bslib::card(
+        bslib::card_header(shiny::h2("Last Grade Completed")),
+        custom_card(
+          bslib::card_header(
+            with_popover(
+              text = "# of Head of Household and/or Adults by Last Grade Completed Group",
+              content = shiny::tagList(
+                shiny::span("Response categories have been grouped to improve chart readability."),
+                shiny::br(),
+                link_section("R4 Last Grade Completed")
               )
             )
-
           ),
-
-          shiny::tabPanel(
-            title = "School Status",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by School Status",
-                    content = link_section("R5 School Status")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("school_status_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in School Status (Entry --> Exit)",
-                    content = link_section("R5 School Status")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("school_status_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
+          echarts4r::echarts4rOutput(outputId = ns("last_grade_completed_chart"), height = "100%")
+        ),
+        custom_card(
+          bslib::card_header(
+            with_popover(
+              text = "Changes in Last Grade Completed Group (Entry --> Exit)",
+              content = shiny::tagList(
+                shiny::span("Response categories have been grouped to improve chart readability."),
+                shiny::br(),
+                link_section("R4 Last Grade Completed")
               )
             )
-
-          )
-
+          ),
+          echarts4r::echarts4rOutput(outputId = ns("last_grade_completed_sankey_chart"), height = "100%")
         )
-
+      ),
+      bslib::card(
+        bslib::card_header(shiny::h2("School Status")),
+        custom_card(
+          bslib::card_header(
+            with_popover(
+              text = "# of Head of Household and/or Adults by School Status",
+              content = link_section("R5 School Status")
+            )
+          ),
+          echarts4r::echarts4rOutput(outputId = ns("school_status_chart"), height = "100%")
+        ),
+        custom_card(
+          bslib::card_header(
+            with_popover(
+              text = "Changes in School Status (Entry --> Exit)",
+              content = link_section("R5 School Status")
+            )
+          ),
+          echarts4r::echarts4rOutput(outputId = ns("school_status_sankey_chart"), height = "100%")
+        )
       )
-
     )
 
   )
