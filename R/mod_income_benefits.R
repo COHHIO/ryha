@@ -11,34 +11,6 @@ mod_income_benefits_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    # Info Boxes ----
-    shiny::fluidRow(
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_income_data")),
-        subtitle = "Total # of Youth with Income Data Available",
-        icon = shiny::icon("dollar-sign"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_benefits_data")),
-        subtitle = "Total # of Youth with Benefits Data Available",
-        icon = shiny::icon("dollar-sign"),
-        width = 4
-      )
-
-    ),
-
-    shiny::hr(),
-
     # Visuals ----
     shiny::fluidRow(
 
@@ -297,16 +269,6 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Info Boxes ----
-
-    ## Total number of youth (post filters) ----
-    n_youth <- shiny::reactive(
-
-      clients_filtered() |>
-        nrow()
-
-    )
-
     ## Filter income data ----
     income_data_filtered <- shiny::reactive({
       filter_data(income_data, clients_filtered()) |>
@@ -332,45 +294,6 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     most_recent_benefits_data_per_enrollment_all_clients <- shiny::reactive({
       benefits_data_filtered() |>
         filter_most_recent_data_per_enrollment()
-    })
-
-    ## Filtered number of youth with income data ----
-    n_youth_with_income_data <- shiny::reactive(
-
-      income_data_filtered() |>
-        dplyr::filter(
-          !is.na(total_monthly_income)
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    ## Filtered number of youth with benefits data ----
-    n_youth_with_benefits_data <- shiny::reactive(
-
-      benefits_data_filtered() |>
-        dplyr::filter(
-          benefits_from_any_source %in% c("Yes", "No")
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    ## Render "number of youth with income data" info box ----
-    output$n_youth_with_income_data <- shiny::renderText({
-      n_youth_with_income_data()
-    })
-
-    ## Render "number of youth with benefits data" info box ----
-    output$n_youth_with_benefits_data <- shiny::renderText({
-      n_youth_with_benefits_data()
     })
 
     ## Income Chart ----
