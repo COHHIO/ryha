@@ -13,33 +13,6 @@ mod_trafficking_ui <- function(id){
 
     shiny::fluidRow(
 
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_sex_data")),
-        subtitle = "Total # of Youth with Sex Trafficking Data Available",
-        icon = shiny::icon("exclamation-circle"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_labor_data")),
-        subtitle = "Total # of Youth with Labor Trafficking Data Available",
-        icon = shiny::icon("exclamation-circle"),
-        width = 4
-      )
-
-    ),
-
-    shiny::hr(),
-
-    shiny::fluidRow(
-
       shiny::column(
         width = 12,
 
@@ -211,62 +184,11 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive(
-
-      clients_filtered() |>
-        nrow()
-
-    )
-
     # Filter trafficking data
     trafficking_data_filtered <- shiny::reactive(
       filter_data(trafficking_data, clients_filtered()) |>
         dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
     )
-
-    # Total number of Youth in program(s) that exist in the `education.csv`
-    # file
-    n_youth_with_sex_data <- shiny::reactive(
-
-      trafficking_data_filtered() |>
-        dplyr::filter(
-          exchange_for_sex %in% c("Yes", "No")
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Total number of Youth in program(s) that exist in the `education.csv`
-    # file
-    n_youth_with_labor_data <- shiny::reactive(
-
-      trafficking_data_filtered() |>
-        dplyr::filter(
-          work_place_violence_threats %in% c("Yes", "No") |
-            workplace_promise_difference %in% c("Yes", "No") |
-            coerced_to_continue_work %in% c("Yes", "No")
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    # Render number of projects box value
-    output$n_youth_with_sex_data <- shiny::renderText({
-      n_youth_with_sex_data()
-    })
-
-    # Render number of projects box value
-    output$n_youth_with_labor_data <- shiny::renderText({
-      n_youth_with_labor_data()
-    })
 
     # Sex Trafficking ----
 
