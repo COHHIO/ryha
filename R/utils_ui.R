@@ -3,6 +3,15 @@ get_nav_panel_title <- function(text, icon) {
   shiny::span(shiny::icon(icon), shiny::HTML(glue::glue("<br>{text}")))
 }
 
+# TODO: add documentation
+custom_card <- function(..., default_height = "490px") {
+  bslib::card(
+    height = default_height,
+    full_screen = TRUE,
+    ...
+  )
+}
+
 #' Create message with spinner
 #'
 #' @param message String. The message that should be placed below spinner

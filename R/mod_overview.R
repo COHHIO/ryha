@@ -12,10 +12,7 @@ mod_overview_ui <- function(id){
   tagList(
 
     bslib::layout_columns(
-      bslib::card(
-        height = DEFAULT_BOX_HEIGHT,
-        full_screen = TRUE,
-
+      custom_card(
         bslib::card_header(
           with_popover(
             text = "# of Youth by Gender",
@@ -28,10 +25,7 @@ mod_overview_ui <- function(id){
         ),
         echarts4r::echarts4rOutput(outputId = ns("gender_chart"), height = "100%")
       ),
-      bslib::card(
-        height = DEFAULT_BOX_HEIGHT,
-        full_screen = TRUE,
-
+      custom_card(
         bslib::card_header(
           with_popover(
             text = "# of Head of Household and/or Adults by Sexual Orientation",
@@ -40,14 +34,10 @@ mod_overview_ui <- function(id){
         ),
         echarts4r::echarts4rOutput(outputId = ns("sexual_orientation_chart"), height = "100%")
       )
-
     ),
 
     bslib::layout_columns(
-      bslib::card(
-        height = DEFAULT_BOX_HEIGHT,
-        full_screen = TRUE,
-
+      custom_card(
         bslib::card_header(
           with_popover(
             text = "# of Adults by Veteran Status",
@@ -56,10 +46,7 @@ mod_overview_ui <- function(id){
         ),
         echarts4r::echarts4rOutput(outputId = ns("veteran_chart"), height = "100%")
       ),
-      bslib::card(
-        height = DEFAULT_BOX_HEIGHT,
-        full_screen = TRUE,
-
+      custom_card(
         bslib::card_header(
           with_popover(
             text = "# of Youth by Race & Ethnicity",
@@ -73,10 +60,7 @@ mod_overview_ui <- function(id){
         echarts4r::echarts4rOutput(outputId = ns("ethnicity_bar_chart"), height = "100%")
       )
     ),
-    bslib::card(
-      height = DEFAULT_BOX_HEIGHT,
-      full_screen = TRUE,
-
+    custom_card(
       bslib::card_header(
         with_popover(
             text = "# of Youth by Age Group",
@@ -86,10 +70,7 @@ mod_overview_ui <- function(id){
       echarts4r::echarts4rOutput(outputId = ns("age_bar_chart"), height = "100%")
     ),
     bslib::layout_columns(
-      bslib::card(
-        height = DEFAULT_BOX_HEIGHT,
-        full_screen = TRUE,
-
+      custom_card(
         bslib::card_header(
           with_popover(
             text = "# of Head of Household and/or Adults by Former Ward Child Welfare Response",
@@ -98,10 +79,7 @@ mod_overview_ui <- function(id){
         ),
         echarts4r::echarts4rOutput(outputId = ns("welfare_chart"), height = "100%")
       ),
-      bslib::card(
-        height = DEFAULT_BOX_HEIGHT,
-        full_screen = TRUE,
-
+      custom_card(
         bslib::card_header(
           with_popover(
             text = "# of Head of Household and/or Adults by Former Ward Juvenile Justice Response",
