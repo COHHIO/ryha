@@ -11,89 +11,46 @@ mod_employment_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-        bs4Dash::box(
-           title = with_popover(
-             text = "# of Head of Household and/or Adults by Employment Status",
-             content = link_section("R6 Employment Status")
-           ),
-           width = NULL,
-           height = DEFAULT_BOX_HEIGHT,
-           maximizable = TRUE,
-           echarts4r::echarts4rOutput(
-             outputId = ns("employed_chart"),
-             height = "100%"
-           )
-         )
-      )
+    custom_card(
+      bslib::card_header(
+        with_popover(
+          text = "# of Head of Household and/or Adults by Employment Status",
+          content = link_section("R6 Employment Status")
+        )
+      ),
+      echarts4r::echarts4rOutput(outputId = ns("employed_chart"), height = "100%")
     ),
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+    bslib::layout_columns(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "# of Employed Youth by Employment Type",
             content = link_section("R6 Employment Status")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("employment_type_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("employment_type_chart"), height = "100%")
       ),
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "# of Not Employed Youth by Reason Not Employed",
             content = link_section("R6 Employment Status")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("not_employed_reason_chart"),
-            height = "100%"
           )
-        )
-
-      ),
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("not_employed_reason_chart"), height = "100%")
+      )
     ),
 
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-
-        bs4Dash::box(
-          title = with_popover(
-            text = "Changes in Employed Status (Entry --> Exit)",
-            content = link_section("R6 Employment Status")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("employed_sankey_chart"),
-            height = "100%"
-          )
+    custom_card(
+      bslib::card_header(
+        with_popover(
+          text = "Changes in Employed Status (Entry --> Exit)",
+          content = link_section("R6 Employment Status")
         )
-
-      )
+      ),
+      echarts4r::echarts4rOutput(outputId = ns("employed_sankey_chart"), height = "100%")
     )
-
   )
 }
 
