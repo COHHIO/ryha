@@ -11,95 +11,50 @@ mod_living_situation_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+    bslib::layout_columns(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "# of Head of Household and/or Adults by Living Situation Group (at Entry)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
               shiny::br(),
               link_section("3.917 Prior Living Situation")
             )
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("living_situation_chart"),
-            height = "100%"
           )
-        )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("living_situation_chart"), height = "100%")
       ),
-
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
+      custom_card(
+        bslib::card_header(
+          with_popover(
             text = "# of Head of Household and/or Adults by Destination Group (at Exit)",
             content = shiny::tagList(
               shiny::span("Response categories have been grouped to improve chart readability."),
               shiny::br(),
               link_section("3.12 Destination")
             )
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("destination_chart"),
-            height = "100%"
           )
-        )
-
-      )
-
+        ),
+        echarts4r::echarts4rOutput(outputId = ns("destination_chart"), height = "100%")
+      ),
     ),
+    custom_card(
+      height = "720px",
 
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-
-        bs4Dash::box(
-          title = "# of Head of Household and/or Adults by Destination (at Exit)",
-          width = NULL,
-          height = "720px",
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("destination_bar_chart"),
-            height = "100%"
-          )
-        )
-
-      )
+      bslib::card_header("# of Head of Household and/or Adults by Destination (at Exit)"),
+      echarts4r::echarts4rOutput(outputId = ns("destination_bar_chart"), height = "100%")
     ),
-
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-
-        bs4Dash::box(
-          title = with_popover(
-            text = "Changes in General Living Situation Group (Entry --> Exit)",
-            content = shiny::tagList(
-              shiny::span("Response categories have been grouped to improve chart readability.")
-            )
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("sankey_chart"),
-            height = "100%"
+    custom_card(
+      bslib::card_header(
+        with_popover(
+          text = "Changes in General Living Situation Group (Entry --> Exit)",
+          content = shiny::tagList(
+            shiny::span("Response categories have been grouped to improve chart readability.")
           )
         )
-
-      )
+      ),
+      echarts4r::echarts4rOutput(outputId = ns("sankey_chart"), height = "100%")
     )
 
   )
