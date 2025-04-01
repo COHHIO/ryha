@@ -11,252 +11,121 @@ mod_income_benefits_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    # Visuals ----
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-
-        bs4Dash::tabsetPanel(
-          type = "pills",
-
-          ## Income Tab Panel ----
-          shiny::tabPanel(
-            title = "Income",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                ### Income Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Income Received (from Any Source) Response",
-                    content = link_section("4.02 Income and Sources")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("income_chart"),
-                    height = "100%"
-                  )
+    bslib::card(
+      bslib::navset_card_tab(
+        bslib::nav_panel(
+          title = "Income",
+          bslib::layout_columns(
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "# of Head of Household and/or Adults by Income Received (from Any Source) Response",
+                  content = link_section("4.02 Income and Sources")
                 )
-
               ),
-
-              shiny::column(
-                width = 6,
-
-                ### Income Source Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Informed Income Sources",
-                    content = shiny::tagList(
-                      shiny::p("Only Head of Household and Adults who reported receiving income are included."),
-                      shiny::p("Each bar represents the percentage of youth who informed a given income source."),
-                      shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
-                      shiny::p(link_section("4.02 Income and Sources"))
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("income_source_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
+              echarts4r::echarts4rOutput(outputId = ns("income_chart"), height = "100%")
             ),
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 12,
-
-                ### Monthly Income Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults with Income by Total Monthly Income",
-                    content = link_section("4.02 Income and Sources")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("income_bar_chart"),
-                    height = "100%"
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "Informed Income Sources",
+                  content = shiny::tagList(
+                    shiny::p("Only Head of Household and Adults who reported receiving income are included."),
+                    shiny::p("Each bar represents the percentage of youth who informed a given income source."),
+                    shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                    shiny::p(link_section("4.02 Income and Sources"))
                   )
                 )
-
-              )
-
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("income_source_chart"), height = "100%")
             )
-
           ),
-
-          ## Benefits Tab Panel ----
-          shiny::tabPanel(
-            title = "Benefits",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                ### Benefits Pie Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Head of Household and/or Adults by Benefits Received (from Any Source) Response",
-                    content = link_section("4.03 Non-Cash Benefits")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("benefits_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                ### Benefits Source Pie Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Informed Benefits Source",
-                    content = shiny::tagList(
-                      shiny::p("Only Head of Household and Adults who reported receiving benefits are included."),
-                      shiny::p("Each bar represents the percentage of youth who informed a given benefit source."),
-                      shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
-                      shiny::p(link_section("4.03 Non-Cash Benefits"))
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("benefits_source_chart"),
-                    height = "100%"
-                  )
-                )
-
+          custom_card(
+            bslib::card_header(
+              with_popover(
+                text = "# of Head of Household and/or Adults with Income by Total Monthly Income",
+                content = link_section("4.02 Income and Sources")
               )
-
             ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                ### Benefits Sankey Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
-                    content = link_section("4.03 Non-Cash Benefits")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("benefits_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-            )
-
-          ),
-
-          ## Health Insurance Tab Panel ----
-          shiny::tabPanel(
-            title = "Health Insurance",
-
-            shiny::fluidRow(
-
-              shiny::column(
-                width = 6,
-
-                ### Health Insurance Pie Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "# of Youth by Health Insurance Received (from Any Source) Response",
-                    content = link_section("4.04 Health Insurance")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("insurance_chart"),
-                    height = "100%"
-                  )
-                )
-
-              ),
-
-              shiny::column(
-                width = 6,
-
-                ### Health Insurance Source Pie Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Informed Health Insurance Source",
-                    content = shiny::tagList(
-                      shiny::p("Only youth who reported receiving health insurance are included."),
-                      shiny::p("Each bar represents the percentage of youth who informed a given health insurance source."),
-                      shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
-                      shiny::p(link_section("4.04 Health Insurance"))
-                    )
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("insurance_source_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-
-            ),
-
-            shiny::fluidRow(
-              shiny::column(
-                width = 12,
-
-                ### Health Insurance Sankey Chart ----
-                bs4Dash::box(
-                  title = with_popover(
-                    text = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
-                    content = link_section("4.04 Health Insurance")
-                  ),
-                  width = NULL,
-                  height = DEFAULT_BOX_HEIGHT,
-                  maximizable = TRUE,
-                  echarts4r::echarts4rOutput(
-                    outputId = ns("insurance_sankey_chart"),
-                    height = "100%"
-                  )
-                )
-
-              )
-            )
-
+            echarts4r::echarts4rOutput(outputId = ns("income_bar_chart"), height = "100%")
           )
-
+        ),
+        bslib::nav_panel(
+          title = "Benefits",
+          bslib::layout_columns(
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "# of Head of Household and/or Adults by Benefits Received (from Any Source) Response",
+                  content = link_section("4.03 Non-Cash Benefits")
+                )
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("benefits_chart"), height = "100%")
+            ),
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "Informed Benefits Source",
+                  content = shiny::tagList(
+                    shiny::p("Only Head of Household and Adults who reported receiving benefits are included."),
+                    shiny::p("Each bar represents the percentage of youth who informed a given benefit source."),
+                    shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                    shiny::p(link_section("4.03 Non-Cash Benefits"))
+                  )
+                )
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("benefits_source_chart"), height = "100%")
+            )
+          ),
+          custom_card(
+            bslib::card_header(
+              with_popover(
+                text = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                content = link_section("4.03 Non-Cash Benefits")
+              )
+            ),
+            echarts4r::echarts4rOutput(outputId = ns("benefits_sankey_chart"), height = "100%")
+          )
+        ),
+        bslib::nav_panel(
+          title = "Health Insurance",
+          bslib::layout_columns(
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "# of Youth by Health Insurance Received (from Any Source) Response",
+                  content = link_section("4.04 Health Insurance")
+                )
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("insurance_chart"), height = "100%")
+            ),
+            custom_card(
+              bslib::card_header(
+                with_popover(
+                  text = "Informed Health Insurance Source",
+                  content = shiny::tagList(
+                    shiny::p("Only youth who reported receiving health insurance are included."),
+                    shiny::p("Each bar represents the percentage of youth who informed a given health insurance source."),
+                    shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                    shiny::p(link_section("4.04 Health Insurance"))
+                  )
+                )
+              ),
+              echarts4r::echarts4rOutput(outputId = ns("insurance_source_chart"), height = "100%")
+            )
+          ),
+          custom_card(
+            bslib::card_header(
+              with_popover(
+                text = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
+                content = link_section("4.04 Health Insurance")
+              )
+            ),
+            echarts4r::echarts4rOutput(outputId = ns("insurance_sankey_chart"), height = "100%")
+          )
         )
-
-      )
-
+      ) |>
+        shiny::tagAppendAttributes(class = "nav-justified")
     )
 
   )
