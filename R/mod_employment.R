@@ -13,27 +13,6 @@ mod_employment_ui <- function(id){
 
     shiny::fluidRow(
 
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 6
-      ),
-
-      # Number of projects (post filters)
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_employment")),
-        subtitle = "Total # of Youth with Employment Data Available",
-        icon = shiny::icon("briefcase"),
-        width = 6
-      )
-
-    ),
-
-    shiny::hr(),
-
-    shiny::fluidRow(
-
       shiny::column(
         width = 12,
         bs4Dash::box(
@@ -125,14 +104,6 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive({
-
-      clients_filtered() |>
-        nrow()
-
-    })
-
     # Filter employment data
     employment_data_filtered <- shiny::reactive({
       filter_data(employment_data, clients_filtered()) |>
@@ -145,25 +116,6 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
         # Employment data should be collected only at Project start and Project exit
         dplyr::filter(data_collection_stage %in% c("Project start", "Project exit")) |>
         filter_most_recent_data_per_enrollment()
-    })
-
-    # Total number of Youth in program(s) that exist in the `employment.csv`
-    # file
-    n_youth_with_employment_data <- shiny::reactive({
-      employment_data_filtered() |>
-        dplyr::filter(employed %in% c("Yes", "No")) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-    })
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    # Render number of projects box value
-    output$n_youth_with_employment <- shiny::renderText({
-      n_youth_with_employment_data()
     })
 
     output$employed_chart <- echarts4r::renderEcharts4r({
