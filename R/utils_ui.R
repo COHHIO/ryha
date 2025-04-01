@@ -4,9 +4,9 @@ get_nav_panel_title <- function(text, icon) {
 }
 
 # TODO: add documentation
-custom_card <- function(..., default_height = "490px") {
+custom_card <- function(..., height = "490px") {
   bslib::card(
-    height = default_height,
+    height = height,
     full_screen = TRUE,
     ...
   )
