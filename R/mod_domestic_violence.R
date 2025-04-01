@@ -13,26 +13,6 @@ mod_domestic_violence_ui <- function(id){
 
     shiny::fluidRow(
 
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 6
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_domestic_violence")),
-        subtitle = "Total # of Youth with Domestic Violence Data Available",
-        icon = shiny::icon("user-shield"),
-        width = 6
-      )
-
-    ),
-
-    shiny::hr(),
-
-    shiny::fluidRow(
-
       shiny::column(
         width = 12,
 
@@ -104,14 +84,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive({
-
-      clients_filtered() |>
-        nrow()
-
-    })
-
     # Filter domestic violence data
     domestic_violence_data_filtered <- shiny::reactive({
       filter_data(domestic_violence_data, clients_filtered()) |>
@@ -124,29 +96,6 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         # Domestic violence data is not expected to be collected at Project exit
         dplyr::filter(data_collection_stage != "Project exit") |>
         filter_most_recent_data_per_enrollment()
-    })
-
-    # Total number of Youth in program(s) that exist in the `domestic_violence.csv`
-    # file
-    n_youth_with_domestic_violence_data <- shiny::reactive(
-
-      domestic_violence_data_filtered() |>
-        dplyr::filter(
-          domestic_violence_survivor %in% c("Yes", "No")
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    # Render number of youth w/ services box value
-    output$n_youth_with_domestic_violence <- shiny::renderText({
-      n_youth_with_domestic_violence_data()
     })
 
     # Create education pie chart
