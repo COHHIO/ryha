@@ -11,34 +11,6 @@ mod_parenting_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    # Info Boxes ----
-    shiny::fluidRow(
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_pregnancy_data")),
-        subtitle = "Total # of Youth with Pregnancy Data Available",
-        icon = shiny::icon("baby-carriage"),
-        width = 4
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_parenting_data")),
-        subtitle = "Total # of Youth with Parenting Data Available",
-        icon = shiny::icon("baby-carriage"),
-        width = 4
-      )
-
-    ),
-
-    shiny::hr(),
-
     shiny::fluidRow(
 
       # Pregnancy Chart ----
@@ -93,14 +65,6 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
 
     # Info Boxes ----
 
-    # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive(
-
-      clients_filtered() |>
-        nrow()
-
-    )
-
     # Filter health data
     health_data_filtered <- shiny::reactive(
       filter_data(health_data, clients_filtered()) |>
@@ -119,19 +83,6 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         filter_data(clients_filtered()) 
     )
 
-    # Total number of Youth in program(s) provided a "Yes" or "No" response to
-    # `pregnancy_status` in 'Health.csv"
-    n_youth_with_pregnancy_data <- shiny::reactive(
-
-      health_data_filtered() |>
-        dplyr::filter(
-          pregnancy_status %in% c("Yes", "No")
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
     # Total number of Youth in program(s) provided a valid response to
     # `relationship_to_hoh` in "Enrollment.csv"
     n_youth_with_parenting_data <- shiny::reactive(
@@ -144,22 +95,6 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         nrow()
 
     )
-
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    # Render "number youth with pregnancy data available" box value
-    output$n_youth_with_pregnancy_data <- shiny::renderText({
-      n_youth_with_pregnancy_data()
-    })
-
-    # Render "number youth with parenting data available" box value
-    output$n_youth_with_parenting_data <- shiny::renderText({
-      n_youth_with_parenting_data()
-    })
 
     # Pregnancy Status ----
     output$pregnancy_chart <- echarts4r::renderEcharts4r({
