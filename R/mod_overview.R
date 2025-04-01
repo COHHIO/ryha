@@ -17,7 +17,7 @@ mod_overview_ui <- function(id){
         full_screen = TRUE,
 
         bslib::card_header(
-          with_tooltip(
+          with_popover(
             text = "# of Youth by Gender",
             content = shiny::tagList(
               shiny::p("Each bar represents the percentage of youth who self-identify with a given gender category."),
@@ -33,7 +33,7 @@ mod_overview_ui <- function(id){
         full_screen = TRUE,
 
         bslib::card_header(
-          with_tooltip(
+          with_popover(
             text = "# of Head of Household and/or Adults by Sexual Orientation",
             content = link_section("R3 Sexual Orientation")
           )
@@ -49,7 +49,7 @@ mod_overview_ui <- function(id){
         full_screen = TRUE,
 
         bslib::card_header(
-          with_tooltip(
+          with_popover(
             text = "# of Adults by Veteran Status",
             content = link_section("3.07 Veteran Status")
           )
@@ -61,7 +61,7 @@ mod_overview_ui <- function(id){
         full_screen = TRUE,
 
         bslib::card_header(
-          with_tooltip(
+          with_popover(
             text = "# of Youth by Race & Ethnicity",
             content = shiny::tagList(
               shiny::p("Each bar represents the percentage of youth who self-identify with a given racial and/or ethnic category."),
@@ -78,7 +78,7 @@ mod_overview_ui <- function(id){
       full_screen = TRUE,
 
       bslib::card_header(
-        with_tooltip(
+        with_popover(
             text = "# of Youth by Age Group",
             content = link_section("3.03 Date of Birth")
         )
@@ -91,7 +91,7 @@ mod_overview_ui <- function(id){
         full_screen = TRUE,
 
         bslib::card_header(
-          with_tooltip(
+          with_popover(
             text = "# of Head of Household and/or Adults by Former Ward Child Welfare Response",
             content = link_section("R11 Formerly a Ward of Child Welfare/Foster Care Agency")
           )
@@ -103,7 +103,7 @@ mod_overview_ui <- function(id){
         full_screen = TRUE,
 
         bslib::card_header(
-          with_tooltip(
+          with_popover(
             text = "# of Head of Household and/or Adults by Former Ward Juvenile Justice Response",
             content = link_section("R12 Formerly a Ward of Juvenile Justice System")
           )

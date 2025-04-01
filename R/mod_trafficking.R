@@ -55,7 +55,7 @@ mod_trafficking_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Exchange for Sex Response",
                     content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
                   ),
@@ -78,7 +78,7 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Asked or Forced to Exchange Response",
                     content = shiny::tagList(
                       shiny::p("Only youth that ever received anything in exchange for sex are included."),
@@ -100,7 +100,7 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Count of Exchange for Sex Response",
                     content = shiny::tagList(
                       shiny::p("Only youth that ever received anything in exchange for sex are included."),
@@ -131,7 +131,7 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Workplace Violence/Threats Response",
                     content = link_section("R16 Labor Exploitation/Trafficking")
                   ),
@@ -150,7 +150,7 @@ mod_trafficking_ui <- function(id){
                 width = 6,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Workplace Promise Difference Response",
                     content = link_section("R16 Labor Exploitation/Trafficking")
                   ),
@@ -173,7 +173,7 @@ mod_trafficking_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Coerced to Continue Work Response",
                     content = shiny::tagList(
                       shiny::p("Only Head of Household and Adults that experienced workplace violence and/or promise difference are included."),

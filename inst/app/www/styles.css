@@ -80,3 +80,8 @@ smaller screen widths */
 .datepicker {
   z-index: 99999 !important;
 }
+
+/* Hide popover close button */
+.popover .btn-close {
+  display: none !important;
+}

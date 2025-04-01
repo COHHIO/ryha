@@ -86,7 +86,7 @@ reference:
   contents:
   - link_section
   - link_data_standards_manual
-  - with_tooltip
+  - with_popover
   - validate_data
 - title: Other Functions
   contents: run_app

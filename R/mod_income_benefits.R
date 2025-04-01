@@ -59,7 +59,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Income Received (from Any Source) Response",
                     content = link_section("4.02 Income and Sources")
                   ),
@@ -79,7 +79,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Income Source Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "Informed Income Sources",
                     content = shiny::tagList(
                       shiny::p("Only Head of Household and Adults who reported receiving income are included."),
@@ -108,7 +108,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Monthly Income Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults with Income by Total Monthly Income",
                     content = link_section("4.02 Income and Sources")
                   ),
@@ -138,7 +138,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Pie Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Benefits Received (from Any Source) Response",
                     content = link_section("4.03 Non-Cash Benefits")
                   ),
@@ -158,7 +158,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Source Pie Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "Informed Benefits Source",
                     content = shiny::tagList(
                       shiny::p("Only Head of Household and Adults who reported receiving benefits are included."),
@@ -186,7 +186,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Benefits Sankey Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
                     content = link_section("4.03 Non-Cash Benefits")
                   ),
@@ -215,7 +215,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Pie Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Youth by Health Insurance Received (from Any Source) Response",
                     content = link_section("4.04 Health Insurance")
                   ),
@@ -235,7 +235,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Source Pie Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "Informed Health Insurance Source",
                     content = shiny::tagList(
                       shiny::p("Only youth who reported receiving health insurance are included."),
@@ -263,7 +263,7 @@ mod_income_benefits_ui <- function(id){
 
                 ### Health Insurance Sankey Chart ----
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
                     content = link_section("4.04 Health Insurance")
                   ),

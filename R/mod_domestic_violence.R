@@ -37,7 +37,7 @@ mod_domestic_violence_ui <- function(id){
         width = 12,
 
         bs4Dash::box(
-          title = with_tooltip(
+          title = with_popover(
             text = "# of Head of Household and/or Adults by Domestic Violence Victim Response",
             content = link_section("4.11 Domestic Violence")
           ),
@@ -59,7 +59,7 @@ mod_domestic_violence_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_tooltip(
+          title = with_popover(
             text = "# of Domestic Violence Victims by When Occurred Response",
             content = link_section("4.11 Domestic Violence")
           ),
@@ -78,7 +78,7 @@ mod_domestic_violence_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_tooltip(
+          title = with_popover(
             text = "# of Domestic Violence Victims by Currently Fleeing Response",
             content = link_section("4.11 Domestic Violence")
           ),

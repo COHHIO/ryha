@@ -15,20 +15,20 @@ spinner_message <- function(message) {
   )
 }
 
-#' Add custom Bootstrap tooltip
+#' Add custom Bootstrap popover
 #'
-#' `with_tooltip()` creates a Bootstrap tooltip containing additional information
+#' `with_popover()` creates a Bootstrap popover containing additional information
 #' to display alongside a given text.
 #'
 #' @param text The text to display.
-#' @param content The content to display inside the tooltip.
-#' @param placement The placement of the tooltip relative to the text. Defaults to "right".
+#' @param content The content to display inside the popover.
+#' @param placement The placement of the popover relative to the text. Defaults to "right".
 #'
-#' @return HTML Bootstrap tooltip containing the specified content.
+#' @return HTML Bootstrap popover containing the specified content.
 #'
 #' @examples
 #' \dontrun{
-#' with_tooltip(
+#' with_popover(
 #'   text = "Some Example Text",
 #'   content = shiny::tagList(
 #'     shiny::span("First description line."),
@@ -37,17 +37,12 @@ spinner_message <- function(message) {
 #'   )
 #' )
 #' }
-with_tooltip <- function(text, content, placement = "right") {
+with_popover <- function(text, content, placement = "right") {
 
-  bslib::tooltip(
+  bslib::popover(
     trigger = shiny::span(text, bsicons::bs_icon("info-circle")),
     content,
-    placement = placement,
-    options = list(
-      delay = list(
-        hide = 1000
-      )
-    )
+    placement = placement
   )
 
 }

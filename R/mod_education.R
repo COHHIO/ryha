@@ -48,7 +48,7 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by Last Grade Completed Group",
                     content = shiny::tagList(
                       shiny::span("Response categories have been grouped to improve chart readability."),
@@ -74,7 +74,7 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "Changes in Last Grade Completed Group (Entry --> Exit)",
                     content = shiny::tagList(
                       shiny::span("Response categories have been grouped to improve chart readability."),
@@ -105,7 +105,7 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "# of Head of Household and/or Adults by School Status",
                     content = link_section("R5 School Status")
                   ),
@@ -127,7 +127,7 @@ mod_education_ui <- function(id){
                 width = 12,
 
                 bs4Dash::box(
-                  title = with_tooltip(
+                  title = with_popover(
                     text = "Changes in School Status (Entry --> Exit)",
                     content = link_section("R5 School Status")
                   ),

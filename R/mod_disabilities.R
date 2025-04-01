@@ -61,7 +61,7 @@ mod_disabilities_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_tooltip(
+          title = with_popover(
             text = "Disability Prevalence in Youth",
             content = shiny::tagList(
               shiny::span("Each bar summarizes the responses for the corresponding disability."),
@@ -94,7 +94,7 @@ mod_disabilities_ui <- function(id){
         width = 6,
 
         bs4Dash::box(
-          title = with_tooltip(
+          title = with_popover(
             text = "# of Youth by Substance Use",
             content = link_section("4.10 Substance Use Disorder")
           ),
@@ -119,7 +119,7 @@ mod_disabilities_ui <- function(id){
         width = 12,
 
         bs4Dash::tabBox(
-          title = with_tooltip(
+          title = with_popover(
             text = "Changes in Disability Status (Entry --> Exit)",
             content = shiny::tagList(
               shiny::span("For more information, refer to sections:"),
