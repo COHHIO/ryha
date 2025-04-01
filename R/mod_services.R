@@ -11,64 +11,37 @@ mod_services_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 3,
-
-        shiny::dateRangeInput(
-          inputId = ns("date_provided_filter"),
-          label = "Date Provided",
-          start = NULL,
-          end = NULL,
-          min = NULL,
-          max = NULL
-        )
-
+    bslib::card(
+      shiny::dateRangeInput(
+        inputId = ns("date_provided_filter"),
+        label = "Date Provided",
+        start = NULL,
+        end = NULL,
+        min = NULL,
+        max = NULL
       )
-
     ),
+    custom_card(
+      height = "720px",
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-        bs4Dash::box(
-          title = with_popover(
-            text = "# of Youth by Service Type Provided",
-            content = link_section("R14 RHY Service Connections")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("services_bar_chart"),
-            height = "100%"
-          )
+      bslib::card_header(
+        with_popover(
+          text = "# of Youth by Service Type Provided",
+          content = link_section("R14 RHY Service Connections")
         )
-      )
-
+      ),
+      echarts4r::echarts4rOutput(outputId = ns("services_bar_chart"), height = "100%")
     ),
+    custom_card(
+      height = "720px",
 
-    shiny::fluidRow(
-
-      shiny::column(
-        width = 12,
-        bs4Dash::box(
-          title = with_popover(
-            text = "# of Youth by Referral Source",
-            content = link_section("R1 Referral Source")
-          ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("referral_bar_chart"),
-            height = "100%"
-          )
+      bslib::card_header(
+        with_popover(
+          text = "# of Youth by Referral Source",
+          content = link_section("R1 Referral Source")
         )
-      )
-
+      ),
+      echarts4r::echarts4rOutput(outputId = ns("referral_bar_chart"), height = "100%")
     )
 
   )
