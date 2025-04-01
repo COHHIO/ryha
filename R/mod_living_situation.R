@@ -13,26 +13,6 @@ mod_living_situation_ui <- function(id){
 
     shiny::fluidRow(
 
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth")),
-        subtitle = "Total # of Youth in Program(s)",
-        icon = shiny::icon("user", class = "fa-solid"),
-        width = 6
-      ),
-
-      bs4Dash::bs4ValueBox(
-        value = shiny::textOutput(outputId = ns("n_youth_with_living_situation_data")),
-        subtitle = "Total # of Youth with Living Situation Data Available",
-        icon = shiny::icon("bed"),
-        width = 6
-      )
-
-    ),
-
-    shiny::hr(),
-
-    shiny::fluidRow(
-
       shiny::column(
         width = 6,
 
@@ -132,14 +112,6 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Total number of Youth in program(s), based on `client.csv` file
-    n_youth <- shiny::reactive({
-
-      clients_filtered() |>
-        nrow()
-
-    })
-
     # Apply the filters to the enrollment data
     living_data_filtered <- shiny::reactive({
       filter_data(enrollment_data, clients_filtered()) |>
@@ -160,36 +132,6 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
         # Destination is collected for all youth.
         # Head of household and adults filter is applied to both for reporting consistency reasons
         dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
-    })
-
-    # Total number of Youth in program(s) that exist in the `employment.csv`
-    # file
-    n_youth_with_living_data <- shiny::reactive(
-
-      living_data_filtered() |>
-        dplyr::filter(
-          !is.na(living_situation),
-          !living_situation %in% c(
-            "No exit interview completed",
-            "Worker unable to determine",
-            "Client doesn't know",
-            "Client prefers not to answer",
-            "Data not collected"
-          )
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Render number of clients box value
-    output$n_youth <- shiny::renderText({
-      n_youth()
-    })
-
-    # Render number of youth with living situation data box value
-    output$n_youth_with_living_situation_data <- shiny::renderText({
-      n_youth_with_living_data()
     })
 
     # Living Situation Chart ----
