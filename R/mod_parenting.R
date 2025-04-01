@@ -11,46 +11,28 @@ mod_parenting_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-
-      # Pregnancy Chart ----
-      shiny::column(
-        width = 6,
-
-        bs4Dash::box(
-          title = with_popover(
-            text = "# of Head of Household and/or Adults by Pregnancy Status",
-            content = link_section("R10 Pregnancy Status")
+    bslib::layout_columns(
+      col_widths = c(-2, 8, -2),
+      bslib::card(
+        custom_card(
+          bslib::card_header(
+            with_popover(
+              text = "# of Head of Household and/or Adults by Pregnancy Status",
+              content = link_section("R10 Pregnancy Status")
+            )
           ),
-          width = NULL,
-          height = DEFAULT_BOX_HEIGHT,
-          maximizable = TRUE,
-          echarts4r::echarts4rOutput(
-            outputId = ns("pregnancy_chart"),
-            height = "100%"
-          )
-        )
-
-      ),
-
-      shiny::column(
-        width = 6,
-
-        # Parenting Table ----
-        bs4Dash::box(
-          title = with_popover(
-            text = "# of Youth Parenting",
-            content = shiny::HTML("A youth is defined as <strong>Parenting</strong> if there is at least one youth enrolled as the head of household's child")
+          echarts4r::echarts4rOutput(outputId = ns("pregnancy_chart"), height = "100%")
+        ),
+        bslib::card(
+          bslib::card_header(
+            with_popover(
+              text = "# of Youth Parenting",
+              content = shiny::HTML("A youth is defined as <strong>Parenting</strong> if there is at least one youth enrolled as the head of household's child")
+            )
           ),
-          width = NULL,
-          maximizable = TRUE,
-          reactable::reactableOutput(
-            outputId = ns("parenting_tbl")
-          )
+          reactable::reactableOutput(outputId = ns("parenting_tbl"), height = "100%")
         )
-
       )
-
     )
 
   )
