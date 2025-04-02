@@ -1,5 +1,3 @@
-DEFAULT_BOX_HEIGHT <- "440px"
-
 COLORS <- list(
   DEFAULT = "#5470C6",
 
