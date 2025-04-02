@@ -11,158 +11,84 @@ mod_filters_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
+    # Funder filter
+    custom_pickerInput(
+      inputId = ns("funder"),
+      label = "Funder"
+    ),
 
-        # Funder filter
-        shinyWidgets::pickerInput(
-          inputId = ns("funder"),
-          label = "Funder",
-          width = "460px",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE,
-          # collapse the list of selected items in the UI
-          options = list(
-            `actions-box` = TRUE,
-            `selected-text-format` = 'count > 1',
-            container = "body"
-          )
-        ),
+    # County filter
+    custom_pickerInput(
+      inputId = ns("county"),
+      label = shiny::uiOutput(outputId = ns("county_filter_label")),
+    ),
 
-        # County filter
-        ## Adding a div with id as a workaround to show popover when disabled
-        shiny::div(
-          id = ns("county_div"),
-          shinyWidgets::pickerInput(
-            inputId = ns("county"),
-            label = with_popover(
-              text = "County",
-              content = "Showing counties associated with selected funders"
-            ),
-            width = "460px",
-            choices = NULL,
-            selected = NULL,
-            multiple = TRUE,
-            # collapse the list of selected items in the UI
-            options = list(
-              `actions-box` = TRUE,
-              `selected-text-format` = 'count > 1',
-              container = "body"
-            )
-          )
-        ),
+    # Project filter
+    custom_pickerInput(
+      inputId = ns("project_filter_global"),
+      label = shiny::uiOutput(outputId = ns("project_filter_label")),
+    ),
 
-        # Project filter
-        ## Adding a div with id as a workaround to show popover when disabled
-        shiny::div(
-          id = ns("project_filter_global_div"),
-          shinyWidgets::pickerInput(
-            inputId = ns("project_filter_global"),
-            label = with_popover(
-              text = "Project",
-              content = "Showing projects associated with selected funders and counties"
-            ),
-            width = "460px",
-            choices = NULL,
-            selected = NULL,
-            multiple = TRUE,
-            # collapse the list of selected items in the UI
-            options = list(
-              `actions-box` = TRUE,
-              `selected-text-format` = 'count > 1',
-              container = "body"
-            )
-          )
-        ),
+    # SSN De-Dup checkbox
+    shiny::checkboxInput(
+      inputId = ns("dedup_status_global"),
+      label = "De-duplicate Youth Across Projects by SSN?",
+      value = FALSE,
+      width = "100%"
+    ),
 
-        # SSN De-Dup checkbox
-        shiny::checkboxInput(
-          inputId = ns("dedup_status_global"),
-          label = "De-duplicate Youth Across Projects by SSN?",
-          value = FALSE,
-          width = "100%"
-        ),
+    # Active date filter
+    shiny::dateRangeInput(
+      inputId = ns("active_date_filter_global"),
+      label = "Active During Period",
+      start = NULL,
+      end = lubridate::today(),
+      min = NULL,
+      max = lubridate::today()
+    ),
 
+    # Gender filter
+    custom_pickerInput(
+      inputId = ns("gender_filter_global"),
+      label = "Gender",
+      opts_selectedTextFormat = 'count > 2'
+    ),
 
-        # Active date filter
-        shiny::dateRangeInput(
-          inputId = ns("active_date_filter_global"),
-          label = "Active During Period",
-          width = "460px",
-          start = NULL,
-          end = lubridate::today(),
-          min = NULL,
-          max = lubridate::today()
-        ),
+    # Ethnicity filter
+    custom_pickerInput(
+      inputId = ns("ethnicity_filter_global"),
+      label = "Ethnicity",
+      opts_selectedTextFormat = 'count > 2'
+    ),
 
-        # Gender filter
-        shinyWidgets::pickerInput(
-          inputId = ns("gender_filter_global"),
-          label = "Gender",
-          width = "460px",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE,
-          options = list(
-            `actions-box` = TRUE,
-            `selected-text-format` = 'count > 2'
-          )
-        ),
+    # Age slider
+    shiny::sliderInput(
+      inputId = ns("age_filter_global"),
+      label = "Age",
+      min = 0,
+      max = 18,
+      value = c(0, 18)
+    ),
 
-        # Ethnicity filter
-        shinyWidgets::pickerInput(
-          inputId = ns("ethnicity_filter_global"),
-          label = "Ethnicity",
-          width = "460px",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE,
-          options = list(
-            `actions-box` = TRUE,
-            `selected-text-format` = 'count > 2'
-          )
-        ),
+    # Age missing checkbox
+    shiny::checkboxInput(
+      inputId = ns("age_missing_global"),
+      label = "Include Youth with Missing Ages?",
+      value = TRUE
+    ),
 
-        # Age slider
-        shiny::sliderInput(
-          inputId = ns("age_filter_global"),
-          label = "Age",
-          width = "460px",
-          min = 0,
-          max = 18,
-          value = c(0, 18)
-        ),
+    # Heads of household checkbox
+    shiny::checkboxInput(
+      inputId = ns("heads_of_household_global"),
+      label = "Limit to Heads of Household",
+      value = FALSE
+    ),
 
-        # Age missing checkbox
-        shiny::checkboxInput(
-          inputId = ns("age_missing_global"),
-          label = "Include Youth with Missing Ages?",
-          value = TRUE
-        ),
-
-        # Heads of household checkbox
-        shiny::checkboxInput(
-          inputId = ns("heads_of_household_global"),
-          label = "Limit to Heads of Household",
-          value = FALSE
-        ),
-
-        # Action button to apply filters
-        bs4Dash::actionButton(
-          inputId = ns("apply_filters"),
-          label = "Apply"
-        ),
-
-        # Add padding under "Apply" button
-        shiny::br(),
-        shiny::br(),
-        shiny::br()
-
-      )
+    # Action button to apply filters
+    bslib::input_task_button(
+      id = ns("apply_filters"),
+      label = "Apply"
     )
-
   )
 }
 
@@ -200,22 +126,30 @@ mod_filters_server <- function(id, dm, rctv){
       if (length(rctv_projects_funded_by_funders()) == 0) {
         # Disable county input
         shinyjs::disable(id = "county")
-        # Add popover to inform the user that at least one funder should be selected
-        bs4Dash::addPopover(
-          id = "county_div",
-          options = list(
-            content = "Please select at least one funder",
-            placement = "bottom",
-            trigger = "hover"
-          )
-        )
       } else {
         # When at least one funder is selected...
         # Enable county input
         shinyjs::enable(id = "county")
-        # Remove popover
-        bs4Dash::removePopover(id = "county_div")
       }
+    })
+
+    output$county_filter_label <- shiny::renderUI({
+      if (length(rctv_projects_funded_by_funders()) == 0) {
+        class = "text-danger"
+        content = "Please select at least one funder"
+      } else {
+        class = NULL
+        content = "Showing counties associated with selected funders"
+      }
+
+      bslib::tooltip(
+        shiny::span(
+          "County",
+          bsicons::bs_icon("info-circle", class = class)
+        ),
+        content,
+        placement = "right"
+      )
     })
 
     ## Update county filter to show only counties with projects funded by selected funders
@@ -241,23 +175,31 @@ mod_filters_server <- function(id, dm, rctv){
       if (length(input$county) == 0) {
         # Disable project input
         shinyjs::disable(id = "project_filter_global")
-        # Add popover to inform the user that at least one county should be selected
-        bs4Dash::addPopover(
-          id = "project_filter_global_div",
-          options = list(
-            content = "Please select at least one county",
-            placement = "bottom",
-            trigger = "hover"
-          )
-        )
       } else {
         # When at least one county is selected...
         # Enable project input
         shinyjs::enable(id = "project_filter_global")
-        # Remove popover
-        bs4Dash::removePopover(id = "project_filter_global_div")
       }
     }, ignoreNULL = FALSE)
+
+    output$project_filter_label <- shiny::renderUI({
+      if (length(input$county) == 0) {
+        class = "text-danger"
+        content = "Please select at least one county"
+      } else {
+        class = NULL
+        content = "Showing projects associated with selected funders and counties"
+      }
+
+      bslib::tooltip(
+        shiny::span(
+          "Project",
+          bsicons::bs_icon("info-circle", class = class)
+        ),
+        content,
+        placement = "right"
+      )
+    })
 
     ## Update project filter (based on funder filter and county)
     ### As county choices depend on funder filter, any changes in funder
@@ -287,13 +229,7 @@ mod_filters_server <- function(id, dm, rctv){
         session = session,
         inputId = "project_filter_global",
         choices = setNames(project_sorted$project_id, project_sorted$project_name),
-        selected = project_sorted$project_id,
-        choicesOpt = list(
-          style = rep_len(
-            "font-size: 75%;",
-            project_sorted$project_name |> length()
-          )
-        )
+        selected = project_sorted$project_id
       )
 
     }, ignoreNULL = FALSE)

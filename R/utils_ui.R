@@ -12,6 +12,37 @@ custom_card <- function(..., height = "490px") {
   )
 }
 
+# TODO: add documentation
+custom_pickerInput <- function(inputId,
+                               label,
+                               choices = NULL,
+                               selected = NULL,
+                               multiple = TRUE,
+                               width = "100%",
+                               opts_actionsBox = TRUE,
+                               opts_selectedTextFormat = 'count > 1',
+                               opts_liveSearch = TRUE,
+                               opts_container = "body",
+                               ...) {
+
+  shinyWidgets::pickerInput(
+    inputId = inputId,
+    label = label,
+    choices = choices,
+    selected = selected,
+    multiple = multiple,
+    width = width,
+    options = shinyWidgets::pickerOptions(
+      actionsBox = opts_actionsBox,
+      selectedTextFormat = opts_selectedTextFormat,
+      liveSearch = opts_liveSearch,
+      container = opts_container
+    ),
+    ...
+  )
+
+}
+
 #' Create message with spinner
 #'
 #' @param message String. The message that should be placed below spinner

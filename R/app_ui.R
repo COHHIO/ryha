@@ -38,7 +38,7 @@ app_ui <- function(request) {
 
         bslib::navset_card_underline(
           sidebar = bslib::sidebar(
-            width = 400,
+            width = 450,
             position = "right",
             mod_filters_ui("filters_1")
           ),
