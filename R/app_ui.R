@@ -10,6 +10,15 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
 
+    waiter::waiter_show_on_load(
+      html = shiny::tagList(
+        waiter::spin_fading_circles(),
+        "Welcome!",
+        shiny::br(),
+        "Data is loading, please wait..."
+      )
+    ),
+
     # Your application UI logic
     bslib::page_navbar(
       id = "navbar",
