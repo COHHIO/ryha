@@ -1,11 +1,5 @@
 
 
- /* Set the background & border color for the navbar */
-.navbar.bg-primary, .navbar.navbar-inverse {
-  background-color: #07274A !important;
-  border-color: #07274A !important;
-}
-
 .card-body {
   padding: 0.5rem;
   overflow: hidden !important; /* Fix "scrolling" bug when "Expand" window is closed */
@@ -23,7 +17,7 @@
   justify-content: center;
 }
 
-/* Add style to welcome page boxes */
+/* Add style to boxes */
 .custom-box .card-body {
   text-align: justify;
   padding: .75rem 1.25rem;
