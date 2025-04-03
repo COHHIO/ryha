@@ -6,7 +6,7 @@
 #' @noRd
 app_ui <- function(request) {
   tagList(
-    # TODO: add loading screen
+
     # Leave this function for adding external resources
     golem_add_external_resources(),
 

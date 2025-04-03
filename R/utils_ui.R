@@ -1,9 +1,28 @@
-# TODO: add documentation
+#' Create a navigation panel title with an icon
+#'
+#' `get_nav_panel_title()` generates a navigation panel title that includes an icon
+#' and a text label displayed below it.
+#'
+#' @param text A character string representing the title text.
+#' @param icon A character string specifying the name of the icon from FontAwesome.
+#'
+#' @return A `shiny::span` element containing the icon and text.
+#'
+#' @examples
+#' get_nav_panel_title("Education", "book-open")
 get_nav_panel_title <- function(text, icon) {
   shiny::span(shiny::icon(icon), shiny::HTML(glue::glue("<br>{text}")))
 }
 
-# TODO: add documentation
+#' Create a custom card
+#'
+#' `custom_card()` generates a Bootstrap card with a specified height and 
+#' full-screen capability.
+#'
+#' @param ... Additional arguments passed to `bslib::card()`
+#' @param height A character string specifying the card's height. Default is `"490px"`.
+#'
+#' @return A `bslib::card` object.
 custom_card <- function(..., height = "490px") {
   bslib::card(
     height = height,
@@ -12,7 +31,24 @@ custom_card <- function(..., height = "490px") {
   )
 }
 
-# TODO: add documentation
+#' Create a custom pickerInput
+#'
+#' `custom_pickerInput()` is a wrapper around `shinyWidgets::pickerInput()` that
+#' includes commonly used values as default.
+#'
+#' @param inputId A character string representing the input ID
+#' @param label A character string specifying the label for the picker input
+#' @param choices A list of choices available for selection (default: `NULL`)
+#' @param selected The initially selected value(s) (default: `NULL`)
+#' @param multiple A logical indicating whether multiple selections are allowed (default: `TRUE`)
+#' @param width A character string specifying the width of the input (default: `"100%"`)
+#' @param opts_actionsBox A logical indicating whether to show an actions box (default: `TRUE`)
+#' @param opts_selectedTextFormat A character string specifying the format of the selected text (default: `"count > 1"`)
+#' @param opts_liveSearch A logical indicating whether to enable live search (default: `TRUE`)
+#' @param opts_container A character string specifying where the dropdown should be contained (default: `"body"`)
+#' @param ... Additional arguments passed to `shinyWidgets::pickerInput()`.
+#'
+#' @return A `shiny.tag` object representing the picker input.
 custom_pickerInput <- function(inputId,
                                label,
                                choices = NULL,
@@ -24,7 +60,6 @@ custom_pickerInput <- function(inputId,
                                opts_liveSearch = TRUE,
                                opts_container = "body",
                                ...) {
-
   shinyWidgets::pickerInput(
     inputId = inputId,
     label = label,
@@ -40,7 +75,6 @@ custom_pickerInput <- function(inputId,
     ),
     ...
   )
-
 }
 
 #' Create message with spinner

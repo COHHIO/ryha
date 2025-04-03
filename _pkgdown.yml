@@ -84,10 +84,13 @@ reference:
   - read_services
 - title: UI Utils Functions
   contents:
+  - custom_card
+  - custom_pickerInput
+  - get_nav_panel_title
   - link_section
   - link_data_standards_manual
-  - with_popover
   - validate_data
+  - with_popover
 - title: Other Functions
   contents: run_app
 
