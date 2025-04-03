@@ -5,7 +5,8 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd
-#'
+#' 
+#' @import markdown
 #' @importFrom shiny NS tagList
 mod_upload_ui <- function(id){
   ns <- NS(id)

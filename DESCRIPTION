@@ -27,6 +27,7 @@ Imports:
     janitor,
     lubridate,
     magrittr,
+    markdown,
     purrr,
     reactable,
     readr,
