@@ -29,12 +29,6 @@
   color: white;
 }
 
-/* Add style to help page */
-.help-page-content {
-  background-color: white;
-  text-align: justify;
-}
-
 /* Bring datepicker to front */
 .datepicker {
   z-index: 99999 !important;

@@ -101,17 +101,7 @@ app_ui <- function(request) {
       bslib::nav_panel(
         title = shiny::span(shiny::icon("question"), "Help"),
         value = "Help",
-        shiny::fluidRow(
-          shiny::column(width = 2),
-
-          shiny::column(
-            width = 8,
-            shiny::includeMarkdown( app_sys("app/www/help_text.md") )
-          ) |>
-            shiny::tagAppendAttributes(class = "help-page-content"),
-
-          shiny::column(width = 2)
-        )
+        "Section under development"
       )
     )
   )
