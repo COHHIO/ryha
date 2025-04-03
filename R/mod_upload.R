@@ -11,73 +11,63 @@ mod_upload_ui <- function(id){
   ns <- NS(id)
   tagList(
 
-    shiny::fluidRow(
+    bslib::layout_columns(
+      col_widths = c(-2, 8, -2),
+      bslib::card(
+        bslib::card(
+          bslib::card_header(shiny::h2("Instructions for Uploading:")),
+          shiny::markdown("
+            1. Click the **Browse...** button and open the HMIS export .zip file on your local computer
+            1. Enter the password needed to upload the .zip file to the app database
+            1. If the correct password has been entered, the **Upload** button will be enabled. Click the button to upload the file.
 
-      shiny::column(
-        width = 8,
-        offset = 2,
+            If you encounter an error screen during the process, please copy and paste the error and email [amandawilson@cohhio.org](mailto:amandawilson@cohhio.org)
+          ")
+        ),
 
-        bs4Dash::box(
-          width = 12,
-          title = "Instructions for Uploading:",
-          collapsible = FALSE,
-          status = "primary",
-
-          shiny::HTML(
-            "
-            <ol>
-              <li> Click the <strong>Browse...</strong> button and open the HMIS export .zip file on your local computer
-              <li> Enter the password needed to upload the .zip file to the app database
-              <li> If the correct password has been entered, the <strong>Upload</strong> button will be enabled. Click the button to upload the file
-            </ol>
-            If you encounter an error screen during the process, please copy and paste the error and email <a href='mailto:amandawilson@cohhio.org'>amandawilson@cohhio.org</a>
-            "
+        bslib::layout_columns(
+          col_widths = c(-3, 6, -3),
+          bslib::card(
+            shiny::fileInput(
+              inputId = ns("choose_zip"),
+              label = shiny::tags$b("Choose HMIS .Zip File"),
+              accept = ".zip",
+              width = "100%"
+            ),
+            shiny::passwordInput(
+              inputId = ns("upload_pwd"),
+              label = shiny::tags$b("Enter Upload Password"),
+              placeholder = "Enter Password...",
+              width = "100%"
+            ),
+            shiny::div(
+              id = ns("enabled_button"),
+              bslib::input_task_button(
+                id = ns("upload_btn"),
+                label = "Upload",
+                type = "success"
+              ) |>
+                shiny::tagAppendAttributes(style = "margin-top: 2rem; width: 100%")
+            ),
+            shiny::div(
+              id = ns("disabled_button"),
+              bslib::tooltip(
+                shiny::div(
+                  "Upload",
+                  class = "btn btn-danger",
+                  style = "margin-top: 2rem; width: 100%; cursor: not-allowed;"
+                ),
+                "Please select a file and provide a valid password",
+                placement = "right",
+                options = list(
+                  trigger = "hover"
+                )
+              )
+            )
           )
         ) |>
-          shiny::tagAppendAttributes(class = "custom-box"),
-
-        shiny::hr(),
-
-        shiny::div(
-          align = "center",
-
-          bs4Dash::box(
-            width = 6,
-            collapsible = FALSE,
-
-            shiny::fluidRow(
-
-              shiny::fileInput(
-                inputId = ns("choose_zip"),
-                label = "Choose HMIS .Zip File",
-                accept = ".zip",
-                width = "100%"
-              ),
-
-              shiny::passwordInput(
-                inputId = ns("upload_pwd"),
-                label = "Enter Upload Password",
-                placeholder = "Enter Password...",
-                width = "100%"
-              ),
-
-              shinyWidgets::actionBttn(
-                inputId = ns("upload_btn"),
-                label = "Upload",
-                color = "success",
-                block = TRUE,
-                style = "material-flat"
-              ) |>
-                shiny::tagAppendAttributes(style = "margin-top: 2rem")
-
-            )
-
-          ) |>
-            shiny::tagAppendAttributes(class = "custom-box")
-        )
-
+          shiny::tagAppendAttributes(style = "margin-top: 2rem")
       )
-
     )
 
   )
@@ -94,17 +84,13 @@ mod_upload_server <- function(id){
     w <- waiter::Waiter$new()
 
     shiny::observe({
-
       if (is.null(input$upload_pwd) || input$upload_pwd != Sys.getenv("UPLOAD_PWD") || is.null(input$choose_zip$datapath)) {
-
-        shinyjs::disable(id = "upload_btn")
-
+        shinyjs::show(id = "disabled_button")
+        shinyjs::hide(id = "enabled_button")
       } else {
-
-        shinyjs::enable(id = "upload_btn")
-
+        shinyjs::show(id = "enabled_button")
+        shinyjs::hide(id = "disabled_button")
       }
-
     })
 
     # Process the data in the uploaded .zip & write to Postgres
