@@ -24,10 +24,19 @@ app_ui <- function(request) {
       id = "navbar",
       fillable = FALSE,
 
-      title = "Youth Data Dashboard",
-      # TODO: add icon with href
-      # href = "https://cohhio.org/youthhealth/",
-      # image = "www/favicon.ico"
+      title = shiny::span(
+        shiny::tags$a(
+          href = "https://cohhio.org/youthhealth/",
+          target = "_blank",
+          style = "text-decoration: none;",
+          shiny::tags$img(
+            src = "www/favicon.ico",
+            height = "40px",
+            style = "margin-right: 8px;"
+          )
+        ),
+        "Youth Data Dashboard"
+      ),
       bslib::nav_panel(
         title = shiny::span(shiny::icon("hand-paper"), "Welcome"),
         mod_welcome_ui("welcome_1")
