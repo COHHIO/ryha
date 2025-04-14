@@ -19,11 +19,28 @@
 			],
 			"settings": {
 				"r.bracketedPaste": true,
-				"r.plot.useHttpgd": true,
 				"r.lsp.args": ["--vanilla"], // To avoid "00LOCK-renv" error
 				"r.lsp.diagnostics": false,
 				"r.lsp.promptToInstall": false,
+				"r.plot.useHttpgd": true,
 				"r.session.viewers.viewColumn": {"browser": "Disable"},
+				"[r][rmd]": {
+					"editor.formatOnSave": true,
+					"editor.formatOnPaste": true,
+					"editor.formatOnType": true,
+					"editor.formatOnSaveMode": "file",
+					"editor.detectIndentation": false,
+					"editor.insertSpaces": true,
+					"editor.tabSize": 4,
+					"editor.folding": false,
+					"editor.wordWrap": "on",
+					"editor.rulers": [{"column": 80}, {"column": 120}]
+				},
+				"files.trimTrailingWhitespace": true,
+				"files.insertFinalNewline": true,
+				"files.trimFinalNewlines": true,
+				"terminal.integrated.cursorBlinking": true,
+				"terminal.integrated.cursorStyle": "line"
 			}
 		}
 	}
