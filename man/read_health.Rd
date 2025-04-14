@@ -24,8 +24,7 @@ table
 path <- "path/to/HealthAndDV.csv"
 
 read_health(
-  file = path
+    file = path
 )
-
 }
 }

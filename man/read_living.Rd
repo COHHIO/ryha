@@ -24,8 +24,7 @@ database table
 path <- "path/to/CurrentLivingSituation.csv"
 
 read_living(
-  file = path
+    file = path
 )
-
 }
 }

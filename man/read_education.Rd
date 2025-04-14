@@ -22,8 +22,7 @@ Ingest "EmploymentEducation.csv" file and perform ETL prep for "EDUCATION" datab
 path <- "path/to/EmploymentEducation.csv"
 
 read_education(
-  file = path
+    file = path
 )
-
 }
 }

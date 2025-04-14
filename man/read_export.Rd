@@ -24,8 +24,7 @@ database tables
 path <- "path/to/Export.csv"
 
 read_export(
-  file = path
+    file = path
 )
-
 }
 }
