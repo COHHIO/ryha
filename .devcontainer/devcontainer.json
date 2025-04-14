@@ -1,15 +1,15 @@
 {
-    "dockerComposeFile": "docker-compose.yml",
-    "service": "app",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
 	"containerEnv": {
 		"RENV_PATHS_CACHE": "/renv/cache",
 		"RENV_PATHS_CACHE_CONTAINER": "/renv/cache"
 	},
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Enable db and pgadmin in local machine
 	"forwardPorts": [5432, 5050],
 	"postCreateCommand": "Rscript .devcontainer/install_dev_packages.R",
-    // Configure tool-specific properties
+	// Configure tool-specific properties
 	"customizations": {
 		// Settings for VS Code
 		"vscode": {
@@ -22,9 +22,7 @@
 				"r.plot.useHttpgd": true,
 				"r.lsp.diagnostics": false,
 				"r.lsp.promptToInstall": false,
-				"r.session.viewers.viewColumn": {
-					"browser": "Disable"
-				}
+				"r.session.viewers.viewColumn": {"browser": "Disable"},
 			}
 		}
 	}
