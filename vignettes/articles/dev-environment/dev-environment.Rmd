@@ -2,44 +2,57 @@
 title: "Development Environment"
 ---
 
+## Overview
+
 [.devcontainer](https://github.com/COHHIO/ryha/tree/master/.devcontainer) directory contains the necessary files to set up a [development container](https://code.visualstudio.com/docs/devcontainers/containers):
 
 - [.env.example](https://github.com/COHHIO/ryha/tree/master/.devcontainer/.env.example) is an *example* file that shows how to set the `RENV_PATHS_CACHE_HOST` environment variable (required to configure `{renv}`'s cache) based upon Windows OS. **You need to create a file named** `.env` **in the same directory as** `.env.example` **and set** `RENV_PATHS_CACHE_HOST` **value to a path in your local machine based upon** [{renv}'s Cache location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
+- [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R) is a script run as a `postCreateCommand` in `devcontainer.json` to leverage `{renv}`'s cache. It performs the following tasks:
+  - runs `renv::restore()` to restore the project's dependencies from the [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock) file
+  - installs development-only packages (i.e. packages not needed to run the application but useful during development, such as `devtools`). **You can add or remove development-only packages from this script based on your preferences**. It's recommended to specify exact package versions to prevent unintended updates to other packages.
+  - configures [R Language Server](https://github.com/REditorSupport/languageserver) by updating the `R_LIBS_USER` environment variable, ensuring it points to the correct library path
 - [devcontainer.json](https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects.
 - [docker-compose.yml](https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml) sets up a development environment with three services:
-  - `app`: A custom-built application container that mounts local directories and [runs indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
-  - `db`: A PostgreSQL database container with [persistent storage](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/) and [exposed ports for access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port). Check [db](#db) section for instructions on how to connect to, populate and launch the application connected to the database.
-  - `pgadmin`: A [pgAdmin](https://www.pgadmin.org/) container for database management. Check [pgadmin](#pgadmin) section for instructions on how to configure the server.
+  - `app`: a custom-built application container that mounts local directories and [runs indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
+  - `db`: a PostgreSQL database container with [persistent storage](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/) and [exposed ports for access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port). Check [db](#db) section for instructions on how to connect to, populate and launch the application connected to the database.
+  - `pgadmin`: a [pgAdmin](https://www.pgadmin.org/) container for database management. Check [pgadmin](#pgadmin) section for instructions on how to configure the server.
 - [Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev) contains a set of instructions on how to build the Docker image to run the application in development. **Any new system requirement needed for additional R packages installed must be added to this file**.
-- [install_dev_packages.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_dev_packages.R) runs `renv::restore()` to restore the project's dependencies from the [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock) file. In addition, we use this script to install development packages (i.e. packages that are not needed to run the application but help during development, such as `devtools`). **Add or remove development packages from this script based on your preferences**. This script is run as a `postCreateCommand` in `devcontainer.json` to leverage `{renv}`'s cache.
 
-### Requirements
+## Requirements
 
 - [Docker](https://docs.docker.com/engine/install/). We recommend installing it via [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/).
 - [VS Code](https://code.visualstudio.com/)
 - VS Code's [Dev Container Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
-### QuickStart
+## QuickStart
 
 Once you have installed the necessary requirements, cloned the repository locally and created the `.devcontainer/.env` file, open the repository in VSCode and click **Reopen in Container...**:
 
-![](reopen-in-container.png)
+![](quickstart/reopen-in-container.png)
 
 *NOTE*: Alternatively, you can select **Dev Containers: Reopen in Container** from the Command Palette (`F1`) to perform this action.
 
 The Dev Container initialization may take a few minutes, as it needs to create different Docker images and install the corresponding R packages via `renv::restore()`.
 
-The message `Done. Press any key to close the terminal.` in `TERMINAL` tab indicates that the process completed successfully:
+The following messages in `TERMINAL` tab indicate that the process completed successfully:
 
-![](quickstart-finish.png)
+![](quickstart/finish.png)
+
+Follow the instructions to configure R Language Server:
+
+![](quickstart/reload-window.png)
+
+*NOTE*: **Developer: Reload Window** only needs to be run after a **Rebuild**. There is no need to run it after you **Reopen** a container.
 
 *NOTE*: If you encounter any errors, you can review the logs to troubleshoot or contact a team member for assistance.
 
 To launch an R Terminal, select **R: Create R terminal** from the Command Palette (`F1`). Alternatively, you can click the ``r intToUtf8(0x2304)`` icon in VS Code Panel and select **R Terminal**:
 
-![](quickstart-open-r.png)
+![](quickstart/open-r.png)
 
 Remember to select the R Terminal in the right sidebar to open it.
+
+## Clean Environment
 
 ### Exit Dev Container
 
@@ -48,7 +61,7 @@ To exit the Dev Container, click **Dev Container** (bottom left corner) and sele
 - **Reopen Folder Locally**: This option will close the current Dev Container session and reopen the project folder in your local environment, outside of the containerized setup. It's useful when you want to switch back to your local development environment while keeping the same project open.
 - **Close Remote Connection**: This will close the connection to the Dev Container and stop the container. The current workspace will be closed, and you'll be returned to the main VS Code window without any active workspace or connection.
 
-![](exit-container.png)
+![](clean/exit-container.png)
 
 ### Remove Dev Container
 
@@ -70,14 +83,14 @@ The following steps demonstrate how to remove the container, images and volumes 
 1. Go to Containers tab
 1. Locate the container associated with your Dev Container and click the corresponding trash icon to stop and delete it
 
-![](delete-container.png)
+![](clean/delete-container.png)
 
 #### Remove Images
 
 1. Go to Images tab
 1. Locate the images associated with your Dev Container and click the corresponding trash icons to remove them from your local Docker repository
 
-![](delete-images.png)
+![](clean/delete-images.png)
 
 #### Remove Volumes
 
@@ -86,13 +99,13 @@ The following steps demonstrate how to remove the container, images and volumes 
 1. Select the associated volumes
 1. Click **Delete**
 
-![](delete-volumes.png)
+![](clean/delete-volumes.png)
 
-### Container Details
+## Container Details
 
 The container uses [Docker Compose](https://docs.docker.com/compose/) to initialize the following **services**:
 
-#### app
+### app
 
 **app** creates a container based on [.devcontainer/Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev). This file:
 
@@ -109,7 +122,7 @@ By setting the `network_mode` property to `service:db`, we can use `host = "loca
 
 To run the app in development mode (without installing the {ryha} R package), run `golem::run_dev()`.
 
-#### db
+### db
 
 **db** creates a postgreSQL database. You can find the credentials under `db`'s `environment` property in [.devcontainer/docker-compose.yml](https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml).
 
@@ -117,34 +130,34 @@ The `ports` property allows the database to be accessible in the host machine (i
 
 This configuration ensures that the connection string remains the same regardless of whether we are connecting from outside or inside the Dev Container (when the `network_mode` property is set for `app` service).
 
-##### Connect
+#### Connect
 
 You can connect to the development database using the following code:
 
 ```{r, eval=FALSE}
 # Connect to dev database
 con <- DBI::dbConnect(
-  drv = RPostgres::Postgres(),
-  dbname = "ryha-dev",
-  host = "localhost",
-  port = 5432,
-  user = "ryha-dev",
-  password = "ryha"
+    drv = RPostgres::Postgres(),
+    dbname = "ryha-dev",
+    host = "localhost",
+    port = 5432,
+    user = "ryha-dev",
+    password = "ryha"
 )
 ```
 
-##### Populate
+#### Populate
 
 Once the container is created, you can run [postgres/populate_dev_database/populate_dev_database.R](https://github.com/COHHIO/ryha/tree/master/postgres/populate_dev_database/populate_dev_database.R) to create and populate the corresponding tables. To run this script you need to:
 
 - Store `dm.rds` in the directory `postgres/populate_dev_database/data`. `dm.rds` is a snapshot of the database in production. It needs to be created by someone with access to the production database. The process to generate this object is to read each table in the database into a list of dataframes where each element is named after the table name the data was read from.
 - Run `devtools::load_all(".")` to have access to the different functions in `ryha` that are used in the script (e.g. `send_to_db()`).
 
-##### Use in App
+#### Use in App
 
 Once the container is running, you can set the environmental variable `APP_BACKEND` to `dev` in `.Renviron` to run the application connected to the development database.
 
-#### pgAdmin
+### pgAdmin
 
 **pgAdmin** provides a graphical administration tool to make it easier to manipulate schema and data in PostgreSQL. Once the container is created, you can access pgAdmin in http://localhost:5050/ with the following credentials (which are defined under `pgadmin`'s `environment` property in `.devcontainer/docker-compose.yml`):
 
