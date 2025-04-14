@@ -8,7 +8,7 @@
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Enable db and pgadmin in local machine
 	"forwardPorts": [5432, 5050],
-	"postCreateCommand": "Rscript .devcontainer/install_dev_packages.R",
+	"postCreateCommand": "Rscript .devcontainer/complete_dev_setup.R",
 	// Configure tool-specific properties
 	"customizations": {
 		// Settings for VS Code
@@ -20,6 +20,7 @@
 			"settings": {
 				"r.bracketedPaste": true,
 				"r.plot.useHttpgd": true,
+				"r.lsp.args": ["--vanilla"], // To avoid "00LOCK-renv" error
 				"r.lsp.diagnostics": false,
 				"r.lsp.promptToInstall": false,
 				"r.session.viewers.viewColumn": {"browser": "Disable"},
