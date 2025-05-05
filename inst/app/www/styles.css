@@ -1,35 +1,8 @@
 
 
- /* Set the background & border color for the navbar */
-.navbar.bg-primary, .navbar.navbar-inverse {
-  background-color: #07274A !important;
-  border-color: #07274A !important;
-}
-
-/* Apply padding between the global filters pane and the filter widgets/labels */
-#control_bar {
-  padding: 20px;
-}
-
-/* Apply padding between the images on the "Welcome" page */
-#welcome-text > p > img {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-/* Widen the left-hand sidebar to accommodate the sidebar title text */
-.layout-fixed .main-sidebar {
-  width: 265px;
-}
-
-.layout-fixed .brand-link{
-  width: 265px;
-}
-
-/* Decrease the padding around {bs4Dash} boxes to accommodate more chart labels at
-smaller screen widths */
 .card-body {
   padding: 0.5rem;
+  overflow: hidden !important; /* Fix "scrolling" bug when "Expand" window is closed */
 }
 
 /* Hide the "Upload Complete" text in the `fileInput` progress bar */
@@ -42,31 +15,12 @@ smaller screen widths */
   display: flex;
   align-items: center;
   justify-content: center;
-  align-content: center;
 }
 
-/* Add style to welcome page boxes */
+/* Add style to boxes */
 .custom-box .card-body {
   text-align: justify;
   padding: .75rem 1.25rem;
-}
-
-.custom-box .card-title {
-  font-size: 1.5rem;
-}
-
-/* Set height for elements in sankey-tabset (default view)*/
-.sankey-tabset .card-body,
-.sankey-tabset .tab-content,
-.sankey-tabset .tab-pane.active {
-    height: 440px;
-}
-
-/* Set height for elements in sankey-tabset (maximized view)*/
-.sankey-tabset .maximized-card .card-body,
-.sankey-tabset .maximized-card .tab-content,
-.sankey-tabset .maximized-card .tab-pane.active {
-    height: 100%;
 }
 
 /* Add custom style to error modal */
@@ -75,13 +29,12 @@ smaller screen widths */
   color: white;
 }
 
-/* Add style to help page */
-.help-page-content {
-  background-color: white;
-  text-align: justify;
-}
-
 /* Bring datepicker to front */
 .datepicker {
   z-index: 99999 !important;
+}
+
+/* Hide popover close button */
+.popover .btn-close {
+  display: none !important;
 }

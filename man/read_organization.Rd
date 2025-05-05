@@ -22,8 +22,7 @@ Ingest "Organization.csv" file and perform ETL prep for "PROJECT" database table
 path <- "path/to/Organization.csv"
 
 read_organization(
-  file = path
+    file = path
 )
-
 }
 }
