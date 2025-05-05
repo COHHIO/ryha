@@ -12,78 +12,70 @@
 #'
 #' @export
 process_data <- function(file) {
+    # Ensure that the uploaded file is indeed a .zip file
+    is_zip <- stringr::str_detect(
+        string = file,
+        pattern = ".zip$"
+    )
 
-  # Ensure that the uploaded file is indeed a .zip file
-  is_zip <- stringr::str_detect(
-    string = file,
-    pattern = ".zip$"
-  )
+    if (!is_zip) {
+        paste0(file, " must be a .zip file") |>
+            rlang::abort()
+    }
 
-  if (!is_zip) {
+    # Create a temporary directory to unzip the .csv files into
+    tmp_dir <- tempfile()
 
-    paste0(file, " must be a .zip file") |>
-      rlang::abort()
+    # Ensure that this is a new (i.e., empty) directory
+    if (fs::dir_exists(tmp_dir)) {
+        fs::dir_delete(tmp_dir)
+    }
 
-  }
+    # Unzip the .csv files into the temp directory
+    zip::unzip(
+        zipfile = file,
+        exdir = tmp_dir,
+        overwrite = TRUE # overwrite any previous uploads into same temp directory
+    )
 
-  # Create a temporary directory to unzip the .csv files into
-  tmp_dir <- tempfile()
+    # Check that all required HMIS files are present in uploaded .zip file
+    check <- check_file_names(dir = tmp_dir, metadata = HMISmetadata)
 
-  # Ensure that this is a new (i.e., empty) directory
-  if (fs::dir_exists(tmp_dir)) {
+    # Throw error if any needed files are missing
+    if (!check$valid) {
+        glue::glue(
+            "The selected <strong>.zip</strong> is missing the following expected <strong>.csv</strong> file(s):",
+            paste("-", check$missing_file_names, collapse = ",<br>"),
+            .sep = "<br>"
+        ) |>
+            rlang::abort()
+    }
 
-    fs::dir_delete(tmp_dir)
+    # List the files (full paths) in the temp directory
+    files_in_tmp <- fs::dir_ls(tmp_dir)
 
-  }
+    # Read data from each file
+    data <- list(
+        client = read_client(find_file(files_in_tmp, "Client")),
+        disabilities = read_disabilities(find_file(files_in_tmp, "Disabilities")),
+        education = read_education(find_file(files_in_tmp, "EmploymentEducation")),
+        employment = read_employment(find_file(files_in_tmp, "EmploymentEducation")),
+        living = read_living(find_file(files_in_tmp, "CurrentLivingSituation")),
+        health = read_health(find_file(files_in_tmp, "HealthAndDV")),
+        domestic_violence = read_domestic_violence(find_file(files_in_tmp, "HealthAndDV")),
+        income = read_income(find_file(files_in_tmp, "IncomeBenefits")),
+        benefits = read_benefits(find_file(files_in_tmp, "IncomeBenefits")),
+        enrollment = read_enrollment(find_file(files_in_tmp, "Enrollment")),
+        services = read_services(find_file(files_in_tmp, "Services")),
+        project = read_project(find_file(files_in_tmp, "Project")),
+        project_coc = read_project_coc(find_file(files_in_tmp, "ProjectCoC")),
+        organization = read_organization(find_file(files_in_tmp, "Organization")),
+        exit = read_exit(find_file(files_in_tmp, "Exit")),
+        export = read_export(find_file(files_in_tmp, "Export")),
+        funder = read_funder(find_file(files_in_tmp, "Funder"))
+    )
 
-  # Unzip the .csv files into the temp directory
-  zip::unzip(
-    zipfile = file,
-    exdir = tmp_dir,
-    overwrite = TRUE   # overwrite any previous uploads into same temp directory
-  )
-
-  # Check that all required HMIS files are present in uploaded .zip file
-  check <- check_file_names(dir = tmp_dir, metadata = HMISmetadata)
-
-  # Throw error if any needed files are missing
-  if (!check$valid) {
-
-    glue::glue(
-      "The selected <strong>.zip</strong> is missing the following expected <strong>.csv</strong> file(s):",
-      paste("-", check$missing_file_names, collapse = ",<br>"),
-      .sep = "<br>"
-    ) |>
-    rlang::abort()
-
-  }
-
-  # List the files (full paths) in the temp directory
-  files_in_tmp <- fs::dir_ls(tmp_dir)
-
-  # Read data from each file
-  data <- list(
-    client = read_client(find_file(files_in_tmp, "Client")),
-    disabilities = read_disabilities(find_file(files_in_tmp, "Disabilities")),
-    education = read_education(find_file(files_in_tmp, "EmploymentEducation")),
-    employment = read_employment(find_file(files_in_tmp, "EmploymentEducation")),
-    living = read_living(find_file(files_in_tmp, "CurrentLivingSituation")),
-    health = read_health(find_file(files_in_tmp, "HealthAndDV")),
-    domestic_violence = read_domestic_violence(find_file(files_in_tmp, "HealthAndDV")),
-    income = read_income(find_file(files_in_tmp, "IncomeBenefits")),
-    benefits = read_benefits(find_file(files_in_tmp, "IncomeBenefits")),
-    enrollment = read_enrollment(find_file(files_in_tmp, "Enrollment")),
-    services = read_services(find_file(files_in_tmp, "Services")),
-    project = read_project(find_file(files_in_tmp, "Project")),
-    project_coc = read_project_coc(find_file(files_in_tmp, "ProjectCoC")),
-    organization = read_organization(find_file(files_in_tmp, "Organization")),
-    exit = read_exit(find_file(files_in_tmp, "Exit")),
-    export = read_export(find_file(files_in_tmp, "Export")),
-    funder = read_funder(find_file(files_in_tmp, "Funder"))
-  )
-
-  return(data)
-
+    return(data)
 }
 
 #' Find the complete filepath of a certain .csv file
@@ -102,12 +94,10 @@ process_data <- function(file) {
 #' find_file(files, "data1")
 #' }
 find_file <- function(files, target) {
-
-  stringr::str_subset(
-    string = files,
-    pattern = paste0(target, ".csv$")
-  )
-
+    stringr::str_subset(
+        string = files,
+        pattern = paste0(target, ".csv$")
+    )
 }
 
 #' Prepare data for database tasks
@@ -128,25 +118,21 @@ find_file <- function(files, target) {
 #'
 #' @return A list of processed data frames.
 prep_tables <- function(data, conn) {
+    # Retrieve the information from the file for the "organization" table
+    if (nrow(data$organization) != 1L) {
+        glue::glue(
+            "{nrow(data$organization)} organizations were found; ",
+            "expected exactly 1 organization in .zip upload."
+        ) |>
+            rlang::abort()
+    }
 
-  # Retrieve the information from the file for the "organization" table
-  if (nrow(data$organization) != 1L) {
-
-    glue::glue(
-      "{nrow(data$organization)} organizations were found; ",
-      "expected exactly 1 organization in .zip upload."
-    ) |>
-      rlang::abort()
-
-  }
-
-  # If the "organization" table exists in the database...
-  if ("organization" %in% DBI::dbListTables(conn = conn)) {
-
-    # Retrieve the existing organization information from the database
-    res <- DBI::dbSendQuery(
-      conn = conn,
-      statement = "
+    # If the "organization" table exists in the database...
+    if ("organization" %in% DBI::dbListTables(conn = conn)) {
+        # Retrieve the existing organization information from the database
+        res <- DBI::dbSendQuery(
+            conn = conn,
+            statement = "
       SELECT
         organization_id,
         orig_organization_id,
@@ -154,77 +140,72 @@ prep_tables <- function(data, conn) {
       FROM organization
       ORDER BY organization_id
     "
-    )
-    db_data <- DBI::dbFetch(res)
-    DBI::dbClearResult(res)
-
-    # Join the database data to the file data; this will allow us to quickly
-    # identify which organizations in the uploaded file are not yet in the
-    # database
-    data$organization <- data$organization |>
-      dplyr::left_join(
-        db_data,
-        by = c(
-          "orig_organization_id",
-          "organization_name"
         )
-      )
+        db_data <- DBI::dbFetch(res)
+        DBI::dbClearResult(res)
 
-    # If the organization in the file doesn't exist in the database...
-    if (is.na(data$organization$organization_id[1])) {
+        # Join the database data to the file data; this will allow us to quickly
+        # identify which organizations in the uploaded file are not yet in the
+        # database
+        data$organization <- data$organization |>
+            dplyr::left_join(
+                db_data,
+                by = c(
+                    "orig_organization_id",
+                    "organization_name"
+                )
+            )
 
-      # Determine the max "organization_id" integer value in the database
-      max_current_organization_id <- ifelse(
-        nrow(db_data) >= 1L,
-        max(db_data$organization_id),
-        0L
-      )
+        # If the organization in the file doesn't exist in the database...
+        if (is.na(data$organization$organization_id[1])) {
+            # Determine the max "organization_id" integer value in the database
+            max_current_organization_id <- ifelse(
+                nrow(db_data) >= 1L,
+                max(db_data$organization_id),
+                0L
+            )
 
-      # Set the next "organization_id" value
-      data$organization$organization_id[1] <- max_current_organization_id + 1L
+            # Set the next "organization_id" value
+            data$organization$organization_id[1] <- max_current_organization_id + 1L
 
-      # Append new organizations to "organization" database table
-      DBI::dbWriteTable(
-        conn = conn,
-        name = "organization",
-        value = data$organization,
-        append = TRUE
-      )
+            # Append new organizations to "organization" database table
+            DBI::dbWriteTable(
+                conn = conn,
+                name = "organization",
+                value = data$organization,
+                append = TRUE
+            )
+        }
 
+        # If the "organization" table does *not* yet exist in the database...
+        # (this handles the first ever submission, if the table hasn't been set up)
+    } else {
+        # Set the "organization_id" value as 1
+        data$organization$organization_id <- 1L
+
+        # Create the "organization" database table
+        DBI::dbWriteTable(
+            conn = conn,
+            name = "organization",
+            value = data$organization
+        )
     }
 
-    # If the "organization" table does *not* yet exist in the database...
-    # (this handles the first ever submission, if the table hasn't been set up)
-  } else {
+    # Retrieve the project, organization, and software information from the
+    # uploaded data
+    file_data <- data$project |>
+        dplyr::rename(orig_project_id = project_id) |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
 
-    # Set the "organization_id" value as 1
-    data$organization$organization_id <- 1L
-
-    # Create the "organization" database table
-    DBI::dbWriteTable(
-      conn = conn,
-      name = "organization",
-      value = data$organization
-    )
-
-  }
-
-  # Retrieve the project, organization, and software information from the
-  # uploaded data
-  file_data <- data$project |>
-    dplyr::rename(orig_project_id = project_id) |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  # If the "project" table exists in the database...
-  if ("project" %in% DBI::dbListTables(conn = conn)) {
-
-    # Retrieve the existing project, organization, and software information from
-    # the database
-    res <- DBI::dbSendQuery(
-      conn = conn,
-      statement = "
+    # If the "project" table exists in the database...
+    if ("project" %in% DBI::dbListTables(conn = conn)) {
+        # Retrieve the existing project, organization, and software information from
+        # the database
+        res <- DBI::dbSendQuery(
+            conn = conn,
+            statement = "
       SELECT
         project_id,
         project_name,
@@ -233,180 +214,175 @@ prep_tables <- function(data, conn) {
       FROM project
       ORDER BY project_id
     "
-    )
-    db_data <- DBI::dbFetch(res)
-    DBI::dbClearResult(res)
-
-    # Join the database data to the file data; this will allow us to quickly
-    # identify which projects in the uploaded file are not yet in the database
-    file_data <- file_data |>
-      dplyr::left_join(
-        db_data,
-        by = c(
-          "project_name",
-          "orig_project_id",
-          "organization_id"
         )
-      )
+        db_data <- DBI::dbFetch(res)
+        DBI::dbClearResult(res)
 
-    # If there are any "new" projects in the file that don't exist in the
-    # database...
-    if (any(is.na(file_data$project_id))) {
+        # Join the database data to the file data; this will allow us to quickly
+        # identify which projects in the uploaded file are not yet in the database
+        file_data <- file_data |>
+            dplyr::left_join(
+                db_data,
+                by = c(
+                    "project_name",
+                    "orig_project_id",
+                    "organization_id"
+                )
+            )
 
-      # Determine the max "project_id" integer value in the database
-      max_current_project_id <- ifelse(
-        nrow(db_data) >= 1L,
-        max(db_data$project_id),
-        0L
-      )
+        # If there are any "new" projects in the file that don't exist in the
+        # database...
+        if (any(is.na(file_data$project_id))) {
+            # Determine the max "project_id" integer value in the database
+            max_current_project_id <- ifelse(
+                nrow(db_data) >= 1L,
+                max(db_data$project_id),
+                0L
+            )
 
-      # Isolate the projects in the file that already exist in the database
-      file_data_existing_projects <- file_data |>
-        dplyr::filter(!is.na(project_id))
+            # Isolate the projects in the file that already exist in the database
+            file_data_existing_projects <- file_data |>
+                dplyr::filter(!is.na(project_id))
 
-      # Isolate the "new" projects in the file that *don't* exist in the
-      # database, and define the `project_id` values for each new project
-      file_data_new_projects <- file_data |>
-        dplyr::filter(is.na(project_id)) |>
-        dplyr::mutate(project_id = max_current_project_id + dplyr::row_number())
+            # Isolate the "new" projects in the file that *don't* exist in the
+            # database, and define the `project_id` values for each new project
+            file_data_new_projects <- file_data |>
+                dplyr::filter(is.na(project_id)) |>
+                dplyr::mutate(project_id = max_current_project_id + dplyr::row_number())
 
-      # Append new projects to "project" database table
-      DBI::dbWriteTable(
-        conn = conn,
-        name = "project",
-        value = file_data_new_projects,
-        append = TRUE
-      )
+            # Append new projects to "project" database table
+            DBI::dbWriteTable(
+                conn = conn,
+                name = "project",
+                value = file_data_new_projects,
+                append = TRUE
+            )
 
-      # Append the new projects (and their newly-defined `project_id` values) to
-      # existing projects
-      file_data <- file_data_existing_projects |>
-        dplyr::bind_rows(file_data_new_projects)
+            # Append the new projects (and their newly-defined `project_id` values) to
+            # existing projects
+            file_data <- file_data_existing_projects |>
+                dplyr::bind_rows(file_data_new_projects)
+        }
 
+        # If the "project" table does *not* yet exist in the database...
+        # (this handles the first ever submission, if the table hasn't been set up)
+    } else {
+        # Set the "project_id" value for each project in the uploaded file
+        file_data_new_projects <- file_data |>
+            dplyr::mutate(project_id = dplyr::row_number())
+
+        # Append new projects to "project" database table
+        DBI::dbWriteTable(
+            conn = conn,
+            name = "project",
+            value = file_data_new_projects,
+            append = TRUE
+        )
+
+        file_data <- file_data_new_projects
     }
 
-    # If the "project" table does *not* yet exist in the database...
-    # (this handles the first ever submission, if the table hasn't been set up)
-  } else {
+    # Add `project_id` and 'organization_id' columns to "enrollment" file data
+    data$enrollment <- data$enrollment |>
+        dplyr::left_join(
+            file_data |> dplyr::select(project_id, orig_project_id, organization_id),
+            by = c("orig_project_id")
+        )
 
-    # Set the "project_id" value for each project in the uploaded file
-    file_data_new_projects <- file_data |>
-      dplyr::mutate(project_id = dplyr::row_number())
+    # Add `project_id` and 'organization_id' columns to "project_coc" file data
+    data$project_coc <- data$project_coc |>
+        dplyr::left_join(
+            file_data |> dplyr::select(project_id, orig_project_id, organization_id),
+            by = c("orig_project_id")
+        )
 
-    # Append new projects to "project" database table
-    DBI::dbWriteTable(
-      conn = conn,
-      name = "project",
-      value = file_data_new_projects,
-      append = TRUE
+    # Add `project_id` and 'organization_id' columns to "funder" file data
+    data$funder <- data$funder |>
+        dplyr::left_join(
+            file_data |> dplyr::select(project_id, orig_project_id, organization_id),
+            by = c("orig_project_id")
+        )
+
+    # Add `software_name` to remaining files
+    data$client <- data$client |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$disabilities <- data$disabilities |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$education <- data$education |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$employment <- data$employment |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$living <- data$living |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$health <- data$health |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$domestic_violence <- data$domestic_violence |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$income <- data$income |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$benefits <- data$benefits |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$services <- data$services |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$exit <- data$exit |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    data$export <- data$export |>
+        dplyr::mutate(
+            organization_id = data$organization$organization_id[1]
+        )
+
+    out <- c(
+        "client",
+        "enrollment",
+        "disabilities",
+        "education",
+        "employment",
+        "living",
+        "health",
+        "domestic_violence",
+        "income",
+        "benefits",
+        "services",
+        "exit",
+        "export",
+        "project_coc",
+        "funder"
     )
 
-    file_data <- file_data_new_projects
-
-  }
-
-  # Add `project_id` and 'organization_id' columns to "enrollment" file data
-  data$enrollment <- data$enrollment |>
-    dplyr::left_join(
-      file_data |> dplyr::select(project_id, orig_project_id, organization_id),
-      by = c("orig_project_id")
-    )
-
-  # Add `project_id` and 'organization_id' columns to "project_coc" file data
-  data$project_coc <- data$project_coc |>
-    dplyr::left_join(
-      file_data |> dplyr::select(project_id, orig_project_id, organization_id),
-      by = c("orig_project_id")
-    )
-
-  # Add `project_id` and 'organization_id' columns to "funder" file data
-  data$funder <- data$funder |>
-    dplyr::left_join(
-      file_data |> dplyr::select(project_id, orig_project_id, organization_id),
-      by = c("orig_project_id")
-    )
-
-  # Add `software_name` to remaining files
-  data$client <- data$client |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$disabilities <- data$disabilities |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$education <- data$education |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$employment <- data$employment |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$living <- data$living |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$health <- data$health |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$domestic_violence <- data$domestic_violence |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$income <- data$income |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$benefits <- data$benefits |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$services <- data$services |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$exit <- data$exit |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  data$export <- data$export |>
-    dplyr::mutate(
-      organization_id = data$organization$organization_id[1]
-    )
-
-  out <- c(
-    "client",
-    "enrollment",
-    "disabilities",
-    "education",
-    "employment",
-    "living",
-    "health",
-    "domestic_violence",
-    "income",
-    "benefits",
-    "services",
-    "exit",
-    "export",
-    "project_coc",
-    "funder"
-  )
-
-  return(data[out])
-
+    return(data[out])
 }
 
 #' Delete records from a database
@@ -424,43 +400,37 @@ prep_tables <- function(data, conn) {
 #'
 #' @return Nothing. `delete_from_db()` is called for its side effects.
 delete_from_db <- function(data, conn) {
+    for (i in 1:length(data)) {
+        # Ensure that a valid 'organization_id' value exists in the input `data`
+        # to use in the DELETE statement's WHERE clause, and a valid database table
+        if (nrow(data[[i]]) >= 1L &
+            names(data)[i] %in% DBI::dbListTables(conn = conn) &
+            # Ensure that database table is not organization nor project
+            !names(data)[i] %in% c("organization", "project")) {
+            table_name <- glue::glue_sql(
+                names(data)[i],
+                .con = conn
+            )
 
-  for (i in 1:length(data)) {
+            organization_id <- data[[i]] |>
+                dplyr::slice(1) |>
+                dplyr::pull(organization_id) |>
+                glue::glue_sql(.con = conn)
 
-    # Ensure that a valid 'organization_id' value exists in the input `data`
-    # to use in the DELETE statement's WHERE clause, and a valid database table
-    if (nrow(data[[i]]) >= 1L &
-        names(data)[i] %in% DBI::dbListTables(conn = conn) &
-        # Ensure that database table is not organization nor project
-        !names(data)[i] %in% c("organization", "project")) {
-
-      table_name <- glue::glue_sql(
-        names(data)[i],
-        .con = conn
-      )
-
-      organization_id <- data[[i]] |>
-        dplyr::slice(1) |>
-        dplyr::pull(organization_id) |>
-        glue::glue_sql(.con = conn)
-
-      sql_stmt <- glue::glue_sql(
-      "
+            sql_stmt <- glue::glue_sql(
+                "
       DELETE FROM {table_name}
       WHERE organization_id = {organization_id}
       ",
-        .con = conn
-      )
+                .con = conn
+            )
 
-      DBI::dbExecute(
-        conn = conn,
-        statement = sql_stmt
-      )
-
+            DBI::dbExecute(
+                conn = conn,
+                statement = sql_stmt
+            )
+        }
     }
-
-  }
-
 }
 
 #' Send data to a database
@@ -474,28 +444,24 @@ delete_from_db <- function(data, conn) {
 #'
 #' @return Nothing. `send_to_db()` is called for its side effects.
 send_to_db <- function(data, conn, waiter = NULL) {
+    for (i in 1:length(data)) {
+        table_name <- names(data)[i]
 
-  for (i in 1:length(data)) {
+        if (!is.null(waiter)) {
+            waiter$update(
+                spinner_message(
+                    glue::glue("Step 5/5: Sending data... ({ i } of { length(data) })")
+                )
+            )
+        }
 
-    table_name <- names(data)[i]
-
-    if (!is.null(waiter)) {
-      waiter$update(
-        spinner_message(
-          glue::glue("Step 5/5: Sending data... ({ i } of { length(data) })")
+        DBI::dbWriteTable(
+            conn = conn,
+            table_name,
+            data[[table_name]],
+            append = TRUE
         )
-      )
     }
-
-    DBI::dbWriteTable(
-      conn = conn,
-      table_name,
-      data[[table_name]],
-      append = TRUE
-    )
-
-  }
-
 }
 
 # Create "safe" equivalents for each function

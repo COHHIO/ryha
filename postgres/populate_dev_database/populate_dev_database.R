@@ -1,21 +1,21 @@
 # Connect to dev database
 con <- DBI::dbConnect(
-  drv = RPostgres::Postgres(),
-  dbname = "ryha-dev",
-  host = "localhost",
-  port = 5432,
-  user = "ryha-dev",
-  password = "ryha"
+    drv = RPostgres::Postgres(),
+    dbname = "ryha-dev",
+    host = "localhost",
+    port = 5432,
+    user = "ryha-dev",
+    password = "ryha"
 )
 
 # Create tables
 for (file in list.files(here::here("postgres", "create_db"))) {
-  DBI::dbExecute(
-    conn = con,
-    statement = readr::read_file(
-      here::here("postgres", "create_db", file)
+    DBI::dbExecute(
+        conn = con,
+        statement = readr::read_file(
+            here::here("postgres", "create_db", file)
+        )
     )
-  )
 }
 
 # Read data snapshot

@@ -24,8 +24,7 @@ database table
 path <- "path/to/IncomeBenefits.csv"
 
 read_benefits(
-  file = path
+    file = path
 )
-
 }
 }

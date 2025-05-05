@@ -30,9 +30,9 @@ con <- connect_to_db(env = "prod")
 # Query only the "project_name" and "project_id" columns from the 'project'
 # database table
 read_data_from_table(
-  connection = con,
-  table_name = "project",
-  column_names = c("project_name", "project_id")
+    connection = con,
+    table_name = "project",
+    column_names = c("project_name", "project_id")
 )
 }
 }
