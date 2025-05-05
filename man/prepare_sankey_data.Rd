@@ -25,11 +25,11 @@ the start, end and count of each transition.
 \examples{
 \dontrun{
 mock_data <- data.frame(
-  enrollment_id = rep(1:5, each = 2),
-  personal_id = rep(1:5, each = 2),
-  organization_id = 1,
-  data_collection_stage = rep(c("Project start", "Project exit"), 5),
-  status = c("A", "B", "A", "B", "B", "C", "A", "C", "A", "D")
+    enrollment_id = rep(1:5, each = 2),
+    personal_id = rep(1:5, each = 2),
+    organization_id = 1,
+    data_collection_stage = rep(c("Project start", "Project exit"), 5),
+    status = c("A", "B", "A", "B", "B", "C", "A", "C", "A", "D")
 )
 
 prepare_sankey_data(mock_data, response_col = "status", response_vals = c("A", "B", "C"))

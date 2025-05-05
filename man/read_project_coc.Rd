@@ -22,7 +22,7 @@ Ingest "ProjectCoC.csv" file and perform ETL prep for "PROJECT COC" database tab
 path <- "path/to/ProjectCoC.csv"
 
 read_project_coc(
-  file = path
+    file = path
 )
 }
 }

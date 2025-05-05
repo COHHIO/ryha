@@ -32,13 +32,13 @@ applied sequentially:
 \examples{
 \dontrun{
 mock_data <- tibble::tribble(
-  ~organization_id, ~personal_id, ~enrollment_id,  ~entry_date,   ~exit_date, ~date_updated,
-                1L,           1L,          1000L, "2022-01-01", "2022-12-31",  "2022-12-31",
-                1L,           1L,          1001L, "2023-01-01",           NA,  "2023-01-01"
+    ~organization_id, ~personal_id, ~enrollment_id, ~entry_date, ~exit_date, ~date_updated,
+    1L, 1L, 1000L, "2022-01-01", "2022-12-31", "2022-12-31",
+    1L, 1L, 1001L, "2023-01-01", NA, "2023-01-01"
 ) |>
-dplyr::mutate(
-  dplyr::across(c(entry_date, exit_date, date_updated), as.Date)
-)
+    dplyr::mutate(
+        dplyr::across(c(entry_date, exit_date, date_updated), as.Date)
+    )
 
 filter_most_recent_enrollment_per_group(mock_data, c("personal_id", "organization_id"))
 }

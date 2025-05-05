@@ -21,6 +21,5 @@ Hash a value with a key
 \dontrun{
 
 hash("blah", key = my_key)
-
 }
 }

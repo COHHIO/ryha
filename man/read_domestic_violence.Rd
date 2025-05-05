@@ -24,8 +24,7 @@ database table
 path <- "path/to/HealthAndDV.csv"
 
 read_domestic_violence(
-  file = path
+    file = path
 )
-
 }
 }

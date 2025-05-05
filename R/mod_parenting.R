@@ -7,146 +7,137 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_parenting_ui <- function(id){
-  ns <- NS(id)
-  tagList(
-
-    bslib::layout_columns(
-      col_widths = c(-2, 8, -2),
-      bslib::card(
-        custom_card(
-          bslib::card_header(
-            with_popover(
-              text = "# of Head of Household and/or Adults by Pregnancy Status",
-              content = link_section("R10 Pregnancy Status")
+mod_parenting_ui <- function(id) {
+    ns <- NS(id)
+    tagList(
+        bslib::layout_columns(
+            col_widths = c(-2, 8, -2),
+            bslib::card(
+                custom_card(
+                    bslib::card_header(
+                        with_popover(
+                            text = "# of Head of Household and/or Adults by Pregnancy Status",
+                            content = link_section("R10 Pregnancy Status")
+                        )
+                    ),
+                    echarts4r::echarts4rOutput(outputId = ns("pregnancy_chart"), height = "100%")
+                ),
+                bslib::card(
+                    bslib::card_header(
+                        with_popover(
+                            text = "# of Youth Parenting",
+                            content = shiny::HTML("A youth is defined as <strong>Parenting</strong> if there is at least one youth enrolled as the head of household's child")
+                        )
+                    ),
+                    reactable::reactableOutput(outputId = ns("parenting_tbl"), height = "100%")
+                )
             )
-          ),
-          echarts4r::echarts4rOutput(outputId = ns("pregnancy_chart"), height = "100%")
-        ),
-        bslib::card(
-          bslib::card_header(
-            with_popover(
-              text = "# of Youth Parenting",
-              content = shiny::HTML("A youth is defined as <strong>Parenting</strong> if there is at least one youth enrolled as the head of household's child")
-            )
-          ),
-          reactable::reactableOutput(outputId = ns("parenting_tbl"), height = "100%")
         )
-      )
     )
-
-  )
 }
 
 #' parenting Server Functions
 #'
 #' @noRd
-mod_parenting_server <- function(id, health_data, enrollment_data, clients_filtered, heads_of_household_and_adults){
-  moduleServer( id, function(input, output, session){
-    ns <- session$ns
+mod_parenting_server <- function(id, health_data, enrollment_data, clients_filtered, heads_of_household_and_adults) {
+    moduleServer(id, function(input, output, session) {
+        ns <- session$ns
 
-    # Info Boxes ----
+        # Info Boxes ----
 
-    # Filter health data
-    health_data_filtered <- shiny::reactive(
-      filter_data(health_data, clients_filtered()) |>
-        dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
-    )
-
-    most_recent_data_per_enrollment <- shiny::reactive({
-      health_data_filtered() |> 
-        dplyr::filter(data_collection_stage %in% c("Project start", "Project exit")) |>
-        filter_most_recent_data_per_enrollment()
-    })
-
-    # Filter enrollment data
-    enrollment_data_filtered <- shiny::reactive(
-      enrollment_data |>
-        filter_data(clients_filtered()) 
-    )
-
-    # Total number of Youth in program(s) provided a valid response to
-    # `relationship_to_hoh` in "Enrollment.csv"
-    n_youth_with_parenting_data <- shiny::reactive(
-
-      enrollment_data_filtered() |>
-        dplyr::filter(
-          !is.na(relationship_to_ho_h)
-        ) |>
-        dplyr::distinct(personal_id, organization_id) |>
-        nrow()
-
-    )
-
-    # Pregnancy Status ----
-    output$pregnancy_chart <- echarts4r::renderEcharts4r({
-      most_recent_data_per_enrollment() |> 
-        dplyr::count(pregnancy_status, .drop = FALSE) |> 
-        bar_chart(
-          x = "pregnancy_status",
-          y = "n"
-        )
-    })
-
-    ## Data Quality Statistics ----
-
-    # Parenting ----
-
-    ## Table ----
-
-    # Create reactive data frame to capture number of youth who are parenting
-    parenting_data <- shiny::reactive({
-
-      hhs_with_children <- enrollment_data_filtered() |>
-        dplyr::filter(relationship_to_ho_h == "Head of household's child") |>
-        dplyr::distinct(household_id) |>
-        dplyr::pull()
-
-      parenting <- enrollment_data_filtered() |>
-        dplyr::filter(
-          household_id %in% hhs_with_children,
-          relationship_to_ho_h %in% c(
-            "Self (head of household)",
-            "Head of household's spouse or partner"
-          )
-        ) |>
-        dplyr::count(relationship_to_ho_h, name = "Count", sort = TRUE) |>
-        dplyr::mutate(Percent = Count / n_youth_with_parenting_data())
-
-    })
-
-    # Create the {reactable} table to hold the parenting data
-    output$parenting_tbl <- reactable::renderReactable(
-
-      parenting_data() |>
-        reactable::reactable(
-          columns = list(
-            relationship_to_ho_h = reactable::colDef(
-              name = "Relationship to Head of Household",
-              minWidth = 200,
-              footer = "Total"
-            ),
-            Count = reactable::colDef(
-              minWidth = 100,
-              footer = function(values) sum(values)
-            ),
-            Percent = reactable::colDef(
-              format = reactable::colFormat(
-                percent = TRUE,
-                digits = 2L
-              ),
-              minWidth = 100,
-              footer = function(values) scales::percent(sum(values), accuracy = 0.01)
-            )
-          ),
-          defaultColDef = reactable::colDef(
-            footerStyle = list(fontWeight = "bold")
-          )
+        # Filter health data
+        health_data_filtered <- shiny::reactive(
+            filter_data(health_data, clients_filtered()) |>
+                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
         )
 
-    )
+        most_recent_data_per_enrollment <- shiny::reactive({
+            health_data_filtered() |>
+                dplyr::filter(data_collection_stage %in% c("Project start", "Project exit")) |>
+                filter_most_recent_data_per_enrollment()
+        })
 
-  })
+        # Filter enrollment data
+        enrollment_data_filtered <- shiny::reactive(
+            enrollment_data |>
+                filter_data(clients_filtered())
+        )
+
+        # Total number of Youth in program(s) provided a valid response to
+        # `relationship_to_hoh` in "Enrollment.csv"
+        n_youth_with_parenting_data <- shiny::reactive(
+            enrollment_data_filtered() |>
+                dplyr::filter(
+                    !is.na(relationship_to_ho_h)
+                ) |>
+                dplyr::distinct(personal_id, organization_id) |>
+                nrow()
+        )
+
+        # Pregnancy Status ----
+        output$pregnancy_chart <- echarts4r::renderEcharts4r({
+            most_recent_data_per_enrollment() |>
+                dplyr::count(pregnancy_status, .drop = FALSE) |>
+                bar_chart(
+                    x = "pregnancy_status",
+                    y = "n"
+                )
+        })
+
+        ## Data Quality Statistics ----
+
+        # Parenting ----
+
+        ## Table ----
+
+        # Create reactive data frame to capture number of youth who are parenting
+        parenting_data <- shiny::reactive({
+            hhs_with_children <- enrollment_data_filtered() |>
+                dplyr::filter(relationship_to_ho_h == "Head of household's child") |>
+                dplyr::distinct(household_id) |>
+                dplyr::pull()
+
+            parenting <- enrollment_data_filtered() |>
+                dplyr::filter(
+                    household_id %in% hhs_with_children,
+                    relationship_to_ho_h %in% c(
+                        "Self (head of household)",
+                        "Head of household's spouse or partner"
+                    )
+                ) |>
+                dplyr::count(relationship_to_ho_h, name = "Count", sort = TRUE) |>
+                dplyr::mutate(Percent = Count / n_youth_with_parenting_data())
+        })
+
+        # Create the {reactable} table to hold the parenting data
+        output$parenting_tbl <- reactable::renderReactable(
+            parenting_data() |>
+                reactable::reactable(
+                    columns = list(
+                        relationship_to_ho_h = reactable::colDef(
+                            name = "Relationship to Head of Household",
+                            minWidth = 200,
+                            footer = "Total"
+                        ),
+                        Count = reactable::colDef(
+                            minWidth = 100,
+                            footer = function(values) sum(values)
+                        ),
+                        Percent = reactable::colDef(
+                            format = reactable::colFormat(
+                                percent = TRUE,
+                                digits = 2L
+                            ),
+                            minWidth = 100,
+                            footer = function(values) scales::percent(sum(values), accuracy = 0.01)
+                        )
+                    ),
+                    defaultColDef = reactable::colDef(
+                        footerStyle = list(fontWeight = "bold")
+                    )
+                )
+        )
+    })
 }
 
 ## To be copied in the UI

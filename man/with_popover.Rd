@@ -23,12 +23,12 @@ to display alongside a given text.
 \examples{
 \dontrun{
 with_popover(
-  text = "Some Example Text",
-  content = shiny::tagList(
-    shiny::span("First description line."),
-    shiny::br(),
-    shiny::span("Second description line.")
-  )
+    text = "Some Example Text",
+    content = shiny::tagList(
+        shiny::span("First description line."),
+        shiny::br(),
+        shiny::span("Second description line.")
+    )
 )
 }
 }
