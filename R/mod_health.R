@@ -13,6 +13,18 @@ mod_health_ui <- function(id) {
         bslib::card(
             bslib::card_header(shiny::h2("Health Status")),
             bslib::layout_columns(
+                mod_value_box_ui(
+                    id = ns("n_heads_of_household_and_adults_with_health_data"),
+                    title = "# of Head of Household and/or Adults with Health Data",
+                    tooltip = "Head of Household and/or Adults included in Overview who also appear in Health records"
+                ),
+                mod_value_box_ui(
+                    id = ns("n_heads_of_household_and_adults_missing_health_data"),
+                    title = "# of Head of Household and/or Adults Missing",
+                    tooltip = "Head of Household and/or Adults included in Overview without a matching Health record"
+                )
+            ),
+            bslib::layout_columns(
                 custom_card(
                     bslib::card_header(
                         with_popover(
@@ -67,6 +79,13 @@ mod_health_ui <- function(id) {
         ),
         bslib::card(
             bslib::card_header(shiny::h2("Counseling")),
+            bslib::layout_columns(
+                mod_value_box_ui(
+                    id = ns("n_heads_of_household_and_adults_with_counseling_data"),
+                    title = "# of Head of Household and/or Adults with Counseling Data",
+                    tooltip = "Head of Household and/or Adults included in Overview who also appear in Counseling records"
+                )
+            ),
             custom_card(
                 bslib::card_header(
                     with_popover(
@@ -87,13 +106,12 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        # Filter health data
+        # Filter Data ####
         health_data_filtered <- shiny::reactive({
             filter_data(health_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
-        # Create reactive with the most recent data collected per enrollment
         most_recent_health_data_per_enrollment <- shiny::reactive({
             health_data_filtered() |>
                 # Health data should be collected only at Project start and Project exit
@@ -101,13 +119,35 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
                 filter_most_recent_data_per_enrollment()
         })
 
-        # Filter counseling data
         counseling_data_filtered <- shiny::reactive({
             filter_data(counseling_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
-        # General Health ----
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_health_data",
+            rctv_data = most_recent_health_data_per_enrollment
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_missing_health_data",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        most_recent_health_data_per_enrollment(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_counseling_data",
+            rctv_data = counseling_data_filtered
+        )
+
+        # Charts ####
+        ## General Health ####
         output$health_status_chart <- echarts4r::renderEcharts4r({
             most_recent_health_data_per_enrollment() |>
                 tidyr::pivot_longer(
@@ -160,7 +200,8 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
                 add_stacked_bar_tooltip()
         })
 
-        # Create general health status sankey chart
+        ## Sankey ####
+        ### General Health Status ####
         output$general_sankey_chart <- echarts4r::renderEcharts4r({
             health_data_filtered() |>
                 prepare_sankey_data(
@@ -180,7 +221,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
                 )
         })
 
-        # Create dental health status sankey chart
+        ### Dental Health Status ####
         output$dental_sankey_chart <- echarts4r::renderEcharts4r({
             health_data_filtered() |>
                 prepare_sankey_data(
@@ -200,7 +241,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
                 )
         })
 
-        # Create mental health status sankey chart
+        ### Mental Health Status ####
         output$mental_sankey_chart <- echarts4r::renderEcharts4r({
             health_data_filtered() |>
                 prepare_sankey_data(
@@ -220,7 +261,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
                 )
         })
 
-        # Counseling ----
+        ## Counseling ####
         output$counseling_chart <- echarts4r::renderEcharts4r({
             counseling_data_filtered() |>
                 dplyr::count(counseling_received, .drop = FALSE) |>
