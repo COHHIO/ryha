@@ -10,6 +10,22 @@
 mod_employment_ui <- function(id) {
     ns <- NS(id)
     tagList(
+        bslib::layout_columns(
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_with_employment_data"),
+                title = "# of Head of Household and/or Adults with Employment Data",
+                tooltip = "Head of Household and/or Adults included in Overview who also appear in Employment records"
+            ),
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_missing"),
+                title = "# of Head of Household and/or Adults Missing",
+                tooltip = "Head of Household and/or Adults included in Overview without a matching Employment record"
+            ),
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_employed"),
+                title = "# of Head of Household and/or Adults Employed"
+            )
+        ),
         custom_card(
             bslib::card_header(
                 with_popover(
@@ -58,13 +74,12 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        # Filter employment data
+        # Filter Data ####
         employment_data_filtered <- shiny::reactive({
             filter_data(employment_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
-        # Create reactive with the most recent data collected per enrollment
         most_recent_data_per_enrollment <- shiny::reactive({
             employment_data_filtered() |>
                 # Employment data should be collected only at Project start and Project exit
@@ -72,6 +87,33 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
                 filter_most_recent_data_per_enrollment()
         })
 
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_employment_data",
+            rctv_data = most_recent_data_per_enrollment
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_missing",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        most_recent_data_per_enrollment(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_employed",
+            rctv_data = shiny::reactive({
+                most_recent_data_per_enrollment() |>
+                    dplyr::filter(employed == "Yes")
+            })
+        )
+
+        # Charts ####
+        ## Employed ####
         output$employed_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
                 dplyr::count(employed, .drop = FALSE) |>
@@ -81,6 +123,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
                 )
         })
 
+        ## Employment Type ####
         output$employment_type_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
                 dplyr::filter(employed == "Yes") |>
@@ -91,6 +134,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
                 )
         })
 
+        ## Not Employed Reason ####
         output$not_employed_reason_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
                 dplyr::filter(employed == "No") |>
@@ -101,6 +145,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
                 )
         })
 
+        ## Sankey
         output$employed_sankey_chart <- echarts4r::renderEcharts4r({
             employment_data_filtered() |>
                 prepare_sankey_data(
