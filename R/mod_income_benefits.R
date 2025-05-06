@@ -15,6 +15,18 @@ mod_income_benefits_ui <- function(id) {
                 bslib::nav_panel(
                     title = "Income",
                     bslib::layout_columns(
+                        mod_value_box_ui(
+                            id = ns("n_heads_of_household_and_adults_with_income_data"),
+                            title = "# of Head of Household and/or Adults with Income Data",
+                            tooltip = "Head of Household and/or Adults included in Overview who also appear in Income records"
+                        ),
+                        mod_value_box_ui(
+                            id = ns("n_heads_of_household_and_adults_missing_income_data"),
+                            title = "# of Head of Household and/or Adults Missing",
+                            tooltip = "Head of Household and/or Adults included in Overview without a matching Income record"
+                        ),
+                    ),
+                    bslib::layout_columns(
                         custom_card(
                             bslib::card_header(
                                 with_popover(
@@ -52,6 +64,18 @@ mod_income_benefits_ui <- function(id) {
                 bslib::nav_panel(
                     title = "Benefits",
                     bslib::layout_columns(
+                        mod_value_box_ui(
+                            id = ns("n_heads_of_household_and_adults_with_benefits_data"),
+                            title = "# of Head of Household and/or Adults with Benefits Data",
+                            tooltip = "Head of Household and/or Adults included in Overview who also appear in Benefits records"
+                        ),
+                        mod_value_box_ui(
+                            id = ns("n_heads_of_household_and_adults_missing_benefits_data"),
+                            title = "# of Head of Household and/or Adults Missing",
+                            tooltip = "Head of Household and/or Adults included in Overview without a matching Benefits record"
+                        )
+                    ),
+                    bslib::layout_columns(
                         custom_card(
                             bslib::card_header(
                                 with_popover(
@@ -88,6 +112,18 @@ mod_income_benefits_ui <- function(id) {
                 ),
                 bslib::nav_panel(
                     title = "Health Insurance",
+                    bslib::layout_columns(
+                        mod_value_box_ui(
+                            id = ns("n_youth_with_health_insurance_data"),
+                            title = "# of Youth with Health Insurance Data",
+                            tooltip = "Youth included in Overview who also appear in Health Insurance records"
+                        ),
+                        mod_value_box_ui(
+                            id = ns("n_youth_missing_health_insurance_data"),
+                            title = "# of Youth Missing",
+                            tooltip = "Youth included in Overview without a matching Health Insurance record"
+                        )
+                    ),
                     bslib::layout_columns(
                         custom_card(
                             bslib::card_header(
@@ -136,7 +172,8 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        ## Filter income data ----
+        # Filter Data ####
+        ## Income ####
         income_data_filtered <- shiny::reactive({
             filter_data(income_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
@@ -147,7 +184,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 filter_most_recent_data_per_enrollment()
         })
 
-        ## Filter benefits data ----
+        ## Benefits ####
         benefits_data_filtered <- shiny::reactive({
             filter_data(benefits_data, clients_filtered())
         })
@@ -163,7 +200,57 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 filter_most_recent_data_per_enrollment()
         })
 
-        ## Income Chart ----
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_income_data",
+            rctv_data = most_recent_income_data_per_enrollment
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_missing_income_data",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        most_recent_income_data_per_enrollment(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_benefits_data",
+            rctv_data = most_recent_benefits_data_per_enrollment_hh_and_adults
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_missing_benefits_data",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        most_recent_benefits_data_per_enrollment_hh_and_adults(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_youth_with_health_insurance_data",
+            rctv_data = most_recent_benefits_data_per_enrollment_all_clients
+        )
+
+        mod_value_box_server(
+            id = "n_youth_missing_health_insurance_data",
+            rctv_data = shiny::reactive({
+                clients_filtered() |>
+                    dplyr::anti_join(
+                        most_recent_benefits_data_per_enrollment_all_clients(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        # Charts ####
+        ## Income ####
         output$income_chart <- echarts4r::renderEcharts4r(
             most_recent_income_data_per_enrollment() |>
                 dplyr::count(income_from_any_source, .drop = FALSE) |>
@@ -173,7 +260,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         )
 
-        ## Income Source Chart ----
+        ## Income Source ####
         output$income_source_chart <- echarts4r::renderEcharts4r({
             youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
                 dplyr::filter(income_from_any_source == "Yes")
@@ -253,7 +340,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Monthly Income Chart ----
+        ## Monthly Income ####
         output$income_bar_chart <- echarts4r::renderEcharts4r({
             youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
                 dplyr::filter(income_from_any_source == "Yes")
@@ -266,7 +353,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Benefits Chart ----
+        ## Benefits ####
         output$benefits_chart <- echarts4r::renderEcharts4r({
             most_recent_benefits_data_per_enrollment_hh_and_adults() |>
                 dplyr::count(benefits_from_any_source, .drop = FALSE) |>
@@ -276,7 +363,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Benefits Source Chart ----
+        ## Benefits Source ####
         output$benefits_source_chart <- echarts4r::renderEcharts4r({
             youth_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment_hh_and_adults() |>
                 dplyr::filter(benefits_from_any_source == "Yes")
@@ -328,7 +415,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Benefits Sankey Chart ----
+        ## Benefits Sankey ####
         output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
             benefits_data_filtered() |>
                 prepare_sankey_data(
@@ -342,7 +429,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         )
 
-        ## Health Insurance Chart ----
+        ## Health Insurance ####
         output$insurance_chart <- echarts4r::renderEcharts4r({
             most_recent_benefits_data_per_enrollment_all_clients() |>
                 dplyr::count(insurance_from_any_source, .drop = FALSE) |>
@@ -352,7 +439,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Health Insurance Source Chart ----
+        ## Health Insurance Source ####
         output$insurance_source_chart <- echarts4r::renderEcharts4r({
             youth_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment_all_clients() |>
                 dplyr::filter(insurance_from_any_source == "Yes")
@@ -417,7 +504,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Health Insurance Sankey Chart ----
+        ## Health Insurance Sankey ####
         output$insurance_sankey_chart <- echarts4r::renderEcharts4r(
             benefits_data_filtered() |>
                 prepare_sankey_data(
