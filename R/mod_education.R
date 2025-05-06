@@ -11,6 +11,18 @@ mod_education_ui <- function(id) {
     ns <- NS(id)
     tagList(
         bslib::layout_columns(
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_with_education_data"),
+                title = "# of Head of Household and/or Adults with Education Data",
+                tooltip = "Head of Household and/or Adults included in Overview who also appear in Education records"
+            ),
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_missing"),
+                title = "# of Head of Household and/or Adults Missing",
+                tooltip = "Head of Household and/or Adults included in Overview without a matching Education record"
+            )
+        ),
+        bslib::layout_columns(
             bslib::card(
                 bslib::card_header(shiny::h2("Last Grade Completed")),
                 custom_card(
@@ -72,19 +84,36 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        # Filter education data
+        # Filter Data ####
         education_data_filtered <- shiny::reactive({
             filter_data(education_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
-        # Create reactive with the most recent data collected per enrollment
         most_recent_data_per_enrollment <- shiny::reactive({
             education_data_filtered() |>
                 filter_most_recent_data_per_enrollment()
         })
 
-        # Last Grade Completed ----
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_education_data",
+            rctv_data = most_recent_data_per_enrollment
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_missing",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        most_recent_data_per_enrollment(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        # Charts ####
+        ## Last Grade Completed ####
         output$last_grade_completed_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
                 dplyr::count(last_grade_completed_grouped, .drop = FALSE) |>
@@ -94,7 +123,7 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
                 )
         })
 
-        ## Sankey Chart ----
+        ## Sankey ####
         output$last_grade_completed_sankey_chart <- echarts4r::renderEcharts4r({
             education_data_filtered() |>
                 prepare_sankey_data(
@@ -115,7 +144,7 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
                 )
         })
 
-        # School Status ----
+        ## School Status ####
         output$school_status_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
                 dplyr::count(school_status, .drop = FALSE) |>
@@ -125,8 +154,7 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
                 )
         })
 
-        ## Sankey Chart ----
-        # Create "School Status" sankey chart
+        ## Sankey ####
         output$school_status_sankey_chart <- echarts4r::renderEcharts4r({
             education_data_filtered() |>
                 prepare_sankey_data(
