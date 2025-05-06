@@ -11,13 +11,13 @@ mod_value_box_ui <- function(id, title, tooltip = NULL) {
     ns <- NS(id)
 
     title_ui <- if (!is.null(tooltip)) {
-        bslib::tooltip(
-            shiny::span(
-                title,
-                bsicons::bs_icon("info-circle")
-            ),
-            tooltip,
-            placement = "right"
+        shiny::span(
+            title,
+            bslib::tooltip(
+                trigger = bsicons::bs_icon("info-circle"),
+                tooltip,
+                placement = "right"
+            )
         )
     } else {
         title

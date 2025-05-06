@@ -11,6 +11,26 @@ mod_disabilities_ui <- function(id) {
     ns <- NS(id)
     tagList(
         bslib::layout_columns(
+            mod_value_box_ui(
+                id = ns("n_youth_with_disabilities_data"),
+                title = "# of Youth with Disabilities Data",
+                tooltip = "Youth included in Overview who also appear in Disabilities records"
+            ),
+            mod_value_box_ui(
+                id = ns("n_youth_missing"),
+                title = "# of Youth Missing",
+                tooltip = "Youth included in Overview without a matching Disabilities record"
+            ),
+            mod_value_box_ui(
+                id = ns("n_youth_with_a_disability"),
+                title = "# of Youth with a Disability"
+            ),
+            mod_value_box_ui(
+                id = ns("n_youth_with_substance_use"),
+                title = "# of Youth with Substance Use"
+            )
+        ),
+        bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
@@ -108,13 +128,13 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        # Filter disabilities data
+        # Filter Data ####
         # disabilities_data_filtered has one row per enrollment, data collection stage and disability type
         disabilities_data_filtered <- shiny::reactive({
             filter_data(disabilities_data, clients_filtered())
         })
 
-        # Create reactive with the most recent data collected per enrollment
+        # most_recent_data_per_enrollment contains the most recent data collected per enrollment
         most_recent_data_per_enrollment <- shiny::reactive({
             out <- disabilities_data_filtered() |>
                 tidyr::pivot_wider(names_from = disability_type, values_from = disability_response) |>
@@ -142,11 +162,60 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
             out
         })
 
-        # Charts ----
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_youth_with_disabilities_data",
+            rctv_data = most_recent_data_per_enrollment
+        )
 
-        ## Disabilities Chart ----
+        mod_value_box_server(
+            id = "n_youth_missing",
+            rctv_data = shiny::reactive({
+                clients_filtered() |>
+                    dplyr::anti_join(
+                        most_recent_data_per_enrollment(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
 
-        # Create reactive data frame to data to be displayed in chart
+        mod_value_box_server(
+            id = "n_youth_with_a_disability",
+            rctv_data = shiny::reactive({
+                most_recent_data_per_enrollment() |>
+                    dplyr::filter(
+                        dplyr::if_any(
+                            .cols = c(
+                                `Physical Disability`,
+                                `Developmental Disability`,
+                                `Chronic Health Condition`,
+                                `HIV/AIDS`,
+                                `Mental Health Disorder`
+                            ),
+                            .fns = function(col) col == "Yes"
+                        )
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_youth_with_substance_use",
+            rctv_data = shiny::reactive({
+                most_recent_data_per_enrollment() |>
+                    dplyr::filter(
+                        `Substance Use Disorder` %in% c(
+                            "Both alcohol and drug use disorders",
+                            "Drug use disorder",
+                            "Alcohol use disorder"
+                        )
+                    )
+            })
+        )
+
+
+        # Charts ####
+        ## Disabilities ####
+        # Process data
         disabilities_chart_data <- shiny::reactive({
             most_recent_data_per_enrollment() |>
                 # Remove Substance Use Disorder column
@@ -187,7 +256,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 dplyr::group_by(Response)
         })
 
-        # Create disabilities chart
+        # Create chart
         output$disabilities_chart <- echarts4r::renderEcharts4r({
             disabilities_chart_data() |>
                 echarts4r::e_chart(x = Disability) |>
@@ -208,9 +277,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 add_stacked_bar_tooltip()
         })
 
-        ## Substance Use Disorder Chart ----
-
-        # Create substance use pie chart
+        ## Substance Use Disorder ####
         output$substance_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
                 tidyr::replace_na(list(`Substance Use Disorder` = "Missing")) |>
@@ -247,8 +314,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 )
         })
 
-        # Sankey Charts ----
-        ## Physical Disabilities ----
+        ## Sankey Charts ####
+        ### Physical Disabilities ####
         output$physical_sankey_chart <- echarts4r::renderEcharts4r({
             disabilities_data_filtered() |>
                 dplyr::filter(disability_type == "Physical Disability") |>
@@ -263,7 +330,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 )
         })
 
-        ## Developmental Disabilities ----
+        ### Developmental Disabilities ####
         output$developmental_sankey_chart <- echarts4r::renderEcharts4r({
             disabilities_data_filtered() |>
                 dplyr::filter(disability_type == "Developmental Disability") |>
@@ -278,7 +345,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 )
         })
 
-        ## Chronic Health Condition ----
+        ### Chronic Health Condition ####
         output$chronic_sankey_chart <- echarts4r::renderEcharts4r({
             disabilities_data_filtered() |>
                 dplyr::filter(disability_type == "Chronic Health Condition") |>
@@ -293,7 +360,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 )
         })
 
-        ## HIV/AIDS ----
+        ### HIV/AIDS ####
         output$hiv_sankey_chart <- echarts4r::renderEcharts4r({
             disabilities_data_filtered() |>
                 dplyr::filter(disability_type == "HIV/AIDS") |>
@@ -308,7 +375,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 )
         })
 
-        ## Mental Health Disorder ----
+        ### Mental Health Disorder ####
         output$mental_sankey_chart <- echarts4r::renderEcharts4r({
             disabilities_data_filtered() |>
                 dplyr::filter(disability_type == "Mental Health Disorder") |>
@@ -323,7 +390,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                 )
         })
 
-        ## Substance Use Disorder ----
+        ### Substance Use Disorder ####
         output$substance_sankey_chart <- echarts4r::renderEcharts4r({
             disabilities_data_filtered() |>
                 dplyr::filter(disability_type == "Substance Use Disorder") |>
