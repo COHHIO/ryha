@@ -11,6 +11,20 @@ mod_overview_ui <- function(id) {
     ns <- NS(id)
     tagList(
         bslib::layout_columns(
+            mod_value_box_ui(
+                id = ns("n_youth_served"),
+                title = "# of Youth Served"
+            ),
+            mod_value_box_ui(
+                id = ns("n_head_of_household_and_adults_served"),
+                title = "# of Head of Household and/or Adults Served"
+            ),
+            mod_value_box_ui(
+                id = ns("n_households_served"),
+                title = "# of Households Served"
+            )
+        ),
+        bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
@@ -97,7 +111,40 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        # Gender ----
+        # Filter Data ####
+        # > Client ####
+        client_data_filtered <- shiny::reactive({
+            filter_data(client_data, clients_filtered(), at = "youth")
+        })
+
+
+        # > Enrollment ####
+        enrollment_data_filtered <- shiny::reactive({
+            filter_data(enrollment_data, clients_filtered()) |>
+                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+        })
+
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_youth_served",
+            rctv_data = client_data_filtered
+        )
+
+        mod_value_box_server(
+            id = "n_head_of_household_and_adults_served",
+            rctv_data = enrollment_data_filtered
+        )
+
+        mod_value_box_server(
+            id = "n_households_served",
+            rctv_data = shiny::reactive({
+                enrollment_data_filtered() |>
+                    dplyr::distinct(household_id)
+            })
+        )
+
+        # Charts ####
+        # > Gender ####
         output$gender_chart <- echarts4r::renderEcharts4r({
             gender_data |>
                 filter_data(clients_filtered(), at = "youth") |>
@@ -109,13 +156,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                 )
         })
 
-        # Filter enrollment data
-        enrollment_data_filtered <- shiny::reactive({
-            filter_data(enrollment_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
-        })
-
-        # Sexual Orientation ----
+        # > Sexual Orientation ####
         output$sexual_orientation_chart <- echarts4r::renderEcharts4r({
             enrollment_data_filtered() |>
                 dplyr::count(sexual_orientation, .drop = FALSE) |>
@@ -125,12 +166,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                 )
         })
 
-        # Filter client data
-        client_data_filtered <- shiny::reactive({
-            filter_data(client_data, clients_filtered(), at = "youth")
-        })
-
-        # Veteran ----
+        # > Veteran ####
         output$veteran_chart <- echarts4r::renderEcharts4r({
             client_data_filtered() |>
                 dplyr::filter(age >= 18) |>
@@ -141,7 +177,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                 )
         })
 
-        # Age ----
+        # > Age ####
         output$age_bar_chart <- echarts4r::renderEcharts4r({
             client_data_filtered() |>
                 dplyr::count(age_grouped, .drop = FALSE) |>
@@ -151,7 +187,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                 )
         })
 
-        # Ethnicity ----
+        # > Ethnicity ####
         output$ethnicity_bar_chart <- echarts4r::renderEcharts4r({
             ethnicity_data |>
                 filter_data(clients_filtered(), at = "youth") |>
@@ -163,7 +199,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                 )
         })
 
-        # Welfare ----
+        # > Welfare ####
         output$welfare_chart <- echarts4r::renderEcharts4r(
             enrollment_data_filtered() |>
                 dplyr::count(former_ward_child_welfare, .drop = FALSE) |>
@@ -173,7 +209,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                 )
         )
 
-        # Juvenile ----
+        # > Juvenile ####
         output$juvenile_chart <- echarts4r::renderEcharts4r(
             enrollment_data_filtered() |>
                 dplyr::count(former_ward_juvenile_justice, .drop = FALSE) |>
