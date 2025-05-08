@@ -10,6 +10,11 @@
 mod_exit_ui <- function(id) {
     ns <- NS(id)
     tagList(
+        mod_value_box_ui(
+            id = ns("n_heads_of_household_and_adults_with_exit_data"),
+            title = "# of Head of Household and/or Adults with Exit Data",
+            tooltip = "Head of Household and/or Adults included in Overview who also appear in Exit records"
+        ),
         bslib::card(
             bslib::card_header(shiny::h2("Project Completion Status")),
             custom_card(
@@ -44,13 +49,19 @@ mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        # Apply the filters to the services data
+        # Filter Data ####
         exit_data_filtered <- shiny::reactive({
             filter_data(exit_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
-        # Create employment pie chart
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_exit_data",
+            rctv_data = exit_data_filtered
+        )
+
+        # Charts ####
         output$completion_chart <- echarts4r::renderEcharts4r({
             exit_data_filtered() |>
                 dplyr::count(project_completion_status, .drop = FALSE) |>
@@ -60,7 +71,6 @@ mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_
                 )
         })
 
-        # Create employment pie chart
         output$exit_heatmap <- echarts4r::renderEcharts4r({
             exit_data_filtered() |>
                 dplyr::count(destination_safe_client, destination_safe_worker, .drop = FALSE) |>
@@ -98,13 +108,13 @@ mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_
                 echarts4r::e_tooltip(
                     trigger = "item",
                     formatter = htmlwidgets::JS("
-            function(params){
-                return('<strong>Youth Response: </strong>' + params.value[0] + '<br />' +
-                        '<strong>Worker Response: </strong>' + params.value[1] + '<br />' +
-                        params.marker + '# of Youth: ' + params.value[2]
-                )
-            }
-          ")
+                      function(params){
+                          return('<strong>Youth Response: </strong>' + params.value[0] + '<br />' +
+                                  '<strong>Worker Response: </strong>' + params.value[1] + '<br />' +
+                                  params.marker + '# of Youth: ' + params.value[2]
+                          )
+                      }
+                    ")
                 ) |>
                 echarts4r::e_grid(containLabel = TRUE) |>
                 echarts4r::e_show_loading()
