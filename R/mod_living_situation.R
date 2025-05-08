@@ -11,6 +11,27 @@ mod_living_situation_ui <- function(id) {
     ns <- NS(id)
     tagList(
         bslib::layout_columns(
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_with_living_situation_data"),
+                title = "# of Head of Household and/or Adults with Living Situation Data",
+                tooltip = "Head of Household and/or Adults included in Overview who also appear in Living Situation records"
+            ),
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_missing"),
+                title = "# of Head of Household and/or Adults Missing",
+                tooltip = "Head of Household and/or Adults included in Overview without a matching Living Situation record"
+            ),
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_with_destination_data"),
+                title = "# of Head of Household and/or Adults with Destination Data",
+                tooltip = "Head of Household and/or Adults included in Overview who also appear in Destination records"
+            ),
+            mod_value_box_ui(
+                id = ns("n_heads_of_household_and_adults_who_exited_to_permanent_housing"),
+                title = "# of Head of Household and/or Adults that Exited to Permanent Housing"
+            )
+        ),
+        bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
@@ -64,7 +85,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        # Apply the filters to the enrollment data
+        # Filter Data ####
         living_data_filtered <- shiny::reactive({
             filter_data(enrollment_data, clients_filtered()) |>
                 # Add destination data
@@ -86,7 +107,43 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
-        # Living Situation Chart ----
+        destination_chart_data <- shiny::reactive({
+            living_data_filtered() |>
+                dplyr::filter(!is.na(exit_date))
+        })
+
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_living_situation_data",
+            rctv_data = living_data_filtered
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_missing",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        living_data_filtered(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_destination_data",
+            rctv_data = destination_chart_data
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_who_exited_to_permanent_housing",
+            rctv_data = shiny::reactive({
+                destination_chart_data() |>
+                    dplyr::filter(destination %in% (LivingCodes |> dplyr::filter(ExitCategory == "Permanent") |> dplyr::pull(Description)))
+            })
+        )
+
+        # Charts ####
+        ## Living Situation (Grouped) ####
         output$living_situation_chart <- echarts4r::renderEcharts4r({
             living_data_filtered() |>
                 dplyr::count(living_situation_grouped, .drop = FALSE) |>
@@ -96,11 +153,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
                 )
         })
 
-        destination_chart_data <- shiny::reactive({
-            living_data_filtered() |>
-                dplyr::filter(!is.na(exit_date))
-        })
-
+        ## Destination (Grouped) ####
         output$destination_bar_chart <- echarts4r::renderEcharts4r({
             destination_chart_data() |>
                 # Not using ".drop = FALSE" to avoid displaying zero-count responses, as the variable has many response categories.
@@ -177,7 +230,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
                 )
         })
 
-        # Destination Chart ----
+        ## Destination ####
         output$destination_chart <- echarts4r::renderEcharts4r({
             destination_chart_data() |>
                 dplyr::count(destination_grouped, .drop = FALSE) |>
@@ -187,7 +240,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
                 )
         })
 
-        # Sankey Chart ----
+        ## Sankey ####
         output$sankey_chart <- echarts4r::renderEcharts4r({
             living_data_filtered() |>
                 # Pivot longer to match expected data format
