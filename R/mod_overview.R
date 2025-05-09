@@ -137,7 +137,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
         mod_value_box_server(
             id = "n_households_served",
             rctv_data = shiny::reactive({
-                enrollment_data_filtered() |>
+                filter_data(enrollment_data, clients_filtered()) |>
                     dplyr::distinct(household_id)
             })
         )
