@@ -46,8 +46,8 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tool
                         "Data not collected",
                         "Client prefers not to answer",
                         "Client doesn't know"
-                    ) ~ COLORS$MISSING,
-                    TRUE ~ COLORS$DEFAULT
+                    ) ~ palette$missing,
+                    TRUE ~ palette$default
                 )
             )
     }

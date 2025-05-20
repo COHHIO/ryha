@@ -22,6 +22,7 @@ app_ui <- function(request) {
         bslib::page_navbar(
             id = "navbar",
             fillable = FALSE,
+            theme = bslib::bs_theme(brand = app_sys("_brand.yml")),
             title = shiny::span(
                 shiny::tags$a(
                     href = "https://cohhio.org/youthhealth/",

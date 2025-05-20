@@ -1,0 +1,62 @@
+color:
+  palette:
+    # Primary brand colors (from COHHIO style guide)
+    navy_blue: "#07274A"
+    light_blue: "#8EB4E3"
+    lighter_blue: "#D8E5F5"
+    # Accent colors
+    yellow: "#EFCB68"
+    green: "#7DBB77"
+    red: "#AE2012"
+    # Bar colors
+    ## Default color
+    default: "#8EB4E3"
+    ## Status colors
+    excellent: "#1A9641"
+    very_good: "#66BD63"
+    good: "#A6D96A"
+    fair: "#FEE08B"
+    poor: "#D7191C"
+    ## Missing responses colors
+    client_doesnt_know: "#FFD700"
+    client_prefers_not_to_answer: "#ABD9E9"
+    data_not_collected: "#726E75"
+    missing: "#D3D3D3"
+    ## Yes/No colors
+    yes_neutral: "#3066BE"
+    no_neutral: "#963484"
+    yes_bad: "#D7191C"
+    no_good: "#1A9641"
+
+  foreground: navy_blue
+  background: lighter_blue
+  primary: navy_blue
+  # secondary: TBD
+  # tertiary: TBD
+  success: navy_blue
+  info: light_blue
+  # warning: TBD
+  danger: red
+
+defaults:
+  bootstrap:
+    defaults:
+      # nav bar
+      navbar-bg: $brand-light_blue
+      navbar-light-color: $brand-navy_blue
+      navbar-light-hover-color: $brand-navy_blue
+      navbar-light-active-color: $brand-navy_blue
+      # cards
+      card-cap-color: $brand-lighter_blue
+      card-cap-bg: $brand-navy_blue !important
+      card-bg: white
+      # nav card
+      nav-link-color: $brand-lighter_blue
+      nav-link-hover-color: $brand-light_blue
+      nav-tabs-link-active-color: $brand-navy_blue
+      nav-underline-link-active-color: $brand-lighter_blue
+    rules: |
+        :root {
+          --bslib-sidebar-main-bg: #D8E5F5;
+          --bslib-sidebar-bg: #8EB4E3;
+        }
