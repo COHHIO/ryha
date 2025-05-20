@@ -26,7 +26,8 @@ mod_value_box_ui <- function(id, title, tooltip = NULL) {
     tagList(
         bslib::value_box(
             title = title_ui,
-            value = shiny::textOutput(ns("value"))
+            value = shiny::textOutput(ns("value")),
+            theme = "info"
         )
     )
 }
