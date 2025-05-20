@@ -10,7 +10,7 @@ color:
     red: "#AE2012"
     # Bar colors
     ## Default color
-    default: "#8EB4E3"
+    default: "#8EB4E3" # light_blue
     ## Status colors
     excellent: "#1A9641"
     very_good: "#66BD63"
@@ -18,12 +18,12 @@ color:
     fair: "#FEE08B"
     poor: "#D7191C"
     ## Missing responses colors
-    client_doesnt_know: "#FFD700"
-    client_prefers_not_to_answer: "#ABD9E9"
+    client_doesnt_know: "#EFCB68" # yellow
+    client_prefers_not_to_answer: "#D8E5F5" # lighter_blue
     data_not_collected: "#726E75"
     missing: "#D3D3D3"
     ## Yes/No colors
-    yes_neutral: "#3066BE"
+    yes_neutral: "#8EB4E3" # light_blue
     no_neutral: "#963484"
     yes_bad: "#D7191C"
     no_good: "#1A9641"

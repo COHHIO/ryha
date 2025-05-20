@@ -4,7 +4,7 @@
 \alias{sankey_chart}
 \title{Generate a Sankey chart using echarts4r}
 \usage{
-sankey_chart(data, entry_status, exit_status, count, color = "blue")
+sankey_chart(data, entry_status, exit_status, count, color = palette$default)
 }
 \arguments{
 \item{data}{A data frame containing the data to be plotted.}

@@ -148,7 +148,7 @@ sankey_chart <- function(data,
                          entry_status,
                          exit_status,
                          count,
-                         color = "blue") {
+                         color = palette$default) {
     data |>
         echarts4r::e_charts() |>
         echarts4r::e_sankey_(
