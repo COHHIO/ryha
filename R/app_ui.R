@@ -29,7 +29,7 @@ app_ui <- function(request) {
                     target = "_blank",
                     style = "text-decoration: none;",
                     shiny::tags$img(
-                        src = "www/favicon.ico",
+                        src = "www/cohhio_logo_small.png",
                         height = "40px",
                         style = "margin-right: 8px;"
                     )
