@@ -41,7 +41,7 @@ mod_income_benefits_ui <- function(id) {
                                 content = shiny::tagList(
                                     shiny::p("Only Head of Household and Adults who reported receiving income are included."),
                                     shiny::p("Each bar represents the percentage of participants who informed a given income source."),
-                                    shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                                    shiny::p("Since participants can select multiple sources, the total percentage may exceed 100%."),
                                     shiny::p(link_section("4.02 Income and Sources"))
                                 )
                             )
@@ -89,7 +89,7 @@ mod_income_benefits_ui <- function(id) {
                                 content = shiny::tagList(
                                     shiny::p("Only Head of Household and Adults who reported receiving benefits are included."),
                                     shiny::p("Each bar represents the percentage of participants who informed a given benefit source."),
-                                    shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                                    shiny::p("Since participants can select multiple sources, the total percentage may exceed 100%."),
                                     shiny::p(link_section("4.03 Non-Cash Benefits"))
                                 )
                             )
@@ -137,7 +137,7 @@ mod_income_benefits_ui <- function(id) {
                                 content = shiny::tagList(
                                     shiny::p("Only participants who reported receiving health insurance are included."),
                                     shiny::p("Each bar represents the percentage of participants who informed a given health insurance source."),
-                                    shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
+                                    shiny::p("Since participants can select multiple sources, the total percentage may exceed 100%."),
                                     shiny::p(link_section("4.04 Health Insurance"))
                                 )
                             )

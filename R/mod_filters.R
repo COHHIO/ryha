@@ -338,9 +338,9 @@ mod_filters_server <- function(id, dm, rctv) {
                     ) |>
                     # Filter by project
                     dplyr::filter(project_id %in% input$project_filter_global) |>
-                    # Remove individuals who entered *after* the later active date
+                    # Remove participants who entered *after* the later active date
                     dplyr::filter(entry_date <= input$active_date_filter_global[2]) |>
-                    # Remove individuals who exited *before* the first active date
+                    # Remove participants who exited *before* the first active date
                     dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1]) |>
                     # Keep one enrollment per person-organization
                     filter_most_recent_enrollment_per_group(grouping_vars = c("organization_id", "personal_id"))

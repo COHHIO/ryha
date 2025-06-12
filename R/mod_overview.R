@@ -31,7 +31,7 @@ mod_overview_ui <- function(id) {
                         text = "Participants by Gender",
                         content = shiny::tagList(
                             shiny::p("Each bar represents the percentage of participants who self-identify with a given gender category."),
-                            shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
+                            shiny::p("Since participants can select multiple categories, the total percentage may exceed 100%."),
                             shiny::p(link_section("3.06 Gender"))
                         )
                     )
@@ -64,7 +64,7 @@ mod_overview_ui <- function(id) {
                         text = "Participants by Race & Ethnicity",
                         content = shiny::tagList(
                             shiny::p("Each bar represents the percentage of participants who self-identify with a given racial and/or ethnic category."),
-                            shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
+                            shiny::p("Since participants can select multiple categories, the total percentage may exceed 100%."),
                             shiny::p(link_section("3.04 Race and Ethnicity"))
                         )
                     )
