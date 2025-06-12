@@ -117,27 +117,11 @@ app_server <- function(input, output, session) {
             heads_of_household_and_adults = dm$heads_of_household_and_adults
         )
     } else {
-        # Hide filtering and navigation elements when there is no data available
-
-        # List ids of elements to hide
-        c(
-            "tab-overview_page",
-            "tab-disabilities_page",
-            "tab-employment_page",
-            "tab-education_page",
-            "tab-services_page",
-            "tab-health_page",
-            "tab-domestic_violence_page",
-            "tab-income_benefits_page",
-            "tab-trafficking_page",
-            "tab-living_situation_page",
-            "tab-parenting_page",
-            "tab-exit_page",
-            "tab-help_page",
-            "controlbar-toggle"
-        ) |>
-            # Hide elements
-            purrr::map(function(id) shinyjs::hide(id))
+        # Remove Explore Data tab when there is no data available
+        bslib::nav_remove(
+            id = "navbar",
+            target = "Explore Data"
+        )
     }
 
     # Upload module should always be present, regardless of data availability
