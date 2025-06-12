@@ -11,9 +11,9 @@ mod_exit_ui <- function(id) {
     ns <- NS(id)
     tagList(
         mod_value_box_ui(
-            id = ns("n_heads_of_household_and_adults_with_exit_data"),
-            title = "# of Head of Household and/or Adults with Exit Data",
-            tooltip = "Head of Household and/or Adults included in Overview who also appear in Exit records"
+            id = ns("n_heads_of_household_and_adults_with_records"),
+            title = "# of Head of Household and/or Adults with Records",
+            tooltip = "Responses within those records may still be missing"
         ),
         bslib::card(
             bslib::card_header(shiny::h2("Project Completion Status")),
@@ -57,7 +57,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_exit_data",
+            id = "n_heads_of_household_and_adults_with_records",
             rctv_data = exit_data_filtered
         )
 
