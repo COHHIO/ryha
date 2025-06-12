@@ -12,14 +12,13 @@ mod_domestic_violence_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_with_domestic_violence_data"),
-                title = "# of Head of Household and/or Adults with Domestic Violence Data",
-                tooltip = "Head of Household and/or Adults included in Overview who also appear in Domestic Violence records"
+                id = ns("n_heads_of_household_and_adults_with_records"),
+                title = "# of Head of Household and/or Adults with Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_missing"),
-                title = "# of Head of Household and/or Adults Missing",
-                tooltip = "Head of Household and/or Adults included in Overview without a matching Domestic Violence record"
+                id = ns("n_heads_of_household_and_adults_without_records"),
+                title = "# of Head of Household and/or Adults without Records"
             ),
             mod_value_box_ui(
                 id = ns("n_heads_of_household_and_adults_who_are_domestic_violence_victim"),
@@ -80,12 +79,12 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_domestic_violence_data",
+            id = "n_heads_of_household_and_adults_with_records",
             rctv_data = most_recent_data_per_enrollment
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_missing",
+            id = "n_heads_of_household_and_adults_without_records",
             rctv_data = shiny::reactive({
                 filter_data(heads_of_household_and_adults, clients_filtered()) |>
                     dplyr::anti_join(
