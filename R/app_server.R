@@ -136,4 +136,6 @@ app_server <- function(input, output, session) {
             selected = "Help"
         )
     })
+
+    waiter::waiter_hide()
 }
