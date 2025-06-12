@@ -8,6 +8,7 @@ bar_chart(
   data,
   x,
   y,
+  serie_name = "# of Participants",
   pct_denominator = NULL,
   axis_flip = TRUE,
   tooltip_opts = list(confine = FALSE, extraCssText = "")

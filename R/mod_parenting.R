@@ -30,7 +30,7 @@ mod_parenting_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "Children per Household",
+                        text = "Households by Number of Children",
                         content = "A child is defined as a participant who is enrolled as the head of household's child"
                     )
                 ),
@@ -107,12 +107,22 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         # Charts ####
         output$n_children_per_household_chart <- echarts4r::renderEcharts4r({
             household_data_filtered() |>
-                dplyr::count(n_children, .drop = FALSE) |>
-                dplyr::arrange(dplyr::desc(n_children)) |>
-                dplyr::mutate(n_children = as.character(n_children)) |>
+                dplyr::mutate(
+                    n_children_factor = dplyr::case_when(
+                        n_children == 1 ~ "1 Child",
+                        n_children <= 4 ~ paste(n_children, "Children"),
+                        n_children >= 5 ~ "5+ Children"
+                    ) |>
+                        factor(
+                            levels = c("0 Children", "1 Child", "2 Children", "3 Children", "4 Children", "5+ Children"),
+                            ordered = TRUE
+                        )
+                ) |>
+                dplyr::count(n_children_factor, .drop = FALSE) |>
                 bar_chart(
-                    x = "n_children",
-                    y = "n"
+                    x = "n_children_factor",
+                    y = "n",
+                    serie_name = "# of Households with"
                 )
         })
 
