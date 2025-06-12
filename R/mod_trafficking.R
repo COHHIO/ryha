@@ -22,7 +22,7 @@ mod_trafficking_ui <- function(id) {
             ),
             mod_value_box_ui(
                 id = ns("n_labor_trafficked_heads_of_household_and_adults"),
-                title = "Labor Trafficked Head of Household and/or Adults",
+                title = "Head of Household and/or Adults that were Labor Trafficked",
                 tooltip = shiny::HTML("
                   A Head of Household and/or Adult is considered to have been labor trafficked if either:
                   <ul>
