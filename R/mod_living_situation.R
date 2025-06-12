@@ -12,30 +12,29 @@ mod_living_situation_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_with_living_situation_data"),
-                title = "# of Head of Household and/or Adults with Living Situation Data",
-                tooltip = "Head of Household and/or Adults included in Overview who also appear in Living Situation records"
+                id = ns("n_heads_of_household_and_adults_with_living_situation_records"),
+                title = "Head of Household and/or Adults with Living Situation Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_missing"),
-                title = "# of Head of Household and/or Adults Missing",
-                tooltip = "Head of Household and/or Adults included in Overview without a matching Living Situation record"
+                id = ns("n_heads_of_household_and_adults_without_living_situation_records"),
+                title = "Head of Household and/or Adults without Living Situation Records"
             ),
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_with_destination_data"),
-                title = "# of Head of Household and/or Adults with Destination Data",
-                tooltip = "Head of Household and/or Adults included in Overview who also appear in Destination records"
+                id = ns("n_heads_of_household_and_adults_with_destination_records"),
+                title = "Head of Household and/or Adults with Destination Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
                 id = ns("n_heads_of_household_and_adults_who_exited_to_permanent_housing"),
-                title = "# of Head of Household and/or Adults that Exited to Permanent Housing"
+                title = "Head of Household and/or Adults that Exited to Permanent Housing"
             )
         ),
         bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Living Situation Group (at Entry)",
+                        text = "Head of Household and/or Adults by Living Situation Group (at Entry)",
                         content = shiny::tagList(
                             shiny::span("Response categories have been grouped to improve chart readability."),
                             shiny::br(),
@@ -48,7 +47,7 @@ mod_living_situation_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Destination Group (at Exit)",
+                        text = "Head of Household and/or Adults by Destination Group (at Exit)",
                         content = shiny::tagList(
                             shiny::span("Response categories have been grouped to improve chart readability."),
                             shiny::br(),
@@ -61,7 +60,7 @@ mod_living_situation_ui <- function(id) {
         ),
         custom_card(
             height = "720px",
-            bslib::card_header("# of Head of Household and/or Adults by Destination (at Exit)"),
+            bslib::card_header("Head of Household and/or Adults by Destination (at Exit)"),
             echarts4r::echarts4rOutput(outputId = ns("destination_bar_chart"), height = "100%")
         ),
         custom_card(
@@ -114,12 +113,12 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_living_situation_data",
+            id = "n_heads_of_household_and_adults_with_living_situation_records",
             rctv_data = living_data_filtered
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_missing",
+            id = "n_heads_of_household_and_adults_without_living_situation_records",
             rctv_data = shiny::reactive({
                 filter_data(heads_of_household_and_adults, clients_filtered()) |>
                     dplyr::anti_join(
@@ -130,7 +129,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_destination_data",
+            id = "n_heads_of_household_and_adults_with_destination_records",
             rctv_data = destination_chart_data
         )
 

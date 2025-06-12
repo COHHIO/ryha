@@ -12,33 +12,32 @@ mod_disabilities_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_youth_with_disabilities_data"),
-                title = "# of Youth with Disabilities Data",
-                tooltip = "Youth included in Overview who also appear in Disabilities records"
+                id = ns("n_participants_with_records"),
+                title = "Participants with Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
-                id = ns("n_youth_missing"),
-                title = "# of Youth Missing",
-                tooltip = "Youth included in Overview without a matching Disabilities record"
+                id = ns("n_participants_without_records"),
+                title = "Participants without Records"
             ),
             mod_value_box_ui(
-                id = ns("n_youth_with_a_disability"),
-                title = "# of Youth with a Disability"
+                id = ns("n_participants_with_a_disabling_condition"),
+                title = "Participants with a Disabling Condition"
             ),
             mod_value_box_ui(
-                id = ns("n_youth_with_substance_use"),
-                title = "# of Youth with Substance Use"
+                id = ns("n_participants_with_substance_use"),
+                title = "Participants with Substance Use"
             )
         ),
         bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "Disability Prevalence in Youth",
+                        text = "Disability Prevalence",
                         content = shiny::tagList(
                             shiny::span("Each bar summarizes the responses for the corresponding disability."),
                             shiny::br(),
-                            shiny::span("Youth with multiple disabilities are counted once per disability."),
+                            shiny::span("Participants with multiple disabilities are counted once per disability."),
                             shiny::br(),
                             shiny::span("For more information, refer to sections:"),
                             shiny::tags$ul(
@@ -57,7 +56,7 @@ mod_disabilities_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Youth by Substance Use",
+                        text = "Participants by Substance Use",
                         content = link_section("4.10 Substance Use Disorder")
                     )
                 ),
@@ -112,7 +111,7 @@ mod_disabilities_ui <- function(id) {
         custom_card(
             bslib::card_header(
                 with_popover(
-                    text = "Data Quality Statistics - Youth by Number of Answers Missing",
+                    text = "Data Quality Statistics - Participants by Number of Answers Missing",
                     content = shiny::em("\"Missing\" is defined as \"Client doesn't know\", \"Client prefers not to answer\", \"Data not collected\", or blank.")
                 )
             ),
@@ -164,12 +163,12 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_youth_with_disabilities_data",
+            id = "n_participants_with_records",
             rctv_data = most_recent_data_per_enrollment
         )
 
         mod_value_box_server(
-            id = "n_youth_missing",
+            id = "n_participants_without_records",
             rctv_data = shiny::reactive({
                 clients_filtered() |>
                     dplyr::anti_join(
@@ -180,7 +179,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
         )
 
         mod_value_box_server(
-            id = "n_youth_with_a_disability",
+            id = "n_participants_with_a_disabling_condition",
             rctv_data = shiny::reactive({
                 most_recent_data_per_enrollment() |>
                     dplyr::filter(
@@ -199,7 +198,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
         )
 
         mod_value_box_server(
-            id = "n_youth_with_substance_use",
+            id = "n_participants_with_substance_use",
             rctv_data = shiny::reactive({
                 most_recent_data_per_enrollment() |>
                     dplyr::filter(
@@ -433,7 +432,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                         )
                     )
                 ) |>
-                dplyr::count(`Answers Missing`, name = "# Youth") |>
+                dplyr::count(`Answers Missing`, name = "# Participants") |>
                 reactable::reactable()
         )
     })

@@ -12,26 +12,26 @@ mod_overview_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_youth_served"),
-                title = "# of Youth Served"
+                id = ns("n_participants"),
+                title = "Participants"
             ),
             mod_value_box_ui(
-                id = ns("n_head_of_household_and_adults_served"),
-                title = "# of Head of Household and/or Adults Served"
+                id = ns("n_head_of_household_and_adults"),
+                title = "Head of Household and/or Adults"
             ),
             mod_value_box_ui(
-                id = ns("n_households_served"),
-                title = "# of Households Served"
+                id = ns("n_households"),
+                title = "Households"
             )
         ),
         bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Youth by Gender",
+                        text = "Participants by Gender",
                         content = shiny::tagList(
-                            shiny::p("Each bar represents the percentage of youth who self-identify with a given gender category."),
-                            shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
+                            shiny::p("Each bar represents the percentage of participants who self-identify with a given gender category."),
+                            shiny::p("Since participants can select multiple categories, the total percentage may exceed 100%."),
                             shiny::p(link_section("3.06 Gender"))
                         )
                     )
@@ -41,7 +41,7 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Sexual Orientation",
+                        text = "Head of Household and/or Adults by Sexual Orientation",
                         content = link_section("R3 Sexual Orientation")
                     )
                 ),
@@ -52,7 +52,7 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Adults by Veteran Status",
+                        text = "Adults by Veteran Status",
                         content = link_section("3.07 Veteran Status")
                     )
                 ),
@@ -61,10 +61,10 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Youth by Race & Ethnicity",
+                        text = "Participants by Race & Ethnicity",
                         content = shiny::tagList(
-                            shiny::p("Each bar represents the percentage of youth who self-identify with a given racial and/or ethnic category."),
-                            shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
+                            shiny::p("Each bar represents the percentage of participants who self-identify with a given racial and/or ethnic category."),
+                            shiny::p("Since participants can select multiple categories, the total percentage may exceed 100%."),
                             shiny::p(link_section("3.04 Race and Ethnicity"))
                         )
                     )
@@ -75,7 +75,7 @@ mod_overview_ui <- function(id) {
         custom_card(
             bslib::card_header(
                 with_popover(
-                    text = "# of Youth by Age Group",
+                    text = "Participants by Age Group",
                     content = link_section("3.03 Date of Birth")
                 )
             ),
@@ -85,7 +85,7 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Former Ward Child Welfare Response",
+                        text = "Head of Household and/or Adults by Former Ward Child Welfare Response",
                         content = link_section("R11 Formerly a Ward of Child Welfare/Foster Care Agency")
                     )
                 ),
@@ -94,7 +94,7 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Former Ward Juvenile Justice Response",
+                        text = "Head of Household and/or Adults by Former Ward Juvenile Justice Response",
                         content = link_section("R12 Formerly a Ward of Juvenile Justice System")
                     )
                 ),
@@ -125,17 +125,17 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_youth_served",
+            id = "n_participants",
             rctv_data = client_data_filtered
         )
 
         mod_value_box_server(
-            id = "n_head_of_household_and_adults_served",
+            id = "n_head_of_household_and_adults",
             rctv_data = enrollment_data_filtered
         )
 
         mod_value_box_server(
-            id = "n_households_served",
+            id = "n_households",
             rctv_data = shiny::reactive({
                 filter_data(enrollment_data, clients_filtered()) |>
                     dplyr::distinct(household_id)

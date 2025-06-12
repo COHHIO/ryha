@@ -12,17 +12,17 @@ mod_trafficking_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_with_trafficking_data"),
-                title = "# of Head of Household and/or Adults with Trafficking Data",
-                tooltip = "Head of Household and/or Adults included in Overview who also appear in Trafficking records"
+                id = ns("n_heads_of_household_and_adults_with_records"),
+                title = "Head of Household and/or Adults with Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
                 id = ns("n_sex_trafficked_heads_of_household_and_adults"),
-                title = "# of Sex Trafficked Head of Household and/or Adults"
+                title = "Sex Trafficked Head of Household and/or Adults"
             ),
             mod_value_box_ui(
                 id = ns("n_labor_trafficked_heads_of_household_and_adults"),
-                title = "# of Labor Trafficked Head of Household and/or Adults",
+                title = "Head of Household and/or Adults that were Labor Trafficked",
                 tooltip = shiny::HTML("
                   A Head of Household and/or Adult is considered to have been labor trafficked if either:
                   <ul>
@@ -38,7 +38,7 @@ mod_trafficking_ui <- function(id) {
                 custom_card(
                     bslib::card_header(
                         with_popover(
-                            text = "# of Head of Household and/or Adults by Exchange for Sex Response",
+                            text = "Head of Household and/or Adults by Exchange for Sex Response",
                             content = link_section("R15 Commercial Sexual Exploitation/Sex Trafficking")
                         )
                     ),
@@ -48,9 +48,9 @@ mod_trafficking_ui <- function(id) {
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Head of Household and/or Adults by Asked or Forced to Exchange Response",
+                                text = "Head of Household and/or Adults by Asked or Forced to Exchange Response",
                                 content = shiny::tagList(
-                                    shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                                    shiny::p("Only participants that ever received anything in exchange for sex are included."),
                                     shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
                                 )
                             )
@@ -60,9 +60,9 @@ mod_trafficking_ui <- function(id) {
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Head of Household and/or Adults by Count of Exchange for Sex Response",
+                                text = "Head of Household and/or Adults by Count of Exchange for Sex Response",
                                 content = shiny::tagList(
-                                    shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                                    shiny::p("Only participants that ever received anything in exchange for sex are included."),
                                     shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
                                 )
                             )
@@ -77,7 +77,7 @@ mod_trafficking_ui <- function(id) {
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Head of Household and/or Adults by Workplace Violence/Threats Response",
+                                text = "Head of Household and/or Adults by Workplace Violence/Threats Response",
                                 content = link_section("R16 Labor Exploitation/Trafficking")
                             )
                         ),
@@ -86,7 +86,7 @@ mod_trafficking_ui <- function(id) {
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Head of Household and/or Adults by Workplace Promise Difference Response",
+                                text = "Head of Household and/or Adults by Workplace Promise Difference Response",
                                 content = link_section("R16 Labor Exploitation/Trafficking")
                             )
                         ),
@@ -96,7 +96,7 @@ mod_trafficking_ui <- function(id) {
                 custom_card(
                     bslib::card_header(
                         with_popover(
-                            text = "# of Head of Household and/or Adults by Coerced to Continue Work Response",
+                            text = "Head of Household and/or Adults by Coerced to Continue Work Response",
                             content = shiny::tagList(
                                 shiny::p("Only Head of Household and Adults that experienced workplace violence and/or promise difference are included."),
                                 shiny::p(link_section("R16 Labor Exploitation/Trafficking"))
@@ -126,7 +126,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_trafficking_data",
+            id = "n_heads_of_household_and_adults_with_records",
             rctv_data = trafficking_data_filtered
         )
 

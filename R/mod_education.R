@@ -12,14 +12,13 @@ mod_education_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_with_education_data"),
-                title = "# of Head of Household and/or Adults with Education Data",
-                tooltip = "Head of Household and/or Adults included in Overview who also appear in Education records"
+                id = ns("n_heads_of_household_and_adults_with_records"),
+                title = "Head of Household and/or Adults with Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_missing"),
-                title = "# of Head of Household and/or Adults Missing",
-                tooltip = "Head of Household and/or Adults included in Overview without a matching Education record"
+                id = ns("n_heads_of_household_and_adults_without_records"),
+                title = "Head of Household and/or Adults without Records"
             )
         ),
         bslib::layout_columns(
@@ -28,7 +27,7 @@ mod_education_ui <- function(id) {
                 custom_card(
                     bslib::card_header(
                         with_popover(
-                            text = "# of Head of Household and/or Adults by Last Grade Completed Group",
+                            text = "Head of Household and/or Adults by Last Grade Completed Group",
                             content = shiny::tagList(
                                 shiny::span("Response categories have been grouped to improve chart readability."),
                                 shiny::br(),
@@ -57,7 +56,7 @@ mod_education_ui <- function(id) {
                 custom_card(
                     bslib::card_header(
                         with_popover(
-                            text = "# of Head of Household and/or Adults by School Status",
+                            text = "Head of Household and/or Adults by School Status",
                             content = link_section("R5 School Status")
                         )
                     ),
@@ -97,12 +96,12 @@ mod_education_server <- function(id, education_data, clients_filtered, heads_of_
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_education_data",
+            id = "n_heads_of_household_and_adults_with_records",
             rctv_data = most_recent_data_per_enrollment
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_missing",
+            id = "n_heads_of_household_and_adults_without_records",
             rctv_data = shiny::reactive({
                 filter_data(heads_of_household_and_adults, clients_filtered()) |>
                     dplyr::anti_join(

@@ -13,25 +13,25 @@ mod_parenting_ui <- function(id) {
         bslib::layout_columns(
             mod_value_box_ui(
                 id = ns("n_pregnant_heads_of_household_and_adults"),
-                title = "# of Pregnant Head of Household and/or Adults"
+                title = "Pregnant Head of Household and/or Adults"
             ),
             mod_value_box_ui(
                 id = ns("n_households_with_children"),
-                title = "# of Households with Children",
-                tooltip = "Households with at least one youth enrolled as the head of household's child"
+                title = "Households with Children",
+                tooltip = "Households with at least one participant enrolled as the head of household's child"
             ),
             mod_value_box_ui(
-                id = ns("n_children_served"),
-                title = "# of Children Served",
-                tooltip = "A child is defined as a youth who is enrolled as the head of household's child"
+                id = ns("n_children"),
+                title = "Children",
+                tooltip = "A child is defined as a participant who is enrolled as the head of household's child"
             )
         ),
         bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Children per Household",
-                        content = "A child is defined as a youth who is enrolled as the head of household's child"
+                        text = "Households by Number of Children",
+                        content = "A child is defined as a participant who is enrolled as the head of household's child"
                     )
                 ),
                 echarts4r::echarts4rOutput(outputId = ns("n_children_per_household_chart"), height = "100%")
@@ -40,7 +40,7 @@ mod_parenting_ui <- function(id) {
         custom_card(
             bslib::card_header(
                 with_popover(
-                    text = "# of Head of Household and/or Adults by Pregnancy Status",
+                    text = "Head of Household and/or Adults by Pregnancy Status",
                     content = link_section("R10 Pregnancy Status")
                 )
             ),
@@ -97,7 +97,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         )
 
         mod_value_box_server(
-            id = "n_children_served",
+            id = "n_children",
             rctv_data = shiny::reactive({
                 enrollment_data_filtered() |>
                     dplyr::filter(relationship_to_ho_h == "Head of household's child")
@@ -107,12 +107,22 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         # Charts ####
         output$n_children_per_household_chart <- echarts4r::renderEcharts4r({
             household_data_filtered() |>
-                dplyr::count(n_children, .drop = FALSE) |>
-                dplyr::arrange(dplyr::desc(n_children)) |>
-                dplyr::mutate(n_children = as.character(n_children)) |>
+                dplyr::mutate(
+                    n_children_factor = dplyr::case_when(
+                        n_children == 1 ~ "1 Child",
+                        n_children <= 4 ~ paste(n_children, "Children"),
+                        n_children >= 5 ~ "5+ Children"
+                    ) |>
+                        factor(
+                            levels = c("0 Children", "1 Child", "2 Children", "3 Children", "4 Children", "5+ Children"),
+                            ordered = TRUE
+                        )
+                ) |>
+                dplyr::count(n_children_factor, .drop = FALSE) |>
                 bar_chart(
-                    x = "n_children",
-                    y = "n"
+                    x = "n_children_factor",
+                    y = "n",
+                    serie_name = "# of Households with"
                 )
         })
 
