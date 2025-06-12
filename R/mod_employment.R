@@ -12,14 +12,13 @@ mod_employment_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_with_employment_data"),
-                title = "# of Head of Household and/or Adults with Employment Data",
-                tooltip = "Head of Household and/or Adults included in Overview who also appear in Employment records"
+                id = ns("n_heads_of_household_and_adults_with_records"),
+                title = "# of Head of Household and/or Adults with Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_missing"),
-                title = "# of Head of Household and/or Adults Missing",
-                tooltip = "Head of Household and/or Adults included in Overview without a matching Employment record"
+                id = ns("n_heads_of_household_and_adults_without_records"),
+                title = "# of Head of Household and/or Adults without Records"
             ),
             mod_value_box_ui(
                 id = ns("n_heads_of_household_and_adults_employed"),
@@ -39,7 +38,7 @@ mod_employment_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Employed Youth by Employment Type",
+                        text = "# of Employed Participants by Employment Type",
                         content = link_section("R6 Employment Status")
                     )
                 ),
@@ -48,7 +47,7 @@ mod_employment_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Not Employed Youth by Reason Not Employed",
+                        text = "# of Not Employed Participants by Reason Not Employed",
                         content = link_section("R6 Employment Status")
                     )
                 ),
@@ -89,12 +88,12 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_employment_data",
+            id = "n_heads_of_household_and_adults_with_records",
             rctv_data = most_recent_data_per_enrollment
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_missing",
+            id = "n_heads_of_household_and_adults_without_records",
             rctv_data = shiny::reactive({
                 filter_data(heads_of_household_and_adults, clients_filtered()) |>
                     dplyr::anti_join(
