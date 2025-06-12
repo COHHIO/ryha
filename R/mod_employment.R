@@ -13,22 +13,22 @@ mod_employment_ui <- function(id) {
         bslib::layout_columns(
             mod_value_box_ui(
                 id = ns("n_heads_of_household_and_adults_with_records"),
-                title = "# of Head of Household and/or Adults with Records",
+                title = "Head of Household and/or Adults with Records",
                 tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
                 id = ns("n_heads_of_household_and_adults_without_records"),
-                title = "# of Head of Household and/or Adults without Records"
+                title = "Head of Household and/or Adults without Records"
             ),
             mod_value_box_ui(
                 id = ns("n_heads_of_household_and_adults_employed"),
-                title = "# of Head of Household and/or Adults Employed"
+                title = "Head of Household and/or Adults Employed"
             )
         ),
         custom_card(
             bslib::card_header(
                 with_popover(
-                    text = "# of Head of Household and/or Adults by Employment Status",
+                    text = "Head of Household and/or Adults by Employment Status",
                     content = link_section("R6 Employment Status")
                 )
             ),
@@ -38,7 +38,7 @@ mod_employment_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Employed Participants by Employment Type",
+                        text = "Employed Participants by Employment Type",
                         content = link_section("R6 Employment Status")
                     )
                 ),
@@ -47,7 +47,7 @@ mod_employment_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Not Employed Participants by Reason Not Employed",
+                        text = "Not Employed Participants by Reason Not Employed",
                         content = link_section("R6 Employment Status")
                     )
                 ),

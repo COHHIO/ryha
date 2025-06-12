@@ -13,20 +13,20 @@ mod_disabilities_ui <- function(id) {
         bslib::layout_columns(
             mod_value_box_ui(
                 id = ns("n_participants_with_records"),
-                title = "# of Participants with Records",
+                title = "Participants with Records",
                 tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
                 id = ns("n_participants_without_records"),
-                title = "# of Participants without Records"
+                title = "Participants without Records"
             ),
             mod_value_box_ui(
                 id = ns("n_participants_with_a_disabling_condition"),
-                title = "# of Participants with a Disabling Condition"
+                title = "Participants with a Disabling Condition"
             ),
             mod_value_box_ui(
                 id = ns("n_participants_with_substance_use"),
-                title = "# of Participants with Substance Use"
+                title = "Participants with Substance Use"
             )
         ),
         bslib::layout_columns(
@@ -56,7 +56,7 @@ mod_disabilities_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Participants by Substance Use",
+                        text = "Participants by Substance Use",
                         content = link_section("4.10 Substance Use Disorder")
                     )
                 ),

@@ -24,7 +24,7 @@ mod_services_ui <- function(id) {
             height = "720px",
             bslib::card_header(
                 with_popover(
-                    text = "# of Participants by Service Type Provided",
+                    text = "Participants by Service Type Provided",
                     content = link_section("R14 RHY Service Connections")
                 )
             ),
@@ -34,7 +34,7 @@ mod_services_ui <- function(id) {
             height = "720px",
             bslib::card_header(
                 with_popover(
-                    text = "# of Participants by Referral Source",
+                    text = "Participants by Referral Source",
                     content = link_section("R1 Referral Source")
                 )
             ),
@@ -116,7 +116,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
                 echarts4r::e_charts(x = type_provided) |>
                 echarts4r::e_bar(
                     serie = n,
-                    name = "# of Participants",
+                    name = "Participants",
                     legend = FALSE,
                     label = list(
                         formatter = "{@[0]}",
@@ -152,7 +152,7 @@ mod_services_server <- function(id, services_data, referral_data, clients_filter
                 echarts4r::e_charts(x = referral_source) |>
                 echarts4r::e_bar(
                     serie = n,
-                    name = "# of Participants",
+                    name = "Participants",
                     legend = FALSE,
                     label = list(
                         formatter = "{@[0]}",

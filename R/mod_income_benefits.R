@@ -16,19 +16,19 @@ mod_income_benefits_ui <- function(id) {
                 bslib::layout_columns(
                     mod_value_box_ui(
                         id = ns("n_heads_of_household_and_adults_with_income_records"),
-                        title = "# of Head of Household and/or Adults with Records",
+                        title = "Head of Household and/or Adults with Records",
                         tooltip = "Responses within those records may still be missing"
                     ),
                     mod_value_box_ui(
                         id = ns("n_heads_of_household_and_adults_without_income_records"),
-                        title = "# of Head of Household and/or Adults without Records"
+                        title = "Head of Household and/or Adults without Records"
                     ),
                 ),
                 bslib::layout_columns(
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Head of Household and/or Adults by Income Received (from Any Source) Response",
+                                text = "Head of Household and/or Adults by Income Received (from Any Source) Response",
                                 content = link_section("4.02 Income and Sources")
                             )
                         ),
@@ -52,7 +52,7 @@ mod_income_benefits_ui <- function(id) {
                 custom_card(
                     bslib::card_header(
                         with_popover(
-                            text = "# of Head of Household and/or Adults with Income by Total Monthly Income",
+                            text = "Head of Household and/or Adults with Income by Total Monthly Income",
                             content = link_section("4.02 Income and Sources")
                         )
                     ),
@@ -64,19 +64,19 @@ mod_income_benefits_ui <- function(id) {
                 bslib::layout_columns(
                     mod_value_box_ui(
                         id = ns("n_heads_of_household_and_adults_with_benefits_records"),
-                        title = "# of Head of Household and/or Adults with Records",
+                        title = "Head of Household and/or Adults with Records",
                         tooltip = "Responses within those records may still be missing"
                     ),
                     mod_value_box_ui(
                         id = ns("n_heads_of_household_and_adults_without_benefits_records"),
-                        title = "# of Head of Household and/or Adults without Records"
+                        title = "Head of Household and/or Adults without Records"
                     )
                 ),
                 bslib::layout_columns(
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Head of Household and/or Adults by Benefits Received (from Any Source) Response",
+                                text = "Head of Household and/or Adults by Benefits Received (from Any Source) Response",
                                 content = link_section("4.03 Non-Cash Benefits")
                             )
                         ),
@@ -112,19 +112,19 @@ mod_income_benefits_ui <- function(id) {
                 bslib::layout_columns(
                     mod_value_box_ui(
                         id = ns("n_participants_with_health_insurance_records"),
-                        title = "# of Participants with Records",
+                        title = "Participants with Records",
                         tooltip = "Responses within those records may still be missing"
                     ),
                     mod_value_box_ui(
                         id = ns("n_participants_without_health_insurance_records"),
-                        title = "# of Participants without Records"
+                        title = "Participants without Records"
                     )
                 ),
                 bslib::layout_columns(
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Participants by Health Insurance Received (from Any Source) Response",
+                                text = "Participants by Health Insurance Received (from Any Source) Response",
                                 content = link_section("4.04 Health Insurance")
                             )
                         ),

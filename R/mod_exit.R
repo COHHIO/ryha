@@ -12,7 +12,7 @@ mod_exit_ui <- function(id) {
     tagList(
         mod_value_box_ui(
             id = ns("n_heads_of_household_and_adults_with_records"),
-            title = "# of Head of Household and/or Adults with Records",
+            title = "Head of Household and/or Adults with Records",
             tooltip = "Responses within those records may still be missing"
         ),
         bslib::card(
@@ -20,7 +20,7 @@ mod_exit_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Project Completion Status",
+                        text = "Head of Household and/or Adults by Project Completion Status",
                         content = link_section("R17 Project Completion Status")
                     )
                 ),
@@ -32,7 +32,7 @@ mod_exit_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Safe & Appropriate Exit Response",
+                        text = "Head of Household and/or Adults by Safe & Appropriate Exit Response",
                         content = link_section("R19 Safe and Appropriate Exit")
                     )
                 ),
@@ -111,7 +111,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_
                       function(params){
                           return('<strong>Participant Response: </strong>' + params.value[0] + '<br />' +
                                   '<strong>Worker Response: </strong>' + params.value[1] + '<br />' +
-                                  params.marker + '# of Participants: ' + params.value[2]
+                                  params.marker + 'Participants: ' + params.value[2]
                           )
                       }
                     ")

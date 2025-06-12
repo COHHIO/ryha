@@ -13,16 +13,16 @@ mod_parenting_ui <- function(id) {
         bslib::layout_columns(
             mod_value_box_ui(
                 id = ns("n_pregnant_heads_of_household_and_adults"),
-                title = "# of Pregnant Head of Household and/or Adults"
+                title = "Pregnant Head of Household and/or Adults"
             ),
             mod_value_box_ui(
                 id = ns("n_households_with_children"),
-                title = "# of Households with Children",
+                title = "Households with Children",
                 tooltip = "Households with at least one participant enrolled as the head of household's child"
             ),
             mod_value_box_ui(
                 id = ns("n_children"),
-                title = "# of Children",
+                title = "Children",
                 tooltip = "A child is defined as a participant who is enrolled as the head of household's child"
             )
         ),
@@ -30,7 +30,7 @@ mod_parenting_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Children per Household",
+                        text = "Children per Household",
                         content = "A child is defined as a participant who is enrolled as the head of household's child"
                     )
                 ),
@@ -40,7 +40,7 @@ mod_parenting_ui <- function(id) {
         custom_card(
             bslib::card_header(
                 with_popover(
-                    text = "# of Head of Household and/or Adults by Pregnancy Status",
+                    text = "Head of Household and/or Adults by Pregnancy Status",
                     content = link_section("R10 Pregnancy Status")
                 )
             ),

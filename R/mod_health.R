@@ -15,19 +15,19 @@ mod_health_ui <- function(id) {
             bslib::layout_columns(
                 mod_value_box_ui(
                     id = ns("n_heads_of_household_and_adults_with_health_records"),
-                    title = "# of Head of Household and/or Adults with Records",
+                    title = "Head of Household and/or Adults with Records",
                     tooltip = "Responses within those records may still be missing"
                 ),
                 mod_value_box_ui(
                     id = ns("n_heads_of_household_and_adults_without_health_records"),
-                    title = "# of Head of Household and/or Adults without Records"
+                    title = "Head of Household and/or Adults without Records"
                 )
             ),
             bslib::layout_columns(
                 custom_card(
                     bslib::card_header(
                         with_popover(
-                            text = "# of Head of Household and/or Adults by Health Status",
+                            text = "Head of Household and/or Adults by Health Status",
                             content = shiny::tagList(
                                 shiny::span("Each bar summarizes the responses for the corresponding health status."),
                                 shiny::br(),
@@ -81,13 +81,13 @@ mod_health_ui <- function(id) {
             bslib::layout_columns(
                 mod_value_box_ui(
                     id = ns("n_heads_of_household_and_adults_with_counseling_records"),
-                    title = "# of Head of Household and/or Adults with Records"
+                    title = "Head of Household and/or Adults with Records"
                 )
             ),
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Counseling Received Response",
+                        text = "Head of Household and/or Adults by Counseling Received Response",
                         content = link_section("R18 Counseling")
                     )
                 ),
