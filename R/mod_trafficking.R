@@ -12,9 +12,9 @@ mod_trafficking_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_heads_of_household_and_adults_with_trafficking_data"),
-                title = "# of Head of Household and/or Adults with Trafficking Data",
-                tooltip = "Head of Household and/or Adults included in Overview who also appear in Trafficking records"
+                id = ns("n_heads_of_household_and_adults_with_records"),
+                title = "# of Head of Household and/or Adults with Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
                 id = ns("n_sex_trafficked_heads_of_household_and_adults"),
@@ -126,7 +126,7 @@ mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_trafficking_data",
+            id = "n_heads_of_household_and_adults_with_records",
             rctv_data = trafficking_data_filtered
         )
 
