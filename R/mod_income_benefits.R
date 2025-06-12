@@ -15,14 +15,13 @@ mod_income_benefits_ui <- function(id) {
                 title = "Income",
                 bslib::layout_columns(
                     mod_value_box_ui(
-                        id = ns("n_heads_of_household_and_adults_with_income_data"),
-                        title = "# of Head of Household and/or Adults with Income Data",
-                        tooltip = "Head of Household and/or Adults included in Overview who also appear in Income records"
+                        id = ns("n_heads_of_household_and_adults_with_income_records"),
+                        title = "# of Head of Household and/or Adults with Records",
+                        tooltip = "Responses within those records may still be missing"
                     ),
                     mod_value_box_ui(
-                        id = ns("n_heads_of_household_and_adults_missing_income_data"),
-                        title = "# of Head of Household and/or Adults Missing",
-                        tooltip = "Head of Household and/or Adults included in Overview without a matching Income record"
+                        id = ns("n_heads_of_household_and_adults_without_income_records"),
+                        title = "# of Head of Household and/or Adults without Records"
                     ),
                 ),
                 bslib::layout_columns(
@@ -64,14 +63,13 @@ mod_income_benefits_ui <- function(id) {
                 title = "Benefits",
                 bslib::layout_columns(
                     mod_value_box_ui(
-                        id = ns("n_heads_of_household_and_adults_with_benefits_data"),
-                        title = "# of Head of Household and/or Adults with Benefits Data",
-                        tooltip = "Head of Household and/or Adults included in Overview who also appear in Benefits records"
+                        id = ns("n_heads_of_household_and_adults_with_benefits_records"),
+                        title = "# of Head of Household and/or Adults with Records",
+                        tooltip = "Responses within those records may still be missing"
                     ),
                     mod_value_box_ui(
-                        id = ns("n_heads_of_household_and_adults_missing_benefits_data"),
-                        title = "# of Head of Household and/or Adults Missing",
-                        tooltip = "Head of Household and/or Adults included in Overview without a matching Benefits record"
+                        id = ns("n_heads_of_household_and_adults_without_benefits_records"),
+                        title = "# of Head of Household and/or Adults without Records"
                     )
                 ),
                 bslib::layout_columns(
@@ -113,14 +111,13 @@ mod_income_benefits_ui <- function(id) {
                 title = "Health Insurance",
                 bslib::layout_columns(
                     mod_value_box_ui(
-                        id = ns("n_participants_with_health_insurance_data"),
-                        title = "# of Participants with Health Insurance Data",
-                        tooltip = "Youth included in Overview who also appear in Health Insurance records"
+                        id = ns("n_participants_with_health_insurance_records"),
+                        title = "# of Participants with Records",
+                        tooltip = "Responses within those records may still be missing"
                     ),
                     mod_value_box_ui(
-                        id = ns("n_participants_missing_health_insurance_data"),
-                        title = "# of Participants Missing",
-                        tooltip = "Youth included in Overview without a matching Health Insurance record"
+                        id = ns("n_participants_without_health_insurance_records"),
+                        title = "# of Participants without Records"
                     )
                 ),
                 bslib::layout_columns(
@@ -200,12 +197,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_income_data",
+            id = "n_heads_of_household_and_adults_with_income_records",
             rctv_data = most_recent_income_data_per_enrollment
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_missing_income_data",
+            id = "n_heads_of_household_and_adults_without_income_records",
             rctv_data = shiny::reactive({
                 filter_data(heads_of_household_and_adults, clients_filtered()) |>
                     dplyr::anti_join(
@@ -216,12 +213,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_benefits_data",
+            id = "n_heads_of_household_and_adults_with_benefits_records",
             rctv_data = most_recent_benefits_data_per_enrollment_hh_and_adults
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_missing_benefits_data",
+            id = "n_heads_of_household_and_adults_without_benefits_records",
             rctv_data = shiny::reactive({
                 filter_data(heads_of_household_and_adults, clients_filtered()) |>
                     dplyr::anti_join(
@@ -232,12 +229,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
         )
 
         mod_value_box_server(
-            id = "n_participants_with_health_insurance_data",
+            id = "n_participants_with_health_insurance_records",
             rctv_data = most_recent_benefits_data_per_enrollment_all_clients
         )
 
         mod_value_box_server(
-            id = "n_participants_missing_health_insurance_data",
+            id = "n_participants_without_health_insurance_records",
             rctv_data = shiny::reactive({
                 clients_filtered() |>
                     dplyr::anti_join(
