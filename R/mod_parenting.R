@@ -22,7 +22,7 @@ mod_parenting_ui <- function(id) {
             ),
             mod_value_box_ui(
                 id = ns("n_children"),
-                title = "# of Children Served",
+                title = "# of Children",
                 tooltip = "A child is defined as a participant who is enrolled as the head of household's child"
             )
         ),
