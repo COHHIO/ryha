@@ -13,15 +13,15 @@ mod_overview_ui <- function(id) {
         bslib::layout_columns(
             mod_value_box_ui(
                 id = ns("n_participants"),
-                title = "# of Participants Served"
+                title = "# of Participants"
             ),
             mod_value_box_ui(
                 id = ns("n_head_of_household_and_adults"),
-                title = "# of Head of Household and/or Adults Served"
+                title = "# of Head of Household and/or Adults"
             ),
             mod_value_box_ui(
                 id = ns("n_households"),
-                title = "# of Households Served"
+                title = "# of Households"
             )
         ),
         bslib::layout_columns(
