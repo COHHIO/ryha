@@ -56,7 +56,7 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tool
         echarts4r::e_charts_(x = x) |>
         echarts4r::e_bar_(
             serie = y,
-            name = "# of Youth",
+            name = "# of Participants",
             legend = FALSE
         ) |>
         echarts4r::e_add_nested("itemStyle", color) |>

@@ -41,7 +41,7 @@ mod_income_benefits_ui <- function(id) {
                                 text = "Informed Income Sources",
                                 content = shiny::tagList(
                                     shiny::p("Only Head of Household and Adults who reported receiving income are included."),
-                                    shiny::p("Each bar represents the percentage of youth who informed a given income source."),
+                                    shiny::p("Each bar represents the percentage of participants who informed a given income source."),
                                     shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
                                     shiny::p(link_section("4.02 Income and Sources"))
                                 )
@@ -90,7 +90,7 @@ mod_income_benefits_ui <- function(id) {
                                 text = "Informed Benefits Source",
                                 content = shiny::tagList(
                                     shiny::p("Only Head of Household and Adults who reported receiving benefits are included."),
-                                    shiny::p("Each bar represents the percentage of youth who informed a given benefit source."),
+                                    shiny::p("Each bar represents the percentage of participants who informed a given benefit source."),
                                     shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
                                     shiny::p(link_section("4.03 Non-Cash Benefits"))
                                 )
@@ -113,13 +113,13 @@ mod_income_benefits_ui <- function(id) {
                 title = "Health Insurance",
                 bslib::layout_columns(
                     mod_value_box_ui(
-                        id = ns("n_youth_with_health_insurance_data"),
-                        title = "# of Youth with Health Insurance Data",
+                        id = ns("n_participants_with_health_insurance_data"),
+                        title = "# of Participants with Health Insurance Data",
                         tooltip = "Youth included in Overview who also appear in Health Insurance records"
                     ),
                     mod_value_box_ui(
-                        id = ns("n_youth_missing_health_insurance_data"),
-                        title = "# of Youth Missing",
+                        id = ns("n_participants_missing_health_insurance_data"),
+                        title = "# of Participants Missing",
                         tooltip = "Youth included in Overview without a matching Health Insurance record"
                     )
                 ),
@@ -127,7 +127,7 @@ mod_income_benefits_ui <- function(id) {
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Youth by Health Insurance Received (from Any Source) Response",
+                                text = "# of Participants by Health Insurance Received (from Any Source) Response",
                                 content = link_section("4.04 Health Insurance")
                             )
                         ),
@@ -138,8 +138,8 @@ mod_income_benefits_ui <- function(id) {
                             with_popover(
                                 text = "Informed Health Insurance Source",
                                 content = shiny::tagList(
-                                    shiny::p("Only youth who reported receiving health insurance are included."),
-                                    shiny::p("Each bar represents the percentage of youth who informed a given health insurance source."),
+                                    shiny::p("Only participants who reported receiving health insurance are included."),
+                                    shiny::p("Each bar represents the percentage of participants who informed a given health insurance source."),
                                     shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
                                     shiny::p(link_section("4.04 Health Insurance"))
                                 )
@@ -232,12 +232,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
         )
 
         mod_value_box_server(
-            id = "n_youth_with_health_insurance_data",
+            id = "n_participants_with_health_insurance_data",
             rctv_data = most_recent_benefits_data_per_enrollment_all_clients
         )
 
         mod_value_box_server(
-            id = "n_youth_missing_health_insurance_data",
+            id = "n_participants_missing_health_insurance_data",
             rctv_data = shiny::reactive({
                 clients_filtered() |>
                     dplyr::anti_join(
@@ -260,10 +260,10 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
         ## Income Source ####
         output$income_source_chart <- echarts4r::renderEcharts4r({
-            youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
+            participants_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
                 dplyr::filter(income_from_any_source == "Yes")
 
-            youth_with_income_from_any_source |>
+            participants_with_income_from_any_source |>
                 dplyr::select(
                     enrollment_id,
                     organization_id,
@@ -334,16 +334,16 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 bar_chart(
                     x = "income_source",
                     y = "n",
-                    pct_denominator = nrow(youth_with_income_from_any_source)
+                    pct_denominator = nrow(participants_with_income_from_any_source)
                 )
         })
 
         ## Monthly Income ####
         output$income_bar_chart <- echarts4r::renderEcharts4r({
-            youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
+            participants_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
                 dplyr::filter(income_from_any_source == "Yes")
 
-            youth_with_income_from_any_source |>
+            participants_with_income_from_any_source |>
                 dplyr::count(total_monthly_income_grouped, .drop = FALSE) |>
                 bar_chart(
                     x = "total_monthly_income_grouped",
@@ -363,10 +363,10 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
         ## Benefits Source ####
         output$benefits_source_chart <- echarts4r::renderEcharts4r({
-            youth_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment_hh_and_adults() |>
+            participants_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment_hh_and_adults() |>
                 dplyr::filter(benefits_from_any_source == "Yes")
 
-            youth_with_benefits_from_any_source |>
+            participants_with_benefits_from_any_source |>
                 dplyr::select(
                     enrollment_id,
                     organization_id,
@@ -409,7 +409,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 bar_chart(
                     x = "benefits_source",
                     y = "n",
-                    pct_denominator = nrow(youth_with_benefits_from_any_source)
+                    pct_denominator = nrow(participants_with_benefits_from_any_source)
                 )
         })
 
@@ -439,10 +439,10 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
         ## Health Insurance Source ####
         output$insurance_source_chart <- echarts4r::renderEcharts4r({
-            youth_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment_all_clients() |>
+            participants_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment_all_clients() |>
                 dplyr::filter(insurance_from_any_source == "Yes")
 
-            youth_with_insurance_from_any_source |>
+            participants_with_insurance_from_any_source |>
                 dplyr::select(
                     enrollment_id,
                     organization_id,
@@ -498,7 +498,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 bar_chart(
                     x = "insurance_source",
                     y = "n",
-                    pct_denominator = nrow(youth_with_insurance_from_any_source)
+                    pct_denominator = nrow(participants_with_insurance_from_any_source)
                 )
         })
 

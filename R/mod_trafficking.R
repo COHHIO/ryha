@@ -50,7 +50,7 @@ mod_trafficking_ui <- function(id) {
                             with_popover(
                                 text = "# of Head of Household and/or Adults by Asked or Forced to Exchange Response",
                                 content = shiny::tagList(
-                                    shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                                    shiny::p("Only participants that ever received anything in exchange for sex are included."),
                                     shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
                                 )
                             )
@@ -62,7 +62,7 @@ mod_trafficking_ui <- function(id) {
                             with_popover(
                                 text = "# of Head of Household and/or Adults by Count of Exchange for Sex Response",
                                 content = shiny::tagList(
-                                    shiny::p("Only youth that ever received anything in exchange for sex are included."),
+                                    shiny::p("Only participants that ever received anything in exchange for sex are included."),
                                     shiny::p(link_section("R15 Commercial Sexual Exploitation/Sex Trafficking"))
                                 )
                             )

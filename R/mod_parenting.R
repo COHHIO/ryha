@@ -18,12 +18,12 @@ mod_parenting_ui <- function(id) {
             mod_value_box_ui(
                 id = ns("n_households_with_children"),
                 title = "# of Households with Children",
-                tooltip = "Households with at least one youth enrolled as the head of household's child"
+                tooltip = "Households with at least one participant enrolled as the head of household's child"
             ),
             mod_value_box_ui(
-                id = ns("n_children_served"),
+                id = ns("n_children"),
                 title = "# of Children Served",
-                tooltip = "A child is defined as a youth who is enrolled as the head of household's child"
+                tooltip = "A child is defined as a participant who is enrolled as the head of household's child"
             )
         ),
         bslib::layout_columns(
@@ -31,7 +31,7 @@ mod_parenting_ui <- function(id) {
                 bslib::card_header(
                     with_popover(
                         text = "# of Children per Household",
-                        content = "A child is defined as a youth who is enrolled as the head of household's child"
+                        content = "A child is defined as a participant who is enrolled as the head of household's child"
                     )
                 ),
                 echarts4r::echarts4rOutput(outputId = ns("n_children_per_household_chart"), height = "100%")
@@ -97,7 +97,7 @@ mod_parenting_server <- function(id, health_data, enrollment_data, clients_filte
         )
 
         mod_value_box_server(
-            id = "n_children_served",
+            id = "n_children",
             rctv_data = shiny::reactive({
                 enrollment_data_filtered() |>
                     dplyr::filter(relationship_to_ho_h == "Head of household's child")

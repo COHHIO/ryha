@@ -87,7 +87,7 @@ mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_
                     show = FALSE
                 ) |>
                 echarts4r::e_axis_labels(
-                    x = "Youth Response",
+                    x = "Participant Response",
                     y = "Worker Response"
                 ) |>
                 echarts4r::e_x_axis(
@@ -109,9 +109,9 @@ mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_
                     trigger = "item",
                     formatter = htmlwidgets::JS("
                       function(params){
-                          return('<strong>Youth Response: </strong>' + params.value[0] + '<br />' +
+                          return('<strong>Participant Response: </strong>' + params.value[0] + '<br />' +
                                   '<strong>Worker Response: </strong>' + params.value[1] + '<br />' +
-                                  params.marker + '# of Youth: ' + params.value[2]
+                                  params.marker + '# of Participants: ' + params.value[2]
                           )
                       }
                     ")

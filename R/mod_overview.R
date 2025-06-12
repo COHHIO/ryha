@@ -12,15 +12,15 @@ mod_overview_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_youth_served"),
-                title = "# of Youth Served"
+                id = ns("n_participants"),
+                title = "# of Participants Served"
             ),
             mod_value_box_ui(
-                id = ns("n_head_of_household_and_adults_served"),
+                id = ns("n_head_of_household_and_adults"),
                 title = "# of Head of Household and/or Adults Served"
             ),
             mod_value_box_ui(
-                id = ns("n_households_served"),
+                id = ns("n_households"),
                 title = "# of Households Served"
             )
         ),
@@ -28,9 +28,9 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Youth by Gender",
+                        text = "# of Participants by Gender",
                         content = shiny::tagList(
-                            shiny::p("Each bar represents the percentage of youth who self-identify with a given gender category."),
+                            shiny::p("Each bar represents the percentage of participants who self-identify with a given gender category."),
                             shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
                             shiny::p(link_section("3.06 Gender"))
                         )
@@ -61,9 +61,9 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Youth by Race & Ethnicity",
+                        text = "# of Participants by Race & Ethnicity",
                         content = shiny::tagList(
-                            shiny::p("Each bar represents the percentage of youth who self-identify with a given racial and/or ethnic category."),
+                            shiny::p("Each bar represents the percentage of participants who self-identify with a given racial and/or ethnic category."),
                             shiny::p("Since individuals can select multiple categories, the total percentage may exceed 100%."),
                             shiny::p(link_section("3.04 Race and Ethnicity"))
                         )
@@ -75,7 +75,7 @@ mod_overview_ui <- function(id) {
         custom_card(
             bslib::card_header(
                 with_popover(
-                    text = "# of Youth by Age Group",
+                    text = "# of Participants by Age Group",
                     content = link_section("3.03 Date of Birth")
                 )
             ),
@@ -125,17 +125,17 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_youth_served",
+            id = "n_participants",
             rctv_data = client_data_filtered
         )
 
         mod_value_box_server(
-            id = "n_head_of_household_and_adults_served",
+            id = "n_head_of_household_and_adults",
             rctv_data = enrollment_data_filtered
         )
 
         mod_value_box_server(
-            id = "n_households_served",
+            id = "n_households",
             rctv_data = shiny::reactive({
                 filter_data(enrollment_data, clients_filtered()) |>
                     dplyr::distinct(household_id)

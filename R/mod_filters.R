@@ -32,7 +32,7 @@ mod_filters_ui <- function(id) {
         # SSN De-Dup checkbox
         shiny::checkboxInput(
             inputId = ns("dedup_status_global"),
-            label = "De-duplicate Youth Across Projects by SSN?",
+            label = "De-duplicate Participants Across Projects by SSN?",
             value = FALSE,
             width = "100%"
         ),
@@ -73,7 +73,7 @@ mod_filters_ui <- function(id) {
         # Age missing checkbox
         shiny::checkboxInput(
             inputId = ns("age_missing_global"),
-            label = "Include Youth with Missing Ages?",
+            label = "Include Participants with Missing Ages?",
             value = TRUE
         ),
 
