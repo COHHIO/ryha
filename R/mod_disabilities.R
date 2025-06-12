@@ -12,18 +12,17 @@ mod_disabilities_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             mod_value_box_ui(
-                id = ns("n_participants_with_disabilities_data"),
-                title = "# of Participants with Disabilities Data",
-                tooltip = "Youth included in Overview who also appear in Disabilities records"
+                id = ns("n_participants_with_records"),
+                title = "# of Participants with Records",
+                tooltip = "Responses within those records may still be missing"
             ),
             mod_value_box_ui(
-                id = ns("n_participants_missing"),
-                title = "# of Participants Missing",
-                tooltip = "Youth included in Overview without a matching Disabilities record"
+                id = ns("n_participants_without_records"),
+                title = "# of Participants without Records"
             ),
             mod_value_box_ui(
-                id = ns("n_participants_with_a_disability"),
-                title = "# of Participants with a Disability"
+                id = ns("n_participants_with_a_disabling_condition"),
+                title = "# of Participants with a Disabling Condition"
             ),
             mod_value_box_ui(
                 id = ns("n_participants_with_substance_use"),
@@ -164,12 +163,12 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_participants_with_disabilities_data",
+            id = "n_participants_with_records",
             rctv_data = most_recent_data_per_enrollment
         )
 
         mod_value_box_server(
-            id = "n_participants_missing",
+            id = "n_participants_without_records",
             rctv_data = shiny::reactive({
                 clients_filtered() |>
                     dplyr::anti_join(
@@ -180,7 +179,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
         )
 
         mod_value_box_server(
-            id = "n_participants_with_a_disability",
+            id = "n_participants_with_a_disabling_condition",
             rctv_data = shiny::reactive({
                 most_recent_data_per_enrollment() |>
                     dplyr::filter(
