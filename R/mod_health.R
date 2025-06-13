@@ -81,7 +81,8 @@ mod_health_ui <- function(id) {
             bslib::layout_columns(
                 mod_value_box_ui(
                     id = ns("n_heads_of_household_and_adults_with_counseling_records"),
-                    title = "Head of Household and/or Adults with Records"
+                    title = "Head of Household and/or Adults with Records",
+                    tooltip = "Responses within those records may still be missing"
                 )
             ),
             custom_card(
