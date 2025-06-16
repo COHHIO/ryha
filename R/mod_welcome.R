@@ -17,7 +17,6 @@ mod_welcome_ui <- function(id) {
                 bslib::card(
                     bslib::card_header(shiny::HTML("<h1>Welcome to the <em>Youth Homelessness Data Dashboard</em></h1>")),
                     bslib::layout_columns(
-                        col_widths = c(3, 6, 3),
                         class = "vertical-center",
                         shiny::img(src = "www/odh_logo.png", width = "100%"),
                         shiny::img(src = "www/cohhio_logo.png", width = "100%"),

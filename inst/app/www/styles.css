@@ -36,3 +36,9 @@
 .popover .btn-close {
   display: none !important;
 }
+
+/* Define wider tooltip */
+.tooltip-wider .tooltip-inner {
+  max-width: 400px;
+  text-align: left;
+}

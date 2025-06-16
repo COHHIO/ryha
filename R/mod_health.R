@@ -14,21 +14,20 @@ mod_health_ui <- function(id) {
             bslib::card_header(shiny::h2("Health Status")),
             bslib::layout_columns(
                 mod_value_box_ui(
-                    id = ns("n_heads_of_household_and_adults_with_health_data"),
-                    title = "# of Head of Household and/or Adults with Health Data",
-                    tooltip = "Head of Household and/or Adults included in Overview who also appear in Health records"
+                    id = ns("n_heads_of_household_and_adults_with_health_records"),
+                    title = "Head of Household and/or Adults with Records",
+                    tooltip = "Responses within those records may still be missing"
                 ),
                 mod_value_box_ui(
-                    id = ns("n_heads_of_household_and_adults_missing_health_data"),
-                    title = "# of Head of Household and/or Adults Missing",
-                    tooltip = "Head of Household and/or Adults included in Overview without a matching Health record"
+                    id = ns("n_heads_of_household_and_adults_without_health_records"),
+                    title = "Head of Household and/or Adults without Records"
                 )
             ),
             bslib::layout_columns(
                 custom_card(
                     bslib::card_header(
                         with_popover(
-                            text = "# of Head of Household and/or Adults by Health Status",
+                            text = "Head of Household and/or Adults by Health Status",
                             content = shiny::tagList(
                                 shiny::span("Each bar summarizes the responses for the corresponding health status."),
                                 shiny::br(),
@@ -81,15 +80,15 @@ mod_health_ui <- function(id) {
             bslib::card_header(shiny::h2("Counseling")),
             bslib::layout_columns(
                 mod_value_box_ui(
-                    id = ns("n_heads_of_household_and_adults_with_counseling_data"),
-                    title = "# of Head of Household and/or Adults with Counseling Data",
-                    tooltip = "Head of Household and/or Adults included in Overview who also appear in Counseling records"
+                    id = ns("n_heads_of_household_and_adults_with_counseling_records"),
+                    title = "Head of Household and/or Adults with Records",
+                    tooltip = "Responses within those records may still be missing"
                 )
             ),
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "# of Head of Household and/or Adults by Counseling Received Response",
+                        text = "Head of Household and/or Adults by Counseling Received Response",
                         content = link_section("R18 Counseling")
                     )
                 ),
@@ -126,12 +125,12 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
         # Value Boxes ####
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_health_data",
+            id = "n_heads_of_household_and_adults_with_health_records",
             rctv_data = most_recent_health_data_per_enrollment
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_missing_health_data",
+            id = "n_heads_of_household_and_adults_without_health_records",
             rctv_data = shiny::reactive({
                 filter_data(heads_of_household_and_adults, clients_filtered()) |>
                     dplyr::anti_join(
@@ -142,7 +141,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         )
 
         mod_value_box_server(
-            id = "n_heads_of_household_and_adults_with_counseling_data",
+            id = "n_heads_of_household_and_adults_with_counseling_records",
             rctv_data = counseling_data_filtered
         )
 
