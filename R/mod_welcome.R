@@ -35,8 +35,7 @@ mod_welcome_ui <- function(id) {
                             shiny::tagAppendAttributes(class = "custom-box"),
                         bslib::card(
                             bslib::card_header(shiny::h2("Contact & Help")),
-                            shiny::markdown("This app utilizes the HMIS CSV to provide information on the ODH program. If you have any questions about the app, please email Amanda Wilson, Youth Housing Initiative Director at COHHIO, at [amandawilson@cohhio.org](mailto:amandawilson@cohhio.org)"),
-                            shiny::div("Please refer to ", shiny::actionLink(inputId = "to_help", label = "Help"), " page for more information on how to navigate the app.")
+                            shiny::markdown("This app utilizes the HMIS CSV to provide information on the ODH program. If you have any questions about the app, please email Amanda Wilson, Youth Housing Initiative Director at COHHIO, at [amandawilson@cohhio.org](mailto:amandawilson@cohhio.org)")
                         ) |>
                             shiny::tagAppendAttributes(class = "custom-box")
                     ),

@@ -129,13 +129,5 @@ app_server <- function(input, output, session) {
         id = "upload_1"
     )
 
-    # Define logic to navigate to "Help Page" when the link is clicked
-    shiny::observeEvent(input$to_help, {
-        bslib::nav_select(
-            id = "navbar",
-            selected = "Help"
-        )
-    })
-
     waiter::waiter_hide()
 }
