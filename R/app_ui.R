@@ -103,11 +103,6 @@ app_ui <- function(request) {
             bslib::nav_panel(
                 title = shiny::span(shiny::icon("upload"), "Upload Data"),
                 mod_upload_ui("upload_1")
-            ),
-            bslib::nav_panel(
-                title = shiny::span(shiny::icon("question"), "Help"),
-                value = "Help",
-                "Section under development"
             )
         )
     )
