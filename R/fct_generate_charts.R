@@ -25,7 +25,7 @@
 #'     y = "y"
 #' )
 #' }
-bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tooltip_opts = list(confine = FALSE, extraCssText = "")) {
+bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denominator = NULL, axis_flip = TRUE, tooltip_opts = list(confine = FALSE, extraCssText = "")) {
     # Calculate percentage column
     if (!is.null(pct_denominator)) {
         data <- data |>
@@ -56,7 +56,7 @@ bar_chart <- function(data, x, y, pct_denominator = NULL, axis_flip = TRUE, tool
         echarts4r::e_charts_(x = x) |>
         echarts4r::e_bar_(
             serie = y,
-            name = "# of Youth",
+            name = serie_name,
             legend = FALSE
         ) |>
         echarts4r::e_add_nested("itemStyle", color) |>

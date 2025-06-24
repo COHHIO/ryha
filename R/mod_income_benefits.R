@@ -10,122 +10,153 @@
 mod_income_benefits_ui <- function(id) {
     ns <- NS(id)
     tagList(
-        bslib::card(
-            bslib::navset_card_tab(
-                bslib::nav_panel(
-                    title = "Income",
-                    bslib::layout_columns(
-                        custom_card(
-                            bslib::card_header(
-                                with_popover(
-                                    text = "# of Head of Household and/or Adults by Income Received (from Any Source) Response",
-                                    content = link_section("4.02 Income and Sources")
-                                )
-                            ),
-                            echarts4r::echarts4rOutput(outputId = ns("income_chart"), height = "100%")
-                        ),
-                        custom_card(
-                            bslib::card_header(
-                                with_popover(
-                                    text = "Informed Income Sources",
-                                    content = shiny::tagList(
-                                        shiny::p("Only Head of Household and Adults who reported receiving income are included."),
-                                        shiny::p("Each bar represents the percentage of youth who informed a given income source."),
-                                        shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
-                                        shiny::p(link_section("4.02 Income and Sources"))
-                                    )
-                                )
-                            ),
-                            echarts4r::echarts4rOutput(outputId = ns("income_source_chart"), height = "100%")
-                        )
+        bslib::navset_card_tab(
+            bslib::nav_panel(
+                title = "Income",
+                bslib::layout_columns(
+                    mod_value_box_ui(
+                        id = ns("n_heads_of_household_and_adults_with_income_records"),
+                        title = "Head of Household and/or Adults with Records",
+                        tooltip = "Responses within those records may still be missing"
                     ),
+                    mod_value_box_ui(
+                        id = ns("n_heads_of_household_and_adults_without_income_records"),
+                        title = "Head of Household and/or Adults without Records"
+                    ),
+                ),
+                bslib::layout_columns(
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "# of Head of Household and/or Adults with Income by Total Monthly Income",
+                                text = "Head of Household and/or Adults by Income Received (from Any Source) Response",
                                 content = link_section("4.02 Income and Sources")
                             )
                         ),
-                        echarts4r::echarts4rOutput(outputId = ns("income_bar_chart"), height = "100%")
-                    )
-                ),
-                bslib::nav_panel(
-                    title = "Benefits",
-                    bslib::layout_columns(
-                        custom_card(
-                            bslib::card_header(
-                                with_popover(
-                                    text = "# of Head of Household and/or Adults by Benefits Received (from Any Source) Response",
-                                    content = link_section("4.03 Non-Cash Benefits")
-                                )
-                            ),
-                            echarts4r::echarts4rOutput(outputId = ns("benefits_chart"), height = "100%")
-                        ),
-                        custom_card(
-                            bslib::card_header(
-                                with_popover(
-                                    text = "Informed Benefits Source",
-                                    content = shiny::tagList(
-                                        shiny::p("Only Head of Household and Adults who reported receiving benefits are included."),
-                                        shiny::p("Each bar represents the percentage of youth who informed a given benefit source."),
-                                        shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
-                                        shiny::p(link_section("4.03 Non-Cash Benefits"))
-                                    )
-                                )
-                            ),
-                            echarts4r::echarts4rOutput(outputId = ns("benefits_source_chart"), height = "100%")
-                        )
+                        echarts4r::echarts4rOutput(outputId = ns("income_chart"), height = "100%")
                     ),
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                                text = "Informed Income Sources",
+                                content = shiny::tagList(
+                                    shiny::p("Only Head of Household and Adults who reported receiving income are included."),
+                                    shiny::p("Each bar represents the percentage of participants who informed a given income source."),
+                                    shiny::p("Since participants can select multiple sources, the total percentage may exceed 100%."),
+                                    shiny::p(link_section("4.02 Income and Sources"))
+                                )
+                            )
+                        ),
+                        echarts4r::echarts4rOutput(outputId = ns("income_source_chart"), height = "100%")
+                    )
+                ),
+                custom_card(
+                    bslib::card_header(
+                        with_popover(
+                            text = "Head of Household and/or Adults with Income by Total Monthly Income",
+                            content = link_section("4.02 Income and Sources")
+                        )
+                    ),
+                    echarts4r::echarts4rOutput(outputId = ns("income_bar_chart"), height = "100%")
+                )
+            ),
+            bslib::nav_panel(
+                title = "Benefits",
+                bslib::layout_columns(
+                    mod_value_box_ui(
+                        id = ns("n_heads_of_household_and_adults_with_benefits_records"),
+                        title = "Head of Household and/or Adults with Records",
+                        tooltip = "Responses within those records may still be missing"
+                    ),
+                    mod_value_box_ui(
+                        id = ns("n_heads_of_household_and_adults_without_benefits_records"),
+                        title = "Head of Household and/or Adults without Records"
+                    )
+                ),
+                bslib::layout_columns(
+                    custom_card(
+                        bslib::card_header(
+                            with_popover(
+                                text = "Head of Household and/or Adults by Benefits Received (from Any Source) Response",
                                 content = link_section("4.03 Non-Cash Benefits")
                             )
                         ),
-                        echarts4r::echarts4rOutput(outputId = ns("benefits_sankey_chart"), height = "100%")
-                    )
-                ),
-                bslib::nav_panel(
-                    title = "Health Insurance",
-                    bslib::layout_columns(
-                        custom_card(
-                            bslib::card_header(
-                                with_popover(
-                                    text = "# of Youth by Health Insurance Received (from Any Source) Response",
-                                    content = link_section("4.04 Health Insurance")
-                                )
-                            ),
-                            echarts4r::echarts4rOutput(outputId = ns("insurance_chart"), height = "100%")
-                        ),
-                        custom_card(
-                            bslib::card_header(
-                                with_popover(
-                                    text = "Informed Health Insurance Source",
-                                    content = shiny::tagList(
-                                        shiny::p("Only youth who reported receiving health insurance are included."),
-                                        shiny::p("Each bar represents the percentage of youth who informed a given health insurance source."),
-                                        shiny::p("Since individuals can select multiple sources, the total percentage may exceed 100%."),
-                                        shiny::p(link_section("4.04 Health Insurance"))
-                                    )
-                                )
-                            ),
-                            echarts4r::echarts4rOutput(outputId = ns("insurance_source_chart"), height = "100%")
-                        )
+                        echarts4r::echarts4rOutput(outputId = ns("benefits_chart"), height = "100%")
                     ),
                     custom_card(
                         bslib::card_header(
                             with_popover(
-                                text = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
+                                text = "Informed Benefits Source",
+                                content = shiny::tagList(
+                                    shiny::p("Only Head of Household and Adults who reported receiving benefits are included."),
+                                    shiny::p("Each bar represents the percentage of participants who informed a given benefit source."),
+                                    shiny::p("Since participants can select multiple sources, the total percentage may exceed 100%."),
+                                    shiny::p(link_section("4.03 Non-Cash Benefits"))
+                                )
+                            )
+                        ),
+                        echarts4r::echarts4rOutput(outputId = ns("benefits_source_chart"), height = "100%")
+                    )
+                ),
+                custom_card(
+                    bslib::card_header(
+                        with_popover(
+                            text = "Changes in Benefits (from Any Source) Response (Entry --> Exit)",
+                            content = link_section("4.03 Non-Cash Benefits")
+                        )
+                    ),
+                    echarts4r::echarts4rOutput(outputId = ns("benefits_sankey_chart"), height = "100%")
+                )
+            ),
+            bslib::nav_panel(
+                title = "Health Insurance",
+                bslib::layout_columns(
+                    mod_value_box_ui(
+                        id = ns("n_participants_with_health_insurance_records"),
+                        title = "Participants with Records",
+                        tooltip = "Responses within those records may still be missing"
+                    ),
+                    mod_value_box_ui(
+                        id = ns("n_participants_without_health_insurance_records"),
+                        title = "Participants without Records"
+                    )
+                ),
+                bslib::layout_columns(
+                    custom_card(
+                        bslib::card_header(
+                            with_popover(
+                                text = "Participants by Health Insurance Received (from Any Source) Response",
                                 content = link_section("4.04 Health Insurance")
                             )
                         ),
-                        echarts4r::echarts4rOutput(outputId = ns("insurance_sankey_chart"), height = "100%")
+                        echarts4r::echarts4rOutput(outputId = ns("insurance_chart"), height = "100%")
+                    ),
+                    custom_card(
+                        bslib::card_header(
+                            with_popover(
+                                text = "Informed Health Insurance Source",
+                                content = shiny::tagList(
+                                    shiny::p("Only participants who reported receiving health insurance are included."),
+                                    shiny::p("Each bar represents the percentage of participants who informed a given health insurance source."),
+                                    shiny::p("Since participants can select multiple sources, the total percentage may exceed 100%."),
+                                    shiny::p(link_section("4.04 Health Insurance"))
+                                )
+                            )
+                        ),
+                        echarts4r::echarts4rOutput(outputId = ns("insurance_source_chart"), height = "100%")
                     )
+                ),
+                custom_card(
+                    bslib::card_header(
+                        with_popover(
+                            text = "Changes in Health Insurance (from Any Source) Response (Entry --> Exit)",
+                            content = link_section("4.04 Health Insurance")
+                        )
+                    ),
+                    echarts4r::echarts4rOutput(outputId = ns("insurance_sankey_chart"), height = "100%")
                 )
-            ) |>
-                shiny::tagAppendAttributes(class = "nav-justified")
-        )
+            )
+        ) |>
+            shiny::tagAppendAttributes(class = "nav-justified")
     )
 }
 
@@ -136,7 +167,8 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
-        ## Filter income data ----
+        # Filter Data ####
+        ## Income ####
         income_data_filtered <- shiny::reactive({
             filter_data(income_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
@@ -147,7 +179,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 filter_most_recent_data_per_enrollment()
         })
 
-        ## Filter benefits data ----
+        ## Benefits ####
         benefits_data_filtered <- shiny::reactive({
             filter_data(benefits_data, clients_filtered())
         })
@@ -163,7 +195,57 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 filter_most_recent_data_per_enrollment()
         })
 
-        ## Income Chart ----
+        # Value Boxes ####
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_income_records",
+            rctv_data = most_recent_income_data_per_enrollment
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_without_income_records",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        most_recent_income_data_per_enrollment(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_with_benefits_records",
+            rctv_data = most_recent_benefits_data_per_enrollment_hh_and_adults
+        )
+
+        mod_value_box_server(
+            id = "n_heads_of_household_and_adults_without_benefits_records",
+            rctv_data = shiny::reactive({
+                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                    dplyr::anti_join(
+                        most_recent_benefits_data_per_enrollment_hh_and_adults(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        mod_value_box_server(
+            id = "n_participants_with_health_insurance_records",
+            rctv_data = most_recent_benefits_data_per_enrollment_all_clients
+        )
+
+        mod_value_box_server(
+            id = "n_participants_without_health_insurance_records",
+            rctv_data = shiny::reactive({
+                clients_filtered() |>
+                    dplyr::anti_join(
+                        most_recent_benefits_data_per_enrollment_all_clients(),
+                        by = c("enrollment_id", "personal_id", "organization_id")
+                    )
+            })
+        )
+
+        # Charts ####
+        ## Income ####
         output$income_chart <- echarts4r::renderEcharts4r(
             most_recent_income_data_per_enrollment() |>
                 dplyr::count(income_from_any_source, .drop = FALSE) |>
@@ -173,12 +255,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         )
 
-        ## Income Source Chart ----
+        ## Income Source ####
         output$income_source_chart <- echarts4r::renderEcharts4r({
-            youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
+            participants_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
                 dplyr::filter(income_from_any_source == "Yes")
 
-            youth_with_income_from_any_source |>
+            participants_with_income_from_any_source |>
                 dplyr::select(
                     enrollment_id,
                     organization_id,
@@ -249,16 +331,16 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 bar_chart(
                     x = "income_source",
                     y = "n",
-                    pct_denominator = nrow(youth_with_income_from_any_source)
+                    pct_denominator = nrow(participants_with_income_from_any_source)
                 )
         })
 
-        ## Monthly Income Chart ----
+        ## Monthly Income ####
         output$income_bar_chart <- echarts4r::renderEcharts4r({
-            youth_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
+            participants_with_income_from_any_source <- most_recent_income_data_per_enrollment() |>
                 dplyr::filter(income_from_any_source == "Yes")
 
-            youth_with_income_from_any_source |>
+            participants_with_income_from_any_source |>
                 dplyr::count(total_monthly_income_grouped, .drop = FALSE) |>
                 bar_chart(
                     x = "total_monthly_income_grouped",
@@ -266,7 +348,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Benefits Chart ----
+        ## Benefits ####
         output$benefits_chart <- echarts4r::renderEcharts4r({
             most_recent_benefits_data_per_enrollment_hh_and_adults() |>
                 dplyr::count(benefits_from_any_source, .drop = FALSE) |>
@@ -276,12 +358,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Benefits Source Chart ----
+        ## Benefits Source ####
         output$benefits_source_chart <- echarts4r::renderEcharts4r({
-            youth_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment_hh_and_adults() |>
+            participants_with_benefits_from_any_source <- most_recent_benefits_data_per_enrollment_hh_and_adults() |>
                 dplyr::filter(benefits_from_any_source == "Yes")
 
-            youth_with_benefits_from_any_source |>
+            participants_with_benefits_from_any_source |>
                 dplyr::select(
                     enrollment_id,
                     organization_id,
@@ -324,11 +406,11 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 bar_chart(
                     x = "benefits_source",
                     y = "n",
-                    pct_denominator = nrow(youth_with_benefits_from_any_source)
+                    pct_denominator = nrow(participants_with_benefits_from_any_source)
                 )
         })
 
-        ## Benefits Sankey Chart ----
+        ## Benefits Sankey ####
         output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
             benefits_data_filtered() |>
                 prepare_sankey_data(
@@ -342,7 +424,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         )
 
-        ## Health Insurance Chart ----
+        ## Health Insurance ####
         output$insurance_chart <- echarts4r::renderEcharts4r({
             most_recent_benefits_data_per_enrollment_all_clients() |>
                 dplyr::count(insurance_from_any_source, .drop = FALSE) |>
@@ -352,12 +434,12 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 )
         })
 
-        ## Health Insurance Source Chart ----
+        ## Health Insurance Source ####
         output$insurance_source_chart <- echarts4r::renderEcharts4r({
-            youth_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment_all_clients() |>
+            participants_with_insurance_from_any_source <- most_recent_benefits_data_per_enrollment_all_clients() |>
                 dplyr::filter(insurance_from_any_source == "Yes")
 
-            youth_with_insurance_from_any_source |>
+            participants_with_insurance_from_any_source |>
                 dplyr::select(
                     enrollment_id,
                     organization_id,
@@ -413,11 +495,11 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                 bar_chart(
                     x = "insurance_source",
                     y = "n",
-                    pct_denominator = nrow(youth_with_insurance_from_any_source)
+                    pct_denominator = nrow(participants_with_insurance_from_any_source)
                 )
         })
 
-        ## Health Insurance Sankey Chart ----
+        ## Health Insurance Sankey ####
         output$insurance_sankey_chart <- echarts4r::renderEcharts4r(
             benefits_data_filtered() |>
                 prepare_sankey_data(

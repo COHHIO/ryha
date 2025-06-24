@@ -32,7 +32,7 @@ mod_filters_ui <- function(id) {
         # SSN De-Dup checkbox
         shiny::checkboxInput(
             inputId = ns("dedup_status_global"),
-            label = "De-duplicate Youth Across Projects by SSN?",
+            label = "De-duplicate Participants Across Projects by SSN?",
             value = FALSE,
             width = "100%"
         ),
@@ -73,7 +73,7 @@ mod_filters_ui <- function(id) {
         # Age missing checkbox
         shiny::checkboxInput(
             inputId = ns("age_missing_global"),
-            label = "Include Youth with Missing Ages?",
+            label = "Include Participants with Missing Ages?",
             value = TRUE
         ),
 
@@ -338,9 +338,9 @@ mod_filters_server <- function(id, dm, rctv) {
                     ) |>
                     # Filter by project
                     dplyr::filter(project_id %in% input$project_filter_global) |>
-                    # Remove individuals who entered *after* the later active date
+                    # Remove participants who entered *after* the later active date
                     dplyr::filter(entry_date <= input$active_date_filter_global[2]) |>
-                    # Remove individuals who exited *before* the first active date
+                    # Remove participants who exited *before* the first active date
                     dplyr::filter(is.na(exit_date) | exit_date >= input$active_date_filter_global[1]) |>
                     # Keep one enrollment per person-organization
                     filter_most_recent_enrollment_per_group(grouping_vars = c("organization_id", "personal_id"))
