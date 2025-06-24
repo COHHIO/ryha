@@ -13,11 +13,10 @@ mod_welcome_ui <- function(id) {
     tagList(
         bslib::layout_columns(
             col_widths = c(-2, 8, -2),
-            bslib::card(
+            shiny::tagList(
                 bslib::card(
                     bslib::card_header(shiny::HTML("<h1>Welcome to the <em>Youth Homelessness Data Dashboard</em></h1>")),
                     bslib::layout_columns(
-                        col_widths = c(3, 6, 3),
                         class = "vertical-center",
                         shiny::img(src = "www/odh_logo.png", width = "100%"),
                         shiny::img(src = "www/cohhio_logo.png", width = "100%"),
@@ -25,7 +24,7 @@ mod_welcome_ui <- function(id) {
                     )
                 ),
                 bslib::layout_columns(
-                    bslib::card(
+                    shiny::tagList(
                         bslib::card(
                             bslib::card_header(shiny::h2("Partnership")),
                             shiny::markdown("This app is the result of a partnership between:

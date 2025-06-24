@@ -22,13 +22,14 @@ app_ui <- function(request) {
         bslib::page_navbar(
             id = "navbar",
             fillable = FALSE,
+            theme = bslib::bs_theme(brand = app_sys("_brand.yml")),
             title = shiny::span(
                 shiny::tags$a(
                     href = "https://cohhio.org/youthhealth/",
                     target = "_blank",
                     style = "text-decoration: none;",
                     shiny::tags$img(
-                        src = "www/favicon.ico",
+                        src = "www/cohhio_logo_small.png",
                         height = "40px",
                         style = "margin-right: 8px;"
                     )

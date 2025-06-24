@@ -29,7 +29,8 @@ mod_trafficking_ui <- function(id) {
                     <li>They were ever afraid to quit or leave work due to threats of violence to themselves, their family, or friends</li>
                     <li>They were ever promised work where the work or payment was different than expected</li>
                   </ul>
-                ")
+                "),
+                tooltip_options = list(customClass = "tooltip-wider")
             )
         ),
         bslib::navset_card_tab(

@@ -177,11 +177,11 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
                         ),
                     # Assign color by destination_grouped
                     color = dplyr::case_when(
-                        destination_group == "Other" ~ COLORS$MISSING,
-                        destination_group == "Homeless" ~ COLORS$POOR,
-                        destination_group == "Institutional" ~ COLORS$FAIR,
-                        destination_group == "Temporary" ~ COLORS$GOOD,
-                        destination_group == "Permanent" ~ COLORS$EXCELLENT
+                        destination_group == "Other" ~ palette$missing,
+                        destination_group == "Homeless" ~ palette$poor,
+                        destination_group == "Institutional" ~ palette$fair,
+                        destination_group == "Temporary" ~ palette$good,
+                        destination_group == "Permanent" ~ palette$excellent
                     )
                 ) |>
                 # Sort by counts inside each group
@@ -220,11 +220,11 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
                 echarts4r::e_color(
                     c(
                         "",
-                        COLORS$EXCELLENT,
-                        COLORS$GOOD,
-                        COLORS$FAIR,
-                        COLORS$POOR,
-                        COLORS$MISSING
+                        palette$excellent,
+                        palette$good,
+                        palette$fair,
+                        palette$poor,
+                        palette$missing
                     )
                 )
         })

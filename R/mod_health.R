@@ -185,15 +185,15 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
                 echarts4r::e_grid(containLabel = TRUE) |>
                 echarts4r::e_color(
                     c(
-                        COLORS$EXCELLENT, # "Excellent",
-                        COLORS$VERY_GOOD, # "Very Good",
-                        COLORS$GOOD, # "Good",
-                        COLORS$FAIR, # "Fair",
-                        COLORS$POOR, # "Poor",
-                        COLORS$CLIENT_DOESNT_KNOW, # "Client doesn't know",
-                        COLORS$CLIENT_PREFERS_NOT_TO_ANSWER, # "Client prefers not to answer",
-                        COLORS$DATA_NOT_COLLECTED, # "Data not collected",
-                        COLORS$MISSING # "Missing"
+                        palette$excellent, # "Excellent",
+                        palette$very_good, # "Very Good",
+                        palette$good, # "Good",
+                        palette$fair, # "Fair",
+                        palette$poor, # "Poor",
+                        palette$client_doesnt_know, # "Client doesn't know",
+                        palette$client_prefers_not_to_answer, # "Client prefers not to answer",
+                        palette$data_not_collected, # "Data not collected",
+                        palette$missing # "Missing"
                     )
                 ) |>
                 add_stacked_bar_tooltip()

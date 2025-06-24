@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_value_box_ui <- function(id, title, tooltip = NULL) {
+mod_value_box_ui <- function(id, title, tooltip = NULL, tooltip_options = list()) {
     ns <- NS(id)
 
     title_ui <- if (!is.null(tooltip)) {
@@ -16,7 +16,8 @@ mod_value_box_ui <- function(id, title, tooltip = NULL) {
             bslib::tooltip(
                 trigger = bsicons::bs_icon("info-circle"),
                 tooltip,
-                placement = "right"
+                placement = "right",
+                options = tooltip_options
             )
         )
     } else {
@@ -26,7 +27,8 @@ mod_value_box_ui <- function(id, title, tooltip = NULL) {
     tagList(
         bslib::value_box(
             title = title_ui,
-            value = shiny::textOutput(ns("value"))
+            value = shiny::textOutput(ns("value")),
+            theme = "info"
         )
     )
 }

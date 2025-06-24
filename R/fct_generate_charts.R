@@ -46,8 +46,8 @@ bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denomina
                         "Data not collected",
                         "Client prefers not to answer",
                         "Client doesn't know"
-                    ) ~ COLORS$MISSING,
-                    TRUE ~ COLORS$DEFAULT
+                    ) ~ palette$missing,
+                    TRUE ~ palette$default
                 )
             )
     }
@@ -148,7 +148,7 @@ sankey_chart <- function(data,
                          entry_status,
                          exit_status,
                          count,
-                         color = "blue") {
+                         color = palette$default) {
     data |>
         echarts4r::e_charts() |>
         echarts4r::e_sankey_(

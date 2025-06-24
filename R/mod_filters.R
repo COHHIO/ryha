@@ -20,13 +20,59 @@ mod_filters_ui <- function(id) {
         # County filter
         custom_pickerInput(
             inputId = ns("county"),
-            label = shiny::uiOutput(outputId = ns("county_filter_label")),
+            label = shiny::tagList(
+                shiny::div(
+                    id = ns("county_label_no_error"),
+                    bslib::tooltip(
+                        shiny::span(
+                            "County",
+                            bsicons::bs_icon("info-circle")
+                        ),
+                        "Showing counties associated with selected funders",
+                        placement = "right"
+                    )
+                ),
+                shiny::div(
+                    id = ns("county_label_error"),
+                    bslib::tooltip(
+                        shiny::span(
+                            "County",
+                            bsicons::bs_icon("info-circle", class = "text-danger")
+                        ),
+                        "Please select at least one funder",
+                        placement = "right"
+                    )
+                )
+            )
         ),
 
         # Project filter
         custom_pickerInput(
             inputId = ns("project_filter_global"),
-            label = shiny::uiOutput(outputId = ns("project_filter_label")),
+            label = shiny::tagList(
+                shiny::div(
+                    id = ns("project_label_no_error"),
+                    bslib::tooltip(
+                        shiny::span(
+                            "Project",
+                            bsicons::bs_icon("info-circle")
+                        ),
+                        "Showing projects associated with selected funders and counties",
+                        placement = "right"
+                    )
+                ),
+                shiny::div(
+                    id = ns("project_label_error"),
+                    bslib::tooltip(
+                        shiny::span(
+                            "Project",
+                            bsicons::bs_icon("info-circle", class = "text-danger")
+                        ),
+                        "Please select at least one county",
+                        placement = "right"
+                    )
+                )
+            )
         ),
 
         # SSN De-Dup checkbox
@@ -131,30 +177,17 @@ mod_filters_server <- function(id, dm, rctv) {
             if (length(rctv_projects_funded_by_funders()) == 0) {
                 # Disable county input
                 shinyjs::disable(id = "county")
+                # Show/Hide labels
+                shinyjs::show("county_label_error")
+                shinyjs::hide("county_label_no_error")
             } else {
                 # When at least one funder is selected...
                 # Enable county input
                 shinyjs::enable(id = "county")
+                # Show/Hide labels
+                shinyjs::show("county_label_no_error")
+                shinyjs::hide("county_label_error")
             }
-        })
-
-        output$county_filter_label <- shiny::renderUI({
-            if (length(rctv_projects_funded_by_funders()) == 0) {
-                class <- "text-danger"
-                content <- "Please select at least one funder"
-            } else {
-                class <- NULL
-                content <- "Showing counties associated with selected funders"
-            }
-
-            bslib::tooltip(
-                shiny::span(
-                    "County",
-                    bsicons::bs_icon("info-circle", class = class)
-                ),
-                content,
-                placement = "right"
-            )
         })
 
         ## Update county filter to show only counties with projects funded by selected funders
@@ -181,33 +214,20 @@ mod_filters_server <- function(id, dm, rctv) {
                 if (length(input$county) == 0) {
                     # Disable project input
                     shinyjs::disable(id = "project_filter_global")
+                    # Show/Hide labels
+                    shinyjs::show("project_label_error")
+                    shinyjs::hide("project_label_no_error")
                 } else {
                     # When at least one county is selected...
                     # Enable project input
                     shinyjs::enable(id = "project_filter_global")
+                    # Show/Hide labels
+                    shinyjs::show("project_label_no_error")
+                    shinyjs::hide("project_label_error")
                 }
             },
             ignoreNULL = FALSE
         )
-
-        output$project_filter_label <- shiny::renderUI({
-            if (length(input$county) == 0) {
-                class <- "text-danger"
-                content <- "Please select at least one county"
-            } else {
-                class <- NULL
-                content <- "Showing projects associated with selected funders and counties"
-            }
-
-            bslib::tooltip(
-                shiny::span(
-                    "Project",
-                    bsicons::bs_icon("info-circle", class = class)
-                ),
-                content,
-                placement = "right"
-            )
-        })
 
         ## Update project filter (based on funder filter and county)
         ### As county choices depend on funder filter, any changes in funder
