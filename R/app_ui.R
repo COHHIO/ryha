@@ -42,6 +42,7 @@ app_ui <- function(request) {
             ),
             bslib::nav_panel(
                 title = shiny::span(shiny::icon("magnifying-glass-chart"), "Explore Data"),
+                value = "Explore Data",
                 bslib::navset_card_underline(
                     sidebar = bslib::sidebar(
                         width = 450,

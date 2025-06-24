@@ -402,8 +402,6 @@ mod_filters_server <- function(id, dm, rctv) {
             ignoreNULL = FALSE
         )
 
-        waiter::waiter_hide()
-
         return(clients_filtered)
     })
 }
