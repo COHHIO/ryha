@@ -1,6 +1,6 @@
 Package: ryha
 Title: R Youth Homelessness Analyzer
-Version: 1.6.0
+Version: 1.7.0
 Authors@R: c(
     person("Ketchbrook", "Analytics", , "info@ketchbrookanalytics.com", role = "aut"),
     person("Trevin", "Flickinger", , "trevinflickinger@cohhio.org", role = "cre")
@@ -9,9 +9,9 @@ Description: Shiny web application for visualizing HMIS data in the State
     of Ohio.
 License: AGPL (>= 3)
 URL: https://cohhio.github.io/ryha/
-Depends: 
+Depends:
     R (>= 2.10)
-Imports: 
+Imports:
     bsicons,
     bslib,
     cli,
@@ -44,7 +44,7 @@ Imports:
     tools,
     waiter,
     zip
-Suggests: 
+Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
