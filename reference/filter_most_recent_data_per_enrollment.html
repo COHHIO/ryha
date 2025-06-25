@@ -11,7 +11,7 @@ following a set of rules."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ryha</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,11 +84,11 @@ correspond to "Project update" data collection stage).</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="va">mock_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="op">~</span><span class="va">test_row</span>, <span class="op">~</span><span class="va">organization_id</span>, <span class="op">~</span><span class="va">personal_id</span>, <span class="op">~</span><span class="va">enrollment_id</span>,  <span class="op">~</span><span class="va">data_collection_stage</span>,  <span class="op">~</span><span class="va">date_updated</span>, <span class="op">~</span><span class="va">status</span>,</span></span>
-<span class="r-in"><span>  <span class="fl">1</span>, <span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">1000L</span>, <span class="st">"Project start"</span>, <span class="st">"2024-12-31"</span>, <span class="st">"A"</span>,</span></span>
-<span class="r-in"><span>  <span class="fl">2</span>, <span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">1000L</span>, <span class="st">"Project update"</span>, <span class="st">"2023-01-01"</span>, <span class="st">"B"</span></span></span>
+<span class="r-in"><span>    <span class="op">~</span><span class="va">test_row</span>, <span class="op">~</span><span class="va">organization_id</span>, <span class="op">~</span><span class="va">personal_id</span>, <span class="op">~</span><span class="va">enrollment_id</span>, <span class="op">~</span><span class="va">data_collection_stage</span>, <span class="op">~</span><span class="va">date_updated</span>, <span class="op">~</span><span class="va">status</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1</span>, <span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">1000L</span>, <span class="st">"Project start"</span>, <span class="st">"2024-12-31"</span>, <span class="st">"A"</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">2</span>, <span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">1000L</span>, <span class="st">"Project update"</span>, <span class="st">"2023-01-01"</span>, <span class="st">"B"</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="va">date_updated</span>, <span class="va">as.Date</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="va">date_updated</span>, <span class="va">as.Date</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">filter_most_recent_data_per_enrollment</span><span class="op">(</span><span class="va">mock_data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
@@ -103,7 +103,7 @@ correspond to "Project update" data collection stage).</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

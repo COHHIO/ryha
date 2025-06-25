@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">ryha</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,6 +64,9 @@
 
     
     
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p><a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer" class="external-link">.devcontainer</a>
 directory contains the necessary files to set up a <a href="https://code.visualstudio.com/docs/devcontainers/containers" class="external-link">development
 container</a>:</p>
@@ -79,6 +82,26 @@ configure <a href="https://rstudio.github.io/renv/" class="external-link">renv</
 <strong>value to a path in your local machine based upon</strong> <a href="https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location" class="external-link">{renv}’s
 Cache location</a>.</li>
 <li>
+<a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R" class="external-link">complete_dev_setup.R</a>
+is a script run as a <code>postCreateCommand</code> in
+<code>devcontainer.json</code> to leverage <a href="https://rstudio.github.io/renv/" class="external-link">renv</a>’s cache.
+It performs the following tasks:
+<ul>
+<li>runs <code>renv::restore()</code> to restore the project’s
+dependencies from the <a href="https://github.com/COHHIO/ryha/tree/master/renv.lock" class="external-link">renv.lock</a>
+file</li>
+<li>installs development-only packages (i.e. packages not needed to run
+the application but useful during development, such as
+<code>devtools</code>). <strong>You can add or remove development-only
+packages from this script based on your preferences</strong>. It’s
+recommended to specify exact package versions to prevent unintended
+updates to other packages.</li>
+<li>configures <a href="https://github.com/REditorSupport/languageserver" class="external-link">R Language
+Server</a> by updating the <code>R_LIBS_USER</code> environment
+variable, ensuring it points to the correct library path</li>
+</ul>
+</li>
+<li>
 <a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json" class="external-link">devcontainer.json</a>
 describes how VS Code should start the container and what to do after it
 connects.</li>
@@ -87,17 +110,17 @@ connects.</li>
 sets up a development environment with three services:
 <ul>
 <li>
-<code>app</code>: A custom-built application container that mounts
+<code>app</code>: a custom-built application container that mounts
 local directories and <a href="https://kodekloud.com/blog/keep-docker-container-running/" class="external-link">runs
 indefinitely</a>.</li>
 <li>
-<code>db</code>: A PostgreSQL database container with <a href="https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/" class="external-link">persistent
+<code>db</code>: a PostgreSQL database container with <a href="https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/" class="external-link">persistent
 storage</a> and <a href="https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port" class="external-link">exposed
 ports for access</a>. Check <a href="#db">db</a> section for
 instructions on how to connect to, populate and launch the application
 connected to the database.</li>
 <li>
-<code>pgadmin</code>: A <a href="https://www.pgadmin.org/" class="external-link">pgAdmin</a> container for database
+<code>pgadmin</code>: a <a href="https://www.pgadmin.org/" class="external-link">pgAdmin</a> container for database
 management. Check <a href="#pgadmin">pgadmin</a> section for
 instructions on how to configure the server.</li>
 </ul>
@@ -108,21 +131,11 @@ contains a set of instructions on how to build the Docker image to run
 the application in development. <strong>Any new system requirement
 needed for additional R packages installed must be added to this
 file</strong>.</li>
-<li>
-<a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_dev_packages.R" class="external-link">install_dev_packages.R</a>
-runs <code>renv::restore()</code> to restore the project’s dependencies
-from the <a href="https://github.com/COHHIO/ryha/tree/master/renv.lock" class="external-link">renv.lock</a>
-file. In addition, we use this script to install development packages
-(i.e. packages that are not needed to run the application but help
-during development, such as <code>devtools</code>). <strong>Add or
-remove development packages from this script based on your
-preferences</strong>. This script is run as a
-<code>postCreateCommand</code> in <code>devcontainer.json</code> to
-leverage <a href="https://rstudio.github.io/renv/" class="external-link">renv</a>’s cache.</li>
 </ul>
-<div class="section level3">
-<h3 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
+</h2>
 <ul>
 <li>
 <a href="https://docs.docker.com/engine/install/" class="external-link">Docker</a>. We
@@ -134,34 +147,41 @@ Container Extension</a>
 </li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="quickstart">QuickStart<a class="anchor" aria-label="anchor" href="#quickstart"></a>
-</h3>
+<div class="section level2">
+<h2 id="quickstart">QuickStart<a class="anchor" aria-label="anchor" href="#quickstart"></a>
+</h2>
 <p>Once you have installed the necessary requirements, cloned the
 repository locally and created the <code>.devcontainer/.env</code> file,
 open the repository in VSCode and click <strong>Reopen in
 Container…</strong>:</p>
-<p><img src="reopen-in-container.png"></p>
+<p><img src="quickstart/reopen-in-container.png"></p>
 <p><em>NOTE</em>: Alternatively, you can select <strong>Dev Containers:
 Reopen in Container</strong> from the Command Palette (<code>F1</code>)
 to perform this action.</p>
 <p>The Dev Container initialization may take a few minutes, as it needs
 to create different Docker images and install the corresponding R
 packages via <code>renv::restore()</code>.</p>
-<p>The message <code>Done. Press any key to close the terminal.</code>
-in <code>TERMINAL</code> tab indicates that the process completed
-successfully:</p>
-<p><img src="quickstart-finish.png"></p>
+<p>The following messages in <code>TERMINAL</code> tab indicate that the
+process completed successfully:</p>
+<p><img src="quickstart/finish.png"></p>
+<p>Follow the instructions to configure R Language Server:</p>
+<p><img src="quickstart/reload-window.png"></p>
+<p><em>NOTE</em>: <strong>Developer: Reload Window</strong> only needs
+to be run after a <strong>Rebuild</strong>. There is no need to run it
+after you <strong>Reopen</strong> a container.</p>
 <p><em>NOTE</em>: If you encounter any errors, you can review the logs
 to troubleshoot or contact a team member for assistance.</p>
 <p>To launch an R Terminal, select <strong>R: Create R terminal</strong>
 from the Command Palette (<code>F1</code>). Alternatively, you can click
 the <code>⌄</code> icon in VS Code Panel and select <strong>R
 Terminal</strong>:</p>
-<p><img src="quickstart-open-r.png"></p>
+<p><img src="quickstart/open-r.png"></p>
 <p>Remember to select the R Terminal in the right sidebar to open
 it.</p>
 </div>
+<div class="section level2">
+<h2 id="clean-environment">Clean Environment<a class="anchor" aria-label="anchor" href="#clean-environment"></a>
+</h2>
 <div class="section level3">
 <h3 id="exit-dev-container">Exit Dev Container<a class="anchor" aria-label="anchor" href="#exit-dev-container"></a>
 </h3>
@@ -180,7 +200,7 @@ connection to the Dev Container and stop the container. The current
 workspace will be closed, and you’ll be returned to the main VS Code
 window without any active workspace or connection.</li>
 </ul>
-<p><img src="exit-container.png"></p>
+<p><img src="clean/exit-container.png"></p>
 </div>
 <div class="section level3">
 <h3 id="remove-dev-container">Remove Dev Container<a class="anchor" aria-label="anchor" href="#remove-dev-container"></a>
@@ -212,7 +232,7 @@ interface to perform the same tasks.</p>
 <li>Locate the container associated with your Dev Container and click
 the corresponding trash icon to stop and delete it</li>
 </ol>
-<p><img src="delete-container.png"></p>
+<p><img src="clean/delete-container.png"></p>
 </div>
 <div class="section level4">
 <h4 id="remove-images">Remove Images<a class="anchor" aria-label="anchor" href="#remove-images"></a>
@@ -223,7 +243,7 @@ the corresponding trash icon to stop and delete it</li>
 corresponding trash icons to remove them from your local Docker
 repository</li>
 </ol>
-<p><img src="delete-images.png"></p>
+<p><img src="clean/delete-images.png"></p>
 </div>
 <div class="section level4">
 <h4 id="remove-volumes">Remove Volumes<a class="anchor" aria-label="anchor" href="#remove-volumes"></a>
@@ -236,17 +256,18 @@ repository</li>
 <li>Click <strong>Delete</strong>
 </li>
 </ol>
-<p><img src="delete-volumes.png"></p>
+<p><img src="clean/delete-volumes.png"></p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="container-details">Container Details<a class="anchor" aria-label="anchor" href="#container-details"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="container-details">Container Details<a class="anchor" aria-label="anchor" href="#container-details"></a>
+</h2>
 <p>The container uses <a href="https://docs.docker.com/compose/" class="external-link">Docker
 Compose</a> to initialize the following <strong>services</strong>:</p>
-<div class="section level4">
-<h4 id="app">app<a class="anchor" aria-label="anchor" href="#app"></a>
-</h4>
+<div class="section level3">
+<h3 id="app">app<a class="anchor" aria-label="anchor" href="#app"></a>
+</h3>
 <p><strong>app</strong> creates a container based on <a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev" class="external-link">.devcontainer/Dockerfile.Dev</a>.
 This file:</p>
 <ul>
@@ -281,9 +302,9 @@ to avoid.</p>
 <p>To run the app in development mode (without installing the {ryha} R
 package), run <code><a href="https://thinkr-open.github.io/golem/reference/run_dev.html" class="external-link">golem::run_dev()</a></code>.</p>
 </div>
-<div class="section level4">
-<h4 id="db">db<a class="anchor" aria-label="anchor" href="#db"></a>
-</h4>
+<div class="section level3">
+<h3 id="db">db<a class="anchor" aria-label="anchor" href="#db"></a>
+</h3>
 <p><strong>db</strong> creates a postgreSQL database. You can find the
 credentials under <code>db</code>’s <code>environment</code> property in
 <a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml" class="external-link">.devcontainer/docker-compose.yml</a>.</p>
@@ -295,25 +316,25 @@ property set, the connection string will use
 same regardless of whether we are connecting from outside or inside the
 Dev Container (when the <code>network_mode</code> property is set for
 <code>app</code> service).</p>
-<div class="section level5">
-<h5 id="connect">Connect<a class="anchor" aria-label="anchor" href="#connect"></a>
-</h5>
+<div class="section level4">
+<h4 id="connect">Connect<a class="anchor" aria-label="anchor" href="#connect"></a>
+</h4>
 <p>You can connect to the development database using the following
 code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Connect to dev database</span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span>
-<span>  drv <span class="op">=</span> <span class="fu">RPostgres</span><span class="fu">::</span><span class="fu"><a href="https://rpostgres.r-dbi.org/reference/Postgres.html" class="external-link">Postgres</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  dbname <span class="op">=</span> <span class="st">"ryha-dev"</span>,</span>
-<span>  host <span class="op">=</span> <span class="st">"localhost"</span>,</span>
-<span>  port <span class="op">=</span> <span class="fl">5432</span>,</span>
-<span>  user <span class="op">=</span> <span class="st">"ryha-dev"</span>,</span>
-<span>  password <span class="op">=</span> <span class="st">"ryha"</span></span>
+<span>    drv <span class="op">=</span> <span class="fu">RPostgres</span><span class="fu">::</span><span class="fu"><a href="https://rpostgres.r-dbi.org/reference/Postgres.html" class="external-link">Postgres</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    dbname <span class="op">=</span> <span class="st">"ryha-dev"</span>,</span>
+<span>    host <span class="op">=</span> <span class="st">"localhost"</span>,</span>
+<span>    port <span class="op">=</span> <span class="fl">5432</span>,</span>
+<span>    user <span class="op">=</span> <span class="st">"ryha-dev"</span>,</span>
+<span>    password <span class="op">=</span> <span class="st">"ryha"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="populate">Populate<a class="anchor" aria-label="anchor" href="#populate"></a>
-</h5>
+<div class="section level4">
+<h4 id="populate">Populate<a class="anchor" aria-label="anchor" href="#populate"></a>
+</h4>
 <p>Once the container is created, you can run <a href="https://github.com/COHHIO/ryha/tree/master/postgres/populate_dev_database/populate_dev_database.R" class="external-link">postgres/populate_dev_database/populate_dev_database.R</a>
 to create and populate the corresponding tables. To run this script you
 need to:</p>
@@ -330,17 +351,17 @@ different functions in <code>ryha</code> that are used in the script
 (e.g. <code><a href="../../reference/send_to_db.html">send_to_db()</a></code>).</li>
 </ul>
 </div>
-<div class="section level5">
-<h5 id="use-in-app">Use in App<a class="anchor" aria-label="anchor" href="#use-in-app"></a>
-</h5>
+<div class="section level4">
+<h4 id="use-in-app">Use in App<a class="anchor" aria-label="anchor" href="#use-in-app"></a>
+</h4>
 <p>Once the container is running, you can set the environmental variable
 <code>APP_BACKEND</code> to <code>dev</code> in <code>.Renviron</code>
 to run the application connected to the development database.</p>
 </div>
 </div>
-<div class="section level4">
-<h4 id="pgadmin">pgAdmin<a class="anchor" aria-label="anchor" href="#pgadmin"></a>
-</h4>
+<div class="section level3">
+<h3 id="pgadmin">pgAdmin<a class="anchor" aria-label="anchor" href="#pgadmin"></a>
+</h3>
 <p><strong>pgAdmin</strong> provides a graphical administration tool to
 make it easier to manipulate schema and data in PostgreSQL. Once the
 container is created, you can access pgAdmin in <a href="http://localhost:5050/" class="external-link uri">http://localhost:5050/</a>
@@ -361,12 +382,12 @@ browsers. We recommend using Google Chrome.</p>
 Alternatively, you can right-click <code>Servers</code> as shown
 below:</li>
 </ol>
-<p><img src="pgadmin%2F01.png"></p>
+<p><img src="pgadmin/01.png"></p>
 <ol start="2" style="list-style-type: decimal">
 <li>In <code>General</code>, provide a <code>Name</code> for the server.
 For example: <code>dev-db</code>.</li>
 </ol>
-<p><img src="pgadmin%2F02.png"></p>
+<p><img src="pgadmin/02.png"></p>
 <ol start="3" style="list-style-type: decimal">
 <li>In <code>Connection</code>, set the following configuration:</li>
 </ol>
@@ -385,12 +406,12 @@ For example: <code>dev-db</code>.</li>
 <p>Maintenance database, Username and Password were defined under
 <code>db</code>’s <code>environment</code> property in
 <code>.devcontainer/docker-compose.yml</code>.</p>
-<p><img src="pgadmin%2F03.png"></p>
+<p><img src="pgadmin/03.png"></p>
 <ol start="4" style="list-style-type: decimal">
 <li>Click <code>Save</code>. If the development database was already
 populated, you should be able to see the tables with data:</li>
 </ol>
-<p><img src="pgadmin%2F04.png"></p>
+<p><img src="pgadmin/04.png"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -404,7 +425,7 @@ populated, you should be able to see the tables with data:</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

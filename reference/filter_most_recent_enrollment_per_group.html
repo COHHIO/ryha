@@ -9,7 +9,7 @@ recent enrollment for each group, based on a series prioritization criteria"></h
 
     <a class="navbar-brand me-2" href="../index.html">ryha</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,13 +78,13 @@ applied sequentially:</p><ol><li><p>Retain enrollment(s) without an exit date or
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="va">mock_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="op">~</span><span class="va">organization_id</span>, <span class="op">~</span><span class="va">personal_id</span>, <span class="op">~</span><span class="va">enrollment_id</span>,  <span class="op">~</span><span class="va">entry_date</span>,   <span class="op">~</span><span class="va">exit_date</span>, <span class="op">~</span><span class="va">date_updated</span>,</span></span>
-<span class="r-in"><span>                <span class="fl">1L</span>,           <span class="fl">1L</span>,          <span class="fl">1000L</span>, <span class="st">"2022-01-01"</span>, <span class="st">"2022-12-31"</span>,  <span class="st">"2022-12-31"</span>,</span></span>
-<span class="r-in"><span>                <span class="fl">1L</span>,           <span class="fl">1L</span>,          <span class="fl">1001L</span>, <span class="st">"2023-01-01"</span>,           <span class="cn">NA</span>,  <span class="st">"2023-01-01"</span></span></span>
+<span class="r-in"><span>    <span class="op">~</span><span class="va">organization_id</span>, <span class="op">~</span><span class="va">personal_id</span>, <span class="op">~</span><span class="va">enrollment_id</span>, <span class="op">~</span><span class="va">entry_date</span>, <span class="op">~</span><span class="va">exit_date</span>, <span class="op">~</span><span class="va">date_updated</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">1000L</span>, <span class="st">"2022-01-01"</span>, <span class="st">"2022-12-31"</span>, <span class="st">"2022-12-31"</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">1001L</span>, <span class="st">"2023-01-01"</span>, <span class="cn">NA</span>, <span class="st">"2023-01-01"</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">entry_date</span>, <span class="va">exit_date</span>, <span class="va">date_updated</span><span class="op">)</span>, <span class="va">as.Date</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">entry_date</span>, <span class="va">exit_date</span>, <span class="va">date_updated</span><span class="op">)</span>, <span class="va">as.Date</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">filter_most_recent_enrollment_per_group</span><span class="op">(</span><span class="va">mock_data</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"personal_id"</span>, <span class="st">"organization_id"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
@@ -99,7 +99,7 @@ applied sequentially:</p><ol><li><p>Retain enrollment(s) without an exit date or
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
