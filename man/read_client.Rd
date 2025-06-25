@@ -22,8 +22,7 @@ Ingest "Client.csv" file and perform ETL prep for "CLIENT" database table
 path <- "path/to/Client.csv"
 
 read_client(
-  file = path
+    file = path
 )
-
 }
 }

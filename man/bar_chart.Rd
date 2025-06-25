@@ -8,6 +8,7 @@ bar_chart(
   data,
   x,
   y,
+  serie_name = "# of Participants",
   pct_denominator = NULL,
   axis_flip = TRUE,
   tooltip_opts = list(confine = FALSE, extraCssText = "")
@@ -41,9 +42,9 @@ This function generates a bar chart using the echarts4r package.
 \dontrun{
 mock_data <- data.frame(x = c("A", "B", "C"), y = c(10, 20, 30))
 bar_chart(
-  data = mock_data,
-  x = "x",
-  y = "y"
+    data = mock_data,
+    x = "x",
+    y = "y"
 )
 }
 }

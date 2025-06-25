@@ -4,7 +4,7 @@
 \alias{sankey_chart}
 \title{Generate a Sankey chart using echarts4r}
 \usage{
-sankey_chart(data, entry_status, exit_status, count, color = "blue")
+sankey_chart(data, entry_status, exit_status, count, color = palette$default)
 }
 \arguments{
 \item{data}{A data frame containing the data to be plotted.}
@@ -30,16 +30,16 @@ This function generates a Sankey chart using the echarts4r package.
 \examples{
 \dontrun{
 mock_data <- data.frame(
-  status_at_entry = c("A", "A", "B", "B"),
-  status_at_exit = c("X", "Y", "Y", "Z"),
-  n = c(10, 20, 30, 20)
+    status_at_entry = c("A", "A", "B", "B"),
+    status_at_exit = c("X", "Y", "Y", "Z"),
+    n = c(10, 20, 30, 20)
 )
 sankey_chart(
-  data = mock_data,
-  entry_status = "status_at_entry",
-  exit_status = "status_at_exit",
-  count = "n",
-  color = "green"
+    data = mock_data,
+    entry_status = "status_at_entry",
+    exit_status = "status_at_exit",
+    count = "n",
+    color = "green"
 )
 }
 }

@@ -36,11 +36,11 @@ correspond to "Project update" data collection stage).
 \examples{
 \dontrun{
 mock_data <- tibble::tribble(
-  ~test_row, ~organization_id, ~personal_id, ~enrollment_id,  ~data_collection_stage,  ~date_updated, ~status,
-  1, 1L, 1L, 1000L, "Project start", "2024-12-31", "A",
-  2, 1L, 1L, 1000L, "Project update", "2023-01-01", "B"
+    ~test_row, ~organization_id, ~personal_id, ~enrollment_id, ~data_collection_stage, ~date_updated, ~status,
+    1, 1L, 1L, 1000L, "Project start", "2024-12-31", "A",
+    2, 1L, 1L, 1000L, "Project update", "2023-01-01", "B"
 ) |>
-  dplyr::mutate(dplyr::across(date_updated, as.Date))
+    dplyr::mutate(dplyr::across(date_updated, as.Date))
 
 filter_most_recent_data_per_enrollment(mock_data)
 }

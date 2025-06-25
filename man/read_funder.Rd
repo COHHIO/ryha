@@ -22,7 +22,7 @@ Ingest "Funder.csv" file and perform ETL prep for "FUNDER" database table
 path <- "path/to/Funder.csv"
 
 read_funder(
-  file = path
+    file = path
 )
 }
 }

@@ -1,162 +1,162 @@
 #' CountExchangeForSex Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R15.B CountExchangeForSex>
-'CountExchangeForSexCodes'
+"CountExchangeForSexCodes"
 
 #' CountyCodes Codes
 #'
 #' A county can contain multiple geocodes.
-#' 
+#'
 #' @source <https://www.hud.gov/sites/dfiles/CPD/documents/CoC/FY2024-GeoCodes-Report.pdf>
 "CountyCodes"
 
 #' DOB Data Quality Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.03.2 DOBDataQuality>
-'DOBDataQualityCodes'
+"DOBDataQualityCodes"
 
 
 #' DataCollectionStage Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#5.03.1 DataCollectionStage>
-'DataCollectionStageCodes'
+"DataCollectionStageCodes"
 
 #' DisabilityType Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#1.3 DisabilityType>
-'DisabilityTypeCodes'
+"DisabilityTypeCodes"
 
 #' EmploymentType Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R6.A EmploymentType>
-'EmploymentTypeCodes'
+"EmploymentTypeCodes"
 
 #' HMISmetadata
 #'
 #' Lists HMIS .csv files and whether or not they are required to develop the app
-'HMISmetadata'
+"HMISmetadata"
 
 #' HealthStatus Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R7.1 HealthStatus>
-'HealthStatusCodes'
+"HealthStatusCodes"
 
 #' LastGradeCompleted Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R4.1 LastGradeCompleted>
-'LastGradeCompletedCodes'
+"LastGradeCompletedCodes"
 
 #' LengthOfStay Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.917.2 LengthOfStay>
-'LengthOfStayCodes'
+"LengthOfStayCodes"
 
 #' Living Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.12.1 Living Situation Option List>
-'LivingCodes'
+"LivingCodes"
 
 #' MonthsHomelessPastThreeYears Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.917.5 MonthsHomelessPastThreeYears>
-'MonthsHomelessPastThreeYearsCodes'
+"MonthsHomelessPastThreeYearsCodes"
 
 #' NoYes Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#1.10 No/Yes>
-'NoYesCodes'
+"NoYesCodes"
 
 #' NoYesMissing Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#1.7 No/Yes/Missing>
-'NoYesMissingCodes'
+"NoYesMissingCodes"
 
 #' NoYesReasonsForMissingData Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#1.8 No/Yes/Reasons for Missing Data>
-'NoYesReasonsForMissingDataCodes'
+"NoYesReasonsForMissingDataCodes"
 
 #' NotEmployedReason Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R6.B NotEmployedReason>
-'NotEmployedReasonCodes'
+"NotEmployedReasonCodes"
 
 #' PATHReferralOutcome Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#P2.A PATHReferralOutcome>
-'PATHReferralOutcomeCodes'
+"PATHReferralOutcomeCodes"
 
 #' ProjectCompletionStatus Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R17.1 ProjectCompletionStatus>
-'ProjectCompletionStatusCodes'
+"ProjectCompletionStatusCodes"
 
 #' ProjectType Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#2.02.6 ProjectType>
-'ProjectTypeCodes'
+"ProjectTypeCodes"
 
 #' RHYNumberOfYears Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R11.A RHYNumberofYears>
-'RHYNumberOfYearsCodes'
+"RHYNumberOfYearsCodes"
 
 #' RaceGenderNone Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#1.6 RaceGenderNone>
-'RaceGenderNoneCodes'
+"RaceGenderNoneCodes"
 
 #' ReasonNotInsured Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#4.04.A ReasonNotInsured>
-'ReasonNotInsuredCodes'
+"ReasonNotInsuredCodes"
 
 #' ReferralSource Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R1.1 ReferralSource>
-'ReferralSourceCodes'
+"ReferralSourceCodes"
 
 #' RelationshipToHoH Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.15.1 RelationshipToHoH>
-'RelationshipToHoHCodes'
+"RelationshipToHoHCodes"
 
 #' SSNDataQuality Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.02.2 SSNDataQuality>
-'SSNDataQualityCodes'
+"SSNDataQualityCodes"
 
 #' SchoolStatus Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R5.1 SchoolStatus>
-'SchoolStatusCodes'
+"SchoolStatusCodes"
 
 #' Service Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R14.2 RHYServices>
-'ServiceCodes'
+"ServiceCodes"
 
 #' SexualOrientation Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R3.1 SexualOrientation>
-'SexualOrientationCodes'
+"SexualOrientationCodes"
 
 #' SubstanceUseDisorder Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#4.10.2 DisabilityResponse>
-'SubstanceUseDisorderCodes'
+"SubstanceUseDisorderCodes"
 
 #' TimesHomelessPastThreeYears Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#3.917.4 TimesHomelessPastThreeYears>
-'TimesHomelessPastThreeYearsCodes'
+"TimesHomelessPastThreeYearsCodes"
 
 #' WhenDVOccurred Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#4.11.A WhenDVOccurred>
-'WhenDVOccurredCodes'
+"WhenDVOccurredCodes"
 
 #' WorkerResponse Codes
 #'
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R19.A WorkerResponse>
-'WorkerResponseCodes'
+"WorkerResponseCodes"

@@ -1,15 +1,15 @@
 {
-    "dockerComposeFile": "docker-compose.yml",
-    "service": "app",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
 	"containerEnv": {
 		"RENV_PATHS_CACHE": "/renv/cache",
 		"RENV_PATHS_CACHE_CONTAINER": "/renv/cache"
 	},
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Enable db and pgadmin in local machine
 	"forwardPorts": [5432, 5050],
-	"postCreateCommand": "Rscript .devcontainer/install_dev_packages.R",
-    // Configure tool-specific properties
+	"postCreateCommand": "Rscript .devcontainer/complete_dev_setup.R",
+	// Configure tool-specific properties
 	"customizations": {
 		// Settings for VS Code
 		"vscode": {
@@ -19,12 +19,28 @@
 			],
 			"settings": {
 				"r.bracketedPaste": true,
-				"r.plot.useHttpgd": true,
+				"r.lsp.args": ["--vanilla"], // To avoid "00LOCK-renv" error
 				"r.lsp.diagnostics": false,
 				"r.lsp.promptToInstall": false,
-				"r.session.viewers.viewColumn": {
-					"browser": "Disable"
-				}
+				"r.plot.useHttpgd": true,
+				"r.session.viewers.viewColumn": {"browser": "Disable"},
+				"[r][rmd]": {
+					"editor.formatOnSave": true,
+					"editor.formatOnPaste": true,
+					"editor.formatOnType": true,
+					"editor.formatOnSaveMode": "file",
+					"editor.detectIndentation": false,
+					"editor.insertSpaces": true,
+					"editor.tabSize": 4,
+					"editor.folding": false,
+					"editor.wordWrap": "on",
+					"editor.rulers": [{"column": 80}, {"column": 120}]
+				},
+				"files.trimTrailingWhitespace": true,
+				"files.insertFinalNewline": true,
+				"files.trimFinalNewlines": true,
+				"terminal.integrated.cursorBlinking": true,
+				"terminal.integrated.cursorStyle": "line"
 			}
 		}
 	}

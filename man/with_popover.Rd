@@ -4,12 +4,10 @@
 \alias{with_popover}
 \title{Add custom Bootstrap popover}
 \usage{
-with_popover(text, title = "More Info", content, placement = "right")
+with_popover(text, content, placement = "right")
 }
 \arguments{
 \item{text}{The text to display.}
-
-\item{title}{The title of the popover. Defaults to "More Info".}
 
 \item{content}{The content to display inside the popover.}
 
@@ -19,18 +17,18 @@ with_popover(text, title = "More Info", content, placement = "right")
 HTML Bootstrap popover containing the specified content.
 }
 \description{
-This function creates a Bootstrap popover containing additional information
+\code{with_popover()} creates a Bootstrap popover containing additional information
 to display alongside a given text.
 }
 \examples{
 \dontrun{
 with_popover(
-  text = "Some Example Text",
-  content = shiny::tagList(
-    shiny::span("First description line."),
-    shiny::br(),
-    shiny::span("Second description line.")
-  )
+    text = "Some Example Text",
+    content = shiny::tagList(
+        shiny::span("First description line."),
+        shiny::br(),
+        shiny::span("Second description line.")
+    )
 )
 }
 }

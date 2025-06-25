@@ -36,6 +36,7 @@ golem::add_module(name = "living_situation")
 golem::add_module(name = "parenting")
 golem::add_module(name = "exit")
 golem::add_module(name = "welcome")
+golem::add_module(name = "value_box")
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
