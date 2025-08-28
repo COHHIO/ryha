@@ -115,14 +115,14 @@ mod_trafficking_ui <- function(id) {
 #' trafficking Server Functions
 #'
 #' @noRd
-mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads_of_household_and_adults) {
+mod_trafficking_server <- function(id, trafficking_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
         # Filter Data ####
         trafficking_data_filtered <- shiny::reactive(
             filter_data(trafficking_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         )
 
         # Value Boxes ####

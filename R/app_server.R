@@ -41,7 +41,7 @@ app_server <- function(input, output, session) {
             enrollment_data = dm$enrollment,
             ethnicity_data = dm$ethnicity,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_disabilities_server(
@@ -54,14 +54,14 @@ app_server <- function(input, output, session) {
             id = "employment_1",
             employment_data = dm$employment,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_education_server(
             id = "education_1",
             education_data = dm$education,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_health_server(
@@ -69,14 +69,14 @@ app_server <- function(input, output, session) {
             health_data = dm$health,
             counseling_data = dm$exit,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_domestic_violence_server(
             id = "domestic_violence_1",
             domestic_violence_data = dm$domestic_violence,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_income_benefits_server(
@@ -84,7 +84,7 @@ app_server <- function(input, output, session) {
             income_data = dm$income,
             benefits_data = dm$benefits,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_services_server(
@@ -98,7 +98,7 @@ app_server <- function(input, output, session) {
             id = "trafficking_1",
             trafficking_data = dm$exit,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_living_situation_server(
@@ -106,7 +106,7 @@ app_server <- function(input, output, session) {
             enrollment_data = dm$enrollment,
             exit_data = dm$exit,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_parenting_server(
@@ -114,14 +114,14 @@ app_server <- function(input, output, session) {
             health_data = dm$health,
             enrollment_data = dm$enrollment,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_exit_server(
             id = "exit_1",
             exit_data = dm$exit,
             clients_filtered = clients_filtered,
-            heads_of_household_and_adults = dm$heads_of_household_and_adults
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
     } else {
         # Remove Explore Data tab when there is no data available

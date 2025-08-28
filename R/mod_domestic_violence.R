@@ -60,14 +60,14 @@ mod_domestic_violence_ui <- function(id) {
 #' domestic_violence Server Functions
 #'
 #' @noRd
-mod_domestic_violence_server <- function(id, domestic_violence_data, clients_filtered, heads_of_household_and_adults) {
+mod_domestic_violence_server <- function(id, domestic_violence_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
         # Filter Data ####
         domestic_violence_data_filtered <- shiny::reactive({
             filter_data(domestic_violence_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
         most_recent_data_per_enrollment <- shiny::reactive({
@@ -86,7 +86,7 @@ mod_domestic_violence_server <- function(id, domestic_violence_data, clients_fil
         mod_value_box_server(
             id = "n_heads_of_household_and_adults_without_records",
             rctv_data = shiny::reactive({
-                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                filter_data(heads_of_household_and_adults_filtered(), clients_filtered()) |>
                     dplyr::anti_join(
                         most_recent_data_per_enrollment(),
                         by = c("enrollment_id", "personal_id", "organization_id")

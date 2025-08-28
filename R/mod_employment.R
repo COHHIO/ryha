@@ -69,14 +69,14 @@ mod_employment_ui <- function(id) {
 #' employment Server Functions
 #'
 #' @noRd
-mod_employment_server <- function(id, employment_data, clients_filtered, heads_of_household_and_adults) {
+mod_employment_server <- function(id, employment_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
         # Filter Data ####
         employment_data_filtered <- shiny::reactive({
             filter_data(employment_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
         most_recent_data_per_enrollment <- shiny::reactive({
@@ -95,7 +95,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
         mod_value_box_server(
             id = "n_heads_of_household_and_adults_without_records",
             rctv_data = shiny::reactive({
-                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                filter_data(heads_of_household_and_adults_filtered(), clients_filtered()) |>
                     dplyr::anti_join(
                         most_recent_data_per_enrollment(),
                         by = c("enrollment_id", "personal_id", "organization_id")
@@ -144,7 +144,7 @@ mod_employment_server <- function(id, employment_data, clients_filtered, heads_o
                 )
         })
 
-        ## Sankey
+        ## Sankey ####
         output$employed_sankey_chart <- echarts4r::renderEcharts4r({
             employment_data_filtered() |>
                 prepare_sankey_data(
