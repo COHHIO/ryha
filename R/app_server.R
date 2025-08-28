@@ -27,6 +27,13 @@ app_server <- function(input, output, session) {
             rctv = rctv
         )
 
+        heads_of_household_and_adults_filtered <- shiny::eventReactive(clients_filtered(), {
+            out <- dm$heads_of_household_and_adults |>
+                dplyr::semi_join(clients_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
+            validate_data(out)
+            out
+        })
+
         mod_overview_server(
             id = "overview_1",
             client_data = dm$client,

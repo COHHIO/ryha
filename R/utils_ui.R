@@ -236,9 +236,6 @@ filter_data <- function(data, clients_filtered, at = "enrollment") {
     filtered_data <- data |>
         dplyr::semi_join(clients_filtered, by_cols)
 
-    # Validate data
-    validate_data(filtered_data)
-
     # Return data
     filtered_data
 }
