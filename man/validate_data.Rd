@@ -4,19 +4,22 @@
 \alias{validate_data}
 \title{Validate data}
 \usage{
-validate_data(data, message = "No data to display")
+validate_data(data, min_n = 10)
 }
 \arguments{
 \item{data}{A data frame to validate}
 
-\item{message}{A character string specifying the message to display when
-the data is empty. Defaults to "No data to display".}
+\item{min_n}{An integer specifying the minimum number of rows required
+to maintain confidentiality. Defaults to 10.}
 }
 \value{
 This function does not return a value. It triggers a validation
 error in a Shiny app if the dataset is empty, preventing further execution.
 }
 \description{
-\code{validate_data()} checks whether the provided dataset has at least one row.
-If the data is empty, it triggers a validation error with a specified message.
+\code{validate_data()} checks whether the provided dataset meets the minimum
+row requirements. It first ensures that the dataset has at least one row,
+and then enforces a minimum row threshold to maintain confidentiality.
+If the validation fails, a Shiny validation error is triggered, preventing
+further execution.
 }
