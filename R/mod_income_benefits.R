@@ -412,7 +412,7 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
 
         ## Benefits Sankey ####
         output$benefits_sankey_chart <- echarts4r::renderEcharts4r(
-            most_recent_benefits_data_per_enrollment_hh_and_adults() |>
+            benefits_data_filtered() |>
                 prepare_sankey_data(
                     response_col = "benefits_from_any_source",
                     response_vals = c("Yes", "No")
