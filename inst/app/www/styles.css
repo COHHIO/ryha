@@ -8,11 +8,18 @@
   color: transparent !important;
 }
 
-/* Apply vertical center to images */
-.vertical-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Configure logos card */
+.logo-row {
+  align-items: center;      /* Vertical centering */
+  justify-content: center;  /* Horizontal centering */
+  text-align: center;       /* Center image */
+}
+
+.logo {
+  max-height: 80px;   /* Define height */
+  width: auto;        /* Maintain aspect ratio */
+  margin: 0 auto;     /* Center horizontally */
+  display: block;
 }
 
 /* Add style to boxes */
