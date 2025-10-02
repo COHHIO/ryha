@@ -259,7 +259,7 @@ validate_data <- function(data, min_n = 10) {
     shiny::validate(
         shiny::need(
             expr = nrow(data) >= 1L,
-            message = "No participants match your filter criteria. Please adjust your filters."
+            message = "No participants match your filter criteria"
         )
     )
 
@@ -267,7 +267,7 @@ validate_data <- function(data, min_n = 10) {
     shiny::validate(
         shiny::need(
             expr = nrow(data) >= min_n,
-            message = "Not enough participants match your filter criteria to ensure confidentiality. Please adjust your filters."
+            message = "Not displayed to ensure confidentiality"
         )
     )
 }
