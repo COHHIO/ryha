@@ -203,7 +203,7 @@ prepare_sankey_data <- function(data, response_col, response_vals) {
     shiny::validate(
         shiny::need(
             expr = all(c("Project start", "Project exit") %in% colnames(out)),
-            message = "Chart cannot be displayed: no valid entry or exit responses"
+            message = "Chart cannot be displayed: no valid Entry and/or Exit responses"
         )
     )
 
