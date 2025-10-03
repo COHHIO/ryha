@@ -64,7 +64,7 @@ reference:
   - filter_data
 - title: Ingest Functions
   contents:
-  - check_colnames
+  - validate_colnames
   - read_benefits
   - read_client
   - read_disabilities
@@ -93,4 +93,3 @@ reference:
   - with_popover
 - title: Other Functions
   contents: run_app
-

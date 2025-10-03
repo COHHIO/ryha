@@ -64,7 +64,7 @@ read_client <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     client <- readr::read_csv(
         file = file,
@@ -179,7 +179,7 @@ read_disabilities <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -245,7 +245,7 @@ read_education <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -311,7 +311,7 @@ read_employment <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -381,7 +381,7 @@ read_living <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -443,7 +443,7 @@ read_health <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -516,7 +516,7 @@ read_domestic_violence <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -617,7 +617,7 @@ read_income <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -738,7 +738,7 @@ read_benefits <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -845,7 +845,7 @@ read_enrollment <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -958,7 +958,7 @@ read_services <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -1014,7 +1014,7 @@ read_project <- function(file) {
         "OperatingStartDate"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -1070,9 +1070,9 @@ read_project_coc <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "PROJECT COC" database table
         col_select = expected_colnames,
@@ -1116,7 +1116,7 @@ read_organization <- function(file) {
         "OrganizationName"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -1207,7 +1207,7 @@ read_exit <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     # Ingest file
     exit <- readr::read_csv(
@@ -1327,7 +1327,7 @@ read_export <- function(file) {
         "SoftwareName"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -1368,7 +1368,7 @@ read_funder <- function(file) {
         "OtherFunder"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -1420,18 +1420,18 @@ hash <- function(x, key) {
     }
 }
 
-#' Check colnames
+#' Validate colnames
 #'
-#' `check_colnames()` compares a set of expected column names with the actual
+#' `validate_colnames()` compares a set of expected column names with the actual
 #' column names in a .csv file and errors if any of the expected column names
 #' is not found in the file.
 #'
 #' @param file String. Full path to a .csv file.
 #' @param expected_colnames Character. Set of expected column names.
 #'
-#' @return `check_colnames()` does not return any value. It either produces an
+#' @return `validate_colnames()` does not return any value. It either produces an
 #' error or not, so what matters is its side effect.
-check_colnames <- function(file, expected_colnames) {
+validate_colnames <- function(file, expected_colnames) {
     # List columns in the file
     file_colnames <- readLines(file, n = 1) |>
         strsplit(",") |>
