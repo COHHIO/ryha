@@ -79,7 +79,11 @@ read_client <- function(file) {
             DOB = readr::col_date(),
             DateUpdated = readr::col_datetime()
         )
-    ) |>
+    )
+
+    validate_file_data("Client", client)
+
+    client <- client |>
         # replace the "SSN/DOBDataQuality" codes with the plain-English description
         dplyr::mutate(
             SSNDataQuality = lookup_codes(
@@ -847,7 +851,7 @@ read_enrollment <- function(file) {
 
     validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "ENROLLMENT" database table
         col_select = expected_colnames,
@@ -865,7 +869,11 @@ read_enrollment <- function(file) {
             SexualOrientationOther = readr::col_character(),
             DateUpdated = readr::col_datetime()
         )
-    ) |>
+    )
+
+    validate_file_data("Enrollment", out)
+
+    out |>
         dplyr::mutate(
             RelationshipToHoH = lookup_codes(
                 var = RelationshipToHoH,
@@ -1016,7 +1024,7 @@ read_project <- function(file) {
 
     validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "PROJECT" database table
         col_select = expected_colnames,
@@ -1026,7 +1034,11 @@ read_project <- function(file) {
             ProjectType = readr::col_integer(),
             OperatingStartDate = readr::col_date()
         )
-    ) |>
+    )
+
+    validate_file_data("Project", out)
+
+    out |>
         # replace the "ProjectType" codes with the plain-English description
         dplyr::mutate(
             ProjectType = lookup_codes(
@@ -1081,7 +1093,11 @@ read_project_coc <- function(file) {
             .default = readr::col_character(),
             DateUpdated = readr::col_date()
         )
-    ) |>
+    )
+
+    validate_file_data("ProjectCoC", out)
+
+    out |>
         janitor::clean_names(case = "snake") |>
         dplyr::rename(
             # improve default column names
@@ -1370,7 +1386,7 @@ read_funder <- function(file) {
 
     validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "FUNDER" database table
         col_select = expected_colnames,
@@ -1378,7 +1394,11 @@ read_funder <- function(file) {
         col_types = readr::cols(
             .default = readr::col_character()
         )
-    ) |>
+    )
+
+    validate_file_data("Funder", out)
+
+    out |>
         # replace the integer codes with the plain-English description
         dplyr::mutate(
             Funder = lookup_codes(
@@ -1448,5 +1468,23 @@ validate_colnames <- function(file, expected_colnames) {
         { paste0(missing_columns, collapse = ', ') }"
             )
         )
+    }
+}
+
+#' Validate file data
+#'
+#' `validate_file_data()` checks whether the provided data frame is valid and
+#' aborts with an informative error message if validation fails.
+#'
+#' @param data A data frame
+#' @param filename String. Name of the file (used in error messages).
+#'
+#' @return `validate_file_data()` is called for its side effects.
+#' It produces an error if validation fails, otherwise nothing.
+validate_file_data <- function(filename, data) {
+    # Check that the dataset contains at least one row
+    if (nrow(data) == 0) {
+        glue::glue("<strong>{ filename }.csv</strong> has no data") |>
+            rlang::abort()
     }
 }

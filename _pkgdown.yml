@@ -65,6 +65,7 @@ reference:
 - title: Ingest Functions
   contents:
   - validate_colnames
+  - validate_file_data
   - read_benefits
   - read_client
   - read_disabilities
