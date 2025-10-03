@@ -54,7 +54,7 @@ reference:
   - spinner_message
 - title: Data Processing Functions
   contents:
-  - check_file_names
+  - validate_file_names
   - find_file
   - hash
   - prep_tables

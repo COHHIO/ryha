@@ -21,7 +21,7 @@
 #' }
 #'
 #' @export
-check_file_names <- function(dir, metadata) {
+validate_file_names <- function(dir, metadata) {
     # Retrieve the full paths to each individual file extracted from the .zip file
     paths <- fs::dir_info(dir) |>
         dplyr::pull(path)
