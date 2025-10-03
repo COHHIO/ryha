@@ -61,17 +61,3 @@ validate_file_names <- function(dir, metadata) {
 
     return(out)
 }
-
-# Helper function that converts a character vector to an HTML bullet-point list
-vec_to_ul <- function(vec) {
-    # Create the individual bullet-points
-    bullets <- vec |>
-        purrr::map(.f = function(x) shiny::tags$li(x))
-
-    # Return the un-ordered list ("ul") containing the individual bullet-points
-    shiny::tagList(
-        shiny::tags$ul(
-            bullets
-        )
-    )
-}
