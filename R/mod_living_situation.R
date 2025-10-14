@@ -80,7 +80,7 @@ mod_living_situation_ui <- function(id) {
 #' living_situation Server Functions
 #'
 #' @noRd
-mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered, heads_of_household_and_adults) {
+mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
@@ -103,7 +103,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
                 # Prior living situation is collected for head of household and adults.
                 # Destination is collected for all youth.
                 # Head of household and adults filter is applied to both for reporting consistency reasons
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
         destination_chart_data <- shiny::reactive({
@@ -120,7 +120,7 @@ mod_living_situation_server <- function(id, enrollment_data, exit_data, clients_
         mod_value_box_server(
             id = "n_heads_of_household_and_adults_without_living_situation_records",
             rctv_data = shiny::reactive({
-                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                filter_data(heads_of_household_and_adults_filtered(), clients_filtered()) |>
                     dplyr::anti_join(
                         living_data_filtered(),
                         by = c("enrollment_id", "personal_id", "organization_id")

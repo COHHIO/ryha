@@ -101,14 +101,14 @@ mod_health_ui <- function(id) {
 #' health Server Functions
 #'
 #' @noRd
-mod_health_server <- function(id, health_data, counseling_data, clients_filtered, heads_of_household_and_adults) {
+mod_health_server <- function(id, health_data, counseling_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
         # Filter Data ####
         health_data_filtered <- shiny::reactive({
             filter_data(health_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
         most_recent_health_data_per_enrollment <- shiny::reactive({
@@ -120,7 +120,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
 
         counseling_data_filtered <- shiny::reactive({
             filter_data(counseling_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
         # Value Boxes ####
@@ -132,7 +132,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
         mod_value_box_server(
             id = "n_heads_of_household_and_adults_without_health_records",
             rctv_data = shiny::reactive({
-                filter_data(heads_of_household_and_adults, clients_filtered()) |>
+                filter_data(heads_of_household_and_adults_filtered(), clients_filtered()) |>
                     dplyr::anti_join(
                         most_recent_health_data_per_enrollment(),
                         by = c("enrollment_id", "personal_id", "organization_id")

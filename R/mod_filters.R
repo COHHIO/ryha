@@ -391,6 +391,9 @@ mod_filters_server <- function(id, dm, rctv) {
                         filter_most_recent_enrollment_per_group(grouping_vars = "ssn")
                 }
 
+                # Validate data
+                validate_data(out)
+
                 # Return the filtered data
                 out |>
                     dplyr::select(

@@ -16,7 +16,7 @@ mod_overview_ui <- function(id) {
                 title = "Participants"
             ),
             mod_value_box_ui(
-                id = ns("n_head_of_household_and_adults"),
+                id = ns("n_heads_of_household_and_adults"),
                 title = "Head of Household and/or Adults"
             ),
             mod_value_box_ui(
@@ -107,7 +107,7 @@ mod_overview_ui <- function(id) {
 #' overview Server Functions
 #'
 #' @noRd
-mod_overview_server <- function(id, client_data, enrollment_data, gender_data, ethnicity_data, clients_filtered, heads_of_household_and_adults) {
+mod_overview_server <- function(id, client_data, enrollment_data, gender_data, ethnicity_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
@@ -120,7 +120,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
         ## Enrollment ####
         enrollment_data_filtered <- shiny::reactive({
             filter_data(enrollment_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
         # Value Boxes ####
@@ -130,7 +130,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
         )
 
         mod_value_box_server(
-            id = "n_head_of_household_and_adults",
+            id = "n_heads_of_household_and_adults",
             rctv_data = enrollment_data_filtered
         )
 
