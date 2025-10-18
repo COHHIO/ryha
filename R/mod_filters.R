@@ -93,10 +93,7 @@ mod_filters_ui <- function(id) {
             max = lubridate::today()
         ),
 
-        # Gender filter
         custom_pickerInput(
-            inputId = ns("gender_filter_global"),
-            label = "Gender",
             opts_selectedTextFormat = "count > 2"
         ),
 
@@ -272,12 +269,8 @@ mod_filters_server <- function(id, dm, rctv) {
             min = min(dm$enrollment$entry_date)
         )
 
-        ## Update gender filter
         shinyWidgets::updatePickerInput(
             session = session,
-            inputId = "gender_filter_global",
-            choices = levels(dm$gender$gender) |> sort(),
-            selected = levels(dm$gender$gender) |> sort()
         )
 
         ## Update ethnicity filter
@@ -341,10 +334,6 @@ mod_filters_server <- function(id, dm, rctv) {
                         dplyr::filter(!is.na(age))
                 }
 
-                # Filter dm$gender by gender
-                gender <- dm$gender |>
-                    dplyr::filter(gender %in% input$gender_filter_global)
-
                 # Filter dm$ethnicity by ethnicity
                 ethnicity <- dm$ethnicity |>
                     dplyr::filter(ethnicity %in% input$ethnicity_filter_global)
@@ -373,7 +362,6 @@ mod_filters_server <- function(id, dm, rctv) {
 
                 out <- enrollment |>
                     dplyr::semi_join(client, by = c("organization_id", "personal_id")) |>
-                    dplyr::semi_join(gender, by = c("organization_id", "personal_id")) |>
                     dplyr::semi_join(ethnicity, by = c("organization_id", "personal_id"))
 
                 # De-duplicate youth across projects by ssn accordingly

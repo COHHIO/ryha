@@ -29,8 +29,8 @@ environment.
 }
 \details{
 When \code{env} is \code{"prod"} or \code{"dev"}, \code{create_dm()} connects to the database and,
-for each table, reads the columns used in the app. \code{gender} and \code{ethnicity}
-data frames are derived from \code{client} table.
+for each table, reads the columns used in the app. \code{ethnicity} data frames is
+derived from \code{client} table.
 
 To create the \code{.rds} object required when \code{env} is \code{"file"}, a person with access
 to the database in production should save and share the \code{dm} object that is

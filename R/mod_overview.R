@@ -28,21 +28,6 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "Participants by Gender",
-                        content = shiny::tagList(
-                            shiny::p("Each bar represents the percentage of participants who self-identify with a given gender category."),
-                            shiny::p("Since participants can select multiple categories, the total percentage may exceed 100%."),
-                            shiny::p(link_section("3.06 Gender"))
-                        )
-                    )
-                ),
-                echarts4r::echarts4rOutput(outputId = ns("gender_chart"), height = "100%")
-            ),
-        ),
-        bslib::layout_columns(
-            custom_card(
-                bslib::card_header(
-                    with_popover(
                         text = "Adults by Veteran Status",
                         content = link_section("3.07 Veteran Status")
                     )
@@ -98,7 +83,7 @@ mod_overview_ui <- function(id) {
 #' overview Server Functions
 #'
 #' @noRd
-mod_overview_server <- function(id, client_data, enrollment_data, gender_data, ethnicity_data, clients_filtered, heads_of_household_and_adults_filtered) {
+mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
@@ -134,18 +119,6 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
         )
 
         # Charts ####
-        ## Gender ####
-        output$gender_chart <- echarts4r::renderEcharts4r({
-            gender_data |>
-                filter_data(clients_filtered(), at = "youth") |>
-                dplyr::count(gender, .drop = FALSE) |>
-                bar_chart(
-                    x = "gender",
-                    y = "n",
-                    pct_denominator = nrow(clients_filtered())
-                )
-        })
-
         ## Veteran ####
         output$veteran_chart <- echarts4r::renderEcharts4r({
             client_data_filtered() |>

@@ -37,7 +37,6 @@ app_server <- function(input, output, session) {
         mod_overview_server(
             id = "overview_1",
             client_data = dm$client,
-            gender_data = dm$gender,
             enrollment_data = dm$enrollment,
             ethnicity_data = dm$ethnicity,
             clients_filtered = clients_filtered,

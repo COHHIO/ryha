@@ -51,15 +51,6 @@ read_client <- function(file) {
         "NativeHIPacific",
         "White",
         "RaceNone",
-        "Woman",
-        "Man",
-        "NonBinary",
-        "CulturallySpecific",
-        "Transgender",
-        "Questioning",
-        "DifferentIdentity",
-        "GenderNone",
-        "DifferentIdentityText",
         "VeteranStatus",
         "DateUpdated"
     )
@@ -101,14 +92,7 @@ read_client <- function(file) {
                     HispanicLatinao,
                     MidEastNAfrican,
                     NativeHIPacific,
-                    White,
-                    Woman,
-                    Man,
-                    NonBinary,
-                    CulturallySpecific,
-                    Transgender,
-                    Questioning,
-                    DifferentIdentity
+                    White
                 ),
                 .fns = function(x) lookup_codes(var = x, codes = NoYesCodes)
             )
@@ -118,7 +102,6 @@ read_client <- function(file) {
             dplyr::across(
                 .cols = c(
                     RaceNone,
-                    GenderNone
                 ),
                 .fns = function(x) lookup_codes(var = x, codes = RaceGenderNoneCodes)
             )

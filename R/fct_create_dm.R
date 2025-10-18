@@ -56,8 +56,8 @@ connect_to_db <- function(env) {
 #'
 #' @details
 #' When `env` is `"prod"` or `"dev"`, `create_dm()` connects to the database and,
-#' for each table, reads the columns used in the app. `gender` and `ethnicity`
-#' data frames are derived from `client` table.
+#' for each table, reads the columns used in the app. `ethnicity` data frames is
+#' derived from `client` table.
 #'
 #' To create the `.rds` object required when `env` is `"file"`, a person with access
 #' to the database in production should save and share the `dm` object that is
@@ -138,13 +138,6 @@ create_dm <- function(env,
                 "native_hi_pacific",
                 "white",
                 "race_none",
-                "woman",
-                "man",
-                "non_binary",
-                "culturally_specific",
-                "transgender",
-                "questioning",
-                "different_identity",
                 "veteran_status",
                 "organization_id",
                 "date_updated"
@@ -184,72 +177,6 @@ create_dm <- function(env,
             dplyr::mutate(
                 veteran_status = convert_to_ordered_factor(veteran_status, NoYesReasonsForMissingDataCodes)
             )
-
-        # Prep "gender" table
-        gender <- client_tbl |>
-            dplyr::select(
-                personal_id,
-                woman,
-                man,
-                non_binary,
-                culturally_specific,
-                transgender,
-                questioning,
-                different_identity,
-                organization_id
-            ) |>
-            tidyr::pivot_longer(
-                cols = c(
-                    woman,
-                    man,
-                    non_binary,
-                    culturally_specific,
-                    transgender,
-                    questioning,
-                    different_identity
-                ),
-                names_to = "gender",
-                values_drop_na = TRUE
-            ) |>
-            dplyr::filter(value == "Yes") |>
-            dplyr::select(-value) |>
-            dplyr::right_join(
-                client |> dplyr::select(-c(age, veteran_status)),
-                by = c("personal_id", "organization_id")
-            )
-
-        # Avoid data wrangling errors when there is no data available
-        if (nrow(gender) > 0) {
-            gender <- gender |>
-                dplyr::arrange(
-                    organization_id,
-                    personal_id
-                ) |>
-                # "Missing" category needs to be assigned manually because data was longer pivot
-                dplyr::mutate(
-                    gender = dplyr::if_else(
-                        is.na(gender),
-                        "Missing",
-                        stringr::str_replace_all(gender, "_", " ") |> tools::toTitleCase()
-                    )
-                ) |>
-                dplyr::mutate(
-                    gender = convert_to_ordered_factor(
-                        gender,
-                        list(
-                            Description = c(
-                                "Woman",
-                                "Man",
-                                "Non Binary",
-                                "Culturally Specific",
-                                "Transgender",
-                                "Questioning",
-                                "Different Identity"
-                            )
-                        )
-                    )
-                )
-        }
 
         # Prep "ethnicity" table
         ethnicity <- client_tbl |>
@@ -744,7 +671,6 @@ create_dm <- function(env,
             project_coc = project_coc,
             funder = funder,
             client = client,
-            gender = gender,
             ethnicity = ethnicity,
             disabilities = disabilities,
             employment = employment,
