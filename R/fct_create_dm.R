@@ -130,6 +130,7 @@ create_dm <- function(env,
                 "ssn",
                 "ssn_data_quality",
                 "dob",
+                "sex",
                 "am_ind_ak_native",
                 "asian",
                 "black_af_american",
@@ -168,6 +169,7 @@ create_dm <- function(env,
                 personal_id,
                 ssn,
                 ssn_data_quality,
+                sex,
                 age,
                 age_grouped,
                 veteran_status,
@@ -175,6 +177,7 @@ create_dm <- function(env,
                 date_updated
             ) |>
             dplyr::mutate(
+                sex = convert_to_ordered_factor(sex, SexCodes),
                 veteran_status = convert_to_ordered_factor(veteran_status, NoYesReasonsForMissingDataCodes)
             )
 

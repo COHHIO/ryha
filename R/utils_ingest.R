@@ -43,6 +43,7 @@ read_client <- function(file) {
         "SSNDataQuality",
         "DOB",
         "DOBDataQuality",
+        "Sex",
         "AmIndAKNative",
         "Asian",
         "BlackAfAmerican",
@@ -80,6 +81,10 @@ read_client <- function(file) {
             DOBDataQuality = lookup_codes(
                 var = DOBDataQuality,
                 codes = DOBDataQualityCodes
+            Sex = lookup_codes(
+                var = Sex,
+                codes = SexCodes
+            ),
             )
         ) |>
         # replace codes with the plain-English description

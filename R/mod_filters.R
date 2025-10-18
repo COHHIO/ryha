@@ -93,7 +93,10 @@ mod_filters_ui <- function(id) {
             max = lubridate::today()
         ),
 
+        # Sex filter
         custom_pickerInput(
+            inputId = ns("sex_filter_global"),
+            label = "Sex",
             opts_selectedTextFormat = "count > 2"
         ),
 
@@ -269,8 +272,12 @@ mod_filters_server <- function(id, dm, rctv) {
             min = min(dm$enrollment$entry_date)
         )
 
+        ## Update sex filter
         shinyWidgets::updatePickerInput(
             session = session,
+            inputId = "sex_filter_global",
+            choices = levels(dm$client$sex) |> sort(),
+            selected = levels(dm$client$sex) |> sort()
         )
 
         ## Update ethnicity filter
@@ -318,14 +325,17 @@ mod_filters_server <- function(id, dm, rctv) {
         # Create filtered {dm} data
         clients_filtered <- shiny::eventReactive(input$apply_filters,
             {
-                # Filter dm$client by age
+                # Filter dm$client
                 client <- dm$client |>
                     dplyr::filter(
+                        # Filter by age
                         dplyr::between(
                             x = age,
                             left = input$age_filter_global[1],
                             right = input$age_filter_global[2]
-                        ) | is.na(age)
+                        ) | is.na(age),
+                        # Filter by sex
+                        sex %in% input$sex_filter_global
                     )
 
                 ## Remove youth with missing ages accordingly

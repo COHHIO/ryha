@@ -136,7 +136,10 @@
 #' @source <https://files.hudexchange.info/resources/documents/HMIS-CSV-Format-Specifications-2024.pdf#R14.2 RHYServices>
 "ServiceCodes"
 
+#' Sex Codes
 #'
+#' @source TODO
+"SexCodes"
 
 #' SubstanceUseDisorder Codes
 #'

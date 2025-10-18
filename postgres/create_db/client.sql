@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.client
     ssn_data_quality text COLLATE pg_catalog."default",
     dob date,
     dob_data_quality text COLLATE pg_catalog."default",
+    sex text COLLATE pg_catalog."default",
     am_ind_ak_native text COLLATE pg_catalog."default",
     asian text COLLATE pg_catalog."default",
     black_af_american text COLLATE pg_catalog."default",
