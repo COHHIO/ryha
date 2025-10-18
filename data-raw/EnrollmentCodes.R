@@ -72,19 +72,7 @@ ReferralSourceCodes <- tibble::tribble(
   8L, "Client doesn't know",
   9L, "Client prefers not to answer",
   99L, "Data not collected"
-)
 
-SexualOrientationCodes <- tibble::tribble(
-  ~Code, ~Description,
-  1L, "Heterosexual",
-  2L, "Gay",
-  3L, "Lesbian",
-  4L, "Bisexual",
-  5L, "Questioning / unsure",
-  6L, "Other",
-  8L, "Client doesn't know",
-  9L, "Client prefers not to answer",
-  99L, "Data not collected"
 )
 
 RHYNumberOfYearsCodes <- tibble::tribble(
@@ -100,7 +88,6 @@ usethis::use_data(
   TimesHomelessPastThreeYearsCodes,
   MonthsHomelessPastThreeYearsCodes,
   ReferralSourceCodes,
-  SexualOrientationCodes,
   RHYNumberOfYearsCodes,
   overwrite = TRUE
 )

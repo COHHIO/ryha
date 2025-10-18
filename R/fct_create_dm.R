@@ -448,7 +448,6 @@ create_dm <- function(env,
                 "relationship_to_ho_h",
                 "living_situation",
                 "referral_source",
-                "sexual_orientation",
                 "former_ward_child_welfare",
                 "former_ward_juvenile_justice",
                 "project_id",
@@ -482,7 +481,6 @@ create_dm <- function(env,
                         )
                     )
                 ),
-                sexual_orientation = convert_to_ordered_factor(sexual_orientation, SexualOrientationCodes),
                 former_ward_child_welfare = convert_to_ordered_factor(former_ward_child_welfare, NoYesReasonsForMissingDataCodes),
                 former_ward_juvenile_justice = convert_to_ordered_factor(former_ward_juvenile_justice, NoYesReasonsForMissingDataCodes)
             )

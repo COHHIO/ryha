@@ -38,15 +38,6 @@ mod_overview_ui <- function(id) {
                 ),
                 echarts4r::echarts4rOutput(outputId = ns("gender_chart"), height = "100%")
             ),
-            custom_card(
-                bslib::card_header(
-                    with_popover(
-                        text = "Head of Household and/or Adults by Sexual Orientation",
-                        content = link_section("R3 Sexual Orientation")
-                    )
-                ),
-                echarts4r::echarts4rOutput(outputId = ns("sexual_orientation_chart"), height = "100%")
-            )
         ),
         bslib::layout_columns(
             custom_card(
@@ -152,16 +143,6 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                     x = "gender",
                     y = "n",
                     pct_denominator = nrow(clients_filtered())
-                )
-        })
-
-        ## Sexual Orientation ####
-        output$sexual_orientation_chart <- echarts4r::renderEcharts4r({
-            enrollment_data_filtered() |>
-                dplyr::count(sexual_orientation, .drop = FALSE) |>
-                bar_chart(
-                    x = "sexual_orientation",
-                    y = "n"
                 )
         })
 

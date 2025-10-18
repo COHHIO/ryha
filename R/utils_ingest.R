@@ -828,8 +828,6 @@ read_enrollment <- function(file) {
         "MoveInDate",
         "ReferralSource",
         "RunawayYouth",
-        "SexualOrientation",
-        "SexualOrientationOther",
         "FormerWardChildWelfare",
         "ChildWelfareYears",
         "ChildWelfareMonths",
@@ -862,7 +860,6 @@ read_enrollment <- function(file) {
             EnrollmentCoC = readr::col_character(),
             DateToStreetESSH = readr::col_date(),
             MoveInDate = readr::col_date(),
-            SexualOrientationOther = readr::col_character(),
             DateUpdated = readr::col_datetime()
         )
     ) |>
@@ -890,10 +887,6 @@ read_enrollment <- function(file) {
             ReferralSource = lookup_codes(
                 var = ReferralSource,
                 codes = ReferralSourceCodes
-            ),
-            SexualOrientation = lookup_codes(
-                var = SexualOrientation,
-                codes = SexualOrientationCodes
             ),
             dplyr::across(
                 .cols = c(
