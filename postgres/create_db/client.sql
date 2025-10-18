@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS public.client
     am_ind_ak_native text COLLATE pg_catalog."default",
     asian text COLLATE pg_catalog."default",
     black_af_american text COLLATE pg_catalog."default",
-    hispanic_latinaeo text COLLATE pg_catalog."default",
+    hispanic_latinao text COLLATE pg_catalog."default",
     mid_east_n_african text COLLATE pg_catalog."default",
     native_hi_pacific text COLLATE pg_catalog."default",
     white text COLLATE pg_catalog."default",
