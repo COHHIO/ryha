@@ -72,7 +72,7 @@ read_client <- function(file) {
             DateUpdated = readr::col_datetime()
         )
     ) |>
-        # replace the "SSN/DOBDataQuality" codes with the plain-English description
+        # replace codes with the plain-English description
         dplyr::mutate(
             SSNDataQuality = lookup_codes(
                 var = SSNDataQuality,
@@ -81,10 +81,18 @@ read_client <- function(file) {
             DOBDataQuality = lookup_codes(
                 var = DOBDataQuality,
                 codes = DOBDataQualityCodes
+            ),
+            RaceNone = lookup_codes(
+                var = RaceNone,
+                codes = RaceGenderNoneCodes
+            ),
             Sex = lookup_codes(
                 var = Sex,
                 codes = SexCodes
             ),
+            VeteranStatus = lookup_codes(
+                var = VeteranStatus,
+                codes = NoYesReasonsForMissingDataCodes
             )
         ) |>
         # replace codes with the plain-English description
@@ -100,24 +108,6 @@ read_client <- function(file) {
                     White
                 ),
                 .fns = function(x) lookup_codes(var = x, codes = NoYesCodes)
-            )
-        ) |>
-        # replace codes with the plain-English description
-        dplyr::mutate(
-            dplyr::across(
-                .cols = c(
-                    RaceNone,
-                ),
-                .fns = function(x) lookup_codes(var = x, codes = RaceGenderNoneCodes)
-            )
-        ) |>
-        # replace codes with the plain-English description
-        dplyr::mutate(
-            dplyr::across(
-                .cols = c(
-                    VeteranStatus
-                ),
-                .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
             )
         ) |>
         janitor::clean_names(case = "snake")
