@@ -276,8 +276,8 @@ mod_filters_server <- function(id, dm, rctv) {
         shinyWidgets::updatePickerInput(
             session = session,
             inputId = "sex_filter_global",
-            choices = levels(dm$client$sex) |> sort(),
-            selected = levels(dm$client$sex) |> sort()
+            choices = rev(levels(dm$client$sex)),
+            selected = levels(dm$client$sex)
         )
 
         ## Update ethnicity filter
