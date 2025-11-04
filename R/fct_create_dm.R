@@ -647,7 +647,7 @@ create_dm <- function(env,
                         # Sort alphabetically inside each group
                         dplyr::arrange(ExitCategory, Description)
                 ),
-                counseling_received = convert_to_ordered_factor(counseling_received, NoYesMissingCodes),
+                counseling_received = convert_to_ordered_factor(counseling_received, NoYesCodes),
                 exchange_for_sex = convert_to_ordered_factor(exchange_for_sex, NoYesReasonsForMissingDataCodes),
                 count_of_exchange_for_sex = convert_to_ordered_factor(count_of_exchange_for_sex, CountExchangeForSexCodes),
                 asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(asked_or_forced_to_exchange_for_sex, NoYesReasonsForMissingDataCodes),
