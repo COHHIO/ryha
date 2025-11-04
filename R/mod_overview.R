@@ -28,12 +28,23 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "Adults by Veteran Status",
-                        content = link_section("3.07 Veteran Status")
+                        text = "Participants by Sex",
+                        content = "TODO"
                     )
                 ),
-                echarts4r::echarts4rOutput(outputId = ns("veteran_chart"), height = "100%")
+                echarts4r::echarts4rOutput(outputId = ns("sex_chart"), height = "100%")
             ),
+            custom_card(
+                bslib::card_header(
+                    with_popover(
+                        text = "Participants by Age Group",
+                        content = link_section("3.03 Date of Birth")
+                    )
+                ),
+                echarts4r::echarts4rOutput(outputId = ns("age_bar_chart"), height = "100%")
+            )
+        ),
+        bslib::layout_columns(
             custom_card(
                 bslib::card_header(
                     with_popover(
@@ -46,16 +57,16 @@ mod_overview_ui <- function(id) {
                     )
                 ),
                 echarts4r::echarts4rOutput(outputId = ns("ethnicity_bar_chart"), height = "100%")
-            )
-        ),
-        custom_card(
-            bslib::card_header(
-                with_popover(
-                    text = "Participants by Age Group",
-                    content = link_section("3.03 Date of Birth")
-                )
             ),
-            echarts4r::echarts4rOutput(outputId = ns("age_bar_chart"), height = "100%")
+            custom_card(
+                bslib::card_header(
+                    with_popover(
+                        text = "Adults by Veteran Status",
+                        content = link_section("3.07 Veteran Status")
+                    )
+                ),
+                echarts4r::echarts4rOutput(outputId = ns("veteran_chart"), height = "100%")
+            ),
         ),
         bslib::layout_columns(
             custom_card(
@@ -119,6 +130,16 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
         )
 
         # Charts ####
+        ## Gender ####
+        output$sex_chart <- echarts4r::renderEcharts4r({
+            client_data_filtered() |>
+                dplyr::count(sex, .drop = FALSE) |>
+                bar_chart(
+                    x = "sex",
+                    y = "n"
+                )
+        })
+
         ## Veteran ####
         output$veteran_chart <- echarts4r::renderEcharts4r({
             client_data_filtered() |>
