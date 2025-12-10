@@ -56,8 +56,8 @@ connect_to_db <- function(env) {
 #'
 #' @details
 #' When `env` is `"prod"` or `"dev"`, `create_dm()` connects to the database and,
-#' for each table, reads the columns used in the app. `gender` and `ethnicity`
-#' data frames are derived from `client` table.
+#' for each table, reads the columns used in the app. `ethnicity` data frames is
+#' derived from `client` table.
 #'
 #' To create the `.rds` object required when `env` is `"file"`, a person with access
 #' to the database in production should save and share the `dm` object that is
@@ -130,21 +130,15 @@ create_dm <- function(env,
                 "ssn",
                 "ssn_data_quality",
                 "dob",
+                "sex",
                 "am_ind_ak_native",
                 "asian",
                 "black_af_american",
-                "hispanic_latinaeo",
+                "hispanic_latinao",
                 "mid_east_n_african",
                 "native_hi_pacific",
                 "white",
                 "race_none",
-                "woman",
-                "man",
-                "non_binary",
-                "culturally_specific",
-                "transgender",
-                "questioning",
-                "different_identity",
                 "veteran_status",
                 "organization_id",
                 "date_updated"
@@ -175,6 +169,7 @@ create_dm <- function(env,
                 personal_id,
                 ssn,
                 ssn_data_quality,
+                sex,
                 age,
                 age_grouped,
                 veteran_status,
@@ -182,74 +177,9 @@ create_dm <- function(env,
                 date_updated
             ) |>
             dplyr::mutate(
+                sex = convert_to_ordered_factor(sex, SexCodes),
                 veteran_status = convert_to_ordered_factor(veteran_status, NoYesReasonsForMissingDataCodes)
             )
-
-        # Prep "gender" table
-        gender <- client_tbl |>
-            dplyr::select(
-                personal_id,
-                woman,
-                man,
-                non_binary,
-                culturally_specific,
-                transgender,
-                questioning,
-                different_identity,
-                organization_id
-            ) |>
-            tidyr::pivot_longer(
-                cols = c(
-                    woman,
-                    man,
-                    non_binary,
-                    culturally_specific,
-                    transgender,
-                    questioning,
-                    different_identity
-                ),
-                names_to = "gender",
-                values_drop_na = TRUE
-            ) |>
-            dplyr::filter(value == "Yes") |>
-            dplyr::select(-value) |>
-            dplyr::right_join(
-                client |> dplyr::select(-c(age, veteran_status)),
-                by = c("personal_id", "organization_id")
-            )
-
-        # Avoid data wrangling errors when there is no data available
-        if (nrow(gender) > 0) {
-            gender <- gender |>
-                dplyr::arrange(
-                    organization_id,
-                    personal_id
-                ) |>
-                # "Missing" category needs to be assigned manually because data was longer pivot
-                dplyr::mutate(
-                    gender = dplyr::if_else(
-                        is.na(gender),
-                        "Missing",
-                        stringr::str_replace_all(gender, "_", " ") |> tools::toTitleCase()
-                    )
-                ) |>
-                dplyr::mutate(
-                    gender = convert_to_ordered_factor(
-                        gender,
-                        list(
-                            Description = c(
-                                "Woman",
-                                "Man",
-                                "Non Binary",
-                                "Culturally Specific",
-                                "Transgender",
-                                "Questioning",
-                                "Different Identity"
-                            )
-                        )
-                    )
-                )
-        }
 
         # Prep "ethnicity" table
         ethnicity <- client_tbl |>
@@ -258,7 +188,7 @@ create_dm <- function(env,
                 am_ind_ak_native,
                 asian,
                 black_af_american,
-                hispanic_latinaeo,
+                hispanic_latinao,
                 mid_east_n_african,
                 native_hi_pacific,
                 white,
@@ -270,7 +200,7 @@ create_dm <- function(env,
                     am_ind_ak_native,
                     asian,
                     black_af_american,
-                    hispanic_latinaeo,
+                    hispanic_latinao,
                     mid_east_n_african,
                     native_hi_pacific,
                     white,
@@ -309,7 +239,7 @@ create_dm <- function(env,
                             "White",
                             "Native Hi Pacific",
                             "Mid East n African",
-                            "Hispanic Latinaeo",
+                            "Hispanic Latinao",
                             "Black Af American",
                             "Asian",
                             "Am Ind Ak Native"
@@ -319,7 +249,7 @@ create_dm <- function(env,
                             "White",
                             "Native Hawaiian or Pacific Islander",
                             "Middle Eastern or North African",
-                            "Hispanic/Latina/e/o",
+                            "Hispanic/Latina/o",
                             "Black, African American, or African",
                             "Asian or Asian American",
                             "American Indian, Alaska Native, or Indigenous"
@@ -448,7 +378,6 @@ create_dm <- function(env,
                 "relationship_to_ho_h",
                 "living_situation",
                 "referral_source",
-                "sexual_orientation",
                 "former_ward_child_welfare",
                 "former_ward_juvenile_justice",
                 "project_id",
@@ -482,7 +411,6 @@ create_dm <- function(env,
                         )
                     )
                 ),
-                sexual_orientation = convert_to_ordered_factor(sexual_orientation, SexualOrientationCodes),
                 former_ward_child_welfare = convert_to_ordered_factor(former_ward_child_welfare, NoYesReasonsForMissingDataCodes),
                 former_ward_juvenile_justice = convert_to_ordered_factor(former_ward_juvenile_justice, NoYesReasonsForMissingDataCodes)
             )
@@ -719,7 +647,7 @@ create_dm <- function(env,
                         # Sort alphabetically inside each group
                         dplyr::arrange(ExitCategory, Description)
                 ),
-                counseling_received = convert_to_ordered_factor(counseling_received, NoYesMissingCodes),
+                counseling_received = convert_to_ordered_factor(counseling_received, NoYesCodes),
                 exchange_for_sex = convert_to_ordered_factor(exchange_for_sex, NoYesReasonsForMissingDataCodes),
                 count_of_exchange_for_sex = convert_to_ordered_factor(count_of_exchange_for_sex, CountExchangeForSexCodes),
                 asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(asked_or_forced_to_exchange_for_sex, NoYesReasonsForMissingDataCodes),
@@ -746,7 +674,6 @@ create_dm <- function(env,
             project_coc = project_coc,
             funder = funder,
             client = client,
-            gender = gender,
             ethnicity = ethnicity,
             disabilities = disabilities,
             employment = employment,
