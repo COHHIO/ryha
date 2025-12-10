@@ -109,7 +109,9 @@ add_stacked_bar_tooltip <- function(echart) {
           });
           tooltip += '</table>';
           return tooltip;
-        }")
+        }"),
+            confine = TRUE,
+            extraCssText = "width:auto; white-space:pre-wrap;"
         )
 }
 
