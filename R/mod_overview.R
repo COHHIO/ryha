@@ -26,7 +26,12 @@ mod_overview_ui <- function(id) {
         ),
         bslib::layout_columns(
             custom_card(
-                bslib::card_header("Participants by Sex"),
+                bslib::card_header(
+                    with_popover(
+                        text = "Participants by Sex",
+                        content = link_section("4.21 Sex")
+                    )
+                ),
                 echarts4r::echarts4rOutput(outputId = ns("sex_chart"), height = "100%")
             ),
             custom_card(
