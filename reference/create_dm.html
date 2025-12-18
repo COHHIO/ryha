@@ -9,7 +9,7 @@ environment."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ryha</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,8 +74,8 @@ on-the-fly in the server-side of the app</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>When <code>env</code> is <code>"prod"</code> or <code>"dev"</code>, <code>create_dm()</code> connects to the database and,
-for each table, reads the columns used in the app. <code>gender</code> and <code>ethnicity</code>
-data frames are derived from <code>client</code> table.</p>
+for each table, reads the columns used in the app. <code>ethnicity</code> data frames is
+derived from <code>client</code> table.</p>
 <p>To create the <code>.rds</code> object required when <code>env</code> is <code>"file"</code>, a person with access
 to the database in production should save and share the <code>dm</code> object that is
 generated in <code>app_server.R</code>.</p>
@@ -97,7 +97,7 @@ generated in <code>app_server.R</code>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
