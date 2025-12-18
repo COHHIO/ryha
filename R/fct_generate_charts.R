@@ -109,7 +109,9 @@ add_stacked_bar_tooltip <- function(echart) {
           });
           tooltip += '</table>';
           return tooltip;
-        }")
+        }"),
+            confine = TRUE,
+            extraCssText = "width:auto; white-space:pre-wrap;"
         )
 }
 
@@ -157,7 +159,11 @@ sankey_chart <- function(data,
             value = count,
             layoutIterations = 0
         ) |>
-        echarts4r::e_tooltip(trigger = "item") |>
+        echarts4r::e_tooltip(
+            trigger = "item",
+            confine = TRUE,
+            extraCssText = "width:auto; white-space:pre-wrap;"
+        ) |>
         echarts4r::e_color(color = color) |>
         echarts4r::e_grid(containLabel = TRUE)
 }
