@@ -144,7 +144,7 @@ link_section <- function(section) {
 #' @return An HTML anchor (`<a>`) tag as a `shiny.tag` object.
 #' @export
 link_data_standards_manual <- function() {
-    URL <- "https://cohhio.org/wp-content/uploads/2025/03/HMIS-Data-Standards-Manual-2024.pdf"
+    URL <- "https://files.hudexchange.info/resources/documents/HMIS-Data-Standards.pdf"
     shiny::tags$a(href = URL, target = "_blank", "HMIS Data Standards Manual")
 }
 
