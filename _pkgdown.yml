@@ -37,7 +37,7 @@ reference:
   - RHYNumberOfYearsCodes
   - SchoolStatusCodes
   - ServiceCodes
-  - SexualOrientationCodes
+  - SexCodes
   - SSNDataQualityCodes
   - SubstanceUseDisorderCodes
   - TimesHomelessPastThreeYearsCodes
@@ -93,4 +93,3 @@ reference:
   - with_popover
 - title: Other Functions
   contents: run_app
-

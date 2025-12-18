@@ -109,7 +109,9 @@ add_stacked_bar_tooltip <- function(echart) {
           });
           tooltip += '</table>';
           return tooltip;
-        }")
+        }"),
+            confine = TRUE,
+            extraCssText = "width:auto; white-space:pre-wrap;"
         )
 }
 
@@ -157,7 +159,11 @@ sankey_chart <- function(data,
             value = count,
             layoutIterations = 0
         ) |>
-        echarts4r::e_tooltip(trigger = "item") |>
+        echarts4r::e_tooltip(
+            trigger = "item",
+            confine = TRUE,
+            extraCssText = "width:auto; white-space:pre-wrap;"
+        ) |>
         echarts4r::e_color(color = color) |>
         echarts4r::e_grid(containLabel = TRUE)
 }
@@ -188,7 +194,7 @@ sankey_chart <- function(data,
 #' prepare_sankey_data(mock_data, response_col = "status", response_vals = c("A", "B", "C"))
 #' }
 prepare_sankey_data <- function(data, response_col, response_vals) {
-    data |>
+    out <- data |>
         dplyr::filter(
             # Each enrollment has one "Project start" and at most one "Project exit"
             data_collection_stage %in% c("Project start", "Project exit"),
@@ -198,7 +204,16 @@ prepare_sankey_data <- function(data, response_col, response_vals) {
         # Select columns of interest
         dplyr::select(enrollment_id, personal_id, organization_id, data_collection_stage, !!rlang::sym(response_col)) |>
         # Pivot to one row per youth
-        tidyr::pivot_wider(names_from = data_collection_stage, values_from = !!rlang::sym(response_col)) |>
+        tidyr::pivot_wider(names_from = data_collection_stage, values_from = !!rlang::sym(response_col))
+
+    shiny::validate(
+        shiny::need(
+            expr = all(c("Project start", "Project exit") %in% colnames(out)),
+            message = "Chart cannot be displayed: no valid Entry and/or Exit responses"
+        )
+    )
+
+    out |>
         # Filter rows with both "Project start" and "Project exit"
         dplyr::filter(!is.na(`Project start`), !is.na(`Project exit`)) |>
         dplyr::count(`Project start`, `Project exit`) |>

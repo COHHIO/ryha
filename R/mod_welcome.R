@@ -12,25 +12,44 @@ mod_welcome_ui <- function(id) {
     ns <- NS(id)
     tagList(
         bslib::layout_columns(
-            col_widths = c(-2, 8, -2),
+            col_widths = c(-1, 10, -1),
             shiny::tagList(
                 bslib::card(
                     bslib::card_header(shiny::HTML("<h1>Welcome to the <em>Youth Homelessness Data Dashboard</em></h1>")),
                     bslib::layout_columns(
-                        class = "vertical-center",
-                        shiny::img(src = "www/odh_logo.png", width = "100%"),
-                        shiny::img(src = "www/cohhio_logo.png", width = "100%"),
-                        shiny::img(src = "www/ketchbrook_logo.png", width = "100%")
+                        class = "logo-row",
+                        shiny::img(src = "www/odh_logo.png", class = "logo"),
+                        shiny::img(src = "www/cohhio_logo.png", class = "logo"),
+                        shiny::img(src = "www/ketchbrook_logo.png", class = "logo")
                     )
                 ),
                 bslib::layout_columns(
                     shiny::tagList(
                         bslib::card(
                             bslib::card_header(shiny::h2("Partnership")),
-                            shiny::markdown("This app is the result of a partnership between:
-                - [Ohio Department of Health (ODH)](https://odh.ohio.gov/)
-                - [Coalition on Homelessness and Housing in Ohio (COHHIO)](https://cohhio.org/)
-                - [Ketchbrook Analytics](https://www.ketchbrookanalytics.com)")
+                            shiny::markdown(
+                                "This app is the result of a partnership between:
+                                - [Ohio Department of Health (ODH)](https://odh.ohio.gov/)
+                                - [Coalition on Homelessness and Housing in Ohio (COHHIO)](https://cohhio.org/)
+                                - [Ketchbrook Analytics](https://www.ketchbrookanalytics.com)"
+                            )
+                        ) |>
+                            shiny::tagAppendAttributes(class = "custom-box"),
+                        bslib::card(
+                            bslib::card_header(shiny::h2("Data Protection and Confidentiality")),
+                            shiny::markdown("To protect the privacy of individuals and small groups, a minimum threshold of 10 participants is required to display a chart or summary metric."),
+                            shiny::markdown("If fewer than 10 participants are available, the chart or summary metric will not be shown. Instead, the message **Not displayed to ensure confidentiality** will appear."),
+                            shiny::markdown("When this occurs, you may need to broaden your filter selections to ensure that enough participants are included to display results.")
+                        ) |>
+                            shiny::tagAppendAttributes(class = "custom-box")
+                    ),
+                    shiny::tagList(
+                        bslib::card(
+                            bslib::card_header(shiny::h2("Program Development")),
+                            shiny::markdown("As part of ODH's youth homelessness grant program, **COHHIO** was contracted to assist the department in program development using data-driven approaches."),
+                            shiny::markdown("**COHHIO** supported the department in establishing data collection requirements and providing technical assistance to sub-recipients to standardize data collection across the program."),
+                            shiny::markdown("This was best accomplished using the **Housing and Urban Development** (HUD)-required **Homeless Management Information System** (HMIS)."),
+                            shiny::markdown("In 2022, **COHHIO** entered into a contract with [Ketchbrook Analytics](https://www.ketchbrookanalytics.com) to assist by analyzing large volumes of data from sub-grantees and quantifying trends across data sets.")
                         ) |>
                             shiny::tagAppendAttributes(class = "custom-box"),
                         bslib::card(
@@ -38,15 +57,7 @@ mod_welcome_ui <- function(id) {
                             shiny::markdown("This app utilizes the HMIS CSV to provide information on the ODH program. If you have any questions about the app, please email Amanda Wilson, Youth Housing Initiative Director at COHHIO, at [amandawilson@cohhio.org](mailto:amandawilson@cohhio.org)")
                         ) |>
                             shiny::tagAppendAttributes(class = "custom-box")
-                    ),
-                    bslib::card(
-                        bslib::card_header(shiny::h2("Program Development")),
-                        shiny::markdown("As part of ODH's youth homelessness grant program, **COHHIO** was contracted to assist the department in program development using data-driven approaches."),
-                        shiny::markdown("**COHHIO** supported the department in establishing data collection requirements and providing technical assistance to sub-recipients to standardize data collection across the program."),
-                        shiny::markdown("This was best accomplished using the **Housing and Urban Development** (HUD)-required **Homeless Management Information System** (HMIS)."),
-                        shiny::markdown("In 2022, **COHHIO** entered into a contract with [Ketchbrook Analytics](https://www.ketchbrookanalytics.com) to assist by analyzing large volumes of data from sub-grantees and quantifying trends across data sets.")
-                    ) |>
-                        shiny::tagAppendAttributes(class = "custom-box")
+                    )
                 )
             )
         )

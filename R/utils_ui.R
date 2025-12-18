@@ -144,7 +144,7 @@ link_section <- function(section) {
 #' @return An HTML anchor (`<a>`) tag as a `shiny.tag` object.
 #' @export
 link_data_standards_manual <- function() {
-    URL <- "https://cohhio.org/wp-content/uploads/2025/03/HMIS-Data-Standards-Manual-2024.pdf"
+    URL <- "https://files.hudexchange.info/resources/documents/HMIS-Data-Standards.pdf"
     shiny::tags$a(href = URL, target = "_blank", "HMIS Data Standards Manual")
 }
 
@@ -236,29 +236,38 @@ filter_data <- function(data, clients_filtered, at = "enrollment") {
     filtered_data <- data |>
         dplyr::semi_join(clients_filtered, by_cols)
 
-    # Validate data
-    validate_data(filtered_data)
-
     # Return data
     filtered_data
 }
 
 #' Validate data
 #'
-#' `validate_data()` checks whether the provided dataset has at least one row.
-#' If the data is empty, it triggers a validation error with a specified message.
+#' `validate_data()` checks whether the provided dataset meets the minimum
+#' row requirements. It first ensures that the dataset has at least one row,
+#' and then enforces a minimum row threshold to maintain confidentiality.
+#' If the validation fails, a Shiny validation error is triggered, preventing
+#' further execution.
 #'
 #' @param data A data frame to validate
-#' @param message A character string specifying the message to display when
-#' the data is empty. Defaults to "No data to display".
+#' @param min_n An integer specifying the minimum number of rows required
+#' to maintain confidentiality. Defaults to 10.
 #'
 #' @return This function does not return a value. It triggers a validation
 #' error in a Shiny app if the dataset is empty, preventing further execution.
-validate_data <- function(data, message = "No data to display") {
+validate_data <- function(data, min_n = 10) {
+    # Ensure there is at least one row of data available
     shiny::validate(
         shiny::need(
             expr = nrow(data) >= 1L,
-            message = message
+            message = "No participants match your filter criteria"
+        )
+    )
+
+    # Enforce a minimum row threshold to maintain confidentiality
+    shiny::validate(
+        shiny::need(
+            expr = nrow(data) >= min_n,
+            message = "Not displayed to ensure confidentiality"
         )
     )
 }

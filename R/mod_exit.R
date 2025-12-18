@@ -45,14 +45,14 @@ mod_exit_ui <- function(id) {
 #' exit Server Functions
 #'
 #' @noRd
-mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_and_adults) {
+mod_exit_server <- function(id, exit_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
         # Filter Data ####
         exit_data_filtered <- shiny::reactive({
             filter_data(exit_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults, by = c("enrollment_id", "personal_id", "organization_id"))
+                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
         # Value Boxes ####

@@ -22,8 +22,6 @@ CREATE TABLE IF NOT EXISTS public.enrollment
     move_in_date date,
     referral_source text COLLATE pg_catalog."default",
     runaway_youth text COLLATE pg_catalog."default",
-    sexual_orientation text COLLATE pg_catalog."default",
-    sexual_orientation_other text COLLATE pg_catalog."default",
     former_ward_child_welfare text COLLATE pg_catalog."default",
     child_welfare_years text COLLATE pg_catalog."default",
     child_welfare_months integer,
