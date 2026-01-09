@@ -311,7 +311,6 @@ create_dm <- function(env,
                 last_grade_completed_grouped = factor(
                     last_grade_completed,
                     levels = c(
-                        "Missing",
                         "Data not collected",
                         "Client prefers not to answer",
                         "Client doesn't know",
@@ -329,7 +328,6 @@ create_dm <- function(env,
                         "Vocational Degree"
                     ),
                     labels = c(
-                        "Missing",
                         "Data not collected",
                         "Client prefers not to answer",
                         "Client doesn't know",
@@ -351,7 +349,6 @@ create_dm <- function(env,
                 school_status = factor(
                     school_status,
                     levels = c(
-                        "Missing",
                         "Data not collected",
                         "Client prefers not to answer",
                         "Client doesn't know",
@@ -391,8 +388,7 @@ create_dm <- function(env,
                     dplyr::select(
                         description = Description,
                         living_situation_grouped = ExitCategory
-                    ) |>
-                    dplyr::bind_rows(c(description = "Missing", living_situation_grouped = "Missing")),
+                    ),
                 by = c("living_situation" = "description")
             ) |>
             dplyr::mutate(
@@ -444,8 +440,7 @@ create_dm <- function(env,
                                 "Poor",
                                 "Client doesn't know",
                                 "Client prefers not to answer",
-                                "Data not collected",
-                                "Missing"
+                                "Data not collected"
                             ),
                             ordered = TRUE
                         )
@@ -606,8 +601,7 @@ create_dm <- function(env,
                     dplyr::select(
                         description = Description,
                         destination_grouped = ExitCategory
-                    ) |>
-                    dplyr::bind_rows(c(description = "Missing", destination_grouped = "Missing")),
+                    ),
                 by = c("destination" = "description")
             ) |>
             dplyr::mutate(

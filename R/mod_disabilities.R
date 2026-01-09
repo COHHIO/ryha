@@ -241,8 +241,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                             "No",
                             "Client doesn't know",
                             "Client prefers not to answer",
-                            "Data not collected",
-                            "Missing"
+                            "Data not collected"
                         ),
                         ordered = TRUE
                     )
@@ -269,8 +268,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                         palette$no_neutral, # "No",
                         palette$client_doesnt_know, # "Client doesn't know",
                         palette$client_prefers_not_to_answer, # "Client prefers not to answer",
-                        palette$data_not_collected, # "Data not collected",
-                        palette$missing # "Missing"
+                        palette$data_not_collected # "Data not collected"
                     )
                 ) |>
                 add_stacked_bar_tooltip()
@@ -284,7 +282,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                     `Substance Use Disorder` = factor(
                         `Substance Use Disorder`,
                         levels = c(
-                            "Missing",
                             "Data not collected",
                             "Client prefers not to answer",
                             "Client doesn't know",
@@ -294,7 +291,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                             "Alcohol use disorder"
                         ),
                         labels = c(
-                            "Missing",
                             "Data not collected",
                             "Client prefers not to answer",
                             "Client doesn't know",

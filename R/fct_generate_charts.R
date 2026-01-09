@@ -42,7 +42,6 @@ bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denomina
             dplyr::mutate(
                 color = dplyr::case_when(
                     .data[[x]] %in% c(
-                        "Missing",
                         "Data not collected",
                         "Client prefers not to answer",
                         "Client doesn't know"
