@@ -158,11 +158,11 @@ create_dm <- function(env,
                     age >= 14 & age <= 17 ~ "14-17",
                     age >= 6 & age <= 13 ~ "6-13",
                     age >= 0 & age <= 5 ~ "0-5",
-                    TRUE ~ "Missing"
+                    TRUE ~ "Data not collected"
                 ),
                 age_grouped = factor(
                     age_grouped,
-                    levels = c("Missing", "0-5", "6-13", "14-17", "18-24", "25+")
+                    levels = c("Data not collected", "0-5", "6-13", "14-17", "18-24", "25+")
                 )
             ) |>
             dplyr::select(
@@ -223,11 +223,11 @@ create_dm <- function(env,
                     organization_id,
                     personal_id
                 ) |>
-                # "Missing" category needs to be assigned manually because data was longer pivot
+                # "Data not collected" category needs to be assigned manually because data was longer pivot
                 dplyr::mutate(
                     ethnicity = dplyr::if_else(
                         ethnicity == "race_none" | is.na(ethnicity),
-                        "Missing",
+                        "Data not collected",
                         stringr::str_replace_all(ethnicity, "_", " ") |> tools::toTitleCase()
                     )
                 ) |>
@@ -235,7 +235,7 @@ create_dm <- function(env,
                     ethnicity = factor(
                         ethnicity,
                         levels = c(
-                            "Missing",
+                            "Data not collected",
                             "White",
                             "Native Hi Pacific",
                             "Mid East n African",
@@ -245,7 +245,7 @@ create_dm <- function(env,
                             "Am Ind Ak Native"
                         ),
                         labels = c(
-                            "Missing",
+                            "Data not collected",
                             "White",
                             "Native Hawaiian or Pacific Islander",
                             "Middle Eastern or North African",
@@ -514,11 +514,11 @@ create_dm <- function(env,
                     total_monthly_income_integer > 3000L & total_monthly_income_integer <= 4000L ~ "$3,001-$4,000",
                     total_monthly_income_integer > 4000L & total_monthly_income_integer <= 5000L ~ "$4,001-$5,000",
                     total_monthly_income_integer > 5000L ~ "$5,001 or more",
-                    TRUE ~ "Missing"
+                    TRUE ~ "Data not collected"
                 ) |>
                     factor(
                         levels = c(
-                            "Missing",
+                            "Data not collected",
                             "No Income",
                             "$1-$500",
                             "$551-$1,000",
@@ -735,7 +735,7 @@ read_data_from_table <- function(connection, table_name, column_names) {
         dplyr::mutate(
             dplyr::across(
                 tidyselect::where(is.character),
-                ~ tidyr::replace_na(.x, "Missing")
+                ~ tidyr::replace_na(.x, "Data not collected")
             )
         )
 

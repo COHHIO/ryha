@@ -231,8 +231,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                     names_to = "Disability",
                     values_to = "Response"
                 ) |>
-                # We will consider NA values as "Missing"
-                tidyr::replace_na(list(Response = "Missing")) |>
+                # We will consider NA values as "Data not collected"
+                tidyr::replace_na(list(Response = "Data not collected")) |>
                 dplyr::mutate(
                     Response = factor(
                         Response,
@@ -279,7 +279,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
         ## Substance Use Disorder ####
         output$substance_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
-                tidyr::replace_na(list(`Substance Use Disorder` = "Missing")) |>
+                tidyr::replace_na(list(`Substance Use Disorder` = "Data not collected")) |>
                 dplyr::mutate(
                     `Substance Use Disorder` = factor(
                         `Substance Use Disorder`,
