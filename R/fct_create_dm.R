@@ -728,7 +728,9 @@ read_data_from_table <- function(connection, table_name, column_names) {
         )
     ) |>
         # Convert to tibble
-        tibble::as_tibble()
+        tibble::as_tibble() |>
+        # Remove duplicated rows
+        dplyr::distinct()
 
     # Replace NA values
     data <- data |>
