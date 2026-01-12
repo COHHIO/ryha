@@ -106,7 +106,11 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
 
         ## Enrollment ####
         enrollment_data_filtered <- shiny::reactive({
-            filter_data(enrollment_data, clients_filtered()) |>
+            filter_data(enrollment_data, clients_filtered())
+        })
+
+        enrollment_hoh_adults_data_filtered <- shiny::reactive({
+            enrollment_data_filtered() |>
                 dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
@@ -118,13 +122,13 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
 
         mod_value_box_server(
             id = "n_heads_of_household_and_adults",
-            rctv_data = enrollment_data_filtered
+            rctv_data = enrollment_hoh_adults_data_filtered
         )
 
         mod_value_box_server(
             id = "n_households",
             rctv_data = shiny::reactive({
-                filter_data(enrollment_data, clients_filtered()) |>
+                enrollment_data_filtered() |>
                     dplyr::distinct(household_id)
             })
         )
@@ -175,7 +179,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
 
         ## Welfare ####
         output$welfare_chart <- echarts4r::renderEcharts4r(
-            enrollment_data_filtered() |>
+            enrollment_hoh_adults_data_filtered() |>
                 dplyr::count(former_ward_child_welfare, .drop = FALSE) |>
                 bar_chart(
                     x = "former_ward_child_welfare",
@@ -185,7 +189,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
 
         ## Juvenile ####
         output$juvenile_chart <- echarts4r::renderEcharts4r(
-            enrollment_data_filtered() |>
+            enrollment_hoh_adults_data_filtered() |>
                 dplyr::count(former_ward_juvenile_justice, .drop = FALSE) |>
                 bar_chart(
                     x = "former_ward_juvenile_justice",
