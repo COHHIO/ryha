@@ -70,6 +70,21 @@ mod_overview_ui <- function(id) {
         ),
         bslib::layout_columns(
             custom_card(
+                bslib::card_header("Households by Size"),
+                echarts4r::echarts4rOutput(outputId = ns("household_by_size_chart"), height = "100%")
+            ),
+            custom_card(
+                bslib::card_header(
+                    with_popover(
+                        text = "Participants by Relationship to Head of Household",
+                        content = link_section("3.15 Relationship to Head of Household")
+                    )
+                ),
+                echarts4r::echarts4rOutput(outputId = ns("relationship_to_ho_h_chart"), height = "100%")
+            )
+        ),
+        bslib::layout_columns(
+            custom_card(
                 bslib::card_header(
                     with_popover(
                         text = "Head of Household and/or Adults by Former Ward Child Welfare Response",
@@ -174,6 +189,36 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
                     x = "ethnicity",
                     y = "n",
                     pct_denominator = nrow(clients_filtered())
+                )
+        })
+
+        ## Households by Size ####
+        output$household_by_size_chart <- echarts4r::renderEcharts4r({
+            enrollment_data_filtered() |>
+                dplyr::count(household_id) |>
+                dplyr::mutate(
+                    household_size = dplyr::case_when(
+                        n == 1 ~ "1 Person",
+                        n <= 4 ~ paste(n, "People"),
+                        n >= 5 ~ "5+ People"
+                    ) |>
+                        factor(levels = c("1 Person", paste(c("2", "3", "4", "5+"), "People")), ordered = TRUE)
+                ) |>
+                dplyr::count(household_size, .drop = FALSE) |>
+                bar_chart(
+                    x = "household_size",
+                    y = "n",
+                    serie_name = "# of Households with"
+                )
+        })
+
+        ## Relationship to Head of Household ####
+        output$relationship_to_ho_h_chart <- echarts4r::renderEcharts4r({
+            enrollment_data_filtered() |>
+                dplyr::count(relationship_to_ho_h, .drop = FALSE) |>
+                bar_chart(
+                    x = "relationship_to_ho_h",
+                    y = "n"
                 )
         })
 
