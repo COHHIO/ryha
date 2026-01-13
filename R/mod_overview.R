@@ -102,6 +102,16 @@ mod_overview_ui <- function(id) {
                 ),
                 echarts4r::echarts4rOutput(outputId = ns("juvenile_chart"), height = "100%")
             )
+        ),
+        custom_card(
+            height = "720px",
+            bslib::card_header(
+                with_popover(
+                    text = "Head of Household and/or Adults by Referral Source",
+                    content = link_section("R1 Referral Source")
+                )
+            ),
+            echarts4r::echarts4rOutput(outputId = ns("referral_source_chart"), height = "100%")
         )
     )
 }
@@ -238,6 +248,16 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
                 dplyr::count(former_ward_juvenile_justice, .drop = FALSE) |>
                 bar_chart(
                     x = "former_ward_juvenile_justice",
+                    y = "n"
+                )
+        )
+
+        ## Referral Source ####
+        output$referral_source_chart <- echarts4r::renderEcharts4r(
+            enrollment_hoh_adults_data_filtered() |>
+                dplyr::count(referral_source, .drop = FALSE) |>
+                bar_chart(
+                    x = "referral_source",
                     y = "n"
                 )
         )
