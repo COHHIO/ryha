@@ -407,6 +407,7 @@ create_dm <- function(env,
                         )
                     )
                 ),
+                relationship_to_ho_h = convert_to_ordered_factor(relationship_to_ho_h, RelationshipToHoHCodes),
                 former_ward_child_welfare = convert_to_ordered_factor(former_ward_child_welfare, NoYesReasonsForMissingDataCodes),
                 former_ward_juvenile_justice = convert_to_ordered_factor(former_ward_juvenile_justice, NoYesReasonsForMissingDataCodes)
             )
