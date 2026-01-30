@@ -10,14 +10,15 @@ convert_to_ordered_factor(x, codes)
 \item{x}{A vector to be converted into an ordered factor.}
 
 \item{codes}{A data frame containing a column \code{Description} that defines
-the factor levels (excluding "Missing").}
+the factor levels.}
 }
 \value{
-An ordered factor with levels starting with "Missing" and followed
-by the reversed descriptions.
+An ordered factor with levels in reverse order from codes, with
+"Data not collected" prepended if not already present.
 }
 \description{
 \code{convert_to_ordered_factor()} converts a vector to an ordered factor,
-ensuring that "Missing" appears as the first level, followed by the
-descriptions from a provided \code{codes} data frame in reverse order.
+ordering by reverse \code{Description} from the \code{codes} data frame.
+"Data not collected" is automatically prepended to the levels if it
+does not already exist in the codes.
 }
