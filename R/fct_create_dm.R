@@ -573,7 +573,10 @@ create_dm <- function(env,
                 "type_provided",
                 "organization_id"
             )
-        )
+        ) |>
+            dplyr::mutate(
+                type_provided = convert_to_ordered_factor(type_provided, ServiceCodes)
+            )
 
         exit <- read_data_from_table(
             connection = con,
