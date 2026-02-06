@@ -1455,7 +1455,7 @@ validate_colnames <- function(file, expected_colnames) {
 validate_file_data <- function(filename, data) {
     # Check that the dataset contains at least one row
     if (nrow(data) == 0) {
-        glue::glue("<strong>{ filename }.csv</strong> has no data") |>
+        glue::glue("<strong>{ filename }.csv</strong> file is empty") |>
             rlang::abort()
     }
 }
