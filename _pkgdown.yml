@@ -37,7 +37,7 @@ reference:
   - RHYNumberOfYearsCodes
   - SchoolStatusCodes
   - ServiceCodes
-  - SexualOrientationCodes
+  - SexCodes
   - SSNDataQualityCodes
   - SubstanceUseDisorderCodes
   - TimesHomelessPastThreeYearsCodes

@@ -93,10 +93,10 @@ mod_filters_ui <- function(id) {
             max = lubridate::today()
         ),
 
-        # Gender filter
+        # Sex filter
         custom_pickerInput(
-            inputId = ns("gender_filter_global"),
-            label = "Gender",
+            inputId = ns("sex_filter_global"),
+            label = "Sex",
             opts_selectedTextFormat = "count > 2"
         ),
 
@@ -272,12 +272,12 @@ mod_filters_server <- function(id, dm, rctv) {
             min = min(dm$enrollment$entry_date)
         )
 
-        ## Update gender filter
+        ## Update sex filter
         shinyWidgets::updatePickerInput(
             session = session,
-            inputId = "gender_filter_global",
-            choices = levels(dm$gender$gender) |> sort(),
-            selected = levels(dm$gender$gender) |> sort()
+            inputId = "sex_filter_global",
+            choices = rev(levels(dm$client$sex)),
+            selected = levels(dm$client$sex)
         )
 
         ## Update ethnicity filter
@@ -325,14 +325,17 @@ mod_filters_server <- function(id, dm, rctv) {
         # Create filtered {dm} data
         clients_filtered <- shiny::eventReactive(input$apply_filters,
             {
-                # Filter dm$client by age
+                # Filter dm$client
                 client <- dm$client |>
                     dplyr::filter(
+                        # Filter by age
                         dplyr::between(
                             x = age,
                             left = input$age_filter_global[1],
                             right = input$age_filter_global[2]
-                        ) | is.na(age)
+                        ) | is.na(age),
+                        # Filter by sex
+                        sex %in% input$sex_filter_global
                     )
 
                 ## Remove youth with missing ages accordingly
@@ -340,10 +343,6 @@ mod_filters_server <- function(id, dm, rctv) {
                     client <- client |>
                         dplyr::filter(!is.na(age))
                 }
-
-                # Filter dm$gender by gender
-                gender <- dm$gender |>
-                    dplyr::filter(gender %in% input$gender_filter_global)
 
                 # Filter dm$ethnicity by ethnicity
                 ethnicity <- dm$ethnicity |>
@@ -373,7 +372,6 @@ mod_filters_server <- function(id, dm, rctv) {
 
                 out <- enrollment |>
                     dplyr::semi_join(client, by = c("organization_id", "personal_id")) |>
-                    dplyr::semi_join(gender, by = c("organization_id", "personal_id")) |>
                     dplyr::semi_join(ethnicity, by = c("organization_id", "personal_id"))
 
                 # De-duplicate youth across projects by ssn accordingly

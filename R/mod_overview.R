@@ -28,36 +28,23 @@ mod_overview_ui <- function(id) {
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "Participants by Gender",
-                        content = shiny::tagList(
-                            shiny::p("Each bar represents the percentage of participants who self-identify with a given gender category."),
-                            shiny::p("Since participants can select multiple categories, the total percentage may exceed 100%."),
-                            shiny::p(link_section("3.06 Gender"))
-                        )
+                        text = "Participants by Sex",
+                        content = link_section("4.21 Sex")
                     )
                 ),
-                echarts4r::echarts4rOutput(outputId = ns("gender_chart"), height = "100%")
+                echarts4r::echarts4rOutput(outputId = ns("sex_chart"), height = "100%")
             ),
             custom_card(
                 bslib::card_header(
                     with_popover(
-                        text = "Head of Household and/or Adults by Sexual Orientation",
-                        content = link_section("R3 Sexual Orientation")
+                        text = "Participants by Age Group",
+                        content = link_section("3.03 Date of Birth")
                     )
                 ),
-                echarts4r::echarts4rOutput(outputId = ns("sexual_orientation_chart"), height = "100%")
+                echarts4r::echarts4rOutput(outputId = ns("age_bar_chart"), height = "100%")
             )
         ),
         bslib::layout_columns(
-            custom_card(
-                bslib::card_header(
-                    with_popover(
-                        text = "Adults by Veteran Status",
-                        content = link_section("3.07 Veteran Status")
-                    )
-                ),
-                echarts4r::echarts4rOutput(outputId = ns("veteran_chart"), height = "100%")
-            ),
             custom_card(
                 bslib::card_header(
                     with_popover(
@@ -70,16 +57,31 @@ mod_overview_ui <- function(id) {
                     )
                 ),
                 echarts4r::echarts4rOutput(outputId = ns("ethnicity_bar_chart"), height = "100%")
-            )
-        ),
-        custom_card(
-            bslib::card_header(
-                with_popover(
-                    text = "Participants by Age Group",
-                    content = link_section("3.03 Date of Birth")
-                )
             ),
-            echarts4r::echarts4rOutput(outputId = ns("age_bar_chart"), height = "100%")
+            custom_card(
+                bslib::card_header(
+                    with_popover(
+                        text = "Adults by Veteran Status",
+                        content = link_section("3.07 Veteran Status")
+                    )
+                ),
+                echarts4r::echarts4rOutput(outputId = ns("veteran_chart"), height = "100%")
+            ),
+        ),
+        bslib::layout_columns(
+            custom_card(
+                bslib::card_header("Households by Size"),
+                echarts4r::echarts4rOutput(outputId = ns("household_by_size_chart"), height = "100%")
+            ),
+            custom_card(
+                bslib::card_header(
+                    with_popover(
+                        text = "Participants by Relationship to Head of Household",
+                        content = link_section("3.15 Relationship to Head of Household")
+                    )
+                ),
+                echarts4r::echarts4rOutput(outputId = ns("relationship_to_ho_h_chart"), height = "100%")
+            )
         ),
         bslib::layout_columns(
             custom_card(
@@ -107,7 +109,7 @@ mod_overview_ui <- function(id) {
 #' overview Server Functions
 #'
 #' @noRd
-mod_overview_server <- function(id, client_data, enrollment_data, gender_data, ethnicity_data, clients_filtered, heads_of_household_and_adults_filtered) {
+mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data, clients_filtered, heads_of_household_and_adults_filtered) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
@@ -119,7 +121,11 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
 
         ## Enrollment ####
         enrollment_data_filtered <- shiny::reactive({
-            filter_data(enrollment_data, clients_filtered()) |>
+            filter_data(enrollment_data, clients_filtered())
+        })
+
+        enrollment_hoh_adults_data_filtered <- shiny::reactive({
+            enrollment_data_filtered() |>
                 dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
@@ -131,36 +137,24 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
 
         mod_value_box_server(
             id = "n_heads_of_household_and_adults",
-            rctv_data = enrollment_data_filtered
+            rctv_data = enrollment_hoh_adults_data_filtered
         )
 
         mod_value_box_server(
             id = "n_households",
             rctv_data = shiny::reactive({
-                filter_data(enrollment_data, clients_filtered()) |>
+                enrollment_data_filtered() |>
                     dplyr::distinct(household_id)
             })
         )
 
         # Charts ####
         ## Gender ####
-        output$gender_chart <- echarts4r::renderEcharts4r({
-            gender_data |>
-                filter_data(clients_filtered(), at = "youth") |>
-                dplyr::count(gender, .drop = FALSE) |>
+        output$sex_chart <- echarts4r::renderEcharts4r({
+            client_data_filtered() |>
+                dplyr::count(sex, .drop = FALSE) |>
                 bar_chart(
-                    x = "gender",
-                    y = "n",
-                    pct_denominator = nrow(clients_filtered())
-                )
-        })
-
-        ## Sexual Orientation ####
-        output$sexual_orientation_chart <- echarts4r::renderEcharts4r({
-            enrollment_data_filtered() |>
-                dplyr::count(sexual_orientation, .drop = FALSE) |>
-                bar_chart(
-                    x = "sexual_orientation",
+                    x = "sex",
                     y = "n"
                 )
         })
@@ -198,9 +192,39 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
                 )
         })
 
+        ## Households by Size ####
+        output$household_by_size_chart <- echarts4r::renderEcharts4r({
+            enrollment_data_filtered() |>
+                dplyr::count(household_id) |>
+                dplyr::mutate(
+                    household_size = dplyr::case_when(
+                        n == 1 ~ "1 Person",
+                        n <= 4 ~ paste(n, "People"),
+                        n >= 5 ~ "5+ People"
+                    ) |>
+                        factor(levels = c("1 Person", paste(c("2", "3", "4", "5+"), "People")), ordered = TRUE)
+                ) |>
+                dplyr::count(household_size, .drop = FALSE) |>
+                bar_chart(
+                    x = "household_size",
+                    y = "n",
+                    serie_name = "# of Households with"
+                )
+        })
+
+        ## Relationship to Head of Household ####
+        output$relationship_to_ho_h_chart <- echarts4r::renderEcharts4r({
+            enrollment_data_filtered() |>
+                dplyr::count(relationship_to_ho_h, .drop = FALSE) |>
+                bar_chart(
+                    x = "relationship_to_ho_h",
+                    y = "n"
+                )
+        })
+
         ## Welfare ####
         output$welfare_chart <- echarts4r::renderEcharts4r(
-            enrollment_data_filtered() |>
+            enrollment_hoh_adults_data_filtered() |>
                 dplyr::count(former_ward_child_welfare, .drop = FALSE) |>
                 bar_chart(
                     x = "former_ward_child_welfare",
@@ -210,7 +234,7 @@ mod_overview_server <- function(id, client_data, enrollment_data, gender_data, e
 
         ## Juvenile ####
         output$juvenile_chart <- echarts4r::renderEcharts4r(
-            enrollment_data_filtered() |>
+            enrollment_hoh_adults_data_filtered() |>
                 dplyr::count(former_ward_juvenile_justice, .drop = FALSE) |>
                 bar_chart(
                     x = "former_ward_juvenile_justice",

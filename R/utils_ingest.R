@@ -43,23 +43,15 @@ read_client <- function(file) {
         "SSNDataQuality",
         "DOB",
         "DOBDataQuality",
+        "Sex",
         "AmIndAKNative",
         "Asian",
         "BlackAfAmerican",
-        "HispanicLatinaeo",
+        "HispanicLatinao",
         "MidEastNAfrican",
         "NativeHIPacific",
         "White",
         "RaceNone",
-        "Woman",
-        "Man",
-        "NonBinary",
-        "CulturallySpecific",
-        "Transgender",
-        "Questioning",
-        "DifferentIdentity",
-        "GenderNone",
-        "DifferentIdentityText",
         "VeteranStatus",
         "DateUpdated"
     )
@@ -84,7 +76,7 @@ read_client <- function(file) {
     validate_file_data("Client", client)
 
     client <- client |>
-        # replace the "SSN/DOBDataQuality" codes with the plain-English description
+        # replace codes with the plain-English description
         dplyr::mutate(
             SSNDataQuality = lookup_codes(
                 var = SSNDataQuality,
@@ -93,6 +85,18 @@ read_client <- function(file) {
             DOBDataQuality = lookup_codes(
                 var = DOBDataQuality,
                 codes = DOBDataQualityCodes
+            ),
+            RaceNone = lookup_codes(
+                var = RaceNone,
+                codes = RaceGenderNoneCodes
+            ),
+            Sex = lookup_codes(
+                var = Sex,
+                codes = SexCodes
+            ),
+            VeteranStatus = lookup_codes(
+                var = VeteranStatus,
+                codes = NoYesReasonsForMissingDataCodes
             )
         ) |>
         # replace codes with the plain-English description
@@ -102,38 +106,12 @@ read_client <- function(file) {
                     AmIndAKNative,
                     Asian,
                     BlackAfAmerican,
-                    HispanicLatinaeo,
+                    HispanicLatinao,
                     MidEastNAfrican,
                     NativeHIPacific,
-                    White,
-                    Woman,
-                    Man,
-                    NonBinary,
-                    CulturallySpecific,
-                    Transgender,
-                    Questioning,
-                    DifferentIdentity
+                    White
                 ),
                 .fns = function(x) lookup_codes(var = x, codes = NoYesCodes)
-            )
-        ) |>
-        # replace codes with the plain-English description
-        dplyr::mutate(
-            dplyr::across(
-                .cols = c(
-                    RaceNone,
-                    GenderNone
-                ),
-                .fns = function(x) lookup_codes(var = x, codes = RaceGenderNoneCodes)
-            )
-        ) |>
-        # replace codes with the plain-English description
-        dplyr::mutate(
-            dplyr::across(
-                .cols = c(
-                    VeteranStatus
-                ),
-                .fns = function(x) lookup_codes(var = x, codes = NoYesReasonsForMissingDataCodes)
             )
         ) |>
         janitor::clean_names(case = "snake")
@@ -832,8 +810,6 @@ read_enrollment <- function(file) {
         "MoveInDate",
         "ReferralSource",
         "RunawayYouth",
-        "SexualOrientation",
-        "SexualOrientationOther",
         "FormerWardChildWelfare",
         "ChildWelfareYears",
         "ChildWelfareMonths",
@@ -866,7 +842,6 @@ read_enrollment <- function(file) {
             EnrollmentCoC = readr::col_character(),
             DateToStreetESSH = readr::col_date(),
             MoveInDate = readr::col_date(),
-            SexualOrientationOther = readr::col_character(),
             DateUpdated = readr::col_datetime()
         )
     )
@@ -898,10 +873,6 @@ read_enrollment <- function(file) {
             ReferralSource = lookup_codes(
                 var = ReferralSource,
                 codes = ReferralSourceCodes
-            ),
-            SexualOrientation = lookup_codes(
-                var = SexualOrientation,
-                codes = SexualOrientationCodes
             ),
             dplyr::across(
                 .cols = c(

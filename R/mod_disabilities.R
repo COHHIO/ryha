@@ -231,8 +231,8 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                     names_to = "Disability",
                     values_to = "Response"
                 ) |>
-                # We will consider NA values as "Missing"
-                tidyr::replace_na(list(Response = "Missing")) |>
+                # We will consider NA values as "Data not collected"
+                tidyr::replace_na(list(Response = "Data not collected")) |>
                 dplyr::mutate(
                     Response = factor(
                         Response,
@@ -241,8 +241,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                             "No",
                             "Client doesn't know",
                             "Client prefers not to answer",
-                            "Data not collected",
-                            "Missing"
+                            "Data not collected"
                         ),
                         ordered = TRUE
                     )
@@ -269,8 +268,7 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                         palette$no_neutral, # "No",
                         palette$client_doesnt_know, # "Client doesn't know",
                         palette$client_prefers_not_to_answer, # "Client prefers not to answer",
-                        palette$data_not_collected, # "Data not collected",
-                        palette$missing # "Missing"
+                        palette$data_not_collected # "Data not collected"
                     )
                 ) |>
                 add_stacked_bar_tooltip()
@@ -279,12 +277,11 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
         ## Substance Use Disorder ####
         output$substance_chart <- echarts4r::renderEcharts4r({
             most_recent_data_per_enrollment() |>
-                tidyr::replace_na(list(`Substance Use Disorder` = "Missing")) |>
+                tidyr::replace_na(list(`Substance Use Disorder` = "Data not collected")) |>
                 dplyr::mutate(
                     `Substance Use Disorder` = factor(
                         `Substance Use Disorder`,
                         levels = c(
-                            "Missing",
                             "Data not collected",
                             "Client prefers not to answer",
                             "Client doesn't know",
@@ -294,7 +291,6 @@ mod_disabilities_server <- function(id, disabilities_data, clients_filtered) {
                             "Alcohol use disorder"
                         ),
                         labels = c(
-                            "Missing",
                             "Data not collected",
                             "Client prefers not to answer",
                             "Client doesn't know",

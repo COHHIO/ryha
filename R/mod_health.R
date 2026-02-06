@@ -192,8 +192,7 @@ mod_health_server <- function(id, health_data, counseling_data, clients_filtered
                         palette$poor, # "Poor",
                         palette$client_doesnt_know, # "Client doesn't know",
                         palette$client_prefers_not_to_answer, # "Client prefers not to answer",
-                        palette$data_not_collected, # "Data not collected",
-                        palette$missing # "Missing"
+                        palette$data_not_collected # "Data not collected"
                     )
                 ) |>
                 add_stacked_bar_tooltip()
