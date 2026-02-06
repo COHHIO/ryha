@@ -1453,9 +1453,24 @@ validate_colnames <- function(file, expected_colnames) {
 #' @return `validate_file_data()` is called for its side effects.
 #' It produces an error if validation fails, otherwise nothing.
 validate_file_data <- function(filename, data) {
-    # Check that the dataset contains at least one row
-    if (nrow(data) == 0) {
+    # Check that the dataset contains at least one row with data
+    if (nrow(drop_na_rows(data)) == 0) {
         glue::glue("<strong>{ filename }.csv</strong> file is empty") |>
             rlang::abort()
     }
+}
+
+#' Drop rows where all values are NA
+#'
+#' `drop_na_rows()` removes rows from a data frame where all
+#' columns contain NA values.
+#'
+#' @param data A data frame
+#'
+#' @return A data frame with all-NA rows removed
+#'
+#' @noRd
+drop_na_rows <- function(data) {
+    data |>
+        dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na))
 }
