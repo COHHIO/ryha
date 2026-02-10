@@ -1472,5 +1472,5 @@ validate_file_data <- function(filename, data) {
 #' @noRd
 drop_na_rows <- function(data) {
     data |>
-        dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na))
+        dplyr::filter_out(dplyr::if_all(dplyr::everything(), is.na))
 }
