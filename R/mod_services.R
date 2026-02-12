@@ -61,7 +61,7 @@ mod_services_server <- function(id, services_data, clients_filtered, heads_of_ho
         services_data_filtered <- shiny::reactive({
             filter_data(services_data, clients_filtered()) |>
                 dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id")) |>
-                # Count one service per enrollment
+                # Remove duplicate service records within each enrollment
                 dplyr::distinct(enrollment_id, personal_id, organization_id, type_provided)
         })
 
