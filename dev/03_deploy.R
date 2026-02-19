@@ -33,22 +33,21 @@ golem::add_shinyappsio_file()
 
 ## In command line:
 rsconnect::deployApp(
-  appName = "cohhio-youth-data-dashboard",
-  appTitle = "COHHIO Youth Data Dashboard",
-  appFiles = c(
-    # Add any additional files unique to your app here.
-    "R/",
-    "inst/",
-    "data/",
-    "NAMESPACE",
-    "DESCRIPTION",
-    "app.R",
-    ".Renviron",
-    ".Rbuildignore",
-    "hkey.RDS"
-  ),
-  account = "ohiobalanceofstatecoc",
-  appId =  "7831250",
-  lint = FALSE,
-  forceUpdate = TRUE
+    appName = "cohhio-youth-data-dashboard",
+    appTitle = "COHHIO Youth Data Dashboard",
+    appFiles = c(
+        # Add any additional files unique to your app here.
+        "R/",
+        "inst/",
+        "data/",
+        "NAMESPACE",
+        "DESCRIPTION",
+        "app.R",
+        ".Renviron",
+        ".Rbuildignore"
+    ),
+    account = "ohiobalanceofstatecoc",
+    appId = "7831250",
+    lint = FALSE,
+    forceUpdate = TRUE
 )
