@@ -102,10 +102,11 @@ add_stacked_bar_tooltip <- function(echart) {
           let tooltip = params[0].axisValue + '<br/>';
           tooltip += '<table>';
           params.forEach(function(item) {
-            let percentage = Math.round(item.data.extra.pct * 100) + '%';
+            let pct = Math.round(item.data.extra.pct * 100);
+            let pctDisplay = (pct === 0 ? '<1' : pct) + '%';
             tooltip += '<tr>' +
                        '<td style=\"text-align: left; padding-right: 10px;\">' + item.marker + ' ' + item.seriesName + '</td>' +
-                       '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + percentage + ')</td>' +
+                       '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + pctDisplay + ')</td>' +
                        '</tr>';
           });
           tooltip += '</table>';
