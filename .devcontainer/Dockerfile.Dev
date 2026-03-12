@@ -18,7 +18,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libfontconfig1-dev \
     # {gert} package requirement
     libgit2-dev \
+    # {textshaping} package requirement
+    libharfbuzz-dev \
+    libfribidi-dev \
     # {ragg} package requirement
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
     libwebp-dev \
     # {remotes} package requirement
     git \

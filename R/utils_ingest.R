@@ -122,7 +122,7 @@ read_client <- function(file) {
     for (s in client$ssn) {
         ssns_hashed <- append(
             ssns_hashed,
-            hash(s, key = readRDS(here::here("hkey.RDS")))
+            hash(s, key = process_hash_key(Sys.getenv("HASH_KEY")))
         )
     }
 
@@ -1473,4 +1473,29 @@ validate_file_data <- function(filename, data) {
 drop_na_rows <- function(data) {
     data |>
         dplyr::filter_out(dplyr::if_all(dplyr::everything(), is.na))
+}
+
+#' Process Hash Key
+#'
+#' Internal function to process hash key strings into structured format.
+#'
+#' @param input_string Character string to process
+#' @return Named list with processed components
+#' @keywords internal
+#' @noRd
+process_hash_key <- function(input_string) {
+    # Split string every 4 characters
+    groups <- substring(
+        input_string,
+        seq(1, nchar(input_string), by = 4),
+        seq(4, nchar(input_string), by = 4)
+    )
+
+    # Define names
+    group_names <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-")
+
+    # Create named list
+    result <- setNames(as.list(groups), group_names)
+
+    return(result)
 }
