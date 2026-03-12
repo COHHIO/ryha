@@ -64,10 +64,12 @@ bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denomina
             trigger = "axis",
             formatter = htmlwidgets::JS("
         function(params) {
+          let pct = Math.round(params[0].data.extra.pct * 100);
+          let pctDisplay = pct === 0 ? '<1' : pct;
           return(
             params[0].seriesName +
             '<br/>' + params[0].marker + params[0].value[1] +
-            '<br/>' + '<strong>' + params[0].data.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + Math.round(params[0].data.extra.pct * 100) + '%)' + '</strong>'
+                    '<br/>' + '<strong>' + params[0].data.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + pctDisplay + '%)' + '</strong>'
           )
         }"),
             confine = tooltip_opts$confine,
@@ -100,10 +102,11 @@ add_stacked_bar_tooltip <- function(echart) {
           let tooltip = params[0].axisValue + '<br/>';
           tooltip += '<table>';
           params.forEach(function(item) {
-            let percentage = Math.round(item.data.extra.pct * 100) + '%';
+            let pct = Math.round(item.data.extra.pct * 100);
+            let pctDisplay = (pct === 0 ? '<1' : pct) + '%';
             tooltip += '<tr>' +
                        '<td style=\"text-align: left; padding-right: 10px;\">' + item.marker + ' ' + item.seriesName + '</td>' +
-                       '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + percentage + ')</td>' +
+                       '<td style=\"text-align: right; font-weight: bold;\">' + item.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + pctDisplay + ')</td>' +
                        '</tr>';
           });
           tooltip += '</table>';
