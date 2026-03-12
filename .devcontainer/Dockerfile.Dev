@@ -9,12 +9,19 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libz-dev \
     # {curl} package requirement
     libcurl4-openssl-dev \
+    # {clipr} package requirement
+    libx11-dev \
     # {xlm2} package requirement
     libxml2-dev \
     # {httpgd} package requirement (VS Code development package)
+    libcairo2-dev \
     libfontconfig1-dev \
     # {gert} package requirement
     libgit2-dev \
+    # {ragg} package requirement
+    libwebp-dev \
+    # {remotes} package requirement
+    git \
     # Open Shiny app in VS Code Viewer
     xdg-utils \
     # Knit README.Rmd to README.md

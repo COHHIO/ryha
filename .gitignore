@@ -2,7 +2,6 @@
 .Rhistory
 .Renviron
 .DS_Store
-.Rprofile
 .vscode
 rsconnect/
 db_data

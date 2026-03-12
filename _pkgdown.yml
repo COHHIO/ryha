@@ -54,7 +54,7 @@ reference:
   - spinner_message
 - title: Data Processing Functions
   contents:
-  - check_file_names
+  - validate_file_names
   - find_file
   - hash
   - prep_tables
@@ -64,7 +64,8 @@ reference:
   - filter_data
 - title: Ingest Functions
   contents:
-  - check_colnames
+  - validate_colnames
+  - validate_file_data
   - read_benefits
   - read_client
   - read_disabilities

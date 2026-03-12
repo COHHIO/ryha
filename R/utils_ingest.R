@@ -56,7 +56,7 @@ read_client <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     client <- readr::read_csv(
         file = file,
@@ -71,7 +71,11 @@ read_client <- function(file) {
             DOB = readr::col_date(),
             DateUpdated = readr::col_datetime()
         )
-    ) |>
+    )
+
+    validate_file_data("Client", client)
+
+    client <- client |>
         # replace codes with the plain-English description
         dplyr::mutate(
             SSNDataQuality = lookup_codes(
@@ -157,7 +161,7 @@ read_disabilities <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -223,7 +227,7 @@ read_education <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -289,7 +293,7 @@ read_employment <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -359,7 +363,7 @@ read_living <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -421,7 +425,7 @@ read_health <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -494,7 +498,7 @@ read_domestic_violence <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -595,7 +599,7 @@ read_income <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -716,7 +720,7 @@ read_benefits <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -821,9 +825,9 @@ read_enrollment <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "ENROLLMENT" database table
         col_select = expected_colnames,
@@ -840,7 +844,11 @@ read_enrollment <- function(file) {
             MoveInDate = readr::col_date(),
             DateUpdated = readr::col_datetime()
         )
-    ) |>
+    )
+
+    validate_file_data("Enrollment", out)
+
+    out |>
         dplyr::mutate(
             RelationshipToHoH = lookup_codes(
                 var = RelationshipToHoH,
@@ -929,7 +937,7 @@ read_services <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -985,9 +993,9 @@ read_project <- function(file) {
         "OperatingStartDate"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "PROJECT" database table
         col_select = expected_colnames,
@@ -997,7 +1005,11 @@ read_project <- function(file) {
             ProjectType = readr::col_integer(),
             OperatingStartDate = readr::col_date()
         )
-    ) |>
+    )
+
+    validate_file_data("Project", out)
+
+    out |>
         # replace the "ProjectType" codes with the plain-English description
         dplyr::mutate(
             ProjectType = lookup_codes(
@@ -1041,9 +1053,9 @@ read_project_coc <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "PROJECT COC" database table
         col_select = expected_colnames,
@@ -1052,7 +1064,11 @@ read_project_coc <- function(file) {
             .default = readr::col_character(),
             DateUpdated = readr::col_date()
         )
-    ) |>
+    )
+
+    validate_file_data("ProjectCoC", out)
+
+    out |>
         janitor::clean_names(case = "snake") |>
         dplyr::rename(
             # improve default column names
@@ -1087,7 +1103,7 @@ read_organization <- function(file) {
         "OrganizationName"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -1178,7 +1194,7 @@ read_exit <- function(file) {
         "DateUpdated"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     # Ingest file
     exit <- readr::read_csv(
@@ -1298,7 +1314,7 @@ read_export <- function(file) {
         "SoftwareName"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
     readr::read_csv(
         file = file,
@@ -1339,9 +1355,9 @@ read_funder <- function(file) {
         "OtherFunder"
     )
 
-    check_colnames(file, expected_colnames)
+    validate_colnames(file, expected_colnames)
 
-    readr::read_csv(
+    out <- readr::read_csv(
         file = file,
         # only read in columns needed for "FUNDER" database table
         col_select = expected_colnames,
@@ -1349,7 +1365,11 @@ read_funder <- function(file) {
         col_types = readr::cols(
             .default = readr::col_character()
         )
-    ) |>
+    )
+
+    validate_file_data("Funder", out)
+
+    out |>
         # replace the integer codes with the plain-English description
         dplyr::mutate(
             Funder = lookup_codes(
@@ -1391,18 +1411,18 @@ hash <- function(x, key) {
     }
 }
 
-#' Check colnames
+#' Validate colnames
 #'
-#' `check_colnames()` compares a set of expected column names with the actual
+#' `validate_colnames()` compares a set of expected column names with the actual
 #' column names in a .csv file and errors if any of the expected column names
 #' is not found in the file.
 #'
 #' @param file String. Full path to a .csv file.
 #' @param expected_colnames Character. Set of expected column names.
 #'
-#' @return `check_colnames()` does not return any value. It either produces an
+#' @return `validate_colnames()` does not return any value. It either produces an
 #' error or not, so what matters is its side effect.
-check_colnames <- function(file, expected_colnames) {
+validate_colnames <- function(file, expected_colnames) {
     # List columns in the file
     file_colnames <- readLines(file, n = 1) |>
         strsplit(",") |>
@@ -1420,4 +1440,37 @@ check_colnames <- function(file, expected_colnames) {
             )
         )
     }
+}
+
+#' Validate file data
+#'
+#' `validate_file_data()` checks whether the provided data frame is valid and
+#' aborts with an informative error message if validation fails.
+#'
+#' @param data A data frame
+#' @param filename String. Name of the file (used in error messages).
+#'
+#' @return `validate_file_data()` is called for its side effects.
+#' It produces an error if validation fails, otherwise nothing.
+validate_file_data <- function(filename, data) {
+    # Check that the dataset contains at least one row with data
+    if (nrow(drop_na_rows(data)) == 0) {
+        glue::glue("<strong>{ filename }.csv</strong> file is empty") |>
+            rlang::abort()
+    }
+}
+
+#' Drop rows where all values are NA
+#'
+#' `drop_na_rows()` removes rows from a data frame where all
+#' columns contain NA values.
+#'
+#' @param data A data frame
+#'
+#' @return A data frame with all-NA rows removed
+#'
+#' @noRd
+drop_na_rows <- function(data) {
+    data |>
+        dplyr::filter_out(dplyr::if_all(dplyr::everything(), is.na))
 }

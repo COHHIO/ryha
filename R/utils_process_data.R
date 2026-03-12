@@ -39,7 +39,7 @@ process_data <- function(file) {
     )
 
     # Check that all required HMIS files are present in uploaded .zip file
-    check <- check_file_names(dir = tmp_dir, metadata = HMISmetadata)
+    check <- validate_file_names(dir = tmp_dir, metadata = HMISmetadata)
 
     # Throw error if any needed files are missing
     if (!check$valid) {
@@ -76,6 +76,67 @@ process_data <- function(file) {
     )
 
     return(data)
+}
+
+#' Ensure All HMIS Data was Uploaded
+#'
+#' @details Compare the file names within the uploaded .zip file to the expected
+#' file names (stored in the 'HMISmetadata' data object within this R package)
+#'
+#' @param dir The directory path containing the extracted files from the
+#' uploaded .zip file.
+#' @param metadata Data frame used to identify required files. It expects the
+#' following columns: `FileName` (including file extension) and `Required`
+#' (either `Y` or `N`).
+#'
+#' @return A list with two elements:
+#' \itemize{
+#'   \item \code{valid}: A logical value indicating whether all expected files
+#'   are present in the uploaded directory.
+#'   \item \code{missing_file_names}: A character vector containing the names of
+#'   files that are expected but missing in the uploaded directory.
+#' }
+#'
+#' @export
+validate_file_names <- function(dir, metadata) {
+    # Retrieve the full paths to each individual file extracted from the .zip file
+    paths <- fs::dir_info(dir) |>
+        dplyr::pull(path)
+
+    # Retrieve the related directory
+    dir <- dirname(paths) |> unique()
+
+    # Remove the directory from the path, so that we are just left with the file
+    # names themselves (e.g., "path/to/data.csv" --> "data.csv")
+    file_names <- paths |>
+        stringr::str_replace(
+            pattern = paste0(dir, "/"),
+            replacement = ""
+        )
+
+    # Assume that there were no discrepancies in the uploaded file names
+    valid <- TRUE
+
+    # Compare the character vector of file names from the .zip file to the
+    # file names we expect based on the 'HMISmetadata' data in this R package
+    missing_from_upload <- setdiff(
+        x = metadata$FileName[metadata$Required == "Y"],
+        y = file_names
+    )
+
+    # If at least 1 file was found to be missing from the uploaded .zip file...
+    if (length(missing_from_upload) > 0) {
+        # ... set the "valid" flag to FALSE
+        valid <- FALSE
+    }
+
+    # Return the "valid" flag and accompanying message (if applicable)
+    out <- list(
+        valid = valid,
+        missing_file_names = missing_from_upload
+    )
+
+    return(out)
 }
 
 #' Find the complete filepath of a certain .csv file

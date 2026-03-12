@@ -12,6 +12,7 @@ renv::install("rsconnect@1.3.4")
 
 ## VS Code specific
 renv::install("languageserver@0.3.16")
+renv::install("unigd@0.1.3")
 renv::install("httpgd@2.0.4")
 
 # Set up R Language Server
