@@ -104,6 +104,7 @@ mod_services_server <- function(id, services_data, clients_filtered, heads_of_ho
                 bar_chart(
                     x = "type_provided",
                     y = "n",
+                    serie_name = "# of Participants that were provided",
                     pct_denominator = nrow(heads_of_household_and_adults_filtered())
                 )
         })
