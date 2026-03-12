@@ -573,7 +573,10 @@ create_dm <- function(env,
                 "type_provided",
                 "organization_id"
             )
-        )
+        ) |>
+            dplyr::mutate(
+                type_provided = convert_to_ordered_factor(type_provided, ServiceCodes)
+            )
 
         exit <- read_data_from_table(
             connection = con,
@@ -643,16 +646,16 @@ create_dm <- function(env,
                         # Sort alphabetically inside each group
                         dplyr::arrange(ExitCategory, Description)
                 ),
-                counseling_received = convert_to_ordered_factor(counseling_received, NoYesCodes),
+                counseling_received = convert_to_ordered_factor(counseling_received, NoYesCodes, add_data_not_collected = TRUE),
                 exchange_for_sex = convert_to_ordered_factor(exchange_for_sex, NoYesReasonsForMissingDataCodes),
                 count_of_exchange_for_sex = convert_to_ordered_factor(count_of_exchange_for_sex, CountExchangeForSexCodes),
                 asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(asked_or_forced_to_exchange_for_sex, NoYesReasonsForMissingDataCodes),
                 work_place_violence_threats = convert_to_ordered_factor(work_place_violence_threats, NoYesReasonsForMissingDataCodes),
                 workplace_promise_difference = convert_to_ordered_factor(workplace_promise_difference, NoYesReasonsForMissingDataCodes),
                 coerced_to_continue_work = convert_to_ordered_factor(coerced_to_continue_work, NoYesReasonsForMissingDataCodes),
-                project_completion_status = convert_to_ordered_factor(project_completion_status, ProjectCompletionStatusCodes),
+                project_completion_status = convert_to_ordered_factor(project_completion_status, ProjectCompletionStatusCodes, add_data_not_collected = TRUE),
                 destination_safe_client = convert_to_ordered_factor(destination_safe_client, NoYesReasonsForMissingDataCodes),
-                destination_safe_worker = convert_to_ordered_factor(destination_safe_worker, WorkerResponseCodes)
+                destination_safe_worker = convert_to_ordered_factor(destination_safe_worker, WorkerResponseCodes, add_data_not_collected = TRUE)
             )
 
         # Identify youth who are either heads of household or adults (e.g. at least 18 years old)
@@ -745,26 +748,25 @@ read_data_from_table <- function(connection, table_name, column_names) {
 #'
 #' `convert_to_ordered_factor()` converts a vector to an ordered factor,
 #' ordering by reverse `Description` from the `codes` data frame.
-#' "Data not collected" is automatically prepended to the levels if it
-#' does not already exist in the codes.
 #'
 #' @param x A vector to be converted into an ordered factor.
 #' @param codes A data frame containing a column `Description` that defines
 #' the factor levels.
+#' @param add_data_not_collected Logical. If `TRUE`, "Data not collected" is
+#' prepended to the factor levels.
 #'
-#' @return An ordered factor with levels in reverse order from codes, with
-#' "Data not collected" prepended if not already present.
-convert_to_ordered_factor <- function(x, codes) {
-    if ("Data not collected" %in% codes$Description) {
+#' @return An ordered factor with levels in reverse order from codes.
+convert_to_ordered_factor <- function(x, codes, add_data_not_collected = FALSE) {
+    if (add_data_not_collected == TRUE) {
         factor(
             x,
-            levels = c(rev(codes$Description)),
+            levels = c("Data not collected", rev(codes$Description)),
             ordered = TRUE
         )
     } else {
         factor(
             x,
-            levels = c("Data not collected", rev(codes$Description)),
+            levels = c(rev(codes$Description)),
             ordered = TRUE
         )
     }
