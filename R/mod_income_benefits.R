@@ -57,6 +57,15 @@ mod_income_benefits_ui <- function(id) {
                         )
                     ),
                     echarts4r::echarts4rOutput(outputId = ns("income_bar_chart"), height = "100%")
+                ),
+                custom_card(
+                    bslib::card_header(
+                        with_popover(
+                            text = "Changes in Income (from Any Source) Response (Entry --> Exit)",
+                            content = link_section("4.02 Income and Sources")
+                        )
+                    ),
+                    echarts4r::echarts4rOutput(outputId = ns("income_sankey_chart"), height = "100%")
                 )
             ),
             bslib::nav_panel(
@@ -347,6 +356,20 @@ mod_income_benefits_server <- function(id, income_data, benefits_data, clients_f
                     y = "n"
                 )
         })
+
+        ## Income Sankey ####
+        output$income_sankey_chart <- echarts4r::renderEcharts4r(
+            income_data_filtered() |>
+                prepare_sankey_data(
+                    response_col = "income_from_any_source",
+                    response_vals = c("Yes", "No")
+                ) |>
+                sankey_chart(
+                    entry_status = "Entry",
+                    exit_status = "Exit",
+                    count = "n"
+                )
+        )
 
         ## Benefits ####
         output$benefits_chart <- echarts4r::renderEcharts4r({
