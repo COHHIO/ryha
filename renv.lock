@@ -5,6 +5,10 @@
       {
         "Name": "CRAN",
         "URL": "https://packagemanager.posit.co/cran/latest"
+      },
+      {
+        "Name": "RSPM",
+        "URL": "https://packagemanager.posit.co/cran/latest"
       }
     ]
   },
