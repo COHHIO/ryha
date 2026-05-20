@@ -75,7 +75,8 @@ jobs:
               "DESCRIPTION",
               "app.R",
               ".Renviron",
-              ".Rbuildignore"
+              ".Rbuildignore",
+              "manifest.json"
             ),
             account = "ohiobalanceofstatecoc",
             appId =  "7831250",
