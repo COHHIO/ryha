@@ -4,20 +4,21 @@
 \alias{convert_to_ordered_factor}
 \title{Convert vector to ordered factor}
 \usage{
-convert_to_ordered_factor(x, codes)
+convert_to_ordered_factor(x, codes, add_data_not_collected = FALSE)
 }
 \arguments{
 \item{x}{A vector to be converted into an ordered factor.}
 
 \item{codes}{A data frame containing a column \code{Description} that defines
-the factor levels (excluding "Missing").}
+the factor levels.}
+
+\item{add_data_not_collected}{Logical. If \code{TRUE}, "Data not collected" is
+prepended to the factor levels.}
 }
 \value{
-An ordered factor with levels starting with "Missing" and followed
-by the reversed descriptions.
+An ordered factor with levels in reverse order from codes.
 }
 \description{
 \code{convert_to_ordered_factor()} converts a vector to an ordered factor,
-ensuring that "Missing" appears as the first level, followed by the
-descriptions from a provided \code{codes} data frame in reverse order.
+ordering by reverse \code{Description} from the \code{codes} data frame.
 }

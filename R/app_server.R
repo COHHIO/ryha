@@ -89,8 +89,8 @@ app_server <- function(input, output, session) {
         mod_services_server(
             id = "services_1",
             services_data = dm$services,
-            referral_data = dm$enrollment,
-            clients_filtered = clients_filtered
+            clients_filtered = clients_filtered,
+            heads_of_household_and_adults_filtered = heads_of_household_and_adults_filtered
         )
 
         mod_trafficking_server(

@@ -70,6 +70,21 @@ mod_overview_ui <- function(id) {
         ),
         bslib::layout_columns(
             custom_card(
+                bslib::card_header("Households by Size"),
+                echarts4r::echarts4rOutput(outputId = ns("household_by_size_chart"), height = "100%")
+            ),
+            custom_card(
+                bslib::card_header(
+                    with_popover(
+                        text = "Participants by Relationship to Head of Household",
+                        content = link_section("3.15 Relationship to Head of Household")
+                    )
+                ),
+                echarts4r::echarts4rOutput(outputId = ns("relationship_to_ho_h_chart"), height = "100%")
+            )
+        ),
+        bslib::layout_columns(
+            custom_card(
                 bslib::card_header(
                     with_popover(
                         text = "Head of Household and/or Adults by Former Ward Child Welfare Response",
@@ -87,6 +102,16 @@ mod_overview_ui <- function(id) {
                 ),
                 echarts4r::echarts4rOutput(outputId = ns("juvenile_chart"), height = "100%")
             )
+        ),
+        custom_card(
+            height = "720px",
+            bslib::card_header(
+                with_popover(
+                    text = "Head of Household and/or Adults by Referral Source",
+                    content = link_section("R1 Referral Source")
+                )
+            ),
+            echarts4r::echarts4rOutput(outputId = ns("referral_source_chart"), height = "100%")
         )
     )
 }
@@ -106,7 +131,11 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
 
         ## Enrollment ####
         enrollment_data_filtered <- shiny::reactive({
-            filter_data(enrollment_data, clients_filtered()) |>
+            filter_data(enrollment_data, clients_filtered())
+        })
+
+        enrollment_hoh_adults_data_filtered <- shiny::reactive({
+            enrollment_data_filtered() |>
                 dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id"))
         })
 
@@ -118,13 +147,13 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
 
         mod_value_box_server(
             id = "n_heads_of_household_and_adults",
-            rctv_data = enrollment_data_filtered
+            rctv_data = enrollment_hoh_adults_data_filtered
         )
 
         mod_value_box_server(
             id = "n_households",
             rctv_data = shiny::reactive({
-                filter_data(enrollment_data, clients_filtered()) |>
+                enrollment_data_filtered() |>
                     dplyr::distinct(household_id)
             })
         )
@@ -173,9 +202,39 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
                 )
         })
 
+        ## Households by Size ####
+        output$household_by_size_chart <- echarts4r::renderEcharts4r({
+            enrollment_data_filtered() |>
+                dplyr::count(household_id) |>
+                dplyr::mutate(
+                    household_size = dplyr::case_when(
+                        n == 1 ~ "1 Person",
+                        n <= 4 ~ paste(n, "People"),
+                        n >= 5 ~ "5+ People"
+                    ) |>
+                        factor(levels = c("1 Person", paste(c("2", "3", "4", "5+"), "People")), ordered = TRUE)
+                ) |>
+                dplyr::count(household_size, .drop = FALSE) |>
+                bar_chart(
+                    x = "household_size",
+                    y = "n",
+                    serie_name = "# of Households with"
+                )
+        })
+
+        ## Relationship to Head of Household ####
+        output$relationship_to_ho_h_chart <- echarts4r::renderEcharts4r({
+            enrollment_data_filtered() |>
+                dplyr::count(relationship_to_ho_h, .drop = FALSE) |>
+                bar_chart(
+                    x = "relationship_to_ho_h",
+                    y = "n"
+                )
+        })
+
         ## Welfare ####
         output$welfare_chart <- echarts4r::renderEcharts4r(
-            enrollment_data_filtered() |>
+            enrollment_hoh_adults_data_filtered() |>
                 dplyr::count(former_ward_child_welfare, .drop = FALSE) |>
                 bar_chart(
                     x = "former_ward_child_welfare",
@@ -185,10 +244,20 @@ mod_overview_server <- function(id, client_data, enrollment_data, ethnicity_data
 
         ## Juvenile ####
         output$juvenile_chart <- echarts4r::renderEcharts4r(
-            enrollment_data_filtered() |>
+            enrollment_hoh_adults_data_filtered() |>
                 dplyr::count(former_ward_juvenile_justice, .drop = FALSE) |>
                 bar_chart(
                     x = "former_ward_juvenile_justice",
+                    y = "n"
+                )
+        )
+
+        ## Referral Source ####
+        output$referral_source_chart <- echarts4r::renderEcharts4r(
+            enrollment_hoh_adults_data_filtered() |>
+                dplyr::count(referral_source, .drop = FALSE) |>
+                bar_chart(
+                    x = "referral_source",
                     y = "n"
                 )
         )
