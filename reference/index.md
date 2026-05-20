@@ -97,7 +97,7 @@
 
 ## Data Processing Functions
 
-- [`check_file_names()`](https://cohhio.github.io/ryha/reference/check_file_names.md)
+- [`validate_file_names()`](https://cohhio.github.io/ryha/reference/validate_file_names.md)
   : Ensure All HMIS Data was Uploaded
 - [`find_file()`](https://cohhio.github.io/ryha/reference/find_file.md)
   : Find the complete filepath of a certain .csv file
@@ -116,8 +116,10 @@
 
 ## Ingest Functions
 
-- [`check_colnames()`](https://cohhio.github.io/ryha/reference/check_colnames.md)
-  : Check colnames
+- [`validate_colnames()`](https://cohhio.github.io/ryha/reference/validate_colnames.md)
+  : Validate colnames
+- [`validate_file_data()`](https://cohhio.github.io/ryha/reference/validate_file_data.md)
+  : Validate file data
 - [`read_benefits()`](https://cohhio.github.io/ryha/reference/read_benefits.md)
   : Ingest "IncomeBenefits.csv" file and perform ETL prep for "BENEFITS"
   database table

@@ -18,8 +18,9 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
   is a script run as a `postCreateCommand` in `devcontainer.json` to
   leverage [renv](https://rstudio.github.io/renv/)’s cache. It performs
   the following tasks:
-  - runs `renv::restore()` to restore the project’s dependencies from
-    the
+  - runs
+    [`renv::restore()`](https://rstudio.github.io/renv/reference/restore.html)
+    to restore the project’s dependencies from the
     [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock)
     file
   - installs development-only packages (i.e. packages not needed to run
@@ -75,7 +76,8 @@ Container** from the Command Palette (`F1`) to perform this action.
 
 The Dev Container initialization may take a few minutes, as it needs to
 create different Docker images and install the corresponding R packages
-via `renv::restore()`.
+via
+[`renv::restore()`](https://rstudio.github.io/renv/reference/restore.html).
 
 The following messages in `TERMINAL` tab indicate that the process
 completed successfully:
@@ -232,6 +234,7 @@ Container (when the `network_mode` property is set for `app` service).
 You can connect to the development database using the following code:
 
 ``` r
+
 # Connect to dev database
 con <- DBI::dbConnect(
     drv = RPostgres::Postgres(),

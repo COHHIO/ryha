@@ -13,6 +13,7 @@ app is actually an *R package*.
 You can install **ryha** with:
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("COHHIO/ryha")
 ```
@@ -75,5 +76,6 @@ After installing the package, you can launch the app using the package’s
 function.
 
 ``` r
+
 ryha::run_app()
 ```

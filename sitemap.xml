@@ -40,8 +40,6 @@
 <url><loc>https://cohhio.github.io/ryha/reference/WorkerResponseCodes.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/add_stacked_bar_tooltip.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/bar_chart.html</loc></url>
-<url><loc>https://cohhio.github.io/ryha/reference/check_colnames.html</loc></url>
-<url><loc>https://cohhio.github.io/ryha/reference/check_file_names.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/connect_to_db.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/convert_to_ordered_factor.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/create_dm.html</loc></url>
@@ -83,7 +81,10 @@
 <url><loc>https://cohhio.github.io/ryha/reference/sankey_chart.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/send_to_db.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/spinner_message.html</loc></url>
+<url><loc>https://cohhio.github.io/ryha/reference/validate_colnames.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/validate_data.html</loc></url>
+<url><loc>https://cohhio.github.io/ryha/reference/validate_file_data.html</loc></url>
+<url><loc>https://cohhio.github.io/ryha/reference/validate_file_names.html</loc></url>
 <url><loc>https://cohhio.github.io/ryha/reference/with_popover.html</loc></url>
 </urlset>
 

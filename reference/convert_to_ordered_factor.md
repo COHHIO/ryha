@@ -1,13 +1,12 @@
 # Convert vector to ordered factor
 
 `convert_to_ordered_factor()` converts a vector to an ordered factor,
-ensuring that "Missing" appears as the first level, followed by the
-descriptions from a provided `codes` data frame in reverse order.
+ordering by reverse `Description` from the `codes` data frame.
 
 ## Usage
 
 ``` r
-convert_to_ordered_factor(x, codes)
+convert_to_ordered_factor(x, codes, add_data_not_collected = FALSE)
 ```
 
 ## Arguments
@@ -19,9 +18,13 @@ convert_to_ordered_factor(x, codes)
 - codes:
 
   A data frame containing a column `Description` that defines the factor
-  levels (excluding "Missing").
+  levels.
+
+- add_data_not_collected:
+
+  Logical. If `TRUE`, "Data not collected" is prepended to the factor
+  levels.
 
 ## Value
 
-An ordered factor with levels starting with "Missing" and followed by
-the reversed descriptions.
+An ordered factor with levels in reverse order from codes.
