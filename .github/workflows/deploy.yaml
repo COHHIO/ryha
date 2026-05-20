@@ -19,6 +19,11 @@ jobs:
         with:
           r-version: '4.4.3'
 
+      - name: Restore renv packages
+        run: |
+          renv::restore()
+        shell: Rscript {0}
+
       - name: Install renv
         run: |
           install.packages('remotes', repos = 'https://cloud.r-project.org')
@@ -66,8 +71,7 @@ jobs:
               "DESCRIPTION",
               "app.R",
               ".Renviron",
-              ".Rbuildignore",
-              "manifest.json"
+              ".Rbuildignore"
             ),
             account = "ohiobalanceofstatecoc",
             appId =  "7831250",
