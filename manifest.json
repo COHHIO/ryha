@@ -97,8 +97,8 @@
       "description": {
         "Package": "RPostgres",
         "Title": "C++ Interface to PostgreSQL",
-        "Version": "1.4.8",
-        "Date": "2025-02-24",
+        "Version": "1.4.10",
+        "Date": "2026-02-11",
         "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", role = \"aut\"),\n    person(\"Jeroen\", \"Ooms\", role = \"aut\"),\n    person(\"Kirill\", \"Müller\", , \"kirill@cynkra.com\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-1416-3412\")),\n    person(\"RStudio\", role = \"cph\"),\n    person(\"R Consortium\", role = \"fnd\"),\n    person(\"Tomoaki\", \"Nishiyama\", role = \"ctb\",\n           comment = \"Code for encoding vectors into strings derived from RPostgreSQL\")\n  )",
         "Description": "Fully DBI-compliant C++-backed interface to PostgreSQL\n    <https://www.postgresql.org/>, an open-source relational database.",
         "License": "MIT + file LICENSE",
@@ -107,7 +107,7 @@
         "Depends": "R (>= 3.1.0)",
         "Imports": "bit64, blob (>= 1.2.0), DBI (>= 1.2.0), hms (>= 1.0.0),\nlubridate, methods, withr",
         "Suggests": "callr, covr, DBItest (>= 1.7.3), knitr, rlang, rmarkdown,\ntestthat (>= 3.0.0)",
-        "LinkingTo": "cpp11, plogr (>= 0.2.0)",
+        "LinkingTo": "cpp11",
         "Config/Needs/website": "r-dbi/dbitemplate",
         "VignetteBuilder": "knitr",
         "Config/Needs/build": "decor",
@@ -116,16 +116,23 @@
         "Config/testthat/edition": "3",
         "Encoding": "UTF-8",
         "LazyLoad": "true",
-        "RoxygenNote": "7.3.2.9000",
+        "RoxygenNote": "7.3.3.9000",
         "SystemRequirements": "libpq >= 9.0: libpq-dev (deb) or postgresql-devel\n(rpm)",
         "Collate": "'PqDriver.R' 'PqConnection.R' 'PqResult.R' 'RPostgres-pkg.R'\n'Redshift.R' 'cpp11.R' 'dbAppendTable_PqConnection.R'\n'dbBegin_PqConnection.R' 'dbBind_PqResult.R'\n'dbClearResult_PqResult.R' 'dbColumnInfo_PqResult.R'\n'dbCommit_PqConnection.R' 'dbConnect_PqDriver.R'\n'dbConnect_RedshiftDriver.R' 'dbDataType_PqConnection.R'\n'dbDataType_PqDriver.R' 'dbDisconnect_PqConnection.R'\n'dbExistsTable_PqConnection_Id.R'\n'dbExistsTable_PqConnection_character.R' 'dbFetch_PqResult.R'\n'dbGetInfo_PqConnection.R' 'dbGetInfo_PqDriver.R'\n'dbGetRowCount_PqResult.R' 'dbGetRowsAffected_PqResult.R'\n'dbGetStatement_PqResult.R' 'dbHasCompleted_PqResult.R'\n'dbIsValid_PqConnection.R' 'dbIsValid_PqDriver.R'\n'dbIsValid_PqResult.R' 'dbListFields_PqConnection_Id.R'\n'dbListFields_PqConnection_character.R'\n'dbListObjects_PqConnection_ANY.R'\n'dbListTables_PqConnection.R'\n'dbQuoteIdentifier_PqConnection_Id.R'\n'dbQuoteIdentifier_PqConnection_SQL.R'\n'dbQuoteIdentifier_PqConnection_character.R'\n'dbQuoteLiteral_PqConnection.R'\n'dbQuoteString_PqConnection_SQL.R'\n'dbQuoteString_PqConnection_character.R'\n'dbReadTable_PqConnection_character.R'\n'dbRemoveTable_PqConnection_character.R'\n'dbRollback_PqConnection.R' 'dbSendQuery_PqConnection.R'\n'dbUnloadDriver_PqDriver.R'\n'dbUnquoteIdentifier_PqConnection_SQL.R'\n'dbWriteTable_PqConnection_character_data.frame.R' 'default.R'\n'export.R' 'quote.R' 'show_PqConnection.R'\n'sqlData_PqConnection.R' 'tables.R' 'transactions.R' 'utils.R'",
         "NeedsCompilation": "yes",
-        "Packaged": "2025-02-25 05:33:04 UTC; kirill",
-        "Author": "Hadley Wickham [aut],\n  Jeroen Ooms [aut],\n  Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),\n  RStudio [cph],\n  R Consortium [fnd],\n  Tomoaki Nishiyama [ctb] (Code for encoding vectors into strings derived\n    from RPostgreSQL)",
+        "Packaged": "2026-02-15 18:54:00 UTC; kirill",
+        "Author": "Hadley Wickham [aut],\n  Jeroen Ooms [aut],\n  Kirill Müller [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-1416-3412>),\n  RStudio [cph],\n  R Consortium [fnd],\n  Tomoaki Nishiyama [ctb] (Code for encoding vectors into strings derived\n    from RPostgreSQL)",
         "Maintainer": "Kirill Müller <kirill@cynkra.com>",
         "Repository": "RSPM",
-        "Date/Publication": "2025-02-25 07:30:02 UTC",
-        "Built": "R 4.4.0; x86_64-pc-linux-gnu; 2025-03-04 04:41:50 UTC; unix"
+        "Date/Publication": "2026-02-16 10:30:09 UTC",
+        "Built": "R 4.4.0; x86_64-pc-linux-gnu; 2026-05-07 05:21:23 UTC; unix",
+        "RemoteType": "standard",
+        "RemoteRef": "RPostgres",
+        "RemotePkgRef": "RPostgres",
+        "RemoteRepos": "https://packagemanager.posit.co/cran/__linux__/noble/latest",
+        "RemoteReposName": "CRAN",
+        "RemotePkgPlatform": "source",
+        "RemoteSha": "1.4.10"
       }
     },
     "Rcpp": {
@@ -1815,32 +1822,6 @@
         "RemoteSha": "1.5.0"
       }
     },
-    "plogr": {
-      "Source": "CRAN",
-      "Repository": "https://packagemanager.posit.co/cran/latest",
-      "description": {
-        "Package": "plogr",
-        "Title": "The 'plog' C++ Logging Library",
-        "Version": "0.2.0",
-        "Date": "2018-03-24",
-        "Authors@R": "c(\n  person(\"Kirill\", \"Müller\", role = c(\"aut\", \"cre\"), email = \"krlmlr+r@mailbox.org\"),\n  person(\"Sergey\", \"Podobry\", role = \"cph\", comment = \"Author of the bundled plog library\"))",
-        "Description": "\n  A simple header-only logging library for C++.\n  Add 'LinkingTo: plogr' to 'DESCRIPTION', and '#include <plogr.h>' in your C++ modules to use it.",
-        "Suggests": "Rcpp",
-        "License": "MIT + file LICENSE",
-        "Encoding": "UTF-8",
-        "LazyData": "true",
-        "URL": "https://github.com/krlmlr/plogr#readme",
-        "BugReports": "https://github.com/krlmlr/plogr/issues",
-        "RoxygenNote": "6.0.1.9000",
-        "NeedsCompilation": "no",
-        "Packaged": "2018-03-24 11:02:06 UTC; muelleki",
-        "Author": "Kirill Müller [aut, cre],\n  Sergey Podobry [cph] (Author of the bundled plog library)",
-        "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
-        "Repository": "RSPM",
-        "Date/Publication": "2018-03-25 15:25:27 UTC",
-        "Built": "R 4.4.0; ; 2024-04-25 19:43:19 UTC; unix"
-      }
-    },
     "prettyunits": {
       "Source": "CRAN",
       "Repository": "https://packagemanager.posit.co/cran/latest",
@@ -3053,7 +3034,7 @@
       "checksum": "b750af0b88f02cc0cc6680238dd1eb99"
     },
     ".github/workflows/deploy.yaml": {
-      "checksum": "1affe3cb6d3b3113905869b0c17db7a0"
+      "checksum": "720ee74b22fa94007a9cdc9242fd15a5"
     },
     ".github/workflows/pkgdown.yaml": {
       "checksum": "126c9ebef76ffb54156d760faa99a500"
@@ -3065,7 +3046,7 @@
       "checksum": "cf27ef8a69cbc12f1333667b708ac8d0"
     },
     ".Rprofile": {
-      "checksum": "08670bdddbffd3374347ecce2bb0c803"
+      "checksum": "ef88db53841a5817966db5abfb19f032"
     },
     "app.R": {
       "checksum": "949aa7e0b42258ad21179fed8447d97d"
@@ -3674,7 +3655,7 @@
       "checksum": "52b398c2fdece583bf0a8e1bf8d6026e"
     },
     "renv.lock": {
-      "checksum": "3fbf0c274dc079cfe25a71079a44e354"
+      "checksum": "85ffad6218fc72c498825645dbb10ef9"
     },
     "tests/testthat.R": {
       "checksum": "385b868a61cff0a25dabe5944b4d6296"
