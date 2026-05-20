@@ -59,6 +59,10 @@ jobs:
 
       - name: Deploy to shinyapps.io
         run: |
+          options(repos = c(
+            CRAN = "https://packagemanager.posit.co/cran/latest",
+            RSPM = "https://packagemanager.posit.co/cran/latest"
+          ))
           rsconnect::deployApp(
             appName = "cohhio-youth-data-dashboard",
             appTitle = "COHHIO Youth Data Dashboard",
