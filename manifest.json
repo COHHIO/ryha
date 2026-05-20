@@ -1817,7 +1817,7 @@
     },
     "plogr": {
       "Source": "CRAN",
-      "Repository": null,
+      "Repository": "https://packagemanager.posit.co/cran/latest",
       "description": {
         "Package": "plogr",
         "Title": "The 'plog' C++ Logging Library",

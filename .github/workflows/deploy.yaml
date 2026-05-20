@@ -25,11 +25,6 @@ jobs:
           remotes::install_version(package = 'renv', version = Sys.getenv('RENV_VERSION'))
         shell: Rscript {0}
 
-      - name: Restore renv packages
-        run: |
-          renv::restore()
-        shell: Rscript {0}
-
       - name: Install rsconnect
         run: |
           renv::install("rsconnect@1.3.4")
@@ -59,10 +54,6 @@ jobs:
 
       - name: Deploy to shinyapps.io
         run: |
-          options(repos = c(
-            CRAN = "https://packagemanager.posit.co/cran/latest",
-            RSPM = "https://packagemanager.posit.co/cran/latest"
-          ))
           rsconnect::deployApp(
             appName = "cohhio-youth-data-dashboard",
             appTitle = "COHHIO Youth Data Dashboard",
