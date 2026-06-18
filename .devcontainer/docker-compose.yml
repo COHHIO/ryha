@@ -1,12 +1,10 @@
 services:
   app:
-    build: 
+    build:
       context: ..
       dockerfile: .devcontainer/Dockerfile.Dev
     volumes:
       - ..:/workspaces/ryha:cached
-      - ${RENV_PATHS_CACHE_HOST}:/renv/cache
-    env_file: .env
     command: sleep infinity
     # Allows to use host = "localhost" while connecting to the dev database
     # from inside the Dev Container.

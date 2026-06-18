@@ -6,17 +6,16 @@ title: "Development Environment"
 
 [.devcontainer](https://github.com/COHHIO/ryha/tree/master/.devcontainer) directory contains the necessary files to set up a [development container](https://code.visualstudio.com/docs/devcontainers/containers):
 
-- [.env.example](https://github.com/COHHIO/ryha/tree/master/.devcontainer/.env.example) is an *example* file that shows how to set the `RENV_PATHS_CACHE_HOST` environment variable (required to configure `{renv}`'s cache) based upon Windows OS. **You need to create a file named** `.env` **in the same directory as** `.env.example` **and set** `RENV_PATHS_CACHE_HOST` **value to a path in your local machine based upon** [{renv}'s Cache location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
-- [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R) is a script run as a `postCreateCommand` in `devcontainer.json` to leverage `{renv}`'s cache. It performs the following tasks:
-  - runs `renv::restore()` to restore the project's dependencies from the [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock) file
-  - installs development-only packages (i.e. packages not needed to run the application but useful during development, such as `devtools`). **You can add or remove development-only packages from this script based on your preferences**. It's recommended to specify exact package versions to prevent unintended updates to other packages.
+- [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R) is a script run as a `postCreateCommand`. It performs the following tasks:
+  - enables `pak` as the `renv` backend (for automatic system dependency resolution) and runs `renv::restore()` to restore the project's app packages from the [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock) file
+  - installs development-only packages (i.e. packages not needed to run the application but useful during development, such as `devtools`) using `pak::pak(..., upgrade = FALSE)`, which prevents inadvertently upgrading already-installed app packages. **You can add or remove development-only packages from this script based on your preferences**.
   - configures [R Language Server](https://github.com/REditorSupport/languageserver) by updating the `R_LIBS_USER` environment variable, ensuring it points to the correct library path
 - [devcontainer.json](https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects.
 - [docker-compose.yml](https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml) sets up a development environment with three services:
   - `app`: a custom-built application container that mounts local directories and [runs indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
   - `db`: a PostgreSQL database container with [persistent storage](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/) and [exposed ports for access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port). Check [db](#db) section for instructions on how to connect to, populate and launch the application connected to the database.
   - `pgadmin`: a [pgAdmin](https://www.pgadmin.org/) container for database management. Check [pgadmin](#pgadmin) section for instructions on how to configure the server.
-- [Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev) contains a set of instructions on how to build the Docker image to run the application in development. **Any new system requirement needed for additional R packages installed must be added to this file**.
+- [Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev) contains a set of instructions on how to build the Docker image to run the application in development.
 
 ## Requirements
 
@@ -26,7 +25,7 @@ title: "Development Environment"
 
 ## QuickStart
 
-Once you have installed the necessary requirements, cloned the repository locally and created the `.devcontainer/.env` file, open the repository in VSCode and click **Reopen in Container...**:
+Once you have installed the necessary requirements and cloned the repository locally, open the repository in VSCode and click **Reopen in Container...**:
 
 ![](quickstart/reopen-in-container.png)
 
@@ -110,13 +109,8 @@ The container uses [Docker Compose](https://docs.docker.com/compose/) to initial
 **app** creates a container based on [.devcontainer/Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev). This file:
 
 - installs the R version used in this project
-- installs R packages' system requirements
+- installs [`{pak}`](https://pak.r-lib.org/) R package installer
 - installs the `{renv}` version used in this project
-
-In addition, **app** service defines a [Volume](https://docs.docker.com/storage/volumes/) to leverage the use of `{renv}` cache. The `RENV_PATHS_CACHE_HOST` environmental variable needs to be set in `.devcontainer/.env`. Resources:
-
-- [{renv}'s Cache location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location). This article helps to find where `{renv}`'s cache is located in your machine.
-- [This GitHub Issue comment](https://github.com/docker/for-win/issues/2151#issuecomment-662343075) shows examples on how to state the path when working with a Windows machine.
 
 By setting the `network_mode` property to `service:db`, we can use `host = "localhost"` when connecting to the development database from inside the Dev Container. This configuration ensures that the connection string remains the same regardless of whether we are connecting from inside or outside the Dev Container (when the `ports` property is set for `db` service). Without `network_mode` setting, we would need to use `host = "db"`, resulting in different connection strings depending on the context, which is something we want to avoid.
 
