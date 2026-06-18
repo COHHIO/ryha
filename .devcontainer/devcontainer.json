@@ -15,6 +15,7 @@
 		"vscode": {
 			"extensions": [
 				"Anthropic.claude-code",
+				"Posit.air-vscode",
 				"reditorsupport.r",
 				"RDebugger.r-debugger"
 			],
@@ -26,13 +27,13 @@
 				"r.plot.useHttpgd": true,
 				"r.session.viewers.viewColumn": {"browser": "Disable"},
 				"[r][rmd]": {
+    			    "editor.defaultFormatter": "Posit.air-vscode",
 					"editor.formatOnSave": true,
 					"editor.formatOnPaste": true,
-					"editor.formatOnType": true,
+					"editor.formatOnType": false,
 					"editor.formatOnSaveMode": "file",
 					"editor.detectIndentation": false,
 					"editor.insertSpaces": true,
-					"editor.tabSize": 4,
 					"editor.folding": false,
 					"editor.wordWrap": "on",
 					"editor.rulers": [{"column": 80}, {"column": 120}]
