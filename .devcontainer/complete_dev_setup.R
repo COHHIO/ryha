@@ -1,26 +1,38 @@
+# Use pak as renv backend to automatically handle system dependencies.
+# Set repos to CRAN so pak uses the same source as renv.lock (pak defaults to
+# RSPM, which diverges from the CRAN-sourced versions recorded in renv.lock).
+options(renv.config.pak.enabled = TRUE)
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 # Restore packages in renv.lock file
 renv::restore()
 
-# Install packages for development
-## General use
-renv::install("devtools@2.4.5")
-renv::install("tinytex@0.56")
-renv::install("attachment@0.4.5")
+# Install dev packages without upgrading already-installed app packages
+pak::pak(
+    c(
+        ## General Use
+        "devtools",
+        "tinytex",
+        "attachment",
 
-## Deployment
-renv::install("rsconnect@1.3.4")
+        ## Deployment
+        "rsconnect",
 
-## VS Code specific
-renv::install("languageserver@0.3.16")
-renv::install("unigd@0.1.3")
-renv::install("httpgd@2.0.4")
+        ## VS Code Specific
+        "languageserver",
+        "unigd",
+        "httpgd"
+    ),
+    upgrade = FALSE
+)
 
 # Set up R Language Server
 ## Edit R_LIBS_USER environmental variable
 system(sprintf("sed -i 's|R_LIBS_USER=.*|R_LIBS_USER=%s|' /usr/local/lib/R/etc/Renviron", renv::paths$library()))
 
 ## Message for the user
-message("
+message(
+    "
 ================================================================================
 ✅ R_LIBS_USER has been updated.
 
@@ -34,4 +46,5 @@ message("
 
    - Run: **Developer: Reload Window**
 ================================================================================
-")
+"
+)
