@@ -1,8 +1,13 @@
 # Use pak as renv backend to automatically handle system dependencies.
 # Set repos to CRAN so pak uses the same source as renv.lock (pak defaults to
 # RSPM, which diverges from the CRAN-sourced versions recorded in renv.lock).
-options(renv.config.pak.enabled = TRUE)
-options(repos = c(CRAN = "https://cloud.r-project.org"))
+options(
+    renv.config.pak.enabled = TRUE,
+    repos = c(
+        CRAN = "https://packagemanager.posit.co/cran/latest",
+        RSPM = "https://packagemanager.posit.co/cran/latest"
+    )
+)
 
 # Restore packages in renv.lock file
 renv::restore()
@@ -26,17 +31,13 @@ pak::pak(
     upgrade = FALSE
 )
 
-# Set up R Language Server
-## Edit R_LIBS_USER environmental variable
-system(sprintf("sed -i 's|R_LIBS_USER=.*|R_LIBS_USER=%s|' /usr/local/lib/R/etc/Renviron", renv::paths$library()))
-
 ## Message for the user
 message(
     "
-================================================================================
-✅ R_LIBS_USER has been updated.
+========================================================================
+   ✅ Dev setup completed.
 
-⚠️  Action Required:
+   ⚠️ Action Required:
 
    Reload VS Code to complete R Language Server setup.
 
@@ -45,6 +46,6 @@ message(
    - Open the Command Palette (Ctrl + Shift + P or Cmd + Shift + P)
 
    - Run: **Developer: Reload Window**
-================================================================================
+=======================================================================
 "
 )

@@ -36,3 +36,11 @@ local({
         options(editor = paste(shQuote(code_bin), "--wait"))
     }
 })
+
+options(
+    renv.config.pak.enabled = TRUE,
+    repos = c(
+        CRAN = "https://packagemanager.posit.co/cran/latest",
+        RSPM = "https://packagemanager.posit.co/cran/latest"
+    )
+)
