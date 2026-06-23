@@ -6,11 +6,13 @@ title: "Development Environment"
 
 [.devcontainer](https://github.com/COHHIO/ryha/tree/master/.devcontainer) directory contains the necessary files to set up a [development container](https://code.visualstudio.com/docs/devcontainers/containers):
 
-- [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R) is a script run as a `postCreateCommand`. It performs the following tasks:
-  - enables `pak` as the `renv` backend (for automatic system dependency resolution) and runs `renv::restore()` to restore the project's app packages from the [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock) file
+- [install_arf.sh](https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_arf.sh) is a shell script run as the first step of `postCreateCommand`. It installs [`arf`](https://github.com/eitsupi/arf), a Rust-based R terminal that replaces the default integrated terminal inside the Dev Container.
+- [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R) is an R script run as the second step of `postCreateCommand`. It performs the following tasks:
+  - runs `renv::restore()` to restore the project's app packages from the [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock) file, using `pak` as the `renv` backend (for automatic system dependency resolution)
   - installs development-only packages (i.e. packages not needed to run the application but useful during development, such as `devtools`) using `pak::pak(..., upgrade = FALSE)`, which prevents inadvertently upgrading already-installed app packages. **You can add or remove development-only packages from this script based on your preferences**.
-  - configures [R Language Server](https://github.com/REditorSupport/languageserver) by updating the `R_LIBS_USER` environment variable, ensuring it points to the correct library path
-- [devcontainer.json](https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects.
+- [devcontainer.json](https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json) describes how VS Code should start the container and what to do after it connects. It also:
+  - sets `arf` as the default integrated terminal profile and as the R terminal used by the REditorSupport extension
+  - installs the [Air](https://github.com/posit-dev/air) R code formatter extension and configures format-on-save for R and Rmd files
 - [docker-compose.yml](https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml) sets up a development environment with three services:
   - `app`: a custom-built application container that mounts local directories and [runs indefinitely](https://kodekloud.com/blog/keep-docker-container-running/).
   - `db`: a PostgreSQL database container with [persistent storage](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/) and [exposed ports for access](https://stackoverflow.com/questions/52567272/docker-compose-postgres-expose-port). Check [db](#db) section for instructions on how to connect to, populate and launch the application connected to the database.
@@ -31,7 +33,7 @@ Once you have installed the necessary requirements and cloned the repository loc
 
 *NOTE*: Alternatively, you can select **Dev Containers: Reopen in Container** from the Command Palette (`F1`) to perform this action.
 
-The Dev Container initialization may take a few minutes, as it needs to create different Docker images and install the corresponding R packages via `renv::restore()`.
+The Dev Container initialization may take a few minutes, as it needs to create different Docker images, install `arf`, and install the corresponding R packages via `renv::restore()`.
 
 The following messages in `TERMINAL` tab indicate that the process completed successfully:
 
@@ -45,11 +47,7 @@ Follow the instructions to configure R Language Server:
 
 *NOTE*: If you encounter any errors, you can review the logs to troubleshoot or contact a team member for assistance.
 
-To launch an R Terminal, select **R: Create R terminal** from the Command Palette (`F1`). Alternatively, you can click the ``r intToUtf8(0x2304)`` icon in VS Code Panel and select **R Terminal**:
-
-![](quickstart/open-r.png)
-
-Remember to select the R Terminal in the right sidebar to open it.
+To launch an R Terminal, open a new integrated terminal in VS Code (e.g., press `` Ctrl+` `` or go to **Terminal > New Terminal**). The default terminal profile is `arf`, which provides a full R REPL. R objects created in `arf` are visible in the REditorSupport extension's Environment pane thanks to the `.Rprofile` configuration included in the repository.
 
 ## Clean Environment
 
@@ -111,6 +109,11 @@ The container uses [Docker Compose](https://docs.docker.com/compose/) to initial
 - installs the R version used in this project
 - installs [`{pak}`](https://pak.r-lib.org/) R package installer
 - installs the `{renv}` version used in this project
+
+After the container is created, the `postCreateCommand` runs two steps in sequence:
+
+1. [install_arf.sh](https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_arf.sh) — installs `arf`, a Rust-based R terminal, and configures it as the default integrated terminal.
+2. [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R) — restores app packages via `renv::restore()` and installs development-only packages.
 
 By setting the `network_mode` property to `service:db`, we can use `host = "localhost"` when connecting to the development database from inside the Dev Container. This configuration ensures that the connection string remains the same regardless of whether we are connecting from inside or outside the Dev Container (when the `ports` property is set for `db` service). Without `network_mode` setting, we would need to use `host = "db"`, resulting in different connection strings depending on the context, which is something we want to avoid.
 
