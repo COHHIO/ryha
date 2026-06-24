@@ -1,37 +1,42 @@
 {
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"containerEnv": {
-		"RENV_PATHS_CACHE": "/renv/cache",
-		"RENV_PATHS_CACHE_CONTAINER": "/renv/cache"
-	},
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Enable db and pgadmin in local machine
 	"forwardPorts": [5432, 5050],
-	"postCreateCommand": "Rscript .devcontainer/complete_dev_setup.R",
+	"postCreateCommand": "bash .devcontainer/install_arf.sh && Rscript .devcontainer/complete_dev_setup.R",
 	// Configure tool-specific properties
 	"customizations": {
 		// Settings for VS Code
 		"vscode": {
 			"extensions": [
+				"Anthropic.claude-code",
+				"Posit.air-vscode",
 				"reditorsupport.r",
 				"RDebugger.r-debugger"
 			],
 			"settings": {
+				"terminal.integrated.profiles.linux": {
+        		  "arf": {
+        		    "path": "/root/.cargo/bin/arf",
+        		    "icon": "terminal"
+        		  }
+        		},
+        		"terminal.integrated.defaultProfile.linux": "arf",
+	    		"r.rterm.linux": "/root/.cargo/bin/arf",
 				"r.bracketedPaste": true,
-				"r.lsp.args": ["--vanilla"], // To avoid "00LOCK-renv" error
 				"r.lsp.diagnostics": false,
 				"r.lsp.promptToInstall": false,
 				"r.plot.useHttpgd": true,
 				"r.session.viewers.viewColumn": {"browser": "Disable"},
 				"[r][rmd]": {
+    			    "editor.defaultFormatter": "Posit.air-vscode",
 					"editor.formatOnSave": true,
 					"editor.formatOnPaste": true,
-					"editor.formatOnType": true,
+					"editor.formatOnType": false,
 					"editor.formatOnSaveMode": "file",
 					"editor.detectIndentation": false,
 					"editor.insertSpaces": true,
-					"editor.tabSize": 4,
 					"editor.folding": false,
 					"editor.wordWrap": "on",
 					"editor.rulers": [{"column": 80}, {"column": 120}]
