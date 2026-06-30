@@ -595,6 +595,7 @@ create_dm <- function(env, file = list.files("db_data", full.names = TRUE) |> ta
                 "organization_id"
             )
         ) |>
+            dplyr::filter_out(type_provided == "Data not collected") |>
             dplyr::mutate(
                 type_provided = convert_to_ordered_factor(type_provided, ServiceCodes)
             )
