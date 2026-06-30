@@ -73,14 +73,15 @@ connect_to_db <- function(env) {
 #' \dontrun{
 #' dm <- create_dm(env = "prod")
 #' }
-create_dm <- function(env,
-                      file = list.files("db_data", full.names = TRUE) |> tail(n = 1)) {
+create_dm <- function(env, file = list.files("db_data", full.names = TRUE) |> tail(n = 1)) {
     if (!env %in% c("prod", "dev", "file")) {
         rlang::abort("`env` should be one of \"prod\", \"dev\", \"file\"")
     }
 
     if (env == "file") {
-        if (length(file) == 0) stop("Please provide a valid `file`")
+        if (length(file) == 0) {
+            stop("Please provide a valid `file`")
+        }
         readRDS(file)
     } else {
         # Establish connection to PostgreSQL database
@@ -151,7 +152,8 @@ create_dm <- function(env,
                 age = lubridate::time_length(
                     difftime(lubridate::today(), dob),
                     "years"
-                ) |> floor(),
+                ) |>
+                    floor(),
                 age_grouped = dplyr::case_when(
                     age >= 25 ~ "25+",
                     age >= 18 & age <= 24 ~ "18-24",
@@ -410,8 +412,14 @@ create_dm <- function(env,
                 ),
                 relationship_to_ho_h = convert_to_ordered_factor(relationship_to_ho_h, RelationshipToHoHCodes),
                 referral_source = convert_to_ordered_factor(referral_source, ReferralSourceCodes),
-                former_ward_child_welfare = convert_to_ordered_factor(former_ward_child_welfare, NoYesReasonsForMissingDataCodes),
-                former_ward_juvenile_justice = convert_to_ordered_factor(former_ward_juvenile_justice, NoYesReasonsForMissingDataCodes)
+                former_ward_child_welfare = convert_to_ordered_factor(
+                    former_ward_child_welfare,
+                    NoYesReasonsForMissingDataCodes
+                ),
+                former_ward_juvenile_justice = convert_to_ordered_factor(
+                    former_ward_juvenile_justice,
+                    NoYesReasonsForMissingDataCodes
+                )
             )
 
         health <- read_data_from_table(
@@ -467,7 +475,10 @@ create_dm <- function(env,
             )
         ) |>
             dplyr::mutate(
-                domestic_violence_survivor = convert_to_ordered_factor(domestic_violence_survivor, NoYesReasonsForMissingDataCodes),
+                domestic_violence_survivor = convert_to_ordered_factor(
+                    domestic_violence_survivor,
+                    NoYesReasonsForMissingDataCodes
+                ),
                 when_occurred = convert_to_ordered_factor(when_occurred, WhenDVOccurredCodes),
                 currently_fleeing = convert_to_ordered_factor(currently_fleeing, NoYesReasonsForMissingDataCodes)
             )
@@ -501,7 +512,10 @@ create_dm <- function(env,
             )
         ) |>
             dplyr::mutate(
-                income_from_any_source = convert_to_ordered_factor(income_from_any_source, NoYesReasonsForMissingDataCodes),
+                income_from_any_source = convert_to_ordered_factor(
+                    income_from_any_source,
+                    NoYesReasonsForMissingDataCodes
+                ),
                 total_monthly_income_integer = as.integer(round(total_monthly_income, 0)),
                 total_monthly_income_grouped = dplyr::case_when(
                     total_monthly_income_integer == 0L ~ "No Income",
@@ -560,8 +574,14 @@ create_dm <- function(env,
             )
         ) |>
             dplyr::mutate(
-                benefits_from_any_source = convert_to_ordered_factor(benefits_from_any_source, NoYesReasonsForMissingDataCodes),
-                insurance_from_any_source = convert_to_ordered_factor(insurance_from_any_source, NoYesReasonsForMissingDataCodes)
+                benefits_from_any_source = convert_to_ordered_factor(
+                    benefits_from_any_source,
+                    NoYesReasonsForMissingDataCodes
+                ),
+                insurance_from_any_source = convert_to_ordered_factor(
+                    insurance_from_any_source,
+                    NoYesReasonsForMissingDataCodes
+                )
             )
 
         services <- read_data_from_table(
@@ -575,6 +595,7 @@ create_dm <- function(env,
                 "organization_id"
             )
         ) |>
+            dplyr::filter_out(type_provided == "Data not collected") |>
             dplyr::mutate(
                 type_provided = convert_to_ordered_factor(type_provided, ServiceCodes)
             )
@@ -631,7 +652,12 @@ create_dm <- function(env,
                     LivingCodes |>
                         dplyr::mutate(
                             ExitCategory = dplyr::case_when(
-                                ExitCategory %in% c("Client doesn't know", "Client prefers not to answer", "Data not collected") ~ "Other",
+                                ExitCategory %in%
+                                    c(
+                                        "Client doesn't know",
+                                        "Client prefers not to answer",
+                                        "Data not collected"
+                                    ) ~ "Other",
                                 TRUE ~ ExitCategory
                             ) |>
                                 factor(
@@ -647,16 +673,46 @@ create_dm <- function(env,
                         # Sort alphabetically inside each group
                         dplyr::arrange(ExitCategory, Description)
                 ),
-                counseling_received = convert_to_ordered_factor(counseling_received, NoYesCodes, add_data_not_collected = TRUE),
+                counseling_received = convert_to_ordered_factor(
+                    counseling_received,
+                    NoYesCodes,
+                    add_data_not_collected = TRUE
+                ),
                 exchange_for_sex = convert_to_ordered_factor(exchange_for_sex, NoYesReasonsForMissingDataCodes),
-                count_of_exchange_for_sex = convert_to_ordered_factor(count_of_exchange_for_sex, CountExchangeForSexCodes),
-                asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(asked_or_forced_to_exchange_for_sex, NoYesReasonsForMissingDataCodes),
-                work_place_violence_threats = convert_to_ordered_factor(work_place_violence_threats, NoYesReasonsForMissingDataCodes),
-                workplace_promise_difference = convert_to_ordered_factor(workplace_promise_difference, NoYesReasonsForMissingDataCodes),
-                coerced_to_continue_work = convert_to_ordered_factor(coerced_to_continue_work, NoYesReasonsForMissingDataCodes),
-                project_completion_status = convert_to_ordered_factor(project_completion_status, ProjectCompletionStatusCodes, add_data_not_collected = TRUE),
-                destination_safe_client = convert_to_ordered_factor(destination_safe_client, NoYesReasonsForMissingDataCodes),
-                destination_safe_worker = convert_to_ordered_factor(destination_safe_worker, WorkerResponseCodes, add_data_not_collected = TRUE)
+                count_of_exchange_for_sex = convert_to_ordered_factor(
+                    count_of_exchange_for_sex,
+                    CountExchangeForSexCodes
+                ),
+                asked_or_forced_to_exchange_for_sex = convert_to_ordered_factor(
+                    asked_or_forced_to_exchange_for_sex,
+                    NoYesReasonsForMissingDataCodes
+                ),
+                work_place_violence_threats = convert_to_ordered_factor(
+                    work_place_violence_threats,
+                    NoYesReasonsForMissingDataCodes
+                ),
+                workplace_promise_difference = convert_to_ordered_factor(
+                    workplace_promise_difference,
+                    NoYesReasonsForMissingDataCodes
+                ),
+                coerced_to_continue_work = convert_to_ordered_factor(
+                    coerced_to_continue_work,
+                    NoYesReasonsForMissingDataCodes
+                ),
+                project_completion_status = convert_to_ordered_factor(
+                    project_completion_status,
+                    ProjectCompletionStatusCodes,
+                    add_data_not_collected = TRUE
+                ),
+                destination_safe_client = convert_to_ordered_factor(
+                    destination_safe_client,
+                    NoYesReasonsForMissingDataCodes
+                ),
+                destination_safe_worker = convert_to_ordered_factor(
+                    destination_safe_worker,
+                    WorkerResponseCodes,
+                    add_data_not_collected = TRUE
+                )
             )
 
         # Identify youth who are either heads of household or adults (e.g. at least 18 years old)

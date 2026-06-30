@@ -30,8 +30,12 @@ mod_services_ui <- function(id) {
                 with_popover(
                     text = "Head of Household and/or Adults by Service Type Provided",
                     content = shiny::tagList(
-                        shiny::p("Each bar represents the percentage of participants that were provided the corresponding service throughout the enrollment."),
-                        shiny::p("Since participants can be provided multiple services, the total percentage may exceed 100%."),
+                        shiny::p(
+                            "Each bar represents the percentage of participants that were provided the corresponding service throughout the enrollment."
+                        ),
+                        shiny::p(
+                            "Since participants can be provided multiple services, the total percentage may exceed 100%."
+                        ),
                         shiny::p(link_section("R14 RHY Service Connections"))
                     )
                 )
@@ -60,7 +64,10 @@ mod_services_server <- function(id, services_data, clients_filtered, heads_of_ho
         # Filter Data ####
         services_data_filtered <- shiny::reactive({
             filter_data(services_data, clients_filtered()) |>
-                dplyr::semi_join(heads_of_household_and_adults_filtered(), by = c("enrollment_id", "personal_id", "organization_id")) |>
+                dplyr::semi_join(
+                    heads_of_household_and_adults_filtered(),
+                    by = c("enrollment_id", "personal_id", "organization_id")
+                ) |>
                 # Remove duplicate service records within each enrollment
                 dplyr::distinct(enrollment_id, personal_id, organization_id, type_provided)
         })
@@ -134,7 +141,8 @@ mod_services_server <- function(id, services_data, clients_filtered, heads_of_ho
                 dplyr::count(services_provided_count, .drop = FALSE) |>
                 dplyr::mutate(
                     n = dplyr::case_when(
-                        services_provided_count == "No Services" ~ nrow(heads_of_household_and_adults_without_services()),
+                        services_provided_count ==
+                            "No Services" ~ nrow(heads_of_household_and_adults_without_services()),
                         TRUE ~ n
                     )
                 ) |>
