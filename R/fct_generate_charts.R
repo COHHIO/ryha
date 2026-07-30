@@ -8,7 +8,11 @@
 #' @param y A character string specifying the column name in the data frame
 #' representing the y-axis values.
 #' @param pct_denominator Optional numeric value specifying the denominator
-#' for percentage calculation.
+#' for percentage calculation. When supplied, the chart is treated as a
+#' "share-of-denominator" chart: each bar is drawn in front of a faint
+#' background bar that extends to `pct_denominator`, and the value axis is
+#' scaled to that same maximum, so bars visually represent their share of a
+#' common total rather than parts of a whole.
 #' @param axis_flip A logical value indicating whether to flip the x and y axes.
 #' Default is TRUE.
 #' @param tooltip_opts  A named list of additional tooltip options passed to
@@ -25,7 +29,15 @@
 #'     y = "y"
 #' )
 #' }
-bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denominator = NULL, axis_flip = TRUE, tooltip_opts = list(confine = FALSE, extraCssText = "")) {
+bar_chart <- function(
+    data,
+    x,
+    y,
+    serie_name = "# of Participants",
+    pct_denominator = NULL,
+    axis_flip = TRUE,
+    tooltip_opts = list(confine = FALSE, extraCssText = "")
+) {
     # Calculate percentage column
     if (!is.null(pct_denominator)) {
         data <- data |>
@@ -41,11 +53,12 @@ bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denomina
         data <- data |>
             dplyr::mutate(
                 color = dplyr::case_when(
-                    .data[[x]] %in% c(
-                        "Data not collected",
-                        "Client prefers not to answer",
-                        "Client doesn't know"
-                    ) ~ palette$missing,
+                    .data[[x]] %in%
+                        c(
+                            "Data not collected",
+                            "Client prefers not to answer",
+                            "Client doesn't know"
+                        ) ~ palette$missing,
                     TRUE ~ palette$default
                 )
             )
@@ -56,13 +69,16 @@ bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denomina
         echarts4r::e_bar_(
             serie = y,
             name = serie_name,
-            legend = FALSE
+            legend = FALSE,
+            showBackground = !is.null(pct_denominator),
+            backgroundStyle = list(color = "rgba(180, 180, 180, 0.2)")
         ) |>
         echarts4r::e_add_nested("itemStyle", color) |>
         echarts4r::e_add_nested("extra", pct) |>
         echarts4r::e_tooltip(
             trigger = "axis",
-            formatter = htmlwidgets::JS("
+            formatter = htmlwidgets::JS(
+                "
         function(params) {
           let pct = Math.round(params[0].data.extra.pct * 100);
           let pctDisplay = pct === 0 ? '<1' : pct;
@@ -71,11 +87,20 @@ bar_chart <- function(data, x, y, serie_name = "# of Participants", pct_denomina
             '<br/>' + params[0].marker + params[0].value[1] +
                     '<br/>' + '<strong>' + params[0].data.value[0].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + ' (' + pctDisplay + '%)' + '</strong>'
           )
-        }"),
+        }"
+            ),
             confine = tooltip_opts$confine,
             extraCssText = tooltip_opts$extraCssText
         ) |>
         echarts4r::e_grid(containLabel = TRUE)
+
+    # Scale the value axis to the denominator so the background bar's full
+    # length represents 100% of the shared total. The max is rarely a round
+    # number, so its auto-generated tick label is suppressed.
+    if (!is.null(pct_denominator)) {
+        out <- out |>
+            echarts4r::e_y_axis(max = pct_denominator, axisLabel = list(showMaxLabel = FALSE))
+    }
 
     if (axis_flip) {
         out <- out |>
@@ -97,7 +122,8 @@ add_stacked_bar_tooltip <- function(echart) {
     echart |>
         echarts4r::e_tooltip(
             trigger = "axis",
-            formatter = htmlwidgets::JS("
+            formatter = htmlwidgets::JS(
+                "
         function(params) {
           let tooltip = params[0].axisValue + '<br/>';
           tooltip += '<table>';
@@ -111,7 +137,8 @@ add_stacked_bar_tooltip <- function(echart) {
           });
           tooltip += '</table>';
           return tooltip;
-        }"),
+        }"
+            ),
             confine = TRUE,
             extraCssText = "width:auto; white-space:pre-wrap;"
         )
@@ -148,11 +175,7 @@ add_stacked_bar_tooltip <- function(echart) {
 #'     color = "green"
 #' )
 #' }
-sankey_chart <- function(data,
-                         entry_status,
-                         exit_status,
-                         count,
-                         color = palette$default) {
+sankey_chart <- function(data, entry_status, exit_status, count, color = palette$default) {
     data |>
         echarts4r::e_charts() |>
         echarts4r::e_sankey_(
