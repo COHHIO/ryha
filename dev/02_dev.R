@@ -70,9 +70,6 @@ devtools::build_vignettes()
 ## Set the code coverage service ("codecov" or "coveralls")
 usethis::use_coverage()
 
-# Create a summary readme for the testthat subdirectory
-covrpage::covrpage()
-
 ## CI ----
 ## Use this part of the script if you need to set up a CI
 ## service for your application

@@ -1,41 +1,8 @@
 FROM rocker/r-ver:4.4.3
 
-# System library dependency for the app
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    # {RPostgres} package requirements
-    libpq-dev \
-    libssl-dev \
-    # {httpuv} package requirement
-    libz-dev \
-    # {curl} package requirement
-    libcurl4-openssl-dev \
-    # {clipr} package requirement
-    libx11-dev \
-    # {xlm2} package requirement
-    libxml2-dev \
-    # {httpgd} package requirement (VS Code development package)
-    libcairo2-dev \
-    libfontconfig1-dev \
-    # {gert} package requirement
-    libgit2-dev \
-    # {textshaping} package requirement
-    libharfbuzz-dev \
-    libfribidi-dev \
-    # {ragg} package requirement
-    libfreetype6-dev \
-    libpng-dev \
-    libtiff5-dev \
-    libjpeg-dev \
-    libwebp-dev \
-    # {remotes} package requirement
-    git \
-    # Open Shiny app in VS Code Viewer
-    xdg-utils \
-    # Knit README.Rmd to README.md
-    pandoc \
-&& rm -rf /var/lib/apt/lists/*
+# Install pak (handles R package system dependencies automatically)
+RUN R -q -e "install.packages('pak', repos = 'https://r-lib.github.io/p/pak/stable/')"
 
 # Pin renv version
 ENV RENV_VERSION 1.1.4
-RUN R -q -e "options(warn=2); install.packages('remotes')"
-RUN R -q -e "options(warn=2); remotes::install_version(package = 'renv', version = '${RENV_VERSION}')"
+RUN R -q -e "pak::pak('cran::renv@${RENV_VERSION}')"
