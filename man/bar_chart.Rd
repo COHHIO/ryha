@@ -24,7 +24,11 @@ representing the x-axis values.}
 representing the y-axis values.}
 
 \item{pct_denominator}{Optional numeric value specifying the denominator
-for percentage calculation.}
+for percentage calculation. When supplied, the chart is treated as a
+"share-of-denominator" chart: each bar is drawn in front of a faint
+background bar that extends to \code{pct_denominator}, and the value axis is
+scaled to that same maximum, so bars visually represent their share of a
+common total rather than parts of a whole.}
 
 \item{axis_flip}{A logical value indicating whether to flip the x and y axes.
 Default is TRUE.}
