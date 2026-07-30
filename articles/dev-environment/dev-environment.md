@@ -6,35 +6,33 @@
 directory contains the necessary files to set up a [development
 container](https://code.visualstudio.com/docs/devcontainers/containers):
 
-- [.env.example](https://github.com/COHHIO/ryha/tree/master/.devcontainer/.env.example)
-  is an *example* file that shows how to set the `RENV_PATHS_CACHE_HOST`
-  environment variable (required to configure
-  [renv](https://rstudio.github.io/renv/)’s cache) based upon Windows
-  OS. **You need to create a file named** `.env` **in the same directory
-  as** `.env.example` **and set** `RENV_PATHS_CACHE_HOST` **value to a
-  path in your local machine based upon** [{renv}’s Cache
-  location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
+- [install_arf.sh](https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_arf.sh)
+  is a shell script run as the first step of `postCreateCommand`. It
+  installs [`arf`](https://github.com/eitsupi/arf), a Rust-based R
+  terminal that replaces the default integrated terminal inside the Dev
+  Container.
 - [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R)
-  is a script run as a `postCreateCommand` in `devcontainer.json` to
-  leverage [renv](https://rstudio.github.io/renv/)’s cache. It performs
-  the following tasks:
-  - runs
-    [`renv::restore()`](https://rstudio.github.io/renv/reference/restore.html)
-    to restore the project’s dependencies from the
+  is an R script run as the second step of `postCreateCommand`. It
+  performs the following tasks:
+  - runs `renv::restore()` to restore the project’s app packages from
+    the
     [renv.lock](https://github.com/COHHIO/ryha/tree/master/renv.lock)
-    file
+    file, using `pak` as the `renv` backend (for automatic system
+    dependency resolution)
   - installs development-only packages (i.e. packages not needed to run
-    the application but useful during development, such as `devtools`).
-    **You can add or remove development-only packages from this script
-    based on your preferences**. It’s recommended to specify exact
-    package versions to prevent unintended updates to other packages.
-  - configures [R Language
-    Server](https://github.com/REditorSupport/languageserver) by
-    updating the `R_LIBS_USER` environment variable, ensuring it points
-    to the correct library path
+    the application but useful during development, such as `devtools`)
+    using `pak::pak(..., upgrade = FALSE)`, which prevents inadvertently
+    upgrading already-installed app packages. **You can add or remove
+    development-only packages from this script based on your
+    preferences**.
 - [devcontainer.json](https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json)
   describes how VS Code should start the container and what to do after
-  it connects.
+  it connects. It also:
+  - sets `arf` as the default integrated terminal profile and as the R
+    terminal used by the REditorSupport extension
+  - installs the [Air](https://github.com/posit-dev/air) R code
+    formatter extension and configures format-on-save for R and Rmd
+    files
 - [docker-compose.yml](https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml)
   sets up a development environment with three services:
   - `app`: a custom-built application container that mounts local
@@ -51,8 +49,7 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
     instructions on how to configure the server.
 - [Dockerfile.Dev](https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev)
   contains a set of instructions on how to build the Docker image to run
-  the application in development. **Any new system requirement needed
-  for additional R packages installed must be added to this file**.
+  the application in development.
 
 ## Requirements
 
@@ -65,9 +62,9 @@ container](https://code.visualstudio.com/docs/devcontainers/containers):
 
 ## QuickStart
 
-Once you have installed the necessary requirements, cloned the
-repository locally and created the `.devcontainer/.env` file, open the
-repository in VSCode and click **Reopen in Container…**:
+Once you have installed the necessary requirements and cloned the
+repository locally, open the repository in VSCode and click **Reopen in
+Container…**:
 
 ![](quickstart/reopen-in-container.png)
 
@@ -75,9 +72,8 @@ repository in VSCode and click **Reopen in Container…**:
 Container** from the Command Palette (`F1`) to perform this action.
 
 The Dev Container initialization may take a few minutes, as it needs to
-create different Docker images and install the corresponding R packages
-via
-[`renv::restore()`](https://rstudio.github.io/renv/reference/restore.html).
+create different Docker images, install `arf`, and install the
+corresponding R packages via `renv::restore()`.
 
 The following messages in `TERMINAL` tab indicate that the process
 completed successfully:
@@ -95,13 +91,12 @@ container.
 *NOTE*: If you encounter any errors, you can review the logs to
 troubleshoot or contact a team member for assistance.
 
-To launch an R Terminal, select **R: Create R terminal** from the
-Command Palette (`F1`). Alternatively, you can click the `⌄` icon in VS
-Code Panel and select **R Terminal**:
-
-![](quickstart/open-r.png)
-
-Remember to select the R Terminal in the right sidebar to open it.
+To launch an R Terminal, open a new integrated terminal in VS Code
+(e.g., press `` Ctrl+` `` or go to **Terminal \> New Terminal**). The
+default terminal profile is `arf`, which provides a full R REPL. R
+objects created in `arf` are visible in the REditorSupport extension’s
+Environment pane thanks to the `.Rprofile` configuration included in the
+repository.
 
 ## Clean Environment
 
@@ -182,25 +177,19 @@ initialize the following **services**:
 This file:
 
 - installs the R version used in this project
-- installs R packages’ system requirements
+- installs [`{pak}`](https://pak.r-lib.org/) R package installer
 - installs the [renv](https://rstudio.github.io/renv/) version used in
   this project
 
-In addition, **app** service defines a
-[Volume](https://docs.docker.com/storage/volumes/) to leverage the use
-of [renv](https://rstudio.github.io/renv/) cache. The
-`RENV_PATHS_CACHE_HOST` environmental variable needs to be set in
-`.devcontainer/.env`. Resources:
+After the container is created, the `postCreateCommand` runs two steps
+in sequence:
 
-- [{renv}’s Cache
-  location](https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location).
-  This article helps to find where
-  [renv](https://rstudio.github.io/renv/)’s cache is located in your
-  machine.
-- [This GitHub Issue
-  comment](https://github.com/docker/for-win/issues/2151#issuecomment-662343075)
-  shows examples on how to state the path when working with a Windows
-  machine.
+1.  [install_arf.sh](https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_arf.sh)
+    — installs `arf`, a Rust-based R terminal, and configures it as the
+    default integrated terminal.
+2.  [complete_dev_setup.R](https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R)
+    — restores app packages via `renv::restore()` and installs
+    development-only packages.
 
 By setting the `network_mode` property to `service:db`, we can use
 `host = "localhost"` when connecting to the development database from

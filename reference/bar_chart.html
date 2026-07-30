@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ryha</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,11 @@ representing the y-axis values.</p></dd>
 
 <dt id="arg-pct-denominator">pct_denominator<a class="anchor" aria-label="anchor" href="#arg-pct-denominator"></a></dt>
 <dd><p>Optional numeric value specifying the denominator
-for percentage calculation.</p></dd>
+for percentage calculation. When supplied, the chart is treated as a
+"share-of-denominator" chart: each bar is drawn in front of a faint
+background bar that extends to <code>pct_denominator</code>, and the value axis is
+scaled to that same maximum, so bars visually represent their share of a
+common total rather than parts of a whole.</p></dd>
 
 
 <dt id="arg-axis-flip">axis_flip<a class="anchor" aria-label="anchor" href="#arg-axis-flip"></a></dt>
@@ -112,7 +116,7 @@ echarts4r's <code>e_tooltip()</code>. Supports <code>confine</code> and <code>ex
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

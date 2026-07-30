@@ -35,7 +35,11 @@ bar_chart(
 - pct_denominator:
 
   Optional numeric value specifying the denominator for percentage
-  calculation.
+  calculation. When supplied, the chart is treated as a
+  "share-of-denominator" chart: each bar is drawn in front of a faint
+  background bar that extends to `pct_denominator`, and the value axis
+  is scaled to that same maximum, so bars visually represent their share
+  of a common total rather than parts of a whole.
 
 - axis_flip:
 

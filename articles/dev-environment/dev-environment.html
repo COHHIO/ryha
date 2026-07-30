@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">ryha</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,39 +72,41 @@ directory contains the necessary files to set up a <a href="https://code.visuals
 container</a>:</p>
 <ul>
 <li>
-<a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/.env.example" class="external-link">.env.example</a>
-is an <em>example</em> file that shows how to set the
-<code>RENV_PATHS_CACHE_HOST</code> environment variable (required to
-configure <a href="https://rstudio.github.io/renv/" class="external-link">renv</a>’s cache) based upon Windows OS.
-<strong>You need to create a file named</strong> <code>.env</code>
-<strong>in the same directory as</strong> <code>.env.example</code>
-<strong>and set</strong> <code>RENV_PATHS_CACHE_HOST</code>
-<strong>value to a path in your local machine based upon</strong> <a href="https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location" class="external-link">{renv}’s
-Cache location</a>.</li>
+<a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_arf.sh" class="external-link">install_arf.sh</a>
+is a shell script run as the first step of
+<code>postCreateCommand</code>. It installs <a href="https://github.com/eitsupi/arf" class="external-link"><code>arf</code></a>, a Rust-based
+R terminal that replaces the default integrated terminal inside the Dev
+Container.</li>
 <li>
 <a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R" class="external-link">complete_dev_setup.R</a>
-is a script run as a <code>postCreateCommand</code> in
-<code>devcontainer.json</code> to leverage <a href="https://rstudio.github.io/renv/" class="external-link">renv</a>’s cache.
+is an R script run as the second step of <code>postCreateCommand</code>.
 It performs the following tasks:
 <ul>
-<li>runs <code><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">renv::restore()</a></code> to restore the project’s
-dependencies from the <a href="https://github.com/COHHIO/ryha/tree/master/renv.lock" class="external-link">renv.lock</a>
-file</li>
+<li>runs <code>renv::restore()</code> to restore the project’s app
+packages from the <a href="https://github.com/COHHIO/ryha/tree/master/renv.lock" class="external-link">renv.lock</a>
+file, using <code>pak</code> as the <code>renv</code> backend (for
+automatic system dependency resolution)</li>
 <li>installs development-only packages (i.e. packages not needed to run
 the application but useful during development, such as
-<code>devtools</code>). <strong>You can add or remove development-only
-packages from this script based on your preferences</strong>. It’s
-recommended to specify exact package versions to prevent unintended
-updates to other packages.</li>
-<li>configures <a href="https://github.com/REditorSupport/languageserver" class="external-link">R Language
-Server</a> by updating the <code>R_LIBS_USER</code> environment
-variable, ensuring it points to the correct library path</li>
+<code>devtools</code>) using
+<code>pak::pak(..., upgrade = FALSE)</code>, which prevents
+inadvertently upgrading already-installed app packages. <strong>You can
+add or remove development-only packages from this script based on your
+preferences</strong>.</li>
 </ul>
 </li>
 <li>
 <a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/devcontainer.json" class="external-link">devcontainer.json</a>
 describes how VS Code should start the container and what to do after it
-connects.</li>
+connects. It also:
+<ul>
+<li>sets <code>arf</code> as the default integrated terminal profile and
+as the R terminal used by the REditorSupport extension</li>
+<li>installs the <a href="https://github.com/posit-dev/air" class="external-link">Air</a> R
+code formatter extension and configures format-on-save for R and Rmd
+files</li>
+</ul>
+</li>
 <li>
 <a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/docker-compose.yml" class="external-link">docker-compose.yml</a>
 sets up a development environment with three services:
@@ -128,9 +130,7 @@ instructions on how to configure the server.</li>
 <li>
 <a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/Dockerfile.Dev" class="external-link">Dockerfile.Dev</a>
 contains a set of instructions on how to build the Docker image to run
-the application in development. <strong>Any new system requirement
-needed for additional R packages installed must be added to this
-file</strong>.</li>
+the application in development.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -150,17 +150,16 @@ Container Extension</a>
 <div class="section level2">
 <h2 id="quickstart">QuickStart<a class="anchor" aria-label="anchor" href="#quickstart"></a>
 </h2>
-<p>Once you have installed the necessary requirements, cloned the
-repository locally and created the <code>.devcontainer/.env</code> file,
-open the repository in VSCode and click <strong>Reopen in
-Container…</strong>:</p>
+<p>Once you have installed the necessary requirements and cloned the
+repository locally, open the repository in VSCode and click
+<strong>Reopen in Container…</strong>:</p>
 <p><img src="quickstart/reopen-in-container.png"></p>
 <p><em>NOTE</em>: Alternatively, you can select <strong>Dev Containers:
 Reopen in Container</strong> from the Command Palette (<code>F1</code>)
 to perform this action.</p>
 <p>The Dev Container initialization may take a few minutes, as it needs
-to create different Docker images and install the corresponding R
-packages via <code><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">renv::restore()</a></code>.</p>
+to create different Docker images, install <code>arf</code>, and install
+the corresponding R packages via <code>renv::restore()</code>.</p>
 <p>The following messages in <code>TERMINAL</code> tab indicate that the
 process completed successfully:</p>
 <p><img src="quickstart/finish.png"></p>
@@ -171,13 +170,12 @@ to be run after a <strong>Rebuild</strong>. There is no need to run it
 after you <strong>Reopen</strong> a container.</p>
 <p><em>NOTE</em>: If you encounter any errors, you can review the logs
 to troubleshoot or contact a team member for assistance.</p>
-<p>To launch an R Terminal, select <strong>R: Create R terminal</strong>
-from the Command Palette (<code>F1</code>). Alternatively, you can click
-the <code>⌄</code> icon in VS Code Panel and select <strong>R
-Terminal</strong>:</p>
-<p><img src="quickstart/open-r.png"></p>
-<p>Remember to select the R Terminal in the right sidebar to open
-it.</p>
+<p>To launch an R Terminal, open a new integrated terminal in VS Code
+(e.g., press <code>Ctrl+`</code> or go to <strong>Terminal &gt; New
+Terminal</strong>). The default terminal profile is <code>arf</code>,
+which provides a full R REPL. R objects created in <code>arf</code> are
+visible in the REditorSupport extension’s Environment pane thanks to the
+<code>.Rprofile</code> configuration included in the repository.</p>
 </div>
 <div class="section level2">
 <h2 id="clean-environment">Clean Environment<a class="anchor" aria-label="anchor" href="#clean-environment"></a>
@@ -272,23 +270,22 @@ Compose</a> to initialize the following <strong>services</strong>:</p>
 This file:</p>
 <ul>
 <li>installs the R version used in this project</li>
-<li>installs R packages’ system requirements</li>
+<li>installs <a href="https://pak.r-lib.org/" class="external-link"><code>{pak}</code></a> R
+package installer</li>
 <li>installs the <a href="https://rstudio.github.io/renv/" class="external-link">renv</a> version used in this project</li>
 </ul>
-<p>In addition, <strong>app</strong> service defines a <a href="https://docs.docker.com/storage/volumes/" class="external-link">Volume</a> to leverage
-the use of <a href="https://rstudio.github.io/renv/" class="external-link">renv</a> cache. The
-<code>RENV_PATHS_CACHE_HOST</code> environmental variable needs to be
-set in <code>.devcontainer/.env</code>. Resources:</p>
-<ul>
+<p>After the container is created, the <code>postCreateCommand</code>
+runs two steps in sequence:</p>
+<ol style="list-style-type: decimal">
 <li>
-<a href="https://rstudio.github.io/renv/articles/package-install.html?q=cache%20location#cache-location" class="external-link">{renv}’s
-Cache location</a>. This article helps to find where
-<a href="https://rstudio.github.io/renv/" class="external-link">renv</a>’s cache is located in your machine.</li>
+<a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/install_arf.sh" class="external-link">install_arf.sh</a>
+— installs <code>arf</code>, a Rust-based R terminal, and configures it
+as the default integrated terminal.</li>
 <li>
-<a href="https://github.com/docker/for-win/issues/2151#issuecomment-662343075" class="external-link">This
-GitHub Issue comment</a> shows examples on how to state the path when
-working with a Windows machine.</li>
-</ul>
+<a href="https://github.com/COHHIO/ryha/tree/master/.devcontainer/complete_dev_setup.R" class="external-link">complete_dev_setup.R</a>
+— restores app packages via <code>renv::restore()</code> and installs
+development-only packages.</li>
+</ol>
 <p>By setting the <code>network_mode</code> property to
 <code>service:db</code>, we can use <code>host = "localhost"</code> when
 connecting to the development database from inside the Dev Container.
@@ -425,7 +422,7 @@ populated, you should be able to see the tables with data:</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
