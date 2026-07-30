@@ -19,20 +19,29 @@ jobs:
         with:
           r-version: '4.4.3'
 
-      - name: Restore renv packages
+      - name: Install pak
         run: |
-          renv::restore()
+          install.packages('pak', repos = 'https://r-lib.github.io/p/pak/stable/')
         shell: Rscript {0}
 
       - name: Install renv
         run: |
-          install.packages('remotes', repos = 'https://cloud.r-project.org')
-          remotes::install_version(package = 'renv', version = Sys.getenv('RENV_VERSION'))
+          pak::pak('cran::renv@1.1.4')
+        shell: Rscript {0}
+
+      - name: Restore renv packages
+        run: |
+          options(renv.config.pak.enabled = TRUE)
+          options(repos = c(
+            CRAN = "https://packagemanager.posit.co/cran/latest",
+            RSPM = "https://packagemanager.posit.co/cran/latest"
+          ))
+          renv::restore()
         shell: Rscript {0}
 
       - name: Install rsconnect
         run: |
-          renv::install("rsconnect@1.3.4")
+          pak::pak("rsconnect@1.3.4")
         shell: Rscript {0}
 
       - name: Configure rsconnect
