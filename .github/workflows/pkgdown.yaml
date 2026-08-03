@@ -32,11 +32,15 @@ jobs:
           r-version: '4.4.3'
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-renv@v2
-
       - name: Install pak
         run: install.packages('pak', repos = 'https://r-lib.github.io/p/pak/stable/')
         shell: Rscript {0}
+
+      - name: Install renv
+        run: pak::pak('cran::renv@1.1.4')
+        shell: Rscript {0}
+
+      - uses: r-lib/actions/setup-renv@v2
 
       - name: Install pkgdown
         run: |
