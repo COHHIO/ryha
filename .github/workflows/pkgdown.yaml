@@ -39,7 +39,14 @@ jobs:
         shell: Rscript {0}
 
       - name: Install pkgdown
-        run: pak::pkg_install("pkgdown@2.2.1", upgrade = FALSE, ask = FALSE)
+        run: |
+          # This repo's .Rprofile pins `repos` to a URL without the
+          # __linux__/<codename> segment, which serves source tarballs
+          # instead of binaries. Point back at the binary-serving RSPM
+          # URL that setup-r's use-public-rspm exported, so pak doesn't
+          # compile ragg/systemfonts/textshaping/xml2 from source.
+          options(repos = c(RSPM = Sys.getenv("RSPM")))
+          pak::pkg_install("pkgdown@2.2.1", upgrade = FALSE, ask = FALSE)
         shell: Rscript {0}
 
       - name: Install package
