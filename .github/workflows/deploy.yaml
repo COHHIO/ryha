@@ -27,8 +27,7 @@ jobs:
               "DESCRIPTION",
               "app.R",
               ".Rbuildignore"
-            ),
-            dependencyResolution = "library"
+            )
           )
         shell: Rscript {0}
 
@@ -76,7 +75,6 @@ jobs:
             account = "ohiobalanceofstatecoc",
             appId =  "7831250",
             lint = FALSE,
-            forceUpdate = TRUE,
-            dependencyResolution = "library"
+            forceUpdate = TRUE
           )
         shell: Rscript {0}
