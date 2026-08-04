@@ -26,6 +26,6 @@ RUN R -q -e 'options( \
   ) \
 ); \
 renv::restore(); \
-pak::pak("rsconnect", upgrade = FALSE)'
+pak::pak(c("rsconnect", "pkgdown"), upgrade = FALSE)'
 
 WORKDIR /

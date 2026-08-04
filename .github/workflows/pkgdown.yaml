@@ -3,7 +3,7 @@
 on:
   push:
     branches: [main, master]
-  pull_request:
+  # pull_request:
   release:
     types: [published]
   workflow_dispatch:
@@ -26,11 +26,6 @@ jobs:
       packages: read
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install pkgdown
-        run: |
-          pak::pak("pkgdown", upgrade = FALSE)
-        shell: Rscript {0}
 
       - name: Install package
         run: install.packages(".", repos = NULL, type = "source", dependencies = FALSE)
