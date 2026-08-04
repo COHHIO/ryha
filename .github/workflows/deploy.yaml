@@ -19,9 +19,24 @@ jobs:
           r-version: '4.4.3'
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-renv@v2
+      - name: Install pinned renv version
+        run: pak::pak("cran::renv@1.2.3")
+        shell: Rscript {0}
+
+      - name: Install renv packages (renv.lock, cached)
+        uses: r-lib/actions/setup-renv@v2
+
+      - name: Cache rsconnect
+        id: cache-rsconnect
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.RENV_PATHS_ROOT }}
+            renv/library
+          key: rsconnect-${{ runner.os }}-r4.4.3-v1
 
       - name: Install rsconnect
+        if: steps.cache-rsconnect.outputs.cache-hit != 'true'
         run: |
           pak::pak("rsconnect", upgrade = FALSE)
         shell: Rscript {0}
