@@ -2,13 +2,9 @@ name: Build CI container image
 
 on:
   push:
-    branches:
-      - master
-      - 213-update-renv # TODO: remove before merging, temporary for manual testing
     paths:
       - 'Dockerfile.ci'
       - 'renv.lock'
-      - '.github/workflows/build-image.yaml'
   workflow_dispatch:
 
 permissions:
