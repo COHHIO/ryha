@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - '*'
-  # pull_request:
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,8 @@ jobs:
               "DESCRIPTION",
               "app.R",
               ".Rbuildignore"
-            )
+            ),
+            dependencyResolution = "library"
           )
         shell: Rscript {0}
 
@@ -75,6 +76,7 @@ jobs:
             account = "ohiobalanceofstatecoc",
             appId =  "7831250",
             lint = FALSE,
-            forceUpdate = TRUE
+            forceUpdate = TRUE,
+            dependencyResolution = "library"
           )
         shell: Rscript {0}
