@@ -1,5 +1,9 @@
 FROM rocker/r-ver:4.4.3
 
+# Pre-install some system requirements
+RUN apt-get update && apt-get install --no-install-recommends -y cmake \
+&& rm -rf /var/lib/apt/lists/*
+
 # Install pak (handles R package system dependencies automatically)
 RUN R -q -e "install.packages('pak', repos = 'https://r-lib.github.io/p/pak/stable/')"
 
