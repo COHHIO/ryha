@@ -4,5 +4,5 @@ FROM rocker/r-ver:4.4.3
 RUN R -q -e "install.packages('pak', repos = 'https://r-lib.github.io/p/pak/stable/')"
 
 # Pin renv version
-ENV RENV_VERSION 1.1.4
+ENV RENV_VERSION 1.2.3
 RUN R -q -e "pak::pak('cran::renv@${RENV_VERSION}')"

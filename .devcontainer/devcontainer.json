@@ -5,6 +5,14 @@
 	// Enable db and pgadmin in local machine
 	"forwardPorts": [5432, 5050],
 	"postCreateCommand": "bash .devcontainer/install_arf.sh && Rscript .devcontainer/complete_dev_setup.R",
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {}
+	},
+	"mounts": [
+      "source=${localEnv:USERPROFILE}/.gitconfig,target=/root/.gitconfig,type=bind,consistency=cached",
+      "source=${localEnv:USERPROFILE}/.config/gh,target=/root/.config/gh,type=bind,consistency=cached",
+	  "source=${localEnv:USERPROFILE}/.claude,target=/root/.claude,type=bind,consistency=cached"
+    ],
 	// Configure tool-specific properties
 	"customizations": {
 		// Settings for VS Code
