@@ -2,6 +2,9 @@ name: Build CI container image
 
 on:
   push:
+    branches-ignore:
+      - dev
+      - master
     paths:
       - 'Dockerfile.ci'
       - 'renv.lock'
