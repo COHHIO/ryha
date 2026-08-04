@@ -55,11 +55,20 @@ jobs:
           path: |
             ${{ env.RENV_PATHS_ROOT }}
             renv/library
-          key: rsconnect-${{ runner.os }}-r4.4.3-v1
+          key: rsconnect-${{ runner.os }}-r4.4.3-v2
 
       - name: Install rsconnect
         if: steps.cache-rsconnect.outputs.cache-hit != 'true'
         run: |
+          # renv is active by this point, which resets .libPaths() to the
+          # project library only, so the `pak` installed earlier (into the
+          # pre-activation ambient library) is no longer reachable here.
+          if (!requireNamespace("pak", quietly = TRUE)) {
+            install.packages("pak", repos = sprintf(
+              "https://r-lib.github.io/p/pak/stable/%s/%s/%s",
+              .Platform$pkgType, R.Version()$os, R.Version()$arch
+            ))
+          }
           pak::pak("rsconnect", upgrade = FALSE)
         shell: Rscript {0}
 
