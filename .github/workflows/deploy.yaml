@@ -3,41 +3,16 @@ on:
   push:
     tags:
       - '*'
-  # pull_request:
+  pull_request:
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    container: rocker/r-ver:4.4.3
+    container: ghcr.io/cohhio/ryha-ci:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Locate R user library path
-        id: r-lib-path
-        run: Rscript -e 'cat("path=", .libPaths()[1], "\n", sep = "")' >> "$GITHUB_OUTPUT"
-        shell: bash
-
-      - name: Install pak
-        run: |
-          install.packages("pak", repos = sprintf(
-            "https://r-lib.github.io/p/pak/stable/%s/%s/%s",
-            .Platform$pkgType, R.Version()$os, R.Version()$arch
-          ))
-        shell: Rscript {0}
-
-      - name: Install pinned renv version
-        run: pak::pak("cran::renv@1.2.3")
-        shell: Rscript {0}
-
-      - name: Install renv packages (renv.lock, cached)
-        uses: r-lib/actions/setup-renv@v2
-
-      - name: Install rsconnect
-        run: |
-          pak::pak("rsconnect", upgrade = FALSE)
-        shell: Rscript {0}
 
       - name: Validate app bundle
         if: github.event_name == 'pull_request'
