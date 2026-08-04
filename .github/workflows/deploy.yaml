@@ -27,6 +27,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Validate app bundle
+        if: github.event_name == 'pull_request'
         run: |
           rsconnect::writeManifest(
             appDir = ".",
