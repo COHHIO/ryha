@@ -1,0 +1,28 @@
+FROM rocker/r-ver:4.4.3
+
+# Install pak (handles R package system dependencies automatically)
+RUN R -q -e "install.packages('pak', repos = 'https://r-lib.github.io/p/pak/stable/')"
+
+# Pin renv version
+ENV RENV_VERSION 1.2.3
+RUN R -q -e "pak::pak('cran::renv@${RENV_VERSION}')"
+
+# Restore packages from renv.lock
+# Use pak as renv backend to automatically handle system dependencies, and set
+# repos to match complete_dev_setup.R so we resolve the same package sources
+# recorded in renv.lock.
+WORKDIR /build
+COPY renv.lock /build/renv.lock
+RUN R -q -e 'options( \
+  warn = 2, \
+  renv.config.pak.enabled = TRUE, \
+  repos = c( \
+    CRAN = "https://packagemanager.posit.co/cran/latest", \
+    RSPM = "https://packagemanager.posit.co/cran/latest" \
+  ) \
+); renv::restore()'
+
+# Install rsconnect for deployment to shinyapps.io
+RUN R -q -e "pak::pak('rsconnect', upgrade = FALSE)"
+
+WORKDIR /
