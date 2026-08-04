@@ -20,9 +20,8 @@ RUN R -q -e 'options( \
     CRAN = "https://packagemanager.posit.co/cran/latest", \
     RSPM = "https://packagemanager.posit.co/cran/latest" \
   ) \
-); renv::restore()'
-
-# Install rsconnect for deployment to shinyapps.io
-RUN R -q -e "pak::pak('rsconnect', upgrade = FALSE)"
+); \
+renv::restore(); \
+pak::pak("rsconnect", upgrade = FALSE)'
 
 WORKDIR /
