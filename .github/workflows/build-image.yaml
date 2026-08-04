@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 213-update-renv # TODO: remove before merging, temporary for manual testing
     paths:
       - 'Dockerfile.ci'
       - 'renv.lock'
