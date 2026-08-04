@@ -8,6 +8,7 @@ on:
     paths:
       - 'Dockerfile.ci'
       - 'renv.lock'
+      - '.github/workflows/build-image.yaml'
   workflow_dispatch:
 
 permissions:
